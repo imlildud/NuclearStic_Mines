@@ -1,0 +1,128 @@
+/* Google Fonts Import           */
+/* Imports handwritten / grunge style fonts */
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Indie+Flower&display=swap');
+
+/* Global Layout                 */
+body {
+    margin: 0; /* Remove default browser margin */
+    height: 100vh; /* Full viewport height */
+
+    /* Background image setup */
+    background: url('../assets/hud/NuclearSticMines.png') no-repeat center center fixed;
+    background-size: cover; /* Ensure full screen coverage */
+
+    font-family: "Indie Flower", cursive; /* Main game font */
+    color: black;
+
+    /* Center all content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo                          */
+.logo {
+    width: 320px; /* Fixed logo width */
+    margin-bottom: 10px; /* Space below logo */
+}
+
+/* Top Bar Container             */
+.top-bar {
+    position: relative; /* Allows absolute positioning inside */
+    display: inline-block;
+}
+
+/* Shared Button Base Styles     */
+/* Base styling for ALL menu buttons */
+.legacy-button,
+.daily-button,
+.custom-button,
+.diary-button,
+.option-button {
+    display: flex; /* Allows text centering */
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 18px;
+    transition: transform 0.2s ease, filter 0.15s ease; /* Smooth interaction animations */
+}
+
+/* Legacy Button (Top Left)      */
+.legacy-button {
+    position: absolute; /* Positioned relative to .top-bar */
+    top: 140px;
+    left: -80px;
+    z-index: 10; /* Ensures it stays above logo */
+    width: 180px;
+    height: 70px;
+    background: url('../assets/hud/menu/legacy.png') no-repeat center;
+    background-size: contain;
+}
+
+/* Main Menu Buttons             */
+.daily-button,
+.custom-button {
+    width: 310px;
+    height: 140px;
+    margin: 15px auto;
+    background-size: 300px;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-left: 100px; /* Offset text from icon */
+    font-size: 22px;
+}
+
+.daily-button {
+    background-image: url('../assets/hud/menu/daily.png');
+}
+
+.custom-button {
+    background-image: url('../assets/hud/menu/custom.png');
+}
+
+/* Bottom Row                    */
+.bottom-row {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 5px; /* Space between small buttons */
+}
+
+.diary-button,
+.option-button {
+    width: 210px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.diary-button {
+    background-image: url('../assets/hud/menu/diary.png');
+}
+
+.option-button {
+    background-image: url('../assets/hud/menu/options.png');
+}
+
+/* Hover Effects (Glow)          */
+/* Brightens and adds subtle glow */
+.legacy-button:hover,
+.daily-button:hover,
+.custom-button:hover,
+.diary-button:hover,
+.option-button:hover {
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+    transform: scale(1.05);
+}
+
+/* Active / Click Effects        */
+/* Darkens and slightly shrinks */
+.legacy-button:active,
+.daily-button:active,
+.custom-button:active,
+.diary-button:active,
+.option-button:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
+}
