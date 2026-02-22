@@ -1,36 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Nuclear-Stic Mines Retrash'd</title>
-<link rel="icon" href="assets/hud/nuclearlogo.png">
-<link rel="stylesheet" href="css/styles.css">
 
+<head>
+    <meta charset="UTF-8">
+    <title>Nuclear-Stic Mines Retrash'd</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/hud/nuclearlogo.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Scripts -->
+    <script src="js/Menu.js"></script>
 </head>
+
 <body>
+
+<!-- ====================================================== -->
+<!-- ===================== MAIN MENU ====================== -->
+<!-- ====================================================== -->
+
 <div class="overlay">
+
+    <!-- Corner Logo -->
+    <img src="assets/hud/cloudcon.png" class="cloud" alt="CloudToons">
+
+    <!-- Header -->
     <div class="top-bar">
+
+        <!-- Main Logo -->
         <img src="assets/hud/nuclearlogo.png" class="logo" alt="Game Logo">
 
-        <div class="legacy-button">
-        </div>
+        <!-- Legacy Mode Button -->
+        <div class="legacy-button"></div>
+
     </div>
 
+    <!-- Daily Mode -->
     <div class="daily-button">
         Daily Mission
     </div>
 
+    <!-- Custom Mode -->
     <div class="custom-button">
         Custom Mission
     </div>
 
+    <!-- Bottom Buttons -->
     <div class="bottom-row">
-        <div class="diary-button">
-        </div>
-        <div class="option-button">
-        </div>
+
+        <div class="diary-button"></div>
+        <div class="option-button"></div>
+
     </div>
 
+</div>
+
+
+<!-- ====================================================== -->
+<!-- =================== PUNCHCARD OVERLAY ================= -->
+<!-- ====================================================== -->
+
+<div id="punchcard-screen">
+
+    <div class="punchcard">
+
+        <!-- Base -->
+        <img src="assets/hud/punchcard/punchcard.png"
+             class="pc-base"
+             alt="Punchcard Base">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="puncheader">
+
+            <!-- Titles -->
+            <img src="assets/hud/punchcard/daily punch.png"
+                 class="pc-title"
+                 alt="Punchcard Title">
+
+            <img src="assets/hud/punchcard/custom punch.png"
+                 class="pct-title"
+                 alt="Custom Title">
+
+            <!-- Date -->
+            <img src="assets/hud/punchcard/note.png"
+                 class="pc-date"
+                 alt="Punchcard Date">
+
+            <div id="pc-date-note" class="pc-date-note"></div>
+
+            <!-- Close Button -->
+            <img src="assets/hud/punchcard/close.png"
+                 class="pc-close"
+                 alt="Close Punchcard">
+
+        </div>
+
+
+        <!-- ================= CONFIG SECTIONS ================= -->
+
+        <!-- Character -->
+        <div class="pc-char">
+            <div class="pc-label">Character</div>
+            <img id="pcCharacter">
+
+            <select id="legacy-character-select">
+                <option value="1">Chef</option>
+                <option value="2">Mosquito</option>
+                <option value="3">Mommy</option>
+                <option value="4">Scout</option>
+            </select>
+        </div>
+
+
+        <!-- Size -->
+        <div class="pc-size">
+            <div class="pc-label">Size</div>
+            <img id="pcSize">
+
+            <select id="custom-size-select">
+                <option value="1">Small</option>
+                <option value="5">Medium</option>
+                <option value="10">Large</option>
+                <option value="15">Xtra-Large</option>
+                <option value="20">Ultra-Large</option>
+                <option value="30">Nsanely-Large</option>
+            </select>
+        </div>
+
+
+        <!-- Hazards -->
+        <div class="pc-hazards">
+            <div class="pc-label">Hazards</div>
+            <img id="pcHazards">
+
+            <select id="custom-hazards-select">
+                <option value="1">Low</option>
+                <option value="3">Medium</option>
+                <option value="5">High</option>
+                <option value="10">Xtra-High</option>
+                <option value="20">Ultra-High</option>
+                <option value="30">Nsanely-High</option>
+            </select>
+        </div>
+
+
+        <!-- Obstacles -->
+        <div class="pc-obstacles">
+            <div class="pc-label">Obstacles</div>
+            <img id="pcObstacles">
+
+            <select id="custom-obstacles-select">
+                <option value="1">Low</option>
+                <option value="3">Medium</option>
+                <option value="5">High</option>
+                <option value="10">Xtra-High</option>
+                <option value="15">Ultra-High</option>
+                <option value="30">Nsanely-High</option>
+            </select>
+        </div>
+
+
+        <!-- Goals -->
+        <div class="pc-wanted">
+            <div class="pc-label">Wanted:</div>
+            <img id="pcWanted">
+
+            <select id="custom-wanted-select">
+                <option value="1">1</option>
+                <option value="5">2</option>
+                <option value="10">3</option>
+                <option value="20">4</option>
+                <option value="30">5</option>
+            </select>
+        </div>
+
+
+        <!-- Zone -->
+        <div class="pc-zone">
+            <div class="pc-label">Zone</div>
+            <img id="pcZone">
+
+            <select id="custom-zone-select">
+                <option value="1">Desert</option>
+                <option value="2">Snow</option>
+                <option value="3">Ash</option>
+            </select>
+        </div>
+
+
+        <!-- ================= ACTIONS ================= -->
+
+        <!-- Start Button -->
+        <img src="assets/hud/punchcard/ready.png"
+             class="pc-start"
+             id="pcStart"
+             alt="Start Game">
+
+        <!-- Seed Label -->
+        <div id="pc-seed-label" class="pc-seed-label"></div>
+    </div>
 </div>
 </body>
 </html>
