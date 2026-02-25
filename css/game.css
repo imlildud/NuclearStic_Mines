@@ -1,0 +1,25 @@
+/* ========================================================= */
+/* ====================== GAME SCREEN ====================== */
+/* ========================================================= */
+
+body {
+    margin: 0;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Indie Flower', cursive;
+}
+
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1000px;
+    aspect-ratio: 16 / 9;
+    background-color: rgba(0, 0, 0, 0.325);
+    border: 2px solid rgb(211, 211, 255);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.621);
+    margin: 0;
+}
