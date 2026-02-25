@@ -21,9 +21,9 @@ export class CharacterController {
         const boardsize = board.length;
         for (let i = 0; i < boardsize; i++) {
             for (let j = 0; j < boardsize; j++) {
-                if (board[i][j].getIsStart()) {
-                    this.character.setPosx(i);
-                    this.character.setPosy(j);
+                if (board[i][j].isStart()) {
+                    this.character.setPosX(i);
+                    this.character.setPosY(j);
                     return;
                 }
             }
@@ -32,8 +32,8 @@ export class CharacterController {
 
     moveCharacter(direction, board, riverDepth = 0) {
         const boardsize = board.length;
-        let newX = this.character.getPosx();
-        let newY = this.character.getPosy();
+        let newX = this.character.getPosX();
+        let newY = this.character.getPosY();
 
         switch (direction) {
             case "Up": newX--; break;
@@ -44,7 +44,7 @@ export class CharacterController {
 
         if (newX < 0 || newX >= boardsize || newY < 0 || newY >= boardsize) return;
 
-        const currentTile = board[this.character.getPosx()][this.character.getPosy()];
+        const currentTile = board[this.character.getPosX()][this.character.getPosY()];
         const targetTile = board[newX][newY];
 
         // Height difference check
@@ -56,18 +56,18 @@ export class CharacterController {
         switch (obst) {
             case "natural":
                 if (this.character.getAbilityId() === 4) {
-                    this.character.setPosx(newX);
-                    this.character.setPosy(newY);
+                    this.character.setPosX(newX);
+                    this.character.setPosY(newY);
                 }
                 return;
             case "pit":
-                this.character.setPosx(newX);
-                this.character.setPosy(newY);
+                this.character.setPosX(newX);
+                this.character.setPosY(newY);
                 if (this.character.getAbilityId() !== 4) this.killCharacter();
                 return;
             case "river":
-                this.character.setPosx(newX);
-                this.character.setPosy(newY);
+                this.character.setPosX(newX);
+                this.character.setPosY(newY);
                 if (this.character.getAbilityId() !== 4) {
                     if (riverDepth < 5) {
                         this.moveCharacter(direction, board, riverDepth + 1);
@@ -78,12 +78,12 @@ export class CharacterController {
                 return;
         }
 
-        this.character.setPosx(newX);
-        this.character.setPosy(newY);
+        this.character.setPosX(newX);
+        this.character.setPosY(newY);
     }
 
     verifyTile(board) {
-        const tile = board[this.character.getPosx()][this.character.getPosy()];
+        const tile = board[this.character.getPosX()][this.character.getPosY()];
         const rand = Math.random;
 
         // Lethal hazards
@@ -162,12 +162,12 @@ export class CharacterController {
         }
 
         // Start tile delivery
-        if (tile.getIsStart()) this.deliverGoal(board);
+        if (tile.isStart()) this.deliverGoal(board);
     }
 
     deliverGoal(board) {
-        const tile = board[this.character.getPosx()][this.character.getPosy()];
-        if (tile.getIsStart() && this.character.getRescued() > 0) {
+        const tile = board[this.character.getPosX()][this.character.getPosY()];
+        if (tile.isStart() && this.character.getRescued() > 0) {
             const rescued = this.character.getRescued();
             this.remainingGoals -= rescued;
             this.character.decrementRescue(rescued);
@@ -175,7 +175,7 @@ export class CharacterController {
     }
 
     winCondition(board) {
-        return board[this.character.getPosx()][this.character.getPosy()].getIsStart() &&
+        return board[this.character.getPosX()][this.character.getPosY()].isStart() &&
                this.character.getRescued() === this.remainingGoals;
     }
 

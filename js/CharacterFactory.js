@@ -1,9 +1,11 @@
-import { CharacterModel } from "../Models/CharacterModel.js";
+import { CharacterModel } from "./CharacterModel.js";
 
 export class CharacterFactory {
     static createCharacter(characterType) {
         const character = new CharacterModel();
-        switch (characterType.toLowerCase()) {
+        character.setType(characterType);
+        
+        switch (characterType) {
             case "scout":
                 return this.createScout(character);
             case "mosquito":
@@ -13,7 +15,7 @@ export class CharacterFactory {
             case "chef":
                 return this.createChef(character);
             default:
-                throw new Error(`Tipo de personaje desconocido: ${characterType}`);
+                throw new Error(`Unknow character: ${characterType}`);
         }
     }
 
