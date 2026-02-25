@@ -8,6 +8,9 @@ let punchcardMode = null;
 // Shared config reference (used by legacy & daily)
 let dailyConfig = null;
 
+// Current game config
+let currentConfig = null; 
+
 document.addEventListener("DOMContentLoaded", () => {
 
     const legacyButton = document.querySelector('.legacy-button');
@@ -15,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const customButton = document.querySelector('.custom-button');
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
+    const startButton = document.querySelector('.pc-start'); 
 
     /* -------------------- Mode Buttons -------------------- */
 
@@ -45,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("legacy-character-select")
     .addEventListener("change", (e) => {
 
-        const value = parseInt(e.target.value);
+        const value = e.target.value;
 
         // Legacy Mode updates stored config
         if (punchcardMode === "legacy") {
@@ -53,14 +57,19 @@ document.addEventListener("DOMContentLoaded", () => {
             dailyConfig.character = value;
             updatePunchcardTextures(dailyConfig);
         }
+    });
 
-        // Custom Mode regenerates custom config
-        if (punchcardMode === "custom") {
-            updateCustomTextures();
-        }
+    /* -------------------- Start Button -------------------- */
+    startButton.addEventListener('click', () => {
+        if (!currentConfig) return;            
+        localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
+        window.location.href = '../pages/game.html';
     });
 
     // Custom-only selects
+    document.getElementById("custom-character-select")
+        .addEventListener("change", updateCustomTextures);
+
     document.getElementById("custom-size-select")
         .addEventListener("change", updateCustomTextures);
 
@@ -94,9 +103,9 @@ function createBaseConfig() {
     return {
         mode: null,
         seed: null,
-        level: null,
-        character: 1,
-        size: 5,
+        level: 1,
+        character: "chef",
+        size: 1,
         hazards: 1,
         obstacles: 1,
         goals: 1,
@@ -129,11 +138,6 @@ function updatePunchcardTextures(config) {
     if (config.mode === "legacy") {
 
         dateNote.textContent = "Lvl_" + config.level;
-        legacySelect.style.display = "block";
-    }
-
-    /* -------------------- Custom Mode -------------------- */
-    if (config.mode === "custom") {
         legacySelect.style.display = "block";
     }
 
@@ -175,7 +179,7 @@ function generateLegacyConfig() {
 
     config.mode = "legacy";
     config.level = 1;
-    config.character = 1;
+    config.character = "chef";
 
     // Legacy scaling is tied to level
     config.size = config.level;
@@ -183,6 +187,7 @@ function generateLegacyConfig() {
     config.obstacles = config.level;
 
     dailyConfig = config;
+    currentConfig = config;   
     updatePunchcardTextures(config);
 }
 
@@ -239,13 +244,15 @@ function generateDailyConfig() {
     config.mode = "daily";
     config.seed = seed;
     config.size = size;
-    config.character = getRandomInRange(random, 1, 4);
+    const chars = ["chef", "mosquito", "mommy", "scout"];
+    config.character = chars[getRandomInRange(random, 0, 3)];
     config.goals = getRandomInRange(random, 1, size);
     config.zone = getRandomInRange(random, 1, 3);
     config.hazards = getRandomInRange(random, 1, size);
     config.obstacles = getRandomInRange(random, 1, size);
 
     dailyConfig = config;
+    currentConfig = config;   
     updatePunchcardTextures(config);
 }
 
@@ -257,12 +264,16 @@ function generateDailyConfig() {
 // Generates custom mode configuration
 function generateCustomConfig() {
 
+    hideAllSelects();
+    
     document.getElementById("pc-date-note").textContent = "";
     document.getElementById("pc-seed-label").textContent = "";
 
     document.querySelector(".pc-title").style.display = "none";
     document.querySelector(".pct-title").style.display = "block";
-
+    
+    document.getElementById("legacy-character-select").style.display= "none";
+    document.getElementById("custom-character-select").style.display = "block";
     document.getElementById("custom-size-select").style.display = "block";
     document.getElementById("custom-hazards-select").style.display = "block";
     document.getElementById("custom-obstacles-select").style.display = "block";
@@ -278,13 +289,14 @@ function updateCustomTextures() {
     const config = createBaseConfig();
     config.mode = "custom";
 
-    config.character = parseInt(document.getElementById("legacy-character-select").value);
+    config.character = document.getElementById("custom-character-select").value;
     config.size = parseInt(document.getElementById("custom-size-select").value);
     config.hazards = parseInt(document.getElementById("custom-hazards-select").value);
     config.obstacles = parseInt(document.getElementById("custom-obstacles-select").value);
     config.goals = parseInt(document.getElementById("custom-wanted-select").value);
     config.zone = parseInt(document.getElementById("custom-zone-select").value);
 
+    currentConfig = config;
     updatePunchcardTextures(config);
 }
 
@@ -292,6 +304,7 @@ function updateCustomTextures() {
 function hideAllSelects() {
 
     document.getElementById("legacy-character-select").style.display = "none";
+    document.getElementById("custom-character-select").style.display = "none";
     document.getElementById("custom-size-select").style.display = "none";
     document.getElementById("custom-hazards-select").style.display = "none";
     document.getElementById("custom-obstacles-select").style.display = "none";
@@ -304,21 +317,21 @@ function hideAllSelects() {
 /* ======================= TEXTURES ======================== */
 /* ========================================================= */
 
-// Returns character texture based on numeric ID
+// Returns character texture based on ID
 function getCharTexture(value) {
-    if (value == 1) return "../assets/hud/punchcard/character/chefpin.png";
-    if (value == 2) return "../assets/hud/punchcard/character/mosquitopin.png";
-    if (value == 3) return "../assets/hud/punchcard/character/mommypin.png";
-    if (value == 4) return "../assets/hud/punchcard/character/scoutpin.png";
+    if (value === "chef") return "../assets/hud/punchcard/character/chefpin.png";
+    if (value === "mosquito") return "../assets/hud/punchcard/character/mosquitopin.png";
+    if (value === "mommy") return "../assets/hud/punchcard/character/mommypin.png";
+    if (value === "scout") return "../assets/hud/punchcard/character/scoutpin.png";
     return "../assets/hud/punchcard/character/chefpin.png";
 }
 
 // Returns size texture based on numeric range
 function getSizeTexture(value) {
-    if (value <= 4) return "../assets/hud/punchcard/size/small.png";
-    if (value <= 9) return "../assets/hud/punchcard/size/medium.png";
-    if (value <= 14) return "../assets/hud/punchcard/size/large.png";
-    if (value <= 19) return "../assets/hud/punchcard/size/xtralarge.png";
+    if (value <= 8) return "../assets/hud/punchcard/size/small.png";
+    if (value <= 12) return "../assets/hud/punchcard/size/medium.png";
+    if (value <= 16) return "../assets/hud/punchcard/size/large.png";
+    if (value <= 20) return "../assets/hud/punchcard/size/xtralarge.png";
     if (value <= 24) return "../assets/hud/punchcard/size/ultralarge.png";
     return "../assets/hud/punchcard/size/ultralarge.png";
 }

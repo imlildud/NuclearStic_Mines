@@ -18,6 +18,9 @@ export class CharacterModel {
         this.alive = true;
         this.regen = false;
         this.rescued = 0;
+
+        // Who
+        this.type = "none";
     }
 
     // Position
@@ -90,4 +93,8 @@ export class CharacterModel {
     getRescued() { return this.rescued; }
     incrementRescue() { this.rescued++; }
     decrementRescue(v) { this.rescued -= v; }
+
+    // Who
+    getType() { return this.type; }
+    setType(v) { this.type = v; }
 }

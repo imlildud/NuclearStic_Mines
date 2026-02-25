@@ -68,9 +68,18 @@ export class BoardController {
             case 3: board[randomPos][edgemax].setStart(true); break;
         }
 
+        if(validGoals.length === 0){
+            console.warn("No valid goals");
+            return board;
+        }
+
         // Place goals
         let remainingGoals = numGoals;
-        while (remainingGoals > 0) {
+        let attempts = 0;
+        let maxattempts = 5000;
+    
+        while (remainingGoals > 0 && attempts < maxattempts) {
+            attempts ++
             let goalX = Math.floor(Math.random() * boardSize);
             let goalY = Math.floor(Math.random() * boardSize);
 
@@ -84,11 +93,15 @@ export class BoardController {
 
             const tile = board[goalX][goalY];
             
-            if (tile.getGoalType() === "none" && !tile.isStart()) {
+            if (tile.getGoaltype() === "none" && !tile.isStart()) {
                 const goalIndex = Math.floor(Math.random() * validGoals.length);
-                tile.setGoalType(validGoals[goalIndex].type);
+                tile.setGoaltype(validGoals[goalIndex].type);
                 console.log(`Children tile generated at [${goalX},${goalY}]: ${validGoals[goalIndex].type}`);
                 remainingGoals--;
+            }
+
+            if(attempts >= maxattempts){
+                console.warn("Goal generation stopped by safety");
             }
         }
 
@@ -126,8 +139,8 @@ export class BoardController {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    generateHeights(board, level) {
-        const boardSize = board.length;
+    generateHeights(board, level, size) {
+        const boardSize = size;
         
         if (level >= 3) {
             const totalHeights = this.randInt(5, Math.floor((boardSize - 1) / 2) + level);
@@ -214,10 +227,11 @@ export class BoardController {
                 }
             }
         }
+        return board;
     }
 
-    generateObstacles(board, level) {
-        const boardSize = board.length;
+    generateObstacles(board, level, size) {
+        const boardSize = size;
         
         if (level >= 3) {
             const totalObstacles = this.randInt(5, Math.floor((boardSize - 1) / 2) + level);
@@ -264,8 +278,8 @@ export class BoardController {
         return board;
     }
 
-    generateHazards(board, totalHazards, level) {
-        const boardSize = board.length;
+    generateHazards(board, totalHazards, level, size) {
+        const boardSize = size;
 
         // Hazard types with weight and minimum level
         const hazardTypes = [
@@ -310,7 +324,7 @@ export class BoardController {
                 tile.setHazardtype(chosenType);
 
                 // Live hazards
-                if (["deadbush", "bandit", "liberal", "dunecrawler"].includes(chosenType)) {
+                if (["deadbush", "bandit", "liberal", "dunecrawler"]) {
                     tile.setHazardlive(true);
                 }
 
@@ -320,7 +334,7 @@ export class BoardController {
                 }
 
                 // Detection radius
-                if (["spiderMine", "bandit", "sandsnake"].includes(chosentype)) {
+                if (["spiderMine", "bandit", "sandsnake"]) {
                     this.applyRadius(tile, board, x, y, "setDetectionratio");
                 }
 
@@ -401,8 +415,8 @@ export class BoardController {
 
     updateVision(board, character) {
         const boardSize = board.length;
-        const visionX = character.getPosx();
-        const visionY = character.getPosy();
+        const visionX = character.getPosX();
+        const visionY = character.getPosY();
         const visionRange = character.getVision();
 
         // Step 1: Hide all non-start/non-goal/non-secure/non-obstacle/non-live hazard tiles
@@ -410,8 +424,8 @@ export class BoardController {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
                 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() &&
-                    tile.getObstacletype() === "none" && !tile.isHazardlive()) {
+                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() 
+                    && !tile.isHazardlive()) {
                     tile.setHide(true);
                 }
             }
