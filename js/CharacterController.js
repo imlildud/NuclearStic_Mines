@@ -36,10 +36,10 @@ export class CharacterController {
         let newY = this.character.getPosY();
 
         switch (direction) {
-            case "Up": newX--; break;
-            case "Down": newX++; break;
-            case "Left": newY--; break;
-            case "Right": newY++; break;
+            case "Up": newY--; break;
+            case "Down": newY++; break;
+            case "Left": newX--; break;
+            case "Right": newX++; break;
         }
 
         if (newX < 0 || newX >= boardsize || newY < 0 || newY >= boardsize) return;

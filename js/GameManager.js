@@ -51,34 +51,29 @@ export class GameManager {
         }
 
         this.board = this.boardCtrl.generateBoard(size);
-        console.log("Board: ", this.board);
 
         this.board = this.boardCtrl.generateStartAndGoal(
             this.board,
             goals,
             this.currentLevel
         );
-        console.log("Board: ", this.board);
 
         this.board = this.boardCtrl.setSafeTiles(
             this.board,
             size
         );
-        console.log("Board: ", this.board);
 
         this.board = this.boardCtrl.generateHeights(
             this.board,
             heightIntensity,
             size
         );
-        console.log("Board: ", this.board);
 
         this.board = this.boardCtrl.generateObstacles(
             this.board,
             obstacleIntensity,
             size
         );
-        console.log("Board: ", this.board);
         
         this.board = this.boardCtrl.generateHazards(
             this.board,
@@ -86,20 +81,17 @@ export class GameManager {
             hazardIntensity,
             size
         );
-        console.log("Board: ", this.board);
 
         this.board = this.boardCtrl.trackHazardCount(
             this.board,
             size
         );
-        console.log("Board: ", this.board);
-
+        
         this.charCtrl.getStartCoords(this.board);
         this.boardCtrl.updateVision(this.board, this.player);
     }
 
     handleInput(direction) {
-        
         if (this.gameInputLocked) return;
          
         // Movement
@@ -107,7 +99,7 @@ export class GameManager {
 
         // Check tiles
         this.charCtrl.verifyTile(this.board);
-        this.boardCtrl.updateVision(this.board);
+        this.boardCtrl.updateVision(this.board, this.player);
 
         // Victory
         if (this.charCtrl.winCondition(this.board)){
