@@ -11,7 +11,6 @@ export class BoardController {
         const startSize = 8;
         const step = 4;
         const boardSize = startSize + Math.floor(step * (level / 5));
-        console.log(`Level: ${level}, Board size: ${boardSize}`);
         return boardSize;
     }
 
@@ -20,7 +19,6 @@ export class BoardController {
         const startHazards = 7;
         const step = 7;
         const hazard = startHazards + Math.floor(step * (level / 5));
-        console.log(`Total number of hazards: ${hazard}`);
         return hazard;
     }
 
@@ -29,7 +27,6 @@ export class BoardController {
         const startGoals = 1;
         const step = 1;
         const goals = startGoals + Math.floor(step * (level / 5));
-        console.log(`Total number of kids: ${goals}`);
         return goals;
     }
 
@@ -141,11 +138,10 @@ export class BoardController {
 
     generateHeights(board, level, size) {
         const boardSize = size;
-        
-        if (level >= 3) {
-            const totalHeights = this.randInt(5, Math.floor((boardSize - 1) / 2) + level);
 
-            // Height types with weight and min level
+        if (level >= 3) {
+            const totalHeights = this.randInt(5,Math.floor((boardSize - 1) / 2) + level);
+
             const heightTypes = [
                 { type: 1, weight: 0.45, minLevel: 3 },
                 { type: 2, weight: 0.35, minLevel: 5 },
@@ -153,49 +149,52 @@ export class BoardController {
                 { type: 4, weight: 0.05, minLevel: 15 }
             ];
 
-            // Filter by level
             const validHeights = heightTypes.filter(ht => level >= ht.minLevel);
 
-            // Normalize weights
-            const totalWeight = validHeights.reduce((sum, ht) => sum + ht.weight, 0);
+            const totalWeight = validHeights.reduce((s, ht) => s + ht.weight, 0);
             validHeights.forEach(ht => ht.weight /= totalWeight);
 
-            // Place heights randomly
             let remaining = totalHeights;
+
             while (remaining > 0) {
                 const roll = Math.random();
                 let acc = 0;
                 let chosenType = 1;
-                
+
                 for (const ht of validHeights) {
                     acc += ht.weight;
-                    
                     if (roll <= acc) {
                         chosenType = ht.type;
-                    break;
+                        break;
                     }
                 }
 
                 const x = this.randInt(0, boardSize - 1);
                 const y = this.randInt(0, boardSize - 1);
                 const tile = board[x][y];
-            
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
+
+                if (
+                    !tile.isStart() &&
+                    tile.getGoaltype() === "none" &&
+                    !tile.isSecure() &&
+                    !tile.isMarked() &&
+                    tile.getHazardtype() === "none" &&
+                    tile.getObstacletype() === "none"
+                ) {
                     tile.setTileheight(chosenType);
                     remaining--;
                 }
             }
         }
 
-        // Spread heights around
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
-                
+
                 if (tile.getTileheight() > 1) {
                     const heightFounded = tile.getTileheight();
                     const caseNum = this.randInt(0, 3);
-                    let directions;
+                    let directions = [];
 
                     switch (caseNum) {
                         case 0:
@@ -214,7 +213,7 @@ export class BoardController {
                             directions = [
                                 [1, 0],[0, -1],[0, 1],
                                 [1, 1],[1, -1]
-                            ];
+                            ];  
                             break;
                         case 3:
                             directions = [
@@ -222,7 +221,15 @@ export class BoardController {
                                 [-1, 1],[-1, -1]
                             ];
                             break;
-                        default: directions = [];
+                    }
+
+                    for (const [dx, dy] of directions) {
+                        const x = i + dx;
+                        const y = j + dy;
+
+                        if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+                            board[x][y].setTileheight(heightFounded - 1);
+                        }
                     }
                 }
             }
@@ -322,6 +329,7 @@ export class BoardController {
 
             if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
                 tile.setHazardtype(chosenType);
+                tile.setHazardlive(false);
 
                 // Live hazards
                 if (["deadbush", "bandit", "liberal", "dunecrawler"]) {
@@ -374,7 +382,7 @@ export class BoardController {
                 const tile = board[i][j];
 
                 // Increment hazard counts around standard hazards
-                if (tile.getHazardtype() !== "none" && !tile.isHazardlive()) {
+                if (tile.getHazardtype() !== "none" || (tile.getHazardtype() !== "none" && !tile.isHazardlive())) {
                     for (const [dx, dy] of directions) {
                         const x = i + dx;
                         const y = j + dy;
@@ -419,36 +427,37 @@ export class BoardController {
         const visionY = character.getPosY();
         const visionRange = character.getVision();
 
-        // Step 1: Hide all non-start/non-goal/non-secure/non-obstacle/non-live hazard tiles
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
-                
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() 
-                    && !tile.isHazardlive()) {
+
+                if (
+                    !tile.isStart() &&
+                    tile.getGoaltype() === "none" &&
+                    !tile.isSecure()
+                ){
                     tile.setHide(true);
                 }
             }
         }
 
-        // Step 2: Show tile the player is standing on
         board[visionX][visionY].setHide(false);
 
-        // Step 3: Compute vision boundaries
         const minX = Math.max(0, visionX - visionRange);
         const maxX = Math.min(boardSize - 1, visionX + visionRange);
         const minY = Math.max(0, visionY - visionRange);
         const maxY = Math.min(boardSize - 1, visionY + visionRange);
 
         const directions = [
-            [-1, 0], [1, 0], [0, -1], [0, 1]  // cardinal directions
+            [-1, 0], [1, 0], [0, -1], [0, 1]
         ];
 
-        // Track visible tiles for diagonal checking
-        const visible = Array.from({ length: boardSize }, () => Array(boardSize).fill(false));
+        const visible = Array.from({ length: boardSize }, () =>
+        Array(boardSize).fill(false)
+        );
+
         visible[visionX][visionY] = true;
 
-        // Step 4: Reveal tiles in cardinal directions
         for (const [dx, dy] of directions) {
             let x = visionX;
             let y = visionY;
@@ -456,21 +465,21 @@ export class BoardController {
             while (true) {
                 x += dx;
                 y += dy;
-                
+
                 if (x < minX || x > maxX || y < minY || y > maxY) break;
 
-                // Stop expansion if current tile has hazard count or is a hazard
-                if (board[x][y].getHazardcount() > 0) break;
-                if (board[x][y].getHazardtype() !== "none" && !board[x][y].isHazardlive()) break;
+                const tile = board[x][y];
 
-                board[x][y].setHide(false);
+                if (tile.getHazardtype() !== "none") break;
+
+                tile.setHide(false);
                 visible[x][y] = true;
 
-                if (board[x][y].getHazardcount() > 0) break;
+                if (tile.getHazardcount() > 0) break;
             }
         }
 
-        // Step 5: Diagonals
+
         const diagonals = [
             [-1, -1], [-1, 1],
             [1, -1], [1, 1]
@@ -479,34 +488,55 @@ export class BoardController {
         for (const [dx, dy] of diagonals) {
             const dx1 = visionX + dx;
             const dy1 = visionY + dy;
-            
+
             if (dx1 < minX || dx1 > maxX || dy1 < minY || dy1 > maxY) continue;
 
             const cx1 = visionX + dx;
-            const cy1 = visionY; // vertical
+            const cy1 = visionY;
             const cx2 = visionX;
-            const cy2 = visionY + dy; // horizontal
+            const cy2 = visionY + dy;
 
             let canSee = true;
 
             // Cardinal 1
             if (cx1 >= minX && cx1 <= maxX && cy1 >= minY && cy1 <= maxY) {
-                if (!visible[cx1][cy1] || board[cx1][cy1].getHazardcount() > 0) canSee = false;
-                if (board[cx1][cy1].getHazardtype() !== "none") canSee = false;
-                if (board[cx1][cy1].getObstacletype() !== "none") canSee = true;
-                if (board[cx1][cy1].getTileheight() > board[visionX][visionY].getTileheight()) canSee = false;
+                const tile1 = board[cx1][cy1];
+
+                if (!visible[cx1][cy1] || tile1.getHazardcount() > 0)
+                    canSee = false;
+
+                if (tile1.getHazardtype() !== "none")
+                    canSee = false;
+
+                if (tile1.getObstacletype() !== "none")
+                    canSee = false;
+
+                if (tile1.getTileheight() >
+                    board[visionX][visionY].getTileheight())
+                    canSee = false;
             }
 
             // Cardinal 2
             if (cx2 >= minX && cx2 <= maxX && cy2 >= minY && cy2 <= maxY) {
-                if (!visible[cx2][cy2] || board[cx2][cy2].getHazardcount() > 0) canSee = false;
-                if (board[cx2][cy2].getHazardtype() !== "none") canSee = false;
-                if (board[cx1][cy1].getHazardtype() !== "none") canSee = false;
-                if (board[cx1][cy1].getObstacletype() !== "none") canSee = true;
-                if (board[cx1][cy1].getTileheight() > board[visionX][visionY].getTileheight()) canSee = false;
+                const tile2 = board[cx2][cy2];
+
+                if (!visible[cx2][cy2] || tile2.getHazardcount() > 0)
+                    canSee = false;
+
+                if (tile2.getHazardtype() !== "none")
+                    canSee = false;
+
+                if (tile2.getObstacletype() !== "none")
+                    canSee = false;
+
+                if (tile2.getTileheight() >
+                    board[visionX][visionY].getTileheight())
+                    canSee = false;
             }
 
-            if (canSee) board[dx1][dy1].setHide(false);
+            if (canSee) {
+                board[dx1][dy1].setHide(false);
+            }
         }
     }
 

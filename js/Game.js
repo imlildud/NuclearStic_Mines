@@ -19,15 +19,6 @@ if (!configJSON) {
 const config = JSON.parse(configJSON);
 const debug = document.getElementById("debugPanel");
 
-debug.innerHTML = `
-Character: ${config.character}<br>
-Size: ${config.size}<br>
-Hazards: ${config.hazards}<br>
-Obstacles: ${config.obstacles}<br>
-Goals: ${config.goals}<br>
-Zone: ${config.zone}
-`;
-
 const zoneMap = {
     1: "desert.png",
     2: "snow.png",
@@ -55,9 +46,9 @@ loop();
 // Input
 window.addEventListener("keydown", (e) => {
     switch (e.key.toLowerCase()) {
-        case "w": game.handleInput("Left"); break;
-        case "s": game.handleInput("Right"); break;
-        case "a": game.handleInput("Up"); break;
-        case "d": game.handleInput("Down"); break;
+        case "w": game.handleInput("Up"); break;
+        case "s": game.handleInput("Down"); break;
+        case "a": game.handleInput("Left"); break;
+        case "d": game.handleInput("Right"); break;
     }
 });

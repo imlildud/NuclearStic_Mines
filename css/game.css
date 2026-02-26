@@ -11,6 +11,19 @@ body {
     font-family: 'Indie Flower', cursive;
 }
 
+.filter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    
+    background: url('../assets/hud/filter.png') no-repeat center center;
+    background-size: cover;
+    pointer-events: none;
+    z-index: 9999;
+}
+
 canvas {
     position: absolute;
     top: 50%;
