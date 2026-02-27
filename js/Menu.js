@@ -246,7 +246,7 @@ function generateDailyConfig() {
     config.size = size;
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
-    config.goals = getRandomInRange(random, 1, size);
+    config.goals = getRandomInRange(random, 0, 4);
     config.zone = getRandomInRange(random, 1, 3);
     config.hazards = getRandomInRange(random, 1, size);
     config.obstacles = getRandomInRange(random, 1, size);
@@ -358,11 +358,11 @@ function getObstacleTexture(value) {
 
 // Goal texture based on amount range
 function getGoalsTexture(value) {
-    if (value <= 4) return "../assets/hud/punchcard/goals/1.png";
-    if (value <= 9) return "../assets/hud/punchcard/goals/2.png";
-    if (value <= 19) return "../assets/hud/punchcard/goals/3.png";
-    if (value <= 29) return "../assets/hud/punchcard/goals/4.png";
-    if (value <= 39) return "../assets/hud/punchcard/goals/5.png";
+    if (value == 1) return "../assets/hud/punchcard/goals/1.png";
+    if (value == 2) return "../assets/hud/punchcard/goals/2.png";
+    if (value == 3) return "../assets/hud/punchcard/goals/3.png";
+    if (value == 4) return "../assets/hud/punchcard/goals/4.png";
+    if (value == 5) return "../assets/hud/punchcard/goals/5.png";
     return "../assets/hud/punchcard/goals/5.png";
 }
 
