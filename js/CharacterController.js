@@ -1,7 +1,3 @@
-import { TileModel } from "./TileModel.js";
-import { CharacterModel } from "./CharacterModel.js";
-import { BoardController } from "./BoardController.js";
-
 export class CharacterController {
     constructor(character, boardController) {
         this.character = character; // CharacterModel
@@ -11,9 +7,8 @@ export class CharacterController {
     }
 
     // Set number of goals
-    setCharacterGoals(level) {
-        this.totalGoals = this.boardController.loadNumberOfGoals(level);
-        this.remainingGoals = this.totalGoals;
+    setCharacterGoals(v) {
+        this.remainingGoals = v;
     }
 
     // Find the start tile coordinates
@@ -90,7 +85,7 @@ export class CharacterController {
         const lethal = ["mine", "spiderMine"];
         if (lethal.includes(tile.getHazardtype())) {
             const ability = this.character.getAbilityId();
-            if (ability === 1 && !tile.isFlagged()) {
+            if (ability === 1 && !tile.isFlagged() || ability === 1 && !tile.isMarked() ) {
                 this.killCharacter();
                 return;
             }
@@ -157,6 +152,7 @@ export class CharacterController {
                 this.character.incrementRescue();
                 this.character.incrementPoints(500);
                 tile.setGoaltype("none");
+                tile.setGoallive(false);
                 this.character.setRegen(true);
             }
         }
