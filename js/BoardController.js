@@ -1,5 +1,4 @@
 import { TileModel } from "./TileModel.js";
-import { CharacterModel } from "./CharacterModel.js";
 
 export class BoardController {
     constructor(player) {
@@ -459,6 +458,8 @@ export class BoardController {
         visible[visionX][visionY] = true;
 
         for (const [dx, dy] of directions) {
+            if (board[visionX][visionY].getHazardcount() > 0) break;
+
             let x = visionX;
             let y = visionY;
 
@@ -478,7 +479,6 @@ export class BoardController {
                 if (tile.getHazardcount() > 0) break;
             }
         }
-
 
         const diagonals = [
             [-1, -1], [-1, 1],
@@ -540,7 +540,8 @@ export class BoardController {
         }
     }
 
-    regenerateHazards(board, boardSize, level) {
+    regenerateHazards(board, totalHazards, level, size) {
+        const boardSize = size;
         this.resetHazardCount(board, boardSize);
         let remainingHazards = 0;
 
@@ -548,17 +549,17 @@ export class BoardController {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
 
-                if (tile.getHazardType() !== "none") {
+                if (tile.getHazardtype() !== "none") {
                     if (tile.isFlagged()) {
                         tile.setMarked(true);           // correctly marked
                         this.player.incrementPoints(200);
                     } else {
-                        tile.setHazardType("none");    // remove unmarked hazard
+                        tile.setHazardtype("none");    // remove unmarked hazard
                         remainingHazards++;            // to replace later
                     }
                 }
 
-                if (tile.isFlagged() && tile.getHazardType() === "none") {
+                if (tile.isFlagged() && tile.getHazardtype() === "none") {
                     tile.setFlagged(false);
                     this.player.decrementPoints(200);
                 }
@@ -566,10 +567,11 @@ export class BoardController {
         }
 
         // Generate the missing hazards
-        return this.generateHazards(board, remainingHazards, level);
+        return this.generateHazards(board, totalHazards, level, size);
     }
 
-    resetHazardCount(board, boardSize) {
+    resetHazardCount(board) {
+        const boardSize = board.length;
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];

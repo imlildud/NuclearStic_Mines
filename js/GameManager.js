@@ -87,6 +87,7 @@ export class GameManager {
             size
         );
         
+        this.charCtrl.setCharacterGoals(goals);
         this.charCtrl.getStartCoords(this.board);
         this.boardCtrl.updateVision(this.board, this.player);
     }
@@ -101,6 +102,33 @@ export class GameManager {
         this.charCtrl.verifyTile(this.board);
         this.boardCtrl.updateVision(this.board, this.player);
 
+        // Regen Hazards
+        if (this.player.isRegen() === true){
+            console.log("Goals:" + this.player.getRescued())
+            let hazardAmount;
+            let hazardIntensity;
+            let size;
+
+            if(this.config.mode === "legacy"){
+                size = this.boardCtrl.loadDifficulty(this.currentLevel);
+                hazardAmount = this.boardCtrl.loadNumberOfHazard(this.currentLevel);
+                hazardIntensity = this.currentLevel;
+            }else{
+                size = this.config.size;
+                hazardAmount = this.boardCtrl.loadNumberOfHazard(size);
+                hazardIntensity = this.config.hazards;
+            }
+            this.boardCtrl.regenerateHazards(this.board,
+                hazardAmount,
+                hazardIntensity,
+                size
+            );
+            this.boardCtrl.trackHazardCount(this.board);
+            this.boardCtrl.updateVision(this.board, this.player);
+            this.player.setRegen(false);
+            
+        }
+
         // Victory
         if (this.charCtrl.winCondition(this.board)){
             this.currentLevel ++;
@@ -112,6 +140,45 @@ export class GameManager {
         if (!this.player.isAlive()) {
             this.gameInputLocked = true;
             this.handleGameOver();
+        }
+    }
+
+    // Flag system
+    handleFlagDirection(direction) {
+
+        if (!this.board) return;
+
+        const px = this.player.getPosX();
+        const py = this.player.getPosY();
+
+        let targetX = px;
+        let targetY = py;
+
+        switch(direction) {
+            case "Up":    targetY--; break;
+            case "Down":  targetY++; break;
+            case "Left":  targetX--; break;
+            case "Right": targetX++; break;
+        }
+
+        const size = this.board.length;
+
+        if (targetX < 0 || targetY < 0 || 
+            targetX >= size || targetY >= size) return;
+
+        const tile = this.board[targetX][targetY];
+
+        if (!tile.isHide()) return;
+
+        if (tile.isFlagged()) {
+            tile.setFlagged(false);
+            this.player.incrementFlags();
+            return;
+        }   
+
+        if (this.player.getFlags() > 0) {
+            tile.setFlagged(true);
+            this.player.decrementFlags();
         }
     }
 

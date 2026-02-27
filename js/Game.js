@@ -35,6 +35,14 @@ game.startGame();
 // Renderer maded
 const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
+window.addEventListener("keydown", (e) => {
+    switch (e.key) {
+        case "ArrowUp":    game.handleFlagDirection("Up"); break;
+        case "ArrowDown":  game.handleFlagDirection("Down"); break;
+        case "ArrowLeft":  game.handleFlagDirection("Left"); break;
+        case "ArrowRight": game.handleFlagDirection("Right"); break;
+    }
+});
 
 // Loop
 function loop() {
