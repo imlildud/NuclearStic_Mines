@@ -31,6 +31,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Daily Mode Button
     dailyButton.addEventListener('click', () => {
+        const today = new Date().toDateString();
+        const alreadyPlayed = localStorage.getItem(`daily_completed_${today}`);
+    
+        if (alreadyPlayed) {
+            alert("Daily mission already completed today! Come back tomorrow.");
+        return;
+        }
+
         punchcardMode = "daily";
         punchcardScreen.classList.add('active');
         generateDailyConfig();
@@ -109,7 +117,7 @@ function createBaseConfig() {
         hazards: 1,
         obstacles: 1,
         goals: 1,
-        zone: 1
+        zone: "desert"
     };
 }
 
@@ -246,8 +254,10 @@ function generateDailyConfig() {
     config.size = size;
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
-    config.goals = getRandomInRange(random, 0, 4);
-    config.zone = getRandomInRange(random, 1, 3);
+    config.goals = getRandomInRange(random, 1, 5);
+    const zoneNum = getRandomInRange(random, 1, 3);
+    const zoneMap = {1: "desert", 2: "snow", 3: "ash"};
+    config.zone = zoneMap[zoneNum];
     config.hazards = getRandomInRange(random, 1, size);
     config.obstacles = getRandomInRange(random, 1, size);
 
@@ -266,8 +276,8 @@ function generateCustomConfig() {
 
     hideAllSelects();
     
-    document.getElementById("pc-date-note").textContent = "";
-    document.getElementById("pc-seed-label").textContent = "";
+    document.getElementById("pc-date-note").textContent = "Custom";
+    document.getElementById("pc-seed-label").textContent = "idk put something";
 
     document.querySelector(".pc-title").style.display = "none";
     document.querySelector(".pct-title").style.display = "block";
@@ -294,7 +304,7 @@ function updateCustomTextures() {
     config.hazards = parseInt(document.getElementById("custom-hazards-select").value);
     config.obstacles = parseInt(document.getElementById("custom-obstacles-select").value);
     config.goals = parseInt(document.getElementById("custom-wanted-select").value);
-    config.zone = parseInt(document.getElementById("custom-zone-select").value);
+    config.zone = (document.getElementById("custom-zone-select").value);
 
     currentConfig = config;
     updatePunchcardTextures(config);
@@ -368,8 +378,8 @@ function getGoalsTexture(value) {
 
 // Zone texture based on biome ID
 function getZoneTexture(value) {
-    if (value == 1) return "../assets/hud/punchcard/zone/desert.png";
-    if (value == 2) return "../assets/hud/punchcard/zone/snow.png";
-    if (value == 3) return "../assets/hud/punchcard/zone/ash.png";
+    if (value === "desert") return "../assets/hud/punchcard/zone/desert.png";
+    if (value === "snow") return "../assets/hud/punchcard/zone/snow.png";
+    if (value === "ash") return "../assets/hud/punchcard/zone/ash.png";
     return "../assets/hud/punchcard/zone/desert.png";
 }
