@@ -79,14 +79,22 @@ export class CharacterController {
 
     verifyTile(board) {
         const tile = board[this.character.getPosX()][this.character.getPosY()];
+        const ability = this.character.getAbilityId();
         const rand = Math.random;
 
+        const hazardType = tile.getHazardtype();
+        const isFlagged = tile.isFlagged();
+        const isMarked = tile.isMarked();
+        const hasDamageRatio = tile.getDamageratio();
+        const hasDetectionRatio = tile.getDetectionratio();
+        const goalType = tile.getGoaltype();
+        const isStartTile = tile.isStart();
+
+        // ===== HAZARDS =====
+    
         // Lethal hazards
-        const lethal = ["mine", "spiderMine"];
-        if (lethal.includes(tile.getHazardtype())) {
-            const ability = this.character.getAbilityId();
-            if (ability === 1 && !tile.isFlagged() || ability === 1 && !tile.isMarked() ) {
-                this.killCharacter();
+        if (hazardType === "mine" || hazardType === "spiderMine") {
+            if (ability === 1 && (isFlagged || isMarked)) {
                 return;
             }
             if (ability === 2 && Math.floor(rand() * 5) === 0) {
@@ -98,11 +106,10 @@ export class CharacterController {
                 if (this.character.getAp() <= 0) {
                     this.character.decrementPoints(1000);
                     this.killCharacter();
-                    return;
                 } else {
                     this.character.decrementAp(1);
-                    return;
                 }
+            return;
             }
             this.character.decrementPoints(1000);
             this.killCharacter();
@@ -110,9 +117,7 @@ export class CharacterController {
         }
 
         // Damage hazards
-        const damage = ["cactus", "deadbush"];
-        if (damage.includes(tile.getHazardtype()) || tile.getDamageratio()) {
-            const ability = this.character.getAbilityId();
+        if (hazardType === "cactus" || hazardType === "deadbush" || hasDamageRatio) {
             if (ability === 2 && Math.floor(rand() * 2) === 0) {
                 this.character.decrementPoints(200);
                 this.hurtCharacter();
@@ -122,11 +127,10 @@ export class CharacterController {
                 if (this.character.getAp() <= 0) {
                     this.character.decrementPoints(200);
                     this.hurtCharacter();
-                    return;
                 } else {
                     this.character.decrementAp(1);
-                    return;
                 }
+                return;
             }
             this.character.decrementPoints(200);
             this.hurtCharacter();
@@ -134,20 +138,16 @@ export class CharacterController {
         }
 
         // Detection hazards
-        if (tile.getDetectionratio()) {
-            if (this.character.getAbilityId() === 2) {
-                if (Math.floor(rand() * 4) === 0) {
-                    this.character.decrementPoints(50);
-                    return;
-                }
-            } else {
+        if (hasDetectionRatio) {
+            if (ability === 2 && Math.floor(rand() * 4) === 0) {
+                this.character.decrementPoints(50);
+            } else if (ability !== 2) {
                 this.character.decrementPoints(500);
-                return;
             }
         }
 
         // Goal
-        if (tile.getGoaltype() !== "none") {
+        if (goalType !== "none") {
             if (this.character.getForce() > this.character.getRescued()) {
                 this.character.incrementRescue();
                 this.character.incrementPoints(500);
@@ -157,8 +157,10 @@ export class CharacterController {
             }
         }
 
-        // Start tile delivery
-        if (tile.isStart()) this.deliverGoal(board);
+        // ===== Deliever =====
+        if (isStartTile) {
+            this.deliverGoal(board);
+        }
     }
 
     deliverGoal(board) {
