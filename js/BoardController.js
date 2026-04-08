@@ -29,6 +29,19 @@ export class BoardController {
         return goals;
     }
 
+    // Set the zone randomly
+    loadTypeOfZone(level) {
+        const zoneMap = {
+        1: "desert",
+        2: "snow",
+        3: "ash"
+    };
+    
+        const randomZone = Math.floor(Math.random() * 3) + 1;
+    
+        return zoneMap[randomZone];
+    }
+
     // Generates the board and the size
     generateBoard(boardSize) {
         const board = Array.from({ length: boardSize }, () =>
@@ -583,4 +596,107 @@ export class BoardController {
         }
     return board;
     }
+
+    updateVisionAroundPlayer(board, character) {
+    const boardSize = board.length;
+    const visionX = character.getPosX();
+    const visionY = character.getPosY();
+    const visionRange = character.getVision();
+
+    const minX = Math.max(0, visionX - visionRange);
+    const maxX = Math.min(boardSize - 1, visionX + visionRange);
+    const minY = Math.max(0, visionY - visionRange);
+    const maxY = Math.min(boardSize - 1, visionY + visionRange);
+
+    // Cache del tile del jugador (solo se accede una vez)
+    const playerTile = board[visionX][visionY];
+    const playerHeight = playerTile.getTileheight();
+    const playerHazardCount = playerTile.getHazardcount();
+    
+    // Si el jugador está en hazard, no ver nada (early exit rápido)
+    if (playerHazardCount > 0) {
+        playerTile.setHide(false);
+        return;  // Salir temprano
+    }
+
+    playerTile.setHide(false);
+
+    // Direcciones cardinales
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    
+    for (const [dx, dy] of directions) {
+        let x = visionX;
+        let y = visionY;
+        
+        while (true) {
+            x += dx;
+            y += dy;
+            
+            if (x < minX || x > maxX || y < minY || y > maxY) break;
+            
+            const tile = board[x][y];
+            
+            // Early exit: si hay hazard, no seguir en esta dirección
+            if (tile.getHazardtype() !== "none") break;
+            
+            tile.setHide(false);
+            
+            // Early exit: si hay conteo de hazard, no seguir
+            if (tile.getHazardcount() > 0) break;
+        }
+    }
+    
+    // Direcciones diagonales (solo si el rango es suficiente)
+    if (visionRange >= 2) {
+        const diagonals = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+        
+        for (const [dx, dy] of diagonals) {
+            const diagX = visionX + dx;
+            const diagY = visionY + dy;
+            
+            if (diagX < minX || diagX > maxX || diagY < minY || diagY > maxY) continue;
+            
+            // Cache de tiles cardinales
+            const card1X = visionX + dx;
+            const card1Y = visionY;
+            const card2X = visionX;
+            const card2Y = visionY + dy;
+            
+            // Verificar límites rápidamente
+            let canSee = true;
+            
+            // Primera cardinal
+            if (card1X >= minX && card1X <= maxX && card1Y >= minY && card1Y <= maxY) {
+                const tile1 = board[card1X][card1Y];
+                if (tile1.isHide() || 
+                    tile1.getHazardcount() > 0 ||
+                    tile1.getHazardtype() !== "none" ||
+                    tile1.getObstacletype() !== "none" ||
+                    tile1.getTileheight() > playerHeight) {
+                    canSee = false;
+                }
+            } else {
+                canSee = false;
+            }
+            
+            // Segunda cardinal (solo si la primera pasó)
+            if (canSee && card2X >= minX && card2X <= maxX && card2Y >= minY && card2Y <= maxY) {
+                const tile2 = board[card2X][card2Y];
+                if (tile2.isHide() || 
+                    tile2.getHazardcount() > 0 ||
+                    tile2.getHazardtype() !== "none" ||
+                    tile2.getObstacletype() !== "none" ||
+                    tile2.getTileheight() > playerHeight) {
+                    canSee = false;
+                }
+            } else if (canSee) {
+                canSee = false;
+            }
+            
+            if (canSee) {
+                board[diagX][diagY].setHide(false);
+            }
+        }
+    }
+}
 }
