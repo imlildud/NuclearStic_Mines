@@ -598,30 +598,36 @@ export class BoardController {
     }
 
     updateVisionAroundPlayer(board, character) {
-    const boardSize = board.length;
-    const visionX = character.getPosX();
-    const visionY = character.getPosY();
-    const visionRange = character.getVision();
+        const boardSize = board.length;
+        const visionX = character.getPosX();
+        const visionY = character.getPosY();
+        const visionRange = character.getVision();
 
     const minX = Math.max(0, visionX - visionRange);
     const maxX = Math.min(boardSize - 1, visionX + visionRange);
     const minY = Math.max(0, visionY - visionRange);
     const maxY = Math.min(boardSize - 1, visionY + visionRange);
 
-    // Cache del tile del jugador (solo se accede una vez)
+    for (let i = minX; i <= maxX; i++) {
+        for (let j = minY; j <= maxY; j++) {
+            const tile = board[i][j];
+            if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure()) {
+                tile.setHide(true);
+            }
+        }
+    }
+
     const playerTile = board[visionX][visionY];
     const playerHeight = playerTile.getTileheight();
     const playerHazardCount = playerTile.getHazardcount();
     
-    // Si el jugador está en hazard, no ver nada (early exit rápido)
     if (playerHazardCount > 0) {
         playerTile.setHide(false);
-        return;  // Salir temprano
+        return;
     }
 
     playerTile.setHide(false);
 
-    // Direcciones cardinales
     const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
     
     for (const [dx, dy] of directions) {
@@ -636,17 +642,14 @@ export class BoardController {
             
             const tile = board[x][y];
             
-            // Early exit: si hay hazard, no seguir en esta dirección
             if (tile.getHazardtype() !== "none") break;
             
             tile.setHide(false);
             
-            // Early exit: si hay conteo de hazard, no seguir
             if (tile.getHazardcount() > 0) break;
         }
     }
     
-    // Direcciones diagonales (solo si el rango es suficiente)
     if (visionRange >= 2) {
         const diagonals = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
         
@@ -656,16 +659,13 @@ export class BoardController {
             
             if (diagX < minX || diagX > maxX || diagY < minY || diagY > maxY) continue;
             
-            // Cache de tiles cardinales
             const card1X = visionX + dx;
             const card1Y = visionY;
             const card2X = visionX;
             const card2Y = visionY + dy;
             
-            // Verificar límites rápidamente
             let canSee = true;
             
-            // Primera cardinal
             if (card1X >= minX && card1X <= maxX && card1Y >= minY && card1Y <= maxY) {
                 const tile1 = board[card1X][card1Y];
                 if (tile1.isHide() || 
@@ -679,7 +679,6 @@ export class BoardController {
                 canSee = false;
             }
             
-            // Segunda cardinal (solo si la primera pasó)
             if (canSee && card2X >= minX && card2X <= maxX && card2Y >= minY && card2Y <= maxY) {
                 const tile2 = board[card2X][card2Y];
                 if (tile2.isHide() || 
