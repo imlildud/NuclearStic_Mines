@@ -11,20 +11,20 @@ export class GameManager {
         this.boardCtrl = null;
         this.charCtrl = null;
         this.board = null;
+        this.lastVisionUpdate = 0;
+        this.VISION_UPDATE_DELAY = 50;
     }
 
     startGame() {
         this.gameInputLocked = false;
-
-        // 1.- Create a character
+    
         this.player = CharacterFactory.createCharacter(this.config.character);
-
-        // 2.- Create controllers
         this.boardCtrl = new BoardController(this.player);
         this.charCtrl = new CharacterController(this.player, this.boardCtrl);
-
-        // 3.- Config start level
+    
         this.configLevel(this.currentLevel);
+    
+        this.boardCtrl.updateVision(this.board, this.player);
     }
 
     configLevel() {
@@ -34,6 +34,7 @@ export class GameManager {
         let hazardIntensity;
         let heightIntensity;
         let obstacleIntensity;
+        let zone;
 
         if(this.config.mode === "legacy"){
             size = this.boardCtrl.loadDifficulty(this.currentLevel);
@@ -41,6 +42,7 @@ export class GameManager {
             goals = this.boardCtrl.loadNumberOfGoals(this.currentLevel);
             heightIntensity = this.currentLevel;
             obstacleIntensity = this.currentLevel;
+            zone = this.boardCtrl.loadTypeOfZone(this.currentLevel);
         }else{
             size = this.config.size;
             goals = this.config.goals;
@@ -48,6 +50,7 @@ export class GameManager {
             hazardIntensity = this.config.hazards;
             heightIntensity = this.config.obstacles;
             obstacleIntensity = this.config.obstacles;
+            zone = this.config.zone;
         }
 
         this.board = this.boardCtrl.generateBoard(size);
@@ -94,13 +97,11 @@ export class GameManager {
 
     handleInput(direction) {
         if (this.gameInputLocked) return;
-         
-        // Movement
+     
         this.charCtrl.moveCharacter(direction, this.board);
-
-        // Check tiles
         this.charCtrl.verifyTile(this.board);
-        this.boardCtrl.updateVision(this.board, this.player);
+    
+        this.boardCtrl.updateVisionAroundPlayer(this.board, this.player);
 
         // Regen Hazards
         if (this.player.isRegen() === true){
@@ -126,13 +127,11 @@ export class GameManager {
             this.boardCtrl.trackHazardCount(this.board);
             this.boardCtrl.updateVision(this.board, this.player);
             this.player.setRegen(false);
-            
         }
 
         // Victory
         if (this.charCtrl.winCondition(this.board)){
-            this.currentLevel ++;
-            this.configLevel(this.currentLevel);
+            this.handleVictory();
             return;
         }
 
@@ -140,8 +139,128 @@ export class GameManager {
         if (!this.player.isAlive()) {
             this.gameInputLocked = true;
             this.handleGameOver();
+            return;
         }
     }
+
+        // ==================== VICTORY ====================
+    handleVictory() {
+        this.gameInputLocked = true;
+        this.gameOver = true;
+        
+        const mode = this.config.mode;
+        const score = this.player.getPoints();
+        
+        console.log(`VICTORY! Mode: ${mode}, Score: ${score}`);
+        
+        // this.showVictoryScreen();
+        // this.showScoreTable(score);
+        
+        if (mode === "legacy") {
+            this.handleLegacyVictory();
+        } else if (mode === "daily") {
+            this.handleDailyVictory(score);
+        } else if (mode === "custom") {
+            this.handleCustomVictory(score);
+        }
+    }
+
+    handleLegacyVictory() {
+        console.log(`Legacy: Next level ${this.currentLevel + 1}`);
+        
+        this.currentLevel++;
+        
+        const currentPoints = this.player.getPoints();
+        const currentType = this.player.getType();
+        
+        this.player = CharacterFactory.createCharacter(currentType);
+        this.player.setPoints(currentPoints);
+        
+        this.boardCtrl = new BoardController(this.player);
+        this.charCtrl = new CharacterController(this.player, this.boardCtrl);
+        
+        this.configLevel(this.currentLevel);
+        
+        this.gameInputLocked = false;
+        this.gameOver = false;
+        
+        console.log(`Level ${this.currentLevel} started`);
+    }
+
+    handleDailyVictory(score) {
+        console.log(`Daily complete! Score: ${score}`);
+        
+        const today = new Date().toDateString();
+        localStorage.setItem(`daily_completed_${today}`, "true");
+        localStorage.setItem(`daily_score_${today}`, score);
+        
+        console.log(`Daily locked`);
+        
+        this.returnToMenu();
+    }
+
+    handleCustomVictory(score) {
+        console.log(`Custom complete! Score: ${score}`);
+        this.returnToMenu();
+    }
+
+    // ==================== GAME OVER ====================
+    handleGameOver() {
+        this.gameInputLocked = true;
+        this.gameOver = true;
+        
+        const mode = this.config.mode;
+        const score = this.player.getPoints();
+        
+        console.log(`GAME OVER! Mode: ${mode}, Score: ${score}, Level: ${this.currentLevel}`);
+        
+        // this.showGameOverScreen();
+        // this.showScoreTable(score);
+        
+        if (mode === "legacy") {
+            this.handleLegacyLose();
+        } else if (mode === "daily") {
+            this.handleDailyLose(score);
+        } else if (mode === "custom") {
+            this.handleCustomLose(score);
+        }
+    }
+
+    handleLegacyLose() {
+        console.log(`Game over: Record ${this.currentLevel}`);
+        
+        this.currentLevel = 1;
+        this.startGame();
+        
+        console.log(`Restarting`);
+    }
+    
+    handleDailyLose(score) {
+        console.log(`Daily failed! Score: ${score}`);
+        
+        const today = new Date().toDateString();
+        localStorage.setItem(`daily_completed_${today}`, "failed");
+        localStorage.setItem(`daily_score_${today}`, score);
+        
+        console.log(`Daily locked`);
+        
+        this.returnToMenu();
+    }
+    
+    handleCustomLose(score) {
+        console.log(`Custom failed! Score: ${score}`);
+        this.returnToMenu();
+    }
+
+    // ==================== UTILS ====================
+    returnToMenu() {
+        console.log(`Exit...`);
+        window.location.href = '../index.html';
+    }
+
+    // showVictoryScreen() { ... }
+    // showGameOverScreen() { ... }
+    // showScoreTable(score) { ... }
 
     // Flag system
     handleFlagDirection(direction) {
@@ -189,4 +308,5 @@ export class GameManager {
 
     getBoard() { return this.board; }
     getPlayer() { return this.player; }
+    getZone() { return this.config.zone; }
 }
