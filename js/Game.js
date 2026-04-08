@@ -20,9 +20,9 @@ const config = JSON.parse(configJSON);
 const debug = document.getElementById("debugPanel");
 
 const zoneMap = {
-    1: "desert.png",
-    2: "snow.png",
-    3: "ash.png"
+    "desert": "desert.png",
+    "snow": "snow.png",
+    "ash": "ash.png"
 };
 
 document.body.style.backgroundImage =
@@ -45,11 +45,19 @@ window.addEventListener("keydown", (e) => {
 });
 
 // Loop
-function loop() {
-    renderer.render();
+let lastRender = 0;
+const FPS_LIMIT = 60; // 30 frames por segundo
+const FRAME_TIME = 30 / FPS_LIMIT;
+
+function loop(now) {
     requestAnimationFrame(loop);
+    
+    if (now - lastRender < FRAME_TIME) return;
+    lastRender = now;
+    
+    renderer.render();
 }
-loop();
+requestAnimationFrame(loop);
 
 // Input
 window.addEventListener("keydown", (e) => {
