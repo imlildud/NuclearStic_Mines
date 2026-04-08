@@ -8,12 +8,36 @@ export class Renderer {
         this.TILE_SIZE = 70;
 
         this.images = {};
-        this.biome = game.getBiome ? game.getBiome() : "desert";
+        this.zone = game.getZone ? game.getZone() : "desert"
 
         this.loadImages();
 
         this.resize();
         window.addEventListener("resize", () => this.resize());
+        this.heightOffsetCache = new Map();
+    }
+
+    getCachedHeightOffset(height, tileSize) {
+        const key = `${height}_${tileSize}`;
+        if (this.heightOffsetCache.has(key)) {
+            return this.heightOffsetCache.get(key);
+        }
+    
+        let result = { offsetX: 0, offsetY: 0, size: tileSize };
+    
+        if (height > 0) {
+            const scaleMap = { 1: 1.15, 2: 1.35, 3: 1.55, 4: 1.75 };
+            const scale = scaleMap[height] || 1;
+            const size = tileSize * scale;
+            result = {
+                offsetX: size - tileSize,
+                offsetY: size - tileSize,
+                size: size
+            };
+        }
+    
+        this.heightOffsetCache.set(key, result);
+        return result;
     }
 
     resize() {
@@ -23,7 +47,7 @@ export class Renderer {
     }
 
     loadImages() {
-        const biomePath = `../assets/sprites/tiles/${this.biome}`;
+        const biomePath = `../assets/sprites/tiles/${this.zone}`;
         const globalPath = `../assets/sprites/tiles`;
         const charPath = `../assets/sprites/characters`;
 
@@ -40,6 +64,7 @@ export class Renderer {
         ];
 
         const globalTextures = [
+            "start",
             "mine",
             "radioactive",
             "cactus",
@@ -71,169 +96,170 @@ export class Renderer {
     }
 
     render() {
-        const board = this.game.getBoard();
-        const player = this.game.getPlayer();
-        if (!board || !player) return;
+    const board = this.game.getBoard();
+    const player = this.game.getPlayer();
+    if (!board || !player) return;
 
-        const ctx = this.ctx;
-        const TILE_SIZE = this.TILE_SIZE;
+    const ctx = this.ctx;
+    const TILE_SIZE = this.TILE_SIZE;
 
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.camera.x = player.getPosX() * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
-        this.camera.y = player.getPosY() * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
+    this.camera.x = player.getPosX() * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
+    this.camera.y = player.getPosY() * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
 
-        for (let x = 0; x < board.length; x++) {
-            for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board.length; x++) {
+        for (let y = 0; y < board.length; y++) {
 
-                const tile = board[x][y];
-                const drawX = x * TILE_SIZE - this.camera.x;
-                const drawY = y * TILE_SIZE - this.camera.y;
+            const tile = board[x][y];
+            const drawX = x * TILE_SIZE - this.camera.x;
+            const drawY = y * TILE_SIZE - this.camera.y;
 
-                const height = tile.getTileheight();
+            const height = tile.getTileheight();
 
-                const elevationOffset = height * 12; 
+            let offsetX = 0, offsetY = 0, spriteSize = TILE_SIZE;
+            
+            if (height > 0) {
+                const mountainScaleMap = {
+                    1: 1.15,
+                    2: 1.35,
+                    3: 1.55,
+                    4: 1.75
+                };
+                const scale = mountainScaleMap[height] || 1;
+                spriteSize = TILE_SIZE * scale;
+                offsetX = spriteSize - TILE_SIZE;
+                offsetY = spriteSize - TILE_SIZE;
+            }
 
-                // ───────── LAYER 0: BASE ─────────
+            // ───────── LAYER 0: BASE / MOUNTAIN ─────────
+            if (height === 0) {
+                this.safeDraw("tile", drawX, drawY, TILE_SIZE);
+            } else {
+                this.mountainDraw(
+                    "mountain" + height,
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 1: HAZARD ─────────
+            const hazard = tile.getHazardtype();
+            if (hazard !== "none" && !tile.isHide()) {
+                this.safeDraw(
+                    hazard,
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 2: OBSTACLE ─────────
+            const obstacle = tile.getObstacletype();
+            if (obstacle !== "none" && !tile.isHide()) {
+                this.safeDraw(
+                    obstacle,
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 3: HAZARD COUNT ─────────
+            const count = tile.getHazardcount();
+            if (count > 0 && !tile.isHide() && obstacle === "none" && hazard === "none") {
+                this.safeDraw(
+                    String(count),
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 4: COVER (HIDE) ─────────
+            if (tile.isHide()) {
                 if (height === 0) {
-                    this.safeDraw("tile", drawX, drawY, TILE_SIZE);
+                    this.safeDraw("hide", drawX, drawY, TILE_SIZE);
                 } else {
-                    const scaleMap = {
+                    const hideScaleMap = {
                         1: 1.15,
-                        2: 1.35,
-                        3: 1.55,
-                        4: 1.75
+                        2: 1.3,
+                        3: 1.5,
+                        4: 1.6
                     };
-
-                    const scale = scaleMap[height] || 1;
-                    const newSize = TILE_SIZE * scale;
-                    const offsetX = newSize - TILE_SIZE;
-                    const offsetY = newSize - TILE_SIZE;
-
-                    this.mountainDraw(
-                        "mountain" + height,
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        newSize
-                    );
-                }
-
-                // ───────── LAYER 1: HAZARD ─────────
-                const hazard = tile.getHazardtype();
-                if (hazard !== "none" && !tile.isHide()) {
+        
+                    const hideScale = hideScaleMap[height] || 1;
+                    const hideSize = TILE_SIZE * hideScale;
+        
+                    const extraOffset = 4;
+                    const hideOffsetX = (hideSize - TILE_SIZE) + extraOffset;
+                    const hideOffsetY = (hideSize - TILE_SIZE) + extraOffset;
+        
                     this.safeDraw(
-                        hazard,
-                        drawX - elevationOffset,
-                        drawY - elevationOffset,
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 2: OBSTACLE ─────────
-                const obstacle = tile.getObstacletype();
-                if (obstacle !== "none" && !tile.isHide()) {
-                    this.safeDraw(
-                        obstacle,
-                        drawX - elevationOffset,
-                        drawY - elevationOffset,
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 3: HAZARD COUNT ─────────
-                const count = tile.getHazardcount();
-                if (
-                    count > 0 &&
-                    !tile.isHide() &&
-                    obstacle === "none" &&
-                    hazard === "none"
-                ) {
-                    this.safeDraw(
-                        String(count),
-                        drawX - elevationOffset,
-                        drawY - elevationOffset,
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 4: COVER ─────────
-                if (tile.isHide()) {
-                    const height = tile.getTileheight();
-                    
-                    if (height === 0) {
-                        this.safeDraw(
-                            "hide",
-                            drawX,
-                            drawY,
-                            TILE_SIZE
-                        );
-                    } else {
-                        const scaleMap = {
-                            1: 1.20,
-                            2: 1.40,
-                            3: 1.60,
-                            4: 1.80
-                        };
-
-                        const scale = scaleMap[height] || 1;
-                        const newSize = TILE_SIZE * scale;
-                        const offsetX = newSize - TILE_SIZE;
-                        const offsetY = newSize - TILE_SIZE;
-
-                        this.safeDraw(
-                            "hide",
-                            drawX - offsetX,
-                            drawY - offsetY,
-                            newSize
-                        );
-                    }
-                }
-
-                // ───────── LAYER 5: DAMAGE RATIO ─────────
-                if (tile.getDamageratio()) {
-                    this.safeDraw(
-                        "toxic",
-                        drawX - elevationOffset,
-                        drawY - elevationOffset,
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 6: FLAG ─────────
-                const flagHeight = TILE_SIZE * 1.3;
-                if (tile.isFlagged() || tile.isMarked()) {
-                    this.safeDraw(
-                        "flagged",
-                        drawX - elevationOffset,
-                        drawY - elevationOffset - (flagHeight - TILE_SIZE),
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 7: GOALS ─────────
-                const goalHeight = TILE_SIZE * 1.3;
-                if (tile.getGoaltype() !== "none") {
-                    this.safeDraw(
-                        tile.getGoaltype(),
-                        drawX - elevationOffset,
-                        drawY - elevationOffset - (goalHeight - TILE_SIZE),
-                        TILE_SIZE
-                    );
-                }
-
-                // ───────── LAYER 8: PLAYER ─────────
-                 const playerHeight = TILE_SIZE * 1.2;
-                if (player.getPosX() === x && player.getPosY() === y) {
-                    this.safeDraw(
-                        player.getType(),
-                        drawX - elevationOffset,
-                        drawY - elevationOffset - (playerHeight - TILE_SIZE),
-                        TILE_SIZE
+                        "hide",
+                        drawX - hideOffsetX,
+                        drawY - hideOffsetY,
+                        hideSize
                     );
                 }
             }
+
+            // ───────── LAYER 5: DAMAGE RATIO ─────────
+            if (tile.getDamageratio()) {
+                this.safeDraw(
+                    "toxic",
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 6: FLAG ─────────
+            if (tile.isFlagged() || tile.isMarked()) {
+                const flagHeight = spriteSize * 1.3;
+                this.safeDraw(
+                    "flagged",
+                    drawX - offsetX,
+                    drawY - offsetY - (flagHeight - spriteSize),
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 7: START ─────────
+            if (tile.isStart()) {
+                this.safeDraw(
+                    "start",
+                    drawX - offsetX,
+                    drawY - offsetY,
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 7.5: GOALS ─────────
+            if (tile.getGoaltype() !== "none") {
+                const goalHeight = spriteSize * 1.3;
+                this.safeDraw(
+                    tile.getGoaltype(),
+                    drawX - offsetX,
+                    drawY - offsetY - (goalHeight - spriteSize),
+                    spriteSize
+                );
+            }
+
+            // ───────── LAYER 8: PLAYER ─────────
+            if (player.getPosX() === x && player.getPosY() === y) {
+                const playerHeight = spriteSize * 1.2;
+                this.safeDraw(
+                    player.getType(),
+                    drawX - offsetX,
+                    drawY - offsetY - (playerHeight - spriteSize),
+                    spriteSize
+                );
+            }
         }
     }
+}
 
     safeDraw(name, x, y, size) {
         const img = this.images[name];
