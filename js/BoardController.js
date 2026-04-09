@@ -105,6 +105,13 @@ export class BoardController {
             if (tile.getGoaltype() === "none" && !tile.isStart()) {
                 const goalIndex = Math.floor(Math.random() * validGoals.length);
                 tile.setGoaltype(validGoals[goalIndex].type);
+                
+                if ((validGoals[goalIndex].type) === "joni"){
+                    tile.setSecurehidden(true);
+                }else{
+                    tile.setSecure(true);
+                }
+                
                 console.log(`Children tile generated at [${goalX},${goalY}]: ${validGoals[goalIndex].type}`);
                 remainingGoals--;
             }
@@ -129,10 +136,16 @@ export class BoardController {
             for (let j = 0; j < boardSize; j++) {
                 board[i][j].setHide(false);
                 
-                if (board[i][j].isStart() || board[i][j].getGoaltype() !== "none") {
+                if (board[i][j].getGoaltype() === "joni") {
                     for (const [dx, dy] of directions) {
                         const x = i + dx, y = j + dy;
-                        
+                        if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+                            board[x][y].setSecurehidden(true);
+                        }
+                    }
+                } else if (board[i][j].isStart() || board[i][j].getGoaltype() !== "none") {
+                    for (const [dx, dy] of directions) {
+                        const x = i + dx, y = j + dy;
                         if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
                             board[x][y].setSecure(true);
                         }
@@ -288,7 +301,7 @@ export class BoardController {
                 const y = this.randInt(0, boardSize - 1);
                 const tile = board[x][y];
 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
+                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isSecurehidden() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
                     tile.setObstacletype(chosenType);
                     remaining--;
                 }
@@ -339,7 +352,7 @@ export class BoardController {
             const y = this.randInt(0, boardSize - 1);
             const tile = board[x][y];
 
-            if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
+            if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isSecurehidden() && !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
                 tile.setHazardtype(chosenType);
                 tile.setHazardlive(false);
 
@@ -443,7 +456,9 @@ export class BoardController {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
 
-                if (
+                if (tile.getGoaltype() === "joni"){
+                    tile.setHide(true);
+                } else if (
                     !tile.isStart() &&
                     tile.getGoaltype() === "none" &&
                     !tile.isSecure()

@@ -35,6 +35,7 @@ export class GameManager {
         let heightIntensity;
         let obstacleIntensity;
         let zone;
+        let childLevel;
 
         if(this.config.mode === "legacy"){
             size = this.boardCtrl.loadDifficulty(this.currentLevel);
@@ -43,6 +44,7 @@ export class GameManager {
             heightIntensity = this.currentLevel;
             obstacleIntensity = this.currentLevel;
             zone = this.boardCtrl.loadTypeOfZone(this.currentLevel);
+            childLevel = this.currentLevel; 
         }else{
             size = this.config.size;
             goals = this.config.goals;
@@ -51,6 +53,7 @@ export class GameManager {
             heightIntensity = this.config.obstacles;
             obstacleIntensity = this.config.obstacles;
             zone = this.config.zone;
+            childLevel = 10;
         }
 
         this.board = this.boardCtrl.generateBoard(size);
@@ -58,7 +61,7 @@ export class GameManager {
         this.board = this.boardCtrl.generateStartAndGoal(
             this.board,
             goals,
-            this.currentLevel
+            childLevel
         );
 
         this.board = this.boardCtrl.setSafeTiles(

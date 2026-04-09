@@ -10,6 +10,7 @@ export class TileModel {
 
         // Initialization of the conditions for tile mapping
         this.secure = false; // Define if the tile is a secure area
+        this.securehidden = false; // Define if the tile is a secure hidden area
         this.flagged = false; // Define if the tile is a flagged tile
         this.marked = false; // Define if the tile is a flagged hazard
 
@@ -46,6 +47,10 @@ export class TileModel {
     // Getter & Setter Secure
     isSecure() { return this.secure; }
     setSecure(v) { this.secure = v; }
+
+    // Getter & Setter Secure hidden
+    isSecurehidden() { return this.securehidden; }
+    setSecurehidden(v) { this.securehidden = v; }
 
     // Getter & Setter Flagged
     isFlagged() { return this.flagged; }
