@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startButton.addEventListener('click', () => {
         if (!currentConfig) return;            
         localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
-        window.location.href = '../pages/game.html';
+        window.location.href = 'pages/game.html';
     });
 
     // Custom-only selects
@@ -329,57 +329,57 @@ function hideAllSelects() {
 
 // Returns character texture based on ID
 function getCharTexture(value) {
-    if (value === "chef") return "../assets/hud/punchcard/character/chefpin.png";
-    if (value === "mosquito") return "../assets/hud/punchcard/character/mosquitopin.png";
-    if (value === "mommy") return "../assets/hud/punchcard/character/mommypin.png";
-    if (value === "scout") return "../assets/hud/punchcard/character/scoutpin.png";
-    return "../assets/hud/punchcard/character/chefpin.png";
+    if (value === "chef") return "assets/hud/punchcard/character/chefpin.png";
+    if (value === "mosquito") return "assets/hud/punchcard/character/mosquitopin.png";
+    if (value === "mommy") return "assets/hud/punchcard/character/mommypin.png";
+    if (value === "scout") return "assets/hud/punchcard/character/scoutpin.png";
+    return "assets/hud/punchcard/character/chefpin.png";
 }
 
 // Returns size texture based on numeric range
 function getSizeTexture(value) {
-    if (value <= 8) return "../assets/hud/punchcard/size/small.png";
-    if (value <= 12) return "../assets/hud/punchcard/size/medium.png";
-    if (value <= 16) return "../assets/hud/punchcard/size/large.png";
-    if (value <= 20) return "../assets/hud/punchcard/size/xtralarge.png";
-    if (value <= 24) return "../assets/hud/punchcard/size/ultralarge.png";
-    return "../assets/hud/punchcard/size/ultralarge.png";
+    if (value <= 8) return "assets/hud/punchcard/size/small.png";
+    if (value <= 12) return "assets/hud/punchcard/size/medium.png";
+    if (value <= 16) return "assets/hud/punchcard/size/large.png";
+    if (value <= 20) return "assets/hud/punchcard/size/xtralarge.png";
+    if (value <= 24) return "assets/hud/punchcard/size/ultralarge.png";
+    return "assets/hud/punchcard/size/ultralarge.png";
 }
 
 // Hazard texture by difficulty range
 function getHazardTexture(value) {
-    if (value <= 2) return "../assets/hud/punchcard/hazard/low.png";
-    if (value <= 3) return "../assets/hud/punchcard/hazard/medium.png";
-    if (value <= 9) return "../assets/hud/punchcard/hazard/high.png";
-    if (value <= 14) return "../assets/hud/punchcard/hazard/xtrahigh.png";
-    if (value <= 19) return "../assets/hud/punchcard/hazard/ultrahigh.png";
-    return "../assets/hud/punchcard/hazard/ultrahigh.png";
+    if (value <= 2) return "assets/hud/punchcard/hazard/low.png";
+    if (value <= 3) return "assets/hud/punchcard/hazard/medium.png";
+    if (value <= 9) return "assets/hud/punchcard/hazard/high.png";
+    if (value <= 14) return "assets/hud/punchcard/hazard/xtrahigh.png";
+    if (value <= 19) return "assets/hud/punchcard/hazard/ultrahigh.png";
+    return "assets/hud/punchcard/hazard/ultrahigh.png";
 }
 
 // Obstacle texture by difficulty range
 function getObstacleTexture(value) {
-    if (value <= 2) return "../assets/hud/punchcard/obstacles/low.png";
-    if (value <= 3) return "../assets/hud/punchcard/obstacles/medium.png";
-    if (value <= 9) return "../assets/hud/punchcard/obstacles/high.png";
-    if (value <= 14) return "../assets/hud/punchcard/obstacles/xtrahigh.png";
-    if (value <= 29) return "../assets/hud/punchcard/obstacles/ultrahigh.png";
-    return "../assets/hud/punchcard/obstacles/ultrahigh.png";
+    if (value <= 2) return "assets/hud/punchcard/obstacles/low.png";
+    if (value <= 3) return "assets/hud/punchcard/obstacles/medium.png";
+    if (value <= 9) return "assets/hud/punchcard/obstacles/high.png";
+    if (value <= 14) return "assets/hud/punchcard/obstacles/xtrahigh.png";
+    if (value <= 29) return "assets/hud/punchcard/obstacles/ultrahigh.png";
+    return "assets/hud/punchcard/obstacles/ultrahigh.png";
 }
 
 // Goal texture based on amount range
 function getGoalsTexture(value) {
-    if (value == 1) return "../assets/hud/punchcard/goals/1.png";
-    if (value == 2) return "../assets/hud/punchcard/goals/2.png";
-    if (value == 3) return "../assets/hud/punchcard/goals/3.png";
-    if (value == 4) return "../assets/hud/punchcard/goals/4.png";
-    if (value == 5) return "../assets/hud/punchcard/goals/5.png";
-    return "../assets/hud/punchcard/goals/5.png";
+    if (value == 1) return "assets/hud/punchcard/goals/1.png";
+    if (value == 2) return "assets/hud/punchcard/goals/2.png";
+    if (value == 3) return "assets/hud/punchcard/goals/3.png";
+    if (value == 4) return "assets/hud/punchcard/goals/4.png";
+    if (value == 5) return "assets/hud/punchcard/goals/5.png";
+    return "assets/hud/punchcard/goals/5.png";
 }
 
 // Zone texture based on biome ID
 function getZoneTexture(value) {
-    if (value === "desert") return "../assets/hud/punchcard/zone/desert.png";
-    if (value === "snow") return "../assets/hud/punchcard/zone/snow.png";
-    if (value === "ash") return "../assets/hud/punchcard/zone/ash.png";
-    return "../assets/hud/punchcard/zone/desert.png";
+    if (value === "desert") return "assets/hud/punchcard/zone/desert.png";
+    if (value === "snow") return "assets/hud/punchcard/zone/snow.png";
+    if (value === "ash") return "assets/hud/punchcard/zone/ash.png";
+    return "assets/hud/punchcard/zone/desert.png";
 }
