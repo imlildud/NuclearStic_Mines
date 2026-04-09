@@ -237,14 +237,18 @@ export class Renderer {
             }
 
             // ───────── LAYER 7.5: GOALS ─────────
-            if (tile.getGoaltype() !== "none") {
-                const goalHeight = spriteSize * 1.3;
-                this.safeDraw(
-                    tile.getGoaltype(),
-                    drawX - offsetX,
-                    drawY - offsetY - (goalHeight - spriteSize),
-                    spriteSize
-                );
+            const goalType = tile.getGoaltype();
+            if (goalType !== "none") {
+                const shouldDraw = (goalType !== "joni") || (goalType === "joni" && !tile.isHide());
+                if (shouldDraw) {
+                    const goalHeight = spriteSize * 1.3;
+                    this.safeDraw(
+                        goalType,
+                        drawX - offsetX,
+                        drawY - offsetY - (goalHeight - spriteSize),
+                        spriteSize
+                    );
+                }
             }
 
             // ───────── LAYER 8: PLAYER ─────────
