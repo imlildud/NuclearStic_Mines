@@ -355,3 +355,105 @@ body {
     filter: brightness(0.75);
     transform: scale(0.95);
 }
+
+/* ========================================================= */
+/* ===================== RESPONSIVE FIXES ================== */
+/* ========================================================= */
+
+@media screen and (max-width: 1024px) {
+    .logo {
+        width: 240px;
+    }
+    
+    .cloud {
+        width: 100px;
+    }
+    
+    .daily-button, .custom-button {
+        width: 240px;
+        height: 110px;
+        background-size: 240px;
+        font-size: 20px;
+        padding-left: 80px;
+    }
+    
+    .legacy-button {
+        width: 140px;
+        height: 55px;
+        top: 110px;
+        left: -60px;
+    }
+    
+    .diary-button, .option-button {
+        width: 160px;
+        height: 80px;
+    }
+    
+    .punchcard {
+        transform: scale(0.8);
+        transform-origin: center center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        width: 180px;
+    }
+    
+    .cloud {
+        width: 70px;
+    }
+    
+    .daily-button, .custom-button {
+        width: 200px;
+        height: 90px;
+        background-size: 200px;
+        font-size: 16px;
+        padding-left: 60px;
+    }
+    
+    .legacy-button {
+        width: 100px;
+        height: 40px;
+        top: 80px;
+        left: -40px;
+    }
+    
+    .diary-button, .option-button {
+        width: 120px;
+        height: 60px;
+    }
+    
+    .punchcard {
+        transform: scale(0.65);
+        transform-origin: center center;
+    }
+    
+    .pc-label {
+        font-size: 18px;
+    }
+    
+    .pc-char img, .pc-size img, .pc-hazards img,
+    .pc-obstacles img, .pc-wanted img, .pc-zone img {
+        width: 50px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logo {
+        width: 140px;
+    }
+    
+    .daily-button, .custom-button {
+        width: 160px;
+        height: 70px;
+        background-size: 160px;
+        font-size: 14px;
+        padding-left: 50px;
+    }
+    
+    .punchcard {
+        transform: scale(0.5);
+        transform-origin: center center;
+    }
+}
