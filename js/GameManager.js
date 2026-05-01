@@ -48,7 +48,7 @@ export class GameManager {
         }else{
             size = this.config.size;
             goals = this.config.goals;
-            hazardAmount = this.boardCtrl.loadNumberOfHazard(size);
+            hazardAmount = this.boardCtrl.loadNumberOfHazardBySize(size);
             hazardIntensity = this.config.hazards;
             heightIntensity = this.config.obstacles;
             obstacleIntensity = this.config.obstacles;
@@ -96,6 +96,20 @@ export class GameManager {
         this.charCtrl.setCharacterGoals(goals);
         this.charCtrl.getStartCoords(this.board);
         this.boardCtrl.updateVision(this.board, this.player);
+
+        // ========== DEBUG: ==========
+        console.log("========== GAME CONFIGURATION ==========");
+        console.log(`Mode: ${this.config.mode}`);
+        console.log(`Size: ${size}`);
+        console.log(`Goals: ${goals}`);
+        console.log(`Hazard Amount: ${hazardAmount}`);
+        console.log(`Hazard Intensity: ${hazardIntensity}`);
+        console.log(`Height Intensity: ${heightIntensity}`);
+        console.log(`Obstacle Intensity: ${obstacleIntensity}`);
+        console.log(`Zone: ${zone}`);
+        console.log(`Child Level: ${childLevel}`);
+        console.log(`Character: ${this.config.character}`);
+        console.log("========================================");
     }
 
     handleInput(direction) {
