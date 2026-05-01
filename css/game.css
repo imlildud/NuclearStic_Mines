@@ -1,4 +1,10 @@
 /* ========================================================= */
+/* ====================== GOOGLE FONTS ===================== */
+/* ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Indie+Flower&display=swap');
+
+/* ========================================================= */
 /* ====================== GAME SCREEN ====================== */
 /* ========================================================= */
 
@@ -35,4 +41,138 @@ canvas {
     border: 2px solid rgb(211, 211, 255);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.621);
     margin: 0;
+}
+
+/* ========================================================= */
+/* ===================== RESPONSIVE FIXES ================== */
+/* ========================================================= */
+
+body {
+    overflow-x: auto;
+    min-width: 800px;
+}
+
+@media screen and (max-width: 1024px) {
+    canvas {
+        width: 800px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    canvas {
+        width: 600px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    canvas {
+        width: 450px;
+    }
+}
+
+/* ========================================================= */
+/* ======================== GAME HUD ======================= */
+/* ========================================================= */
+
+/* Character icon */
+.hud-icon-tilemargin {
+    position: absolute;
+    left: 600px;
+    width: 90px;
+    height: 90px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.hud-icon-tile {
+    position: absolute;
+    left: 600px;
+    width: 86px;
+    height: 86px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Character icon */
+.hud-icon-character {
+    position: absolute;
+    left: 5px;
+    width: 150px;
+    height: 150px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Life icon */
+.hud-health-icon {
+    position: absolute;
+    top: 150px;
+    left: 5px;
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+}
+
+/* Life Bar */
+.hud-health-bar {
+    position: absolute;
+    top: 170px;
+    left: 70px;
+    width: 90px;
+    height: 60px;
+    image-rendering: pixelated;
+}
+
+
+.hud-health-text {
+    position: absolute;
+    top: 180px;
+    left: 99px;
+    z-index: 1;
+    font-size: 35px;
+    min-width: 30px;
+    text-align: center;
+    color: white;
+}
+
+/* Flag icon */
+.hud-flags-icon {
+    position: absolute;
+    top: 270px;
+    left: 5px;
+    width: 90px;
+    height: 70px;
+    image-rendering: pixelated;
+}
+
+.hud-flags-text {
+    position: absolute;
+    top: 286px;
+    left: 62px;
+    z-index: 1;
+    font-size: 25px;
+    min-width: 30px;
+    text-align: center;
+    color: white;
+}
+
+/* Goals rescued */
+.hud-rescued-icon {
+    position: absolute;
+    top: 270px;
+    left: 88px;
+    width: 90px;
+    height: 70px;
+    image-rendering: pixelated;
+}
+
+.hud-rescued-text {
+    position: absolute;
+    top: 286px;
+    left: 142px;
+    z-index: 1;
+    font-size: 25px;
+    min-width: 30px;
+    text-align: center;
+    color: white;
 }
