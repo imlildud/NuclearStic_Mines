@@ -44,6 +44,129 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
+// ======================================================
+// ======================== HUD =========================
+// ======================================================
+
+function updateHUD() {
+    const player = game.getPlayer();
+    if (!player) return;
+    
+    // Character icon
+    const characterIcon = document.getElementById("hud-character-icon");
+    if (characterIcon) {
+        characterIcon.src = `../assets/hud/game/charactericon/${player.getType()}.png`;
+    }
+
+    // Health
+    const hp = player.getHp();
+    const maxHp = getMaxHpByCharacter(player.getType());
+    const healthIcon = document.getElementById("hud-health-icon");
+    const healthText = document.getElementById("hud-health-text");
+
+    if (healthText) healthText.textContent = hp;
+
+    if (healthIcon) {
+        if (hp === maxHp) {
+            healthIcon.src = "../assets/hud/game/stats/fulllife.png";
+        } else if (hp >= maxHp / 2) {
+            healthIcon.src = "../assets/hud/game/stats/halflife.png";
+        } else if (hp > 0) {
+            healthIcon.src = "../assets/hud/game/stats/quarterlife.png";
+        } else {
+            healthIcon.src = "../assets/hud/game/stats/emptylife.png";
+        }
+    }
+
+    // Flags
+    const flagsText = document.getElementById("hud-flags-text");
+    if (flagsText) flagsText.textContent = player.getFlags();
+
+    // Rescued children
+    const rescuedText = document.getElementById("hud-rescued-text");
+    if (rescuedText) rescuedText.textContent = player.getRescued();
+
+    // Remaining goals (necesitas exponerlo en GameManager)
+    const goalsText = document.getElementById("hud-goals-text");
+    if (goalsText && game.charCtrl) {
+        goalsText.textContent = game.charCtrl.getRemainingGoals();
+    }
+
+    updateCurrentTile();
+}
+
+// Current tile
+function updateCurrentTile() {
+    const board = game.getBoard();
+    const player = game.getPlayer();
+    if (!board || !player) return;
+
+    const tileX = player.getPosX();
+    const tileY = player.getPosY();
+    const tile = board[tileX][tileY];
+
+    const tileIcon = document.getElementById("hud-tile-icon");
+    if (!tileIcon) return;
+
+    let textureName = null;
+
+    const hazardType = tile.getHazardtype();
+    const obstacleType = tile.getObstacletype();
+    const hazardCount = tile.getHazardcount();
+    const goalType = tile.getGoaltype();
+
+    if (hazardType !== "none") {
+        textureName = hazardType;
+    } else if (obstacleType !== "none") {
+        textureName = obstacleType;
+    } else if (hazardCount > 0) {
+        textureName = hazardCount.toString();
+    } else if (goalType !== "none") {
+        textureName = goalType;
+    } else if (tile.isStart()) {
+        textureName = "start";
+    } else {
+    textureName = null;
+    }
+
+    if (textureName) {
+        tileIcon.src = `../assets/sprites/tiles/${textureName}.png`;
+        tileIcon.style.display = "block";
+    } else {
+        tileIcon.style.display = "none";
+    }
+}
+
+function getMaxHpByCharacter(characterType) {
+    switch (characterType) {
+        case "chef": return 5;
+        case "mosquito": return 3;
+        case "mommy": return 10;
+        case "scout": return 1;
+        default: return 5;
+    }
+}
+
+const originalRender = renderer.render;
+renderer.render = function() {
+    originalRender.call(renderer);
+    updateHUD();
+};
+
+const originalHandleInput = game.handleInput.bind(game);
+game.handleInput = function(direction) {
+    originalHandleInput(direction);
+    updateHUD();
+};
+
+const originalHandleFlag = game.handleFlagDirection.bind(game);
+game.handleFlagDirection = function(direction) {
+    originalHandleFlag(direction);
+    updateHUD();
+};
+
+updateHUD();
+
 // Loop
 let lastRender = 0;
 const FPS_LIMIT = 60; // 30 frames por segundo
