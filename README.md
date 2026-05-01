@@ -2,7 +2,7 @@
 
 > A roguelike where Minesweeper meets chess in a nuclear wasteland.
 
-[![Play Now](https://img.shields.io/badge/Play%20Now-itch.io-FA5C5C?style=for-the-badge&logo=itch.io&logoColor=white)](https://imlildud.itch.io/nuclear-stic-mines)
+[![Play Now](https://img.shields.io/badge/Play%20Now-itch.io-FA5C5C?style=for-the-badge&logo=itch.io&logoColor=white)](https://imlildud.itch.io/nuclear-stic-mines-retrashd)
 [![GitHub stars](https://img.shields.io/github/stars/imlildud/NuclearStic_Mines?style=for-the-badge&logo=github)](https://github.com/imlildud/NuclearStic_Mines)
 
 ---
