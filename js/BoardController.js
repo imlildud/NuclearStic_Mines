@@ -21,6 +21,17 @@ export class BoardController {
         return hazard;
     }
 
+    // Set the total number of hazards based on board size (for Custom/Daily modes)
+    loadNumberOfHazardBySize(size) {
+        const baseSize = 8;
+        const baseHazards = 7;
+        const step = 4;
+        const hazardStep = 7;
+    
+        const increment = Math.floor((size - baseSize) / step) * hazardStep;
+        return baseHazards + increment;
+    }
+
     // Set the number of goals to rescue
     loadNumberOfGoals(level) {
         const startGoals = 1;
@@ -62,9 +73,9 @@ export class BoardController {
         const goalTypes = [
             { type: "charlie", minLevel: 0 },
             { type: "joni", minLevel: 5 },
-            { type: "ru", minLevel: 10 },
-            { type: "evy", minLevel: 20 },
-            { type: "zac", minLevel: 30 }
+            { type: "ru", minLevel: 9999 },
+            { type: "evy", minLevel: 9999 },
+            { type: "zac", minLevel: 9999 }
         ];
 
         const validGoals = goalTypes.filter(g => level >= g.minLevel);
@@ -319,11 +330,11 @@ export class BoardController {
             { type: "cactus", weight: 0.3, minLevel: 0 },
             { type: "deadbush", weight: 0.3, minLevel: 3 },
             { type: "radioactive", weight: 0.2, minLevel: 5 },
-            { type: "spiderMine", weight: 0.15, minLevel: 10 },
-            { type: "bandit", weight: 0.05, minLevel: 15 },
-            { type: "liberal", weight: 0.1, minLevel: 18 },
-            { type: "sandsnake", weight: 0.03, minLevel: 20 },
-            { type: "dunecrawler", weight: 0.01, minLevel: 30 }
+            { type: "spiderMine", weight: 0.15, minLevel: 9999 },
+            { type: "bandit", weight: 0.05, minLevel: 9999 },
+            { type: "liberal", weight: 0.1, minLevel: 9999 },
+            { type: "sandsnake", weight: 0.03, minLevel: 9999 },
+            { type: "dunecrawler", weight: 0.01, minLevel: 9999 }
         ];
 
         // Filter by level
@@ -367,7 +378,7 @@ export class BoardController {
                 }
 
                 // Detection radius
-                if (["spiderMine", "bandit", "sandsnake"]) {
+                if (["spiderMine", "liberal", "sandsnake"]) {
                     this.applyRadius(tile, board, x, y, "setDetectionratio");
                 }
 
