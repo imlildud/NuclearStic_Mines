@@ -34,7 +34,7 @@ export class CharacterFactory {
         character.setFlags(8);
         character.setInventorySize(5);
         character.setAbilityId(2);
-        character.setVision(1);
+        character.setVision(5);
         character.setForce(2);
         return character;
     }
@@ -45,7 +45,7 @@ export class CharacterFactory {
         character.setFlags(1);
         character.setInventorySize(1);
         character.setAbilityId(3);
-        character.setVision(3);
+        character.setVision(1);
         character.setForce(1);
         return character;
     }
