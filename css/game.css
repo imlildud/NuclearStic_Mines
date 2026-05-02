@@ -103,6 +103,30 @@ body {
     image-rendering: crisp-edges;
 }
 
+.hud-geohaz-alert {
+    position: absolute;
+    top: 5px;
+    left: 106px;
+    width: 50px;
+    height: 50px;
+}
+
+.hud-geoobs-alert {
+    position: absolute;
+    top: 95px;
+    left: 106px;
+    width: 50px;
+    height: 50px;
+}
+
+.hud-tired-icon {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    width: 80px;
+    height: 80px;
+}
+
 /* Life icon */
 .hud-health-icon {
     position: absolute;
