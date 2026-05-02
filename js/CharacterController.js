@@ -44,7 +44,7 @@ export class CharacterController {
 
         // Height difference check
         const heightDiff = Math.abs(targetTile.getTileheight() - currentTile.getTileheight());
-        if (heightDiff >= 2) return;
+        if (this.character.getAbilityId() != 4 && heightDiff >= 2) return;
 
         // Obstacles
         const obst = targetTile.getObstacletype();
@@ -83,7 +83,6 @@ export class CharacterController {
         const rand = Math.random;
 
         const hazardType = tile.getHazardtype();
-        const isFlagged = tile.isFlagged();
         const isMarked = tile.isMarked();
         const hasDamageRatio = tile.getDamageratio();
         const hasDetectionRatio = tile.getDetectionratio();
@@ -93,18 +92,20 @@ export class CharacterController {
         // ===== HAZARDS =====
     
         // Lethal hazards
-        if (hazardType === "mine" || hazardType === "spiderMine") {
-            if (ability === 1 && (isFlagged || isMarked)) {
+        if (hazardType === "mine") {
+            if (ability === 1 && (isMarked)) {
                 return;
             }
             if (ability === 2 && Math.floor(rand() * 5) === 0) {
                 this.character.decrementPoints(1000);
+                this.character.setHp(0);
                 this.killCharacter();
                 return;
             }
             if (ability === 3) {
                 if (this.character.getAp() <= 0) {
                     this.character.decrementPoints(1000);
+                    this.character.setHp(0);
                     this.killCharacter();
                 } else {
                     this.character.decrementAp(1);
@@ -112,6 +113,7 @@ export class CharacterController {
             return;
             }
             this.character.decrementPoints(1000);
+            this.character.setHp(0);
             this.killCharacter();
             return;
         }
