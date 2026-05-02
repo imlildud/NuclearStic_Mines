@@ -56,6 +56,9 @@ export class TileModel {
     isFlagged() { return this.flagged; }
     setFlagged(v) { this.flagged = v; }
 
+    isJumpflagged() { return this.jumpflagged; }
+    setJumpflagged(v) { this.jumpflagged = v; }
+
     // Getter & Setter Marked
     isMarked() { return this.marked; }
     setMarked(v) { this.marked = v; }
