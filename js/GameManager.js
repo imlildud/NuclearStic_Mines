@@ -13,7 +13,15 @@ export class GameManager {
         this.board = null;
         this.lastVisionUpdate = 0;
         this.VISION_UPDATE_DELAY = 50;
+        this.lastMoveTime = 0;
+        this.MOVE_DELAY = 200;
+        this.renderer = null;
     }
+
+    setRenderer(renderer) {
+        this.renderer = renderer;
+    }
+
 
     startGame() {
         this.gameInputLocked = false;
@@ -114,7 +122,11 @@ export class GameManager {
 
     handleInput(direction) {
         if (this.gameInputLocked) return;
-     
+        
+        const now = Date.now();
+        if (now - this.lastMoveTime < this.MOVE_DELAY) return;
+        this.lastMoveTime = now;
+    
         this.charCtrl.moveCharacter(direction, this.board);
         this.charCtrl.verifyTile(this.board);
     
@@ -304,7 +316,7 @@ export class GameManager {
 
         const tile = this.board[targetX][targetY];
 
-        if (!tile.isHide()) return;
+        if (!tile.isHide() || tile.isMarked()) return;
 
         if (tile.isFlagged()) {
             tile.setFlagged(false);
