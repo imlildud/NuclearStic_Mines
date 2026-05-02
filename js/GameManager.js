@@ -293,40 +293,71 @@ export class GameManager {
 
     // Flag system
     handleFlagDirection(direction) {
-
         if (!this.board) return;
 
         const px = this.player.getPosX();
         const py = this.player.getPosY();
+        const abilityId = this.player.getAbilityId();
 
         let targetX = px;
         let targetY = py;
+        let jumpX = px;
+        let jumpY = py;
 
         switch(direction) {
-            case "Up":    targetY--; break;
-            case "Down":  targetY++; break;
-            case "Left":  targetX--; break;
-            case "Right": targetX++; break;
+            case "Up":    targetY--; jumpY -= 2; break;
+            case "Down":  targetY++; jumpY += 2; break;
+            case "Left":  targetX--; jumpX -= 2; break;
+            case "Right": targetX++; jumpX += 2; break;
         }
 
         const size = this.board.length;
-
-        if (targetX < 0 || targetY < 0 || 
-            targetX >= size || targetY >= size) return;
-
+        if (targetX < 0 || targetX >= size || targetY < 0 || targetY >= size) return;
+    
         const tile = this.board[targetX][targetY];
 
+        // ==================== SCOUT ABILITY ====================
+        if (abilityId === 4) {
+            if (jumpX < 0 || jumpX >= size || jumpY < 0 || jumpY >= size) return;
+        
+            if (this.player.getFlags() > 0) {
+                if (!tile.isJumpflagged()){
+                    tile.setJumpflagged(true);
+                    this.player.decrementFlags();
+                }
+            }
+            
+            if (tile.isJumpflagged()){
+                this.player.setPosX(jumpX);
+                this.player.setPosY(jumpY);
+                this.charCtrl.verifyTile(this.board);
+                this.boardCtrl.updateVisionAroundPlayer(this.board, this.player)
+            };
+            return;
+        }
+
+        if (abilityId === 1 && tile.isFlagged()) {
+            return;
+        }
+        
         if (!tile.isHide() || tile.isMarked()) return;
 
         if (tile.isFlagged()) {
             tile.setFlagged(false);
             this.player.incrementFlags();
             return;
-        }   
+        }
 
         if (this.player.getFlags() > 0) {
             tile.setFlagged(true);
             this.player.decrementFlags();
+
+            // ==================== CHEF ABILITY ====================
+            if (abilityId === 1 && tile.getHazardtype() !== "none") {
+                tile.setMarked(true);
+                tile.setFlagged(false);
+                this.player.incrementPoints(200);
+            }
         }
     }
 
