@@ -58,7 +58,11 @@ export class CharacterController {
             case "pit":
                 this.character.setPosX(newX);
                 this.character.setPosY(newY);
-                if (this.character.getAbilityId() !== 4) this.killCharacter();
+                if (this.character.getAbilityId() !== 4) {
+                    this.character.setHp(0);
+                    this.killCharacter();
+
+                }
                 return;
             case "river":
                 this.character.setPosX(newX);
@@ -67,6 +71,7 @@ export class CharacterController {
                     if (riverDepth < 5) {
                         this.moveCharacter(direction, board, riverDepth + 1);
                     } else {
+                        this.character.setHp(0);
                         this.killCharacter();
                     }
                 }
@@ -96,12 +101,6 @@ export class CharacterController {
             if (ability === 1 && (isMarked)) {
                 return;
             }
-            if (ability === 2 && Math.floor(rand() * 5) === 0) {
-                this.character.decrementPoints(1000);
-                this.character.setHp(0);
-                this.killCharacter();
-                return;
-            }
             if (ability === 3) {
                 if (this.character.getAp() <= 0) {
                     this.character.decrementPoints(1000);
@@ -120,9 +119,7 @@ export class CharacterController {
 
         // Damage hazards
         if (hazardType === "cactus" || hazardType === "deadbush" || hasDamageRatio) {
-            if (ability === 2 && Math.floor(rand() * 2) === 0) {
-                this.character.decrementPoints(200);
-                this.hurtCharacter();
+            if (ability === 1 && (isMarked)) {
                 return;
             }
             if (ability === 3) {
@@ -169,6 +166,19 @@ export class CharacterController {
         const tile = board[this.character.getPosX()][this.character.getPosY()];
         if (tile.isStart() && this.character.getRescued() > 0) {
             const rescued = this.character.getRescued();
+
+            // ===== MOMMY ABILITY =====
+            if (this.character.getAbilityId() === 3) {
+                for (let i = 0; i < rescued; i++) {
+                    if (this.character.getAp() < 3) {
+                        this.character.incrementAp(1);
+                    } else{
+                        this.character.incrementHp(2);
+                    }
+                this.character.incrementForce(1);
+                this.character.incrementFlags();
+                }
+            }
             this.remainingGoals -= rescued;
             this.character.decrementRescue(rescued);
         }
