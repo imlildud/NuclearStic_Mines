@@ -348,12 +348,12 @@ function getSizeTexture(value) {
 
 // Hazard texture by difficulty range
 function getHazardTexture(value) {
-    if (value <= 2) return "assets/hud/punchcard/hazard/low.png";
-    if (value <= 3) return "assets/hud/punchcard/hazard/medium.png";
-    if (value <= 9) return "assets/hud/punchcard/hazard/high.png";
-    if (value <= 14) return "assets/hud/punchcard/hazard/xtrahigh.png";
-    if (value <= 19) return "assets/hud/punchcard/hazard/ultrahigh.png";
-    return "assets/hud/punchcard/hazard/ultrahigh.png";
+    if (value <= 4) return "assets/hud/punchcard/hazard/low.png";
+    if (value <= 7) return "assets/hud/punchcard/hazard/medium.png";
+    if (value <= 11) return "assets/hud/punchcard/hazard/high.png";
+    if (value <= 19) return "assets/hud/punchcard/hazard/xtrahigh.png";
+    if (value <= 29) return "assets/hud/punchcard/hazard/ultrahigh.png";
+    return "assets/hud/punchcard/hazard/nsanlyhigh.png";
 }
 
 // Obstacle texture by difficulty range
@@ -363,7 +363,7 @@ function getObstacleTexture(value) {
     if (value <= 9) return "assets/hud/punchcard/obstacles/high.png";
     if (value <= 14) return "assets/hud/punchcard/obstacles/xtrahigh.png";
     if (value <= 29) return "assets/hud/punchcard/obstacles/ultrahigh.png";
-    return "assets/hud/punchcard/obstacles/ultrahigh.png";
+    return "assets/hud/punchcard/obstacles/nsanlyhigh.png";
 }
 
 // Goal texture based on amount range
