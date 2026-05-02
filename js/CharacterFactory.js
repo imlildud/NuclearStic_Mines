@@ -53,7 +53,7 @@ export class CharacterFactory {
     static createScout(character) {
         character.setHp(1);
         character.setAp(0);
-        character.setFlags(2);
+        character.setFlags(3);
         character.setInventorySize(2);
         character.setAbilityId(4);
         character.setVision(2);
