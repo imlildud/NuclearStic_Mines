@@ -15,6 +15,9 @@ export class Renderer {
         this.resize();
         window.addEventListener("resize", () => this.resize());
         this.heightOffsetCache = new Map();
+
+        this.justMoved = false;
+        this.justMovedFrames = 0;
     }
 
     getCachedHeightOffset(height, tileSize) {
@@ -215,8 +218,16 @@ export class Renderer {
                 );
             }
 
-            // ───────── LAYER 6: FLAG ─────────
-            if (tile.isFlagged() || tile.isMarked()) {
+            // ───────── LAYER 6: FLAG / MARKED ─────────
+            if (tile.isMarked()) {
+                const flagHeight = spriteSize * 1.3;
+                this.safeDraw(
+                    "marked",
+                    drawX - offsetX,
+                    drawY - offsetY - (flagHeight - spriteSize),
+                    spriteSize
+                );
+            } else if (tile.isFlagged()) {
                 const flagHeight = spriteSize * 1.3;
                 this.safeDraw(
                     "flagged",
@@ -254,12 +265,46 @@ export class Renderer {
             // ───────── LAYER 8: PLAYER ─────────
             if (player.getPosX() === x && player.getPosY() === y) {
                 const playerHeight = spriteSize * 1.2;
-                this.safeDraw(
-                    player.getType(),
-                    drawX - offsetX,
-                    drawY - offsetY - (playerHeight - spriteSize),
-                    spriteSize
-                );
+                const img = this.images[player.getType()];
+
+                if (img && img.complete && img.naturalWidth !== 0) {
+                    let drawPlayerX = drawX - offsetX;
+                    let drawPlayerY = drawY - offsetY - (playerHeight - spriteSize);
+        
+                    if (this.justMoved && this.justMovedFrames > 0) {
+                    ctx.save();
+            
+                        const centerX = drawPlayerX + spriteSize / 2;
+                        const centerY = drawPlayerY + spriteSize / 2;
+            
+                        const progress = 1 - (this.justMovedFrames / 12);
+            
+                        let yOffset = 0;
+                        let tilt = 0;
+            
+                        if (progress < 0.5) {
+                            const liftProgress = progress / 0.5;
+                            yOffset = -liftProgress * 40;
+                            tilt = liftProgress * 0.3;
+                        } else {
+                            const dropProgress = (progress - 0.3) / 0.5;
+                            yOffset = -40 * (1 - dropProgress);
+                            tilt = 0.3 * (1 - dropProgress);
+                        }
+            
+                        ctx.translate(centerX, centerY + yOffset);
+                        ctx.rotate(tilt);
+                        ctx.drawImage(img, -spriteSize / 2, -spriteSize / 2, spriteSize, spriteSize);
+                        ctx.restore();
+            
+                        this.justMovedFrames--;
+                        if (this.justMovedFrames <= 0) {
+                            this.justMoved = false;
+                        }
+                    } else {
+                        ctx.drawImage(img, drawPlayerX, drawPlayerY, spriteSize, spriteSize);
+                    }
+                }
             }
         }
     }

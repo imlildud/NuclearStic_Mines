@@ -155,7 +155,18 @@ renderer.render = function() {
 
 const originalHandleInput = game.handleInput.bind(game);
 game.handleInput = function(direction) {
+    const oldX = game.getPlayer().getPosX();
+    const oldY = game.getPlayer().getPosY();
+
     originalHandleInput(direction);
+
+    const newX = game.getPlayer().getPosX();
+    const newY = game.getPlayer().getPosY();
+    
+    if (oldX !== newX || oldY !== newY) {
+        renderer.justMoved = true;
+        renderer.justMovedFrames = 12;
+    }
     updateHUD();
 };
 
