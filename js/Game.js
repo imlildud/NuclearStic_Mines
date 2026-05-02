@@ -93,6 +93,102 @@ function updateHUD() {
     }
 
     updateCurrentTile();
+    updateGeologicalAlert();
+    updateFatigue();  
+}
+
+function updateFatigue() {
+    const player = game.getPlayer();
+    const rescued = player.getRescued();
+    const force = player.getForce();
+    const tiredIcon = document.getElementById("hud-tired-icon");
+    
+    if (rescued >= force) {
+        tiredIcon.style.display = "block";
+    } else {
+        tiredIcon.style.display = "none";
+    }
+}
+
+function updateGeologicalAlert() {
+    if (game.getPlayer().getAbilityId() != 2) {
+        document.getElementById("hud-geohaz-alert").style.display = "none";
+        document.getElementById("hud-geoobs-alert").style.display = "none";
+        return;
+    }
+    
+    const board = game.getBoard();
+    const player = game.getPlayer();
+    const x = player.getPosX();
+    const y = player.getPosY();
+    
+    let hasDamage = false;
+    let hasKill = false;
+    let hasLive = false;
+    let hasRiver = false;
+    let hasPit = false;
+    
+    const directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+    
+    for (const [dx, dy] of directions) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx >= 0 && nx < board.length && ny >= 0 && ny < board.length) {
+            const hazardType = board[nx][ny].getHazardtype();
+            const obstacleType = board[nx][ny].getObstacletype();
+                
+            if (hazardType === "mine" || hazardType === "spiderMine") {
+                hasKill = true;
+            } else if (hazardType === "cactus" || hazardType === "deadbush" || board[nx][ny].getDamageratio()) {
+                hasDamage = true;
+            } else if (board[nx][ny].isHazardlive()) {
+                hasLive = true;
+            }
+            
+            if (obstacleType === "river") {
+                hasRiver = true;
+            } else if (obstacleType === "pit") {
+                hasPit = true;
+            }
+        }
+    }
+    
+    const alertIcon = document.getElementById("hud-geohaz-alert");
+    const alertIcon2 = document.getElementById("hud-geoobs-alert");
+    let alertType = null;
+    let alertType2 = null;
+    
+    if (hasLive) {
+        alertType = "live.png";
+    } else if (hasDamage && hasKill) {
+        alertType = "mixed.png";
+    } else if (hasKill) {
+        alertType = "kill.png";
+    } else if (hasDamage) {
+        alertType = "damage.png";
+    }
+
+    if (hasRiver) {
+        alertType2 = "obsriver.png";
+    } else if (hasPit && hasRiver) {
+        alertType2 = "obsmixed.png";
+    } else if (hasPit) {
+        alertType2 = "obspit.png";
+    }
+    
+    if (alertType) {
+        alertIcon.src = `../assets/hud/game/stats/${alertType}`;
+        alertIcon.style.display = "block";
+    } else {
+        alertIcon.style.display = "none";
+    }
+
+    if (alertType2) {
+        alertIcon2.src = `../assets/hud/game/stats/${alertType2}`;
+        alertIcon2.style.display = "block";
+    } else {
+        alertIcon2.style.display = "none";
+    }
 }
 
 // Current tile
@@ -109,6 +205,7 @@ function updateCurrentTile() {
     if (!tileIcon) return;
 
     let textureName = null;
+    const zone = game.getZone();
 
     const hazardType = tile.getHazardtype();
     const obstacleType = tile.getObstacletype();
@@ -129,7 +226,11 @@ function updateCurrentTile() {
     textureName = null;
     }
 
-    if (textureName) {
+    if (textureName && obstacleType !== "none"){
+        tileIcon.src = `../assets/sprites/tiles/${zone}/${textureName}.png`;
+        tileIcon.style.display = "block";
+    }
+    else if (textureName) {
         tileIcon.src = `../assets/sprites/tiles/${textureName}.png`;
         tileIcon.style.display = "block";
     } else {
@@ -172,7 +273,24 @@ game.handleInput = function(direction) {
 
 const originalHandleFlag = game.handleFlagDirection.bind(game);
 game.handleFlagDirection = function(direction) {
+    const oldX = game.getPlayer().getPosX();
+    const oldY = game.getPlayer().getPosY();
+    const isScout = game.getPlayer().getAbilityId() === 4;
+    
     originalHandleFlag(direction);
+    
+    const newX = game.getPlayer().getPosX();
+    const newY = game.getPlayer().getPosY();
+    
+    if (isScout && (oldX !== newX || oldY !== newY)) {
+        renderer.justMoved = true;
+        renderer.justMovedFrames = 12;
+        renderer.isScoutJump = true;
+    } else if (oldX !== newX || oldY !== newY) {
+        renderer.justMoved = true;
+        renderer.justMovedFrames = 10;
+        renderer.isScoutJump = false;
+    }
     updateHUD();
 };
 
