@@ -17,6 +17,7 @@ export class Renderer {
         this.heightOffsetCache = new Map();
 
         this.justMoved = false;
+        this.isScoutJump = false;
         this.justMovedFrames = 0;
     }
 
@@ -72,6 +73,7 @@ export class Renderer {
             "radioactive",
             "cactus",
             "flagged",
+            "jumpflag",
             "marked",
             "toxic",
             "1","2","3","4","5","6","7","8","9"
@@ -235,6 +237,14 @@ export class Renderer {
                     drawY - offsetY - (flagHeight - spriteSize),
                     spriteSize
                 );
+            } else if (tile.isJumpflagged()){
+                const flagHeight = spriteSize * 1.3;
+                this.safeDraw(
+                    "jumpflag",
+                    drawX - offsetX,
+                    drawY - offsetY - (flagHeight - spriteSize),
+                    spriteSize
+                );
             }
 
             // ───────── LAYER 7: START ─────────
@@ -281,15 +291,30 @@ export class Renderer {
             
                         let yOffset = 0;
                         let tilt = 0;
+                        
+                        const isScoutJump = this.isScoutJump || false;
             
-                        if (progress < 0.5) {
-                            const liftProgress = progress / 0.5;
-                            yOffset = -liftProgress * 40;
-                            tilt = liftProgress * 0.3;
+                        if (isScoutJump) {
+                            if (progress < 0.5) {
+
+                                const liftProgress = progress / 0.5;
+                                tilt = -Math.PI / 2 * liftProgress;
+                                yOffset = -liftProgress * 25;
+                            } else {
+                                const dropProgress = (progress - 0.5) / 0.5;
+                                tilt = -Math.PI / 2 * (1 - dropProgress); // -90° → 0°
+                                yOffset = -25 * (1 - dropProgress);
+                            }
                         } else {
-                            const dropProgress = (progress - 0.3) / 0.5;
-                            yOffset = -40 * (1 - dropProgress);
-                            tilt = 0.3 * (1 - dropProgress);
+                            if (progress < 0.5) {
+                                const liftProgress = progress / 0.5;
+                                yOffset = -liftProgress * 40;
+                                tilt = liftProgress * 0.3;
+                            } else {
+                                const dropProgress = (progress - 0.3) / 0.5;
+                                yOffset = -40 * (1 - dropProgress);
+                                tilt = 0.3 * (1 - dropProgress);
+                            }
                         }
             
                         ctx.translate(centerX, centerY + yOffset);
@@ -300,6 +325,7 @@ export class Renderer {
                         this.justMovedFrames--;
                         if (this.justMovedFrames <= 0) {
                             this.justMoved = false;
+                            this.isScoutJump = false;
                         }
                     } else {
                         ctx.drawImage(img, drawPlayerX, drawPlayerY, spriteSize, spriteSize);
