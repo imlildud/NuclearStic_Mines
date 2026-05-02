@@ -591,6 +591,7 @@ export class BoardController {
                 if (tile.getHazardtype() !== "none") {
                     if (tile.isFlagged()) {
                         tile.setMarked(true);           // correctly marked
+                        tile.setFlagged(false);
                         this.player.incrementPoints(200);
                     } else {
                         tile.setHazardtype("none");    // remove unmarked hazard
