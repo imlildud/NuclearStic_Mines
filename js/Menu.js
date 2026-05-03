@@ -168,6 +168,13 @@ function updatePunchcardTextures(config) {
 
     document.getElementById("pcZone").src =
         getZoneTexture(config.zone);
+
+    triggerIconFade("pcCharacter");
+    triggerIconFade("pcSize");
+    triggerIconFade("pcHazards");
+    triggerIconFade("pcObstacles");
+    triggerIconFade("pcWanted");
+    triggerIconFade("pcZone");
 }
 
 
@@ -268,7 +275,7 @@ function generateDailyConfig() {
 
 
 /* ========================================================= */
-/* ========================= CUSTOM ========================= */
+/* ========================= CUSTOM ======================== */
 /* ========================================================= */
 
 // Generates custom mode configuration
@@ -383,3 +390,33 @@ function getZoneTexture(value) {
     if (value === "ash") return "assets/hud/punchcard/zone/ash.png";
     return "assets/hud/punchcard/zone/desert.png";
 }
+
+// Updates punchcard scale based on window size
+function updatePunchcardScale() {
+    const pc = document.querySelector('.punchcard');
+    if (!pc || !document.getElementById('punchcard-screen').classList.contains('active')) return;
+
+    // Calculate scale based on available width and height
+    // Using 0.95 to leave a small safety margin
+    const scaleX = (window.innerWidth * 0.95) / 800;
+    const scaleY = (window.innerHeight * 0.95) / 500;
+    
+    // Choose the smallest value so nothing gets cut off
+    // Math.min(..., 1.2) allows slight growth on large screens but not infinite
+    const finalScale = Math.min(scaleX, scaleY, 1.2);
+
+    pc.style.setProperty('--pc-scale', finalScale);
+}
+
+// Triggers fade animation on the corresponding icon
+function triggerIconFade(imgId) {
+    const img = document.getElementById(imgId);
+    if (img) {
+        img.classList.remove('icon-react');
+        void img.offsetWidth; // Reflow trick to restart the animation
+        img.classList.add('icon-react');
+    }
+}
+
+// Call this function every time you open the punchcard and on resize
+window.addEventListener('resize', updatePunchcardScale);
