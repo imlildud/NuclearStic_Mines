@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Nuclear-Stic Mines - Game</title>
 
     <!-- Styles -->
@@ -9,53 +10,59 @@
 </head>
 
 <body>
+    <!-- Wrapper for all HUD elements -->
+    <div class="hud-main-wrapper">
 
-    <!-- ====================================================== -->
-    <!-- ======================== HUD ========================= -->
-    <!-- ====================================================== -->
+        <!-- Movement controls (WASD style) -->
+        <div class="touch-movement">
+            <img src="../assets/hud/game/control/w.png" class="touch-btn touch-w" data-dir="Up">
+            <img src="../assets/hud/game/control/a.png" class="touch-btn touch-a" data-dir="Left">
+            <img src="../assets/hud/game/control/s.png" class="touch-btn touch-s" data-dir="Down">
+            <img src="../assets/hud/game/control/d.png" class="touch-btn touch-d" data-dir="Right">
+        </div>
 
-    <!-- Current tile -->
-    <div class="hud-tile">
-        <img id="hud-tilemarin-icon" class="hud-icon-tilemargin" src="../assets/hud/game/stats/currentile.png" alt="currentilemargin">
-        <img id="hud-tile-icon" class="hud-icon-tile" alt="currentile">
-    </div>
+        <!-- Flag controls (arrow keys style) -->
+        <div class="touch-flags">
+            <img src="../assets/hud/game/control/up.png" class="flag-btn flag-up" data-flag="Up">
+            <img src="../assets/hud/game/control/left.png" class="flag-btn flag-left" data-flag="Left">
+            <img src="../assets/hud/game/control/down.png" class="flag-btn flag-down" data-flag="Down">
+            <img src="../assets/hud/game/control/right.png" class="flag-btn flag-right" data-flag="Right">
+        </div>
 
-    <!-- Character Selected -->
-    <div class="hud-character">
-        <img id="hud-character-icon" class="hud-icon-character" src="../assets/hud/game/charactericon/chef.png" alt="Character">
-    </div>
+        <!-- Group 1: Character and Alerts (Top Left) -->
+        <div class="hud-container hud-character-group">
+            <img id="hud-character-icon" class="hud-icon-character" src="../assets/hud/game/charactericon/chef.png" alt="Character">
+            <img id="hud-geohaz-alert" class="hud-geohaz-alert" style="display: none;">
+            <img id="hud-geoobs-alert" class="hud-geoobs-alert" style="display: none;">
+            <img id="hud-tired-icon" class="hud-tired-icon" style="display: none;" src="../assets/hud/game/stats/tired.png">
+        </div>
 
-    <!-- Mosquito alert -->
-    <div class="hud-geo-hazard">
-        <img id="hud-geohaz-alert" class="hud-geohaz-alert" style="display: none;">
-    </div>
+        <!-- Group 2: Health (Below character) -->
+        <div class="hud-container hud-health-group">
+            <img id="hud-health-bar" class="hud-health-bar" src="../assets/hud/game/stats/barlife.png" alt="Health Bar">
+            <img id="hud-health-icon" class="hud-health-icon" src="../assets/hud/game/stats/fulllife.png" alt="Health">
+            <div id="hud-health-text" class="hud-health-text">5</div>
+        </div>
 
-    <div class="hud-geo-obstacle">
-        <img id="hud-geoobs-alert" class="hud-geoobs-alert" style="display: none;">
-    </div>
+        <!-- Row 3: Flags and Rescued (Below health) -->
+        <div class="hud-stats-row">
+            <div class="hud-container hud-flags-group">
+                <img id="hud-flags-icon" class="hud-flags-icon" src="../assets/hud/game/stats/remainingflags.png" alt="Flags">
+                <div id="hud-flags-text" class="hud-flags-text">0</div>
+            </div>
 
-    <!-- Fatigue -->
-    <div class="hud-tired">
-        <img id="hud-tired-icon" class="hud-tired-icon" style="display: none;" src="../assets/hud/game/stats/tired.png">
-    </div>
+            <div class="hud-container hud-rescued-group">
+                <img id="hud-rescued-icon" class="hud-rescued-icon" src="../assets/hud/game/stats/rescued.png" alt="Rescued">
+                <div id="hud-rescued-text" class="hud-rescued-text">0</div>
+            </div>
+        </div>
 
-    <!-- Life -->
-    <div class="hud-health">
-        <img id="hud-health-bar" class="hud-health-bar" src="../assets/hud/game/stats/barlife.png" alt="Health Bar">
-        <img id="hud-health-icon" class="hud-health-icon" src="../assets/hud/game/stats/fulllife.png" alt="Health">
-        <div id="hud-health-text" class="hud-health-text">5</div>
-    </div>
+        <!-- Top Center: Current Tile Indicator -->
+        <div class="hud-container hud-tile-group">
+            <img id="hud-tilemarin-icon" class="hud-icon-tilemargin" src="../assets/hud/game/stats/currentile.png" alt="margin">
+            <img id="hud-tile-icon" class="hud-icon-tile" alt="currentile">
+        </div>
 
-    <!-- Remaining Flags -->
-    <div class="hud-flags">
-        <img id="hud-flags-icon" class="hud-flags-icon" src="../assets/hud/game/stats/remainingflags.png" alt="Flags">
-        <div id="hud-flags-text" class="hud-flags-text">0</div>
-    </div>
-
-    <!-- Goals Rescued -->
-    <div class="hud-rescued">
-        <img id="hud-rescued-icon" class="hud-rescued-icon" src="../assets/hud/game/stats/rescued.png" alt="Rescued">
-        <div id="hud-rescued-text" class="hud-rescued-text">0</div>
     </div>
 
     <div class="filter"></div>
