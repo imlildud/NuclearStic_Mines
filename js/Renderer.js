@@ -5,7 +5,7 @@ export class Renderer {
         this.game = game;
 
         this.camera = { x: 0, y: 0 };
-        this.TILE_SIZE = 70;
+        this.TILE_SIZE = 90;
 
         this.images = {};
         this.zone = game.getZone ? game.getZone() : "desert"
@@ -45,11 +45,20 @@ export class Renderer {
     }
 
     resize() {
-        const size = this.canvas.clientHeight;
-        this.canvas.width = size;
-        this.canvas.height = size;
+        const board = this.game.getBoard();
+        if (!board) return;
+    
+        const boardSize = board.length;
+    
+        const rect = this.canvas.getBoundingClientRect();
+        const canvasSize = Math.min(rect.width, rect.height);
+    
+        this.canvas.width = canvasSize;
+        this.canvas.height = canvasSize;
+    
+        this.TILE_SIZE = Math.max(12, Math.min(100, this.TILE_SIZE));
     }
-
+    
     loadImages() {
         const biomePath = `../assets/sprites/tiles/${this.zone}`;
         const globalPath = `../assets/sprites/tiles`;
@@ -101,41 +110,41 @@ export class Renderer {
     }
 
     render() {
-    const board = this.game.getBoard();
-    const player = this.game.getPlayer();
-    if (!board || !player) return;
+        const board = this.game.getBoard();
+        const player = this.game.getPlayer();
+        if (!board || !player) return;
 
-    const ctx = this.ctx;
-    const TILE_SIZE = this.TILE_SIZE;
+        const ctx = this.ctx;
+        const TILE_SIZE = this.TILE_SIZE;
 
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.camera.x = player.getPosX() * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
-    this.camera.y = player.getPosY() * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
+        this.camera.x = player.getPosX() * TILE_SIZE - this.canvas.width / 2 + TILE_SIZE / 2;
+        this.camera.y = player.getPosY() * TILE_SIZE - this.canvas.height / 2 + TILE_SIZE / 2;
 
-    for (let x = 0; x < board.length; x++) {
-        for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board.length; x++) {
+            for (let y = 0; y < board.length; y++) {
 
-            const tile = board[x][y];
-            const drawX = x * TILE_SIZE - this.camera.x;
-            const drawY = y * TILE_SIZE - this.camera.y;
+                const tile = board[x][y];
+                const drawX = x * TILE_SIZE - this.camera.x;
+                const drawY = y * TILE_SIZE - this.camera.y;
 
-            const height = tile.getTileheight();
+                const height = tile.getTileheight();
 
-            let offsetX = 0, offsetY = 0, spriteSize = TILE_SIZE;
+                let offsetX = 0, offsetY = 0, spriteSize = TILE_SIZE;
             
-            if (height > 0) {
-                const mountainScaleMap = {
-                    1: 1.15,
-                    2: 1.35,
-                    3: 1.55,
-                    4: 1.75
-                };
-                const scale = mountainScaleMap[height] || 1;
-                spriteSize = TILE_SIZE * scale;
-                offsetX = spriteSize - TILE_SIZE;
-                offsetY = spriteSize - TILE_SIZE;
-            }
+                if (height > 0) {
+                    const mountainScaleMap = {
+                        1: 1.15,
+                        2: 1.35,
+                        3: 1.55,
+                        4: 1.75
+                    };
+                    const scale = mountainScaleMap[height] || 1;
+                    spriteSize = TILE_SIZE * scale;
+                    offsetX = spriteSize - TILE_SIZE;
+                    offsetY = spriteSize - TILE_SIZE;
+                }
 
             // ───────── LAYER 0: BASE / MOUNTAIN ─────────
             if (height === 0) {
