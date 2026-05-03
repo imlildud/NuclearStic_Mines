@@ -1,12 +1,8 @@
 /* ========================================================= */
-/* ====================== GOOGLE FONTS ===================== */
+/* ====================== BASE CONFIGURATION =============== */
 /* ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Indie+Flower&display=swap');
-
-/* ========================================================= */
-/* ====================== GAME SCREEN ====================== */
-/* ========================================================= */
 
 body {
     margin: 0;
@@ -15,6 +11,8 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     font-family: 'Indie Flower', cursive;
+    overflow: hidden;
+    touch-action: none;
 }
 
 .filter {
@@ -23,180 +21,169 @@ body {
     left: 0;
     width: 100%;
     height: 100vh;
-    
     background: url('../assets/hud/filter.png') no-repeat center center;
     background-size: cover;
     pointer-events: none;
     z-index: 9999;
 }
 
+/* ========================================================= */
+/* ======================== CANVAS ========================= */
+/* ========================================================= */
+
 canvas {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 1000px;
-    aspect-ratio: 16 / 9;
+    width: 95vmin;
+    height: 95vmin;
+    aspect-ratio: 1 / 1;
     background-color: rgba(0, 0, 0, 0.325);
     border: 2px solid rgb(211, 211, 255);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.621);
-    margin: 0;
-}
-
-/* ========================================================= */
-/* ===================== RESPONSIVE FIXES ================== */
-/* ========================================================= */
-
-body {
-    overflow-x: auto;
-    min-width: 800px;
-}
-
-@media screen and (max-width: 1024px) {
-    canvas {
-        width: 800px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    canvas {
-        width: 600px;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    canvas {
-        width: 450px;
-    }
-}
-
-/* ========================================================= */
-/* ======================== GAME HUD ======================= */
-/* ========================================================= */
-
-/* Character icon */
-.hud-icon-tilemargin {
-    position: absolute;
-    left: 600px;
-    width: 90px;
-    height: 90px;
+    z-index: 0;
     image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    will-change: transform;
 }
 
-.hud-icon-tile {
+/* ========================================================= */
+/* ========================== HUD ========================== */
+/* ========================================================= */
+
+.hud-container {
+    position: fixed;
+    z-index: 10001;
+}
+
+.hud-character-group {
+    top: 2vmin;
+    left: 2vmin;
+    width: 20vmin;
+    height: 20vmin;
+}
+
+.hud-icon-character { width: 100%; height: 100%; }
+
+.hud-geohaz-alert, .hud-geoobs-alert, .hud-tired-icon {
     position: absolute;
-    left: 600px;
-    width: 86px;
-    height: 86px;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
+}
+.hud-geohaz-alert { top: 0; right: 0; width: 6vmin; }
+.hud-geoobs-alert { bottom: 0; right: 0; width: 6vmin; }
+.hud-tired-icon   { top: 5%; left: 5%; width: 10vmin; }
+
+.hud-health-group {
+    top: 22vmin;
+    left: 1vmin;
+    width: 42vmin;
+    height: 42vmin;
 }
 
-/* Character icon */
-.hud-icon-character {
+.hud-health-icon { position: absolute; left: 0; top: 0; width: 14vmin; z-index: 2; }
+.hud-health-bar  { position: absolute; left: 9vmin; top: 2.5vmin; width: 13vmin; }
+.hud-health-text { 
+    position: absolute; 
+    left: 15vmin; 
+    top: 2vmin; 
+    font-size: 6vmin; 
+    color: white; 
+    z-index: 3; 
+}
+
+.hud-stats-row {
+    position: fixed;
+    top: 34vmin;
+    left: 1vmin;
+    display: flex;
+    gap: 1vmin;
+    z-index: 3;
+}
+
+.hud-flags-group, .hud-rescued-group {
+    position: relative;
+    width: 12vmin;
+    height: 9vmin;
+}
+
+.hud-flags-icon, .hud-rescued-icon { width: 120%; height: auto; }
+.hud-flags-text, .hud-rescued-text {
     position: absolute;
-    left: 5px;
-    width: 150px;
-    height: 150px;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    right: 2%;
+    bottom: 10%;
+    color: white;
+    font-size: 4vmin;
 }
 
-.hud-geohaz-alert {
-    position: absolute;
-    top: 5px;
-    left: 106px;
-    width: 50px;
-    height: 50px;
+.hud-tile-group {
+    top: 2vmin;
+    right: 0%;
+    transform: translateX(-50%);
+    width: 18vmin;
+    height: 18vmin;
 }
 
+.hud-icon-tilemargin { position: absolute; width: 100%; height: 100%; }
+.hud-icon-tile       { position: absolute; width: 90%; height: 90%; top: 5%; left: 5%; }
+
+/* ========================================================= */
+/* ======================= CONTROLS ======================== */
+/* ========================================================= */
+
+.touch-movement, .touch-flags {
+    position: fixed;
+    bottom: 4vh;
+    display: grid;
+    grid-template-columns: repeat(3, 9vmin);
+    grid-template-rows: repeat(2, 9vmin);
+    gap: 1vmin;
+    z-index: 10005;
+}
+
+.touch-movement { left: 4vw; }
+.touch-flags    { right: 4vw; }
+
+.touch-btn, .flag-btn {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease;
+}
+
+.touch-btn:active, .flag-btn:active {
+    transform: scale(0.9);
+    filter: brightness(0.8);
+}
+
+.touch-w, .flag-up    { grid-column: 2; grid-row: 1; }
+.touch-a, .flag-left  { grid-column: 1; grid-row: 2; }
+.touch-s, .flag-down  { grid-column: 2; grid-row: 2; }
+.touch-d, .flag-right { grid-column: 3; grid-row: 2; }
+
+/* ========================================================= */
+/* ==================== ADAPTIVE ADJUSTMENTS =============== */
+/* ========================================================= */
+
+@media screen and (max-height: 450px) {
+    .hud-character-group { scale: 0.8; transform-origin: top left; }
+    .hud-health-group    { scale: 0.8; top: 18vmin; transform-origin: top left; }
+    .hud-stats-row       { scale: 0.8; top: 30vmin; transform-origin: top left; }
+    .touch-movement, .touch-flags { bottom: 2vh; scale: 1.1; }
+}
+
+/* ========================================================= */
+/* ==================== SIMPLE ANIMATIONS ================== */
+/* ========================================================= */
+
+.hud-health-icon,
+.hud-icon-tile,
+.hud-tired-icon,
+.hud-geohaz-alert,
 .hud-geoobs-alert {
-    position: absolute;
-    top: 95px;
-    left: 106px;
-    width: 50px;
-    height: 50px;
+    transition: transform 0.15s ease-out;
+    transform: scale(1); /* Estado base */
 }
 
-.hud-tired-icon {
-    position: absolute;
-    top: 5px;
-    left: 10px;
-    width: 80px;
-    height: 80px;
-}
-
-/* Life icon */
-.hud-health-icon {
-    position: absolute;
-    top: 150px;
-    left: 5px;
-    width: 100px;
-    height: 100px;
-    image-rendering: pixelated;
-}
-
-/* Life Bar */
-.hud-health-bar {
-    position: absolute;
-    top: 170px;
-    left: 70px;
-    width: 90px;
-    height: 60px;
-    image-rendering: pixelated;
-}
-
-
-.hud-health-text {
-    position: absolute;
-    top: 180px;
-    left: 99px;
-    z-index: 1;
-    font-size: 35px;
-    min-width: 30px;
-    text-align: center;
-    color: white;
-}
-
-/* Flag icon */
-.hud-flags-icon {
-    position: absolute;
-    top: 270px;
-    left: 5px;
-    width: 90px;
-    height: 70px;
-    image-rendering: pixelated;
-}
-
-.hud-flags-text {
-    position: absolute;
-    top: 286px;
-    left: 62px;
-    z-index: 1;
-    font-size: 25px;
-    min-width: 30px;
-    text-align: center;
-    color: white;
-}
-
-/* Goals rescued */
-.hud-rescued-icon {
-    position: absolute;
-    top: 270px;
-    left: 88px;
-    width: 90px;
-    height: 70px;
-    image-rendering: pixelated;
-}
-
-.hud-rescued-text {
-    position: absolute;
-    top: 286px;
-    left: 142px;
-    z-index: 1;
-    font-size: 25px;
-    min-width: 30px;
-    text-align: center;
-    color: white;
+.animate {
+    transform: scale(1.2) !important;
 }

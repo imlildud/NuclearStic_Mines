@@ -36,120 +36,108 @@ body {
     align-items: center;
 }
 
-
-/* ========================================================= */
-/* ======================== LOGOS ========================== */
-/* ========================================================= */
-
-.logo {
-    width: 320px;
-    margin-bottom: 10px;
-}
-
-.cloud {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 160px;
-    z-index: 2;
-}
-
-
 /* ========================================================= */
 /* ===================== MAIN MENU UI ====================== */
 /* ========================================================= */
 
+/* Wrapper that contains everything except the background */
+.overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 2vmin;
+    box-sizing: border-box;
+}
+
+/* Corner logo (CloudToons) */
+.cloud {
+    position: fixed;
+    bottom: 3vmin;
+    left: 3vmin;
+    width: 15vmin; /* Scales with screen */
+    z-index: 2;
+}
+
+/* --- HEADER: Logo and Legacy --- */
 .top-bar {
     position: relative;
-    display: inline-block;
-}
-
-/* Shared Button Base */
-
-.legacy-button,
-.daily-button,
-.custom-button,
-.diary-button,
-.option-button {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-
-    cursor: pointer;
-    font-size: 18px;
-
-    transition: transform 0.2s ease, filter 0.15s ease;
+    margin-bottom: 2vh;
 }
 
-/* Legacy Button */
+.logo {
+    width: 45vmin;
+    max-width: 400px;
+    height: auto;
+}
 
 .legacy-button {
     position: absolute;
-    top: 140px;
-    left: -80px;
-    z-index: 10;
-
-    width: 180px;
-    height: 70px;
-
+    top: 50%;
+    left: -12vmin;
+    width: 25vmin;
+    height: 10vmin;
     background: url('../assets/hud/menu/legacy.png') no-repeat center;
     background-size: contain;
+    cursor: pointer;
+    z-index: 10;
 }
 
-/* Main Buttons */
-
+/* --- MODE BUTTONS (Daily / Custom) --- */
 .daily-button,
 .custom-button {
-    width: 310px;
-    height: 140px;
-
-    margin: 15px auto;
-
-    background-size: 300px;
+    width: 45vmin;
+    max-width: 350px;
+    height: 18vmin;
+    max-height: 140px;
+    
+    margin: 1vmin auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 12vmin;
+    
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-
-    padding-left: 100px;
-    font-size: 25px;
+    
+    font-size: 3.5vmin;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
-.daily-button {
-    background-image: url('../assets/hud/menu/daily.png');
-}
+.daily-button { background-image: url('../assets/hud/menu/daily.png'); }
+.custom-button { background-image: url('../assets/hud/menu/custom.png'); }
 
-.custom-button {
-    background-image: url('../assets/hud/menu/custom.png');
-}
-
-/* Bottom Row */
-
+/* --- BOTTOM ROW (Diary / Options) --- */
 .bottom-row {
-    margin-top: 30px;
+    margin-top: 2vh;
     display: flex;
     justify-content: center;
-    gap: 5px;
+    gap: 2vmin;
 }
 
 .diary-button,
 .option-button {
-    width: 210px;
-    height: 100px;
-
+    width: 25vmin;
+    max-width: 210px;
+    height: 12vmin;
+    max-height: 100px;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    cursor: pointer;
 }
 
-.diary-button {
-    background-image: url('../assets/hud/menu/diary.png');
-}
+.diary-button { background-image: url('../assets/hud/menu/diary.png'); }
+.option-button { background-image: url('../assets/hud/menu/options.png'); }
 
-.option-button {
-    background-image: url('../assets/hud/menu/options.png');
-}
-
-/* Hover & Active Effects */
-
+/* Global Effects */
 .legacy-button:hover,
 .daily-button:hover,
 .custom-button:hover,
@@ -173,62 +161,87 @@ body {
 /* ==================== PUNCHCARD OVERLAY ================== */
 /* ========================================================= */
 
-.hidden {
-    display: none;
-}
-
 #punchcard-screen {
     position: fixed;
     inset: 0;
-    z-index: 999;
-
-    background: rgba(0,0,0,0);
-
-    display: none;
+    z-index: 10000; /* Above everything, including filter */
+    background: rgba(0, 0, 0, 0.7); /* Darkens background to highlight the card */
+    display: none; /* Activated with .active via JS */
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    touch-action: none;
 }
 
 #punchcard-screen.active {
     display: flex;
 }
 
-
 /* ========================================================= */
 /* ====================== PUNCHCARD BASE =================== */
 /* ========================================================= */
 
 .punchcard {
-    position: absolute;
+    position: relative; /* Changed to relative so parent flex centers it */
     width: 800px;
     height: 500px;
+    flex-shrink: 0; /* Prevents deformation */
+    
+    /* This variable is controlled via JS to scale the whole card on mobile */
+    transform: scale(var(--pc-scale, 1));
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+}
+
+#punchcard-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    
+    /* Centering */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    
+    /* --- FADE EFFECT --- */
+    opacity: 0;
+    pointer-events: none; /* Prevents clicks when invisible */
+    transition: opacity 0.7s ease, visibility 0.7s;
+    visibility: hidden;
+}
+
+#punchcard-screen.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* Re-enables clicks */
 }
 
 .pc-base {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     z-index: 1;
 }
-
-.puncheader {
-    position: absolute;
-    display: flex;
-    gap: 60px;
-}
-
 
 /* ========================================================= */
 /* ======================= TITLES ========================== */
 /* ========================================================= */
 
+/* Both hidden by default, JS will set display: block based on mode */
 .pc-title,
 .pct-title {
     position: absolute;
-    bottom: -215px;
-    left: 110px;
-    z-index: 2;
+    top: 20px;    /* Adjusted to be at the top of the card */
+    left: 150px;
+    width: 600px; /* Adjust based on your title image size */
+    z-index: 5;
+    display: none; 
 }
 
+/* Helper classes for JS to control which one to show */
+#punchcard-screen.daily-mode .pc-title { display: block; }
+#punchcard-screen.custom-mode .pct-title { display: block; }
 
 /* ========================================================= */
 /* ===================== DATE & SEED ======================= */
@@ -236,33 +249,19 @@ body {
 
 .pc-date {
     position: absolute;
-    top: -16px;
-    left: -155px;
+    top: 5px;
+    left: -120px;
+    width: 250px;
     z-index: 3;
 }
 
 .pc-date-note {
     position: absolute;
     top: 106px;
-    left: -30px;
+    left: -5px; /* Adjusted to fall inside the note image */
     font-size: 30px;
     z-index: 4;
 }
-
-.pc-seed-label {
-    position: fixed;
-    bottom: 16px;
-    right: 20px;
-
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-
-    opacity: 0.7;
-    pointer-events: none;
-    z-index: 9999;
-}
-
 
 /* ========================================================= */
 /* ===================== CLOSE BUTTON ====================== */
@@ -270,14 +269,11 @@ body {
 
 .pc-close {
     position: absolute;
-    top: -16px;
-    right: -850px;
-
-    width: 120px;
+    top: -20px;   /* Sticks out a bit for visibility */
+    right: -20px;
+    width: 100px;
     cursor: pointer;
-
-    z-index: 3;
-    transition: transform 0.2s ease, filter 0.15s ease;
+    z-index: 10;
 }
 
 .pc-close:hover {
@@ -290,45 +286,61 @@ body {
     transform: scale(0.95);
 }
 
-
 /* ========================================================= */
 /* =================== PUNCHCARD ELEMENTS ================== */
 /* ========================================================= */
 
-.pc-char,
-.pc-size,
-.pc-hazards,
-.pc-obstacles,
-.pc-wanted,
-.pc-zone {
+.pc-char, .pc-size, .pc-hazards, .pc-obstacles, .pc-wanted, .pc-zone {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 4;
+    
+    /* SIZE LOCK: Prevents the group from changing height when select appears/disappears */
+    width: 140px; 
+    height: 150px; 
 }
 
-.pc-char     { top: 170px; left: 120px; }
-.pc-size     { top: 180px; left: 280px; }
-.pc-hazards  { top: 190px; left: 470px; }
-.pc-obstacles{ top: 200px; left: 630px; }
-.pc-wanted   { bottom: 50px; left: 180px; }
-.pc-zone     { bottom: 40px; left: 550px; }
+/* Keeping your exact coordinates */
+.pc-char      { top: 170px; left: 100px; }
+.pc-size      { top: 180px; left: 260px; }
+.pc-hazards   { top: 190px; left: 450px; }
+.pc-obstacles { top: 200px; left: 610px; }
+.pc-wanted    { bottom: 30px; left: 160px; } /* Adjusted to give space for select */
+.pc-zone      { bottom: 20px; left: 510px; }
 
 .pc-label {
-    margin-bottom: 10px;
+    height: 30px; /* Fixed height for label */
+    margin-bottom: 5px;
     font-size: 25px;
+    display: flex;
+    align-items: center;
 }
 
-.pc-char img,
-.pc-size img,
-.pc-hazards img,
-.pc-obstacles img,
-.pc-wanted img,
-.pc-zone img {
+.pc-char img, .pc-size img, .pc-hazards img,
+.pc-obstacles img, .pc-wanted img, .pc-zone img {
     width: 80px;
+    height: 80px; /* Fixed height for icon */
+    object-fit: contain;
+    margin-bottom: 5px;
 }
 
+/* Select styles */
+.punchcard select {
+    position: absolute; /* Removed from flow so it doesn't push anything */
+    bottom: 0;         /* Sticks to the bottom of its 150px container */
+    font-family: 'Indie Flower', cursive;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    border-radius: 5px;
+    width: 90%;        /* Prevents overflow */
+}
+
+/* If select is hidden (Daily mode), the icon won't move because the container is always 150px tall */
+.hidden {
+    display: none !important;
+}
 
 /* ========================================================= */
 /* ===================== START BUTTON ====================== */
@@ -336,14 +348,11 @@ body {
 
 .pc-start {
     position: absolute;
-    bottom: 40px;
-    right: 350px;
-
+    bottom: 50px;
+    left: 340px; /* Centered in the empty space you left */
     width: 120px;
     cursor: pointer;
-
     z-index: 5;
-    transition: transform 0.2s ease, filter 0.15s ease;
 }
 
 .pc-start:hover {
@@ -356,104 +365,64 @@ body {
     transform: scale(0.95);
 }
 
-/* ========================================================= */
-/* ===================== RESPONSIVE FIXES ================== */
-/* ========================================================= */
-
-@media screen and (max-width: 1024px) {
-    .logo {
-        width: 240px;
-    }
-    
-    .cloud {
-        width: 100px;
-    }
-    
-    .daily-button, .custom-button {
-        width: 240px;
-        height: 110px;
-        background-size: 240px;
-        font-size: 20px;
-        padding-left: 80px;
-    }
-    
-    .legacy-button {
-        width: 140px;
-        height: 55px;
-        top: 110px;
-        left: -60px;
-    }
-    
-    .diary-button, .option-button {
-        width: 160px;
-        height: 80px;
-    }
-    
-    .punchcard {
+/* Entry animation */
+@keyframes iconFade {
+    0% {
+        opacity: 0;
         transform: scale(0.8);
-        transform-origin: center center;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
     }
 }
 
-@media screen and (max-width: 768px) {
-    .logo {
-        width: 180px;
-    }
-    
-    .cloud {
-        width: 70px;
-    }
-    
-    .daily-button, .custom-button {
-        width: 200px;
-        height: 90px;
-        background-size: 200px;
-        font-size: 16px;
-        padding-left: 60px;
-    }
-    
-    .legacy-button {
-        width: 100px;
-        height: 40px;
-        top: 80px;
-        left: -40px;
-    }
-    
-    .diary-button, .option-button {
-        width: 120px;
-        height: 60px;
-    }
-    
-    .punchcard {
-        transform: scale(0.65);
-        transform-origin: center center;
-    }
-    
-    .pc-label {
-        font-size: 18px;
-    }
-    
-    .pc-char img, .pc-size img, .pc-hazards img,
-    .pc-obstacles img, .pc-wanted img, .pc-zone img {
-        width: 50px;
-    }
+/* This class is applied temporarily via JS */
+.icon-react {
+    animation: iconFade 0.3s ease-out;
 }
 
-@media screen and (max-width: 480px) {
-    .logo {
-        width: 140px;
-    }
+/* ========================================================= */
+/* ================= CUSTOM SELECT STYLE =================== */
+/* ========================================================= */
+
+.punchcard select {
+    /* Removing default browser styling */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     
-    .daily-button, .custom-button {
-        width: 160px;
-        height: 70px;
-        background-size: 160px;
-        font-size: 14px;
-        padding-left: 50px;
-    }
+    /* Font and Text */
+    font-family: 'Indie Flower', bold;
+    font-size: 18px;
+    color: #000000;
+    text-align: center;
     
-    .punchcard {
-        transform: scale(0.5);
-        transform-origin: center center;
-    }
+    /* Background and Borders (Paper/stain style) */
+    background-color: rgba(255, 227, 179, 0.6);
+    background-image: url('assets/hud/menu/select_arrow.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
+    
+    border: 2px solid #ffffff;
+    border-radius: 15px 5px 12px 4px;
+    
+    padding: 5px 25px 5px 10px;
+    cursor: pointer;
+    outline: none;
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+/* Hover effect */
+.punchcard select:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    transform: rotate(-1deg) scale(1.02);
+}
+
+/* Option styling*/
+.punchcard select option {
+    font-family: "Indie Flower", bold;
+    background-color: #d6c794;
+    color: #000000;
 }
