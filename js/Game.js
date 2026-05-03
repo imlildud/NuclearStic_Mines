@@ -320,3 +320,36 @@ window.addEventListener("keydown", (e) => {
         case "d": game.handleInput("Right"); break;
     }
 });
+
+// ==================== TOUCH CONTROLS ====================
+
+// Movement buttons
+document.querySelectorAll('.touch-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dir = btn.dataset.dir;
+        if (dir) game.handleInput(dir);
+    });
+    
+    // Para móvil, también touchstart
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const dir = btn.dataset.dir;
+        if (dir) game.handleInput(dir);
+    });
+});
+
+// Flag buttons
+document.querySelectorAll('.flag-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dir = btn.dataset.flag;
+        if (dir) game.handleFlagDirection(dir);
+    });
+    
+    btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const dir = btn.dataset.flag;
+        if (dir) game.handleFlagDirection(dir);
+    });
+});
