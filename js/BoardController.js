@@ -345,7 +345,10 @@ export class BoardController {
         validHazards.forEach(ht => ht.weight /= totalWeight);
 
         let remaining = totalHazards;
-        while (remaining > 0) {
+        let attempts = 0;
+        const maxAttempts = 5000;
+
+        while (remaining > 0 && attempts < maxAttempts) {
             const roll = Math.random();
             let acc = 0;
             let chosenType = "mine";
@@ -384,6 +387,10 @@ export class BoardController {
 
                 remaining--;
             }
+        }
+
+        if (remaining > 0) {
+            console.warn(`Only ${totalHazards - remaining} of ${totalHazards} can be placed`);
         }
 
         return board;
@@ -583,6 +590,7 @@ export class BoardController {
         const boardSize = size;
         this.resetHazardCount(board, boardSize);
         let remainingHazards = 0;
+        let markedHazards = 0;
 
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
@@ -590,24 +598,29 @@ export class BoardController {
 
                 if (tile.getHazardtype() !== "none") {
                     if (tile.isFlagged()) {
-                        tile.setMarked(true);           // correctly marked
+                        tile.setMarked(true);
                         tile.setFlagged(false);
                         this.player.incrementPoints(200);
-                    } else {
-                        tile.setHazardtype("none");    // remove unmarked hazard
-                        remainingHazards++;            // to replace later
+                        markedHazards++;
+                        continue;
                     }
+                
+                    if (tile.isMarked()) {
+                        markedHazards++;
+                        continue;
+                    }
+                
+                    tile.setHazardtype("none");
+                    remainingHazards++;
                 }
 
-                if (tile.isFlagged() && tile.getHazardtype() === "none") {
+                if  (tile.isFlagged() && tile.getHazardtype() === "none") {
                     tile.setFlagged(false);
                     this.player.decrementPoints(200);
                 }
             }
         }
-
-        // Generate the missing hazards
-        return this.generateHazards(board, totalHazards, level, size);
+        return this.generateHazards(board, remainingHazards, level, size);
     }
 
     resetHazardCount(board) {

@@ -252,7 +252,10 @@ function generateDailyConfig() {
 
     const seed = generateDailySeed();
     const random = createSeededRandom(seed);
-    const size = getRandomInRange(random, 5, 24);
+
+    const validSizes = [8, 12, 16, 20, 24];
+    const sizeIndex = getRandomInRange(random, 0, validSizes.length - 1);
+    const size = validSizes[sizeIndex];
 
     const config = createBaseConfig();
 

@@ -143,16 +143,21 @@ canvas {
 .touch-flags    { right: 4vw; }
 
 .touch-btn, .flag-btn {
-    width: 100%;
-    height: 100%;
+    width: 120%;
+    height: 120%;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s ease;
 }
 
+.touch-btn:hover, .flag-btn:hover{
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+    transform: scale(1.05);
+}
+
 .touch-btn:active, .flag-btn:active {
-    transform: scale(0.9);
-    filter: brightness(0.8);
+    filter: brightness(0.75);
+    transform: scale(0.95);
 }
 
 .touch-w, .flag-up    { grid-column: 2; grid-row: 1; }
