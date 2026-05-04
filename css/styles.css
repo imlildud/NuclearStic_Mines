@@ -1,9 +1,14 @@
 /* ========================================================= */
-/* ====================== GOOGLE FONTS ===================== */
+/* ====================== LOCAL FONTS ===================== */
 /* ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Indie+Flower&display=swap');
-
+@font-face {
+    font-family: 'Shampoos';
+    src: url('../assets/font/Shampoos-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
 /* ========================================================= */
 /* ====================== GLOBAL LAYOUT ==================== */
@@ -28,7 +33,7 @@ body {
     background: url('../assets/hud/NuclearSticMines.png') no-repeat center center fixed;
     background-size: cover;
 
-    font-family: "Indie Flower", bold;
+    font-family: "Shampoos";
     color: black;
 
     display: flex;
