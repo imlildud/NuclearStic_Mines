@@ -2,7 +2,8 @@ import { TileModel } from "./TileModel.js";
 
 export class BoardController {
     constructor(player) {
-        this.player = player; // CharacterModel
+        this.player = player;
+        this.gameManager = null;
     }
 
     // Set the size of the board
@@ -591,6 +592,8 @@ export class BoardController {
         this.resetHazardCount(board, boardSize);
         let remainingHazards = 0;
         let markedHazards = 0;
+        let failedFlags = 0;
+        let failedJumpFlags = 0;
 
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
@@ -606,6 +609,7 @@ export class BoardController {
                     }
                 
                     if (tile.isMarked()) {
+                        this.player.incrementPoints(200);
                         markedHazards++;
                         continue;
                     }
@@ -617,9 +621,18 @@ export class BoardController {
                 if  (tile.isFlagged() && tile.getHazardtype() === "none") {
                     tile.setFlagged(false);
                     this.player.decrementPoints(200);
+                    failedFlags++;
+                }
+
+                if (tile.isJumpflagged() && tile.getHazardtype() === "none") {
+                    failedJumpFlags++;
+                    this.player.decrementPoints(50);
                 }
             }
         }
+        
+        this.player.setFailedFlags(failedFlags);
+        this.player.setFailedJumpFlags(failedJumpFlags);
         return this.generateHazards(board, remainingHazards, level, size);
     }
 
@@ -643,10 +656,10 @@ export class BoardController {
         const visionY = character.getPosY();
         const visionRange = character.getVision();
 
-    const minX = Math.max(0, visionX - visionRange);
-    const maxX = Math.min(boardSize - 1, visionX + visionRange);
-    const minY = Math.max(0, visionY - visionRange);
-    const maxY = Math.min(boardSize - 1, visionY + visionRange);
+        const minX = Math.max(0, visionX - visionRange);
+        const maxX = Math.min(boardSize - 1, visionX + visionRange);
+        const minY = Math.max(0, visionY - visionRange);
+        const maxY = Math.min(boardSize - 1, visionY + visionRange);
 
     for (let i = minX; i <= maxX; i++) {
         for (let j = minY; j <= maxY; j++) {
@@ -738,4 +751,8 @@ export class BoardController {
         }
     }
 }
+
+    setGameManager(gm) {
+        this.gameManager = gm;
+    }
 }
