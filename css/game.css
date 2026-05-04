@@ -1,0 +1,380 @@
+/* ========================================================= */
+/* ====================== LOCAL FONTS ===================== */
+/* ========================================================= */
+
+/* Shampoos Font - Main UI Font */
+@font-face {
+    font-family: 'Shampoos';
+    src: url('../assets/font/Shampoos-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Pencilant Font - Scoreboard Text Font */
+@font-face {
+    font-family: 'Pencilant';
+    src: url('../assets/font/pencilant.script.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ========================================================= */
+/* ====================== BASE CONFIGURATION =============== */
+/* ========================================================= */
+
+/* Body Base Styles */
+body {
+    margin: 0;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Shampoos';
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* Global Overlay Filter */
+.filter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: url('../assets/hud/filter.png') no-repeat center center;
+    background-size: cover;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* ========================================================= */
+/* ======================== CANVAS ========================= */
+/* ========================================================= */
+
+/* Main Game Canvas */
+canvas {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95vmin;
+    height: 95vmin;
+    aspect-ratio: 1 / 1;
+    background-color: rgba(0, 0, 0, 0.325);
+    border: 2px solid rgb(211, 211, 255);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.621);
+    z-index: 0;
+    image-rendering: pixelated;
+    will-change: transform;
+}
+
+/* ========================================================= */
+/* ========================== HUD ========================== */
+/* ========================================================= */
+
+/* HUD Container Base */
+.hud-container {
+    position: fixed;
+    z-index: 10001;
+}
+
+/* ==================== CHARACTER GROUP ==================== */
+
+/* Character Group Container */
+.hud-character-group {
+    top: 2vmin;
+    left: 2vmin;
+    width: 20vmin;
+    height: 20vmin;
+}
+
+/* Character Icon Image */
+.hud-icon-character { width: 100%; height: 100%; }
+
+/* Alert Icons Container */
+.hud-geohaz-alert, .hud-geoobs-alert, .hud-tired-icon {
+    position: absolute;
+}
+
+/* Geohazard Alert Position */
+.hud-geohaz-alert { top: 0; right: 0; width: 6vmin; }
+
+/* Geoobstacle Alert Position */
+.hud-geoobs-alert { bottom: 0; right: 0; width: 6vmin; }
+
+/* Tired Status Icon Position */
+.hud-tired-icon   { top: 5%; left: 5%; width: 10vmin; }
+
+/* ==================== HEALTH GROUP ==================== */
+
+/* Health Group Container */
+.hud-health-group {
+    top: 22vmin;
+    left: 1vmin;
+    width: 42vmin;
+    height: 42vmin;
+}
+
+/* Health Icon Position */
+.hud-health-icon { position: absolute; left: 0; top: 0; width: 14vmin; z-index: 2; }
+
+/* Health Bar Position */
+.hud-health-bar  { position: absolute; left: 9vmin; top: 2.5vmin; width: 13vmin; }
+
+/* Health Text Position */
+.hud-health-text { 
+    position: absolute; 
+    left: 15vmin; 
+    top: 2.6vmin; 
+    font-size: 6vmin; 
+    color: white; 
+    z-index: 3; 
+}
+
+/* ==================== STATS ROW (Flags & Rescued) ==================== */
+
+/* Stats Row Container */
+.hud-stats-row {
+    position: fixed;
+    top: 34vmin;
+    left: 1vmin;
+    display: flex;
+    gap: 1vmin;
+    z-index: 3;
+}
+
+/* Flags and Rescued Group Containers */
+.hud-flags-group, .hud-rescued-group {
+    position: relative;
+    width: 12vmin;
+    height: 9vmin;
+}
+
+/* Flags and Rescued Icons */
+.hud-flags-icon, .hud-rescued-icon { width: 120%; height: auto; }
+
+/* Flags and Rescued Text Values */
+.hud-flags-text, .hud-rescued-text {
+    position: absolute;
+    right: 2%;
+    bottom: 18%;
+    color: white;
+    font-size: 4vmin;
+}
+
+/* ==================== CURRENT TILE GROUP ==================== */
+
+/* Current Tile Group Container */
+.hud-tile-group {
+    top: 2vmin;
+    right: 0%;
+    transform: translateX(-50%);
+    width: 18vmin;
+    height: 18vmin;
+}
+
+/* Tile Margin / Border Icon */
+.hud-icon-tilemargin { position: absolute; width: 100%; height: 100%; }
+
+/* Current Tile Icon */
+.hud-icon-tile       { position: absolute; width: 90%; height: 90%; top: 5%; left: 5%; }
+
+/* ========================================================= */
+/* ======================= CONTROLS ======================== */
+/* ========================================================= */
+
+/* Movement and Flag Controls Containers */
+.touch-movement, .touch-flags {
+    position: fixed;
+    bottom: 4vh;
+    display: grid;
+    grid-template-columns: repeat(3, 9vmin);
+    grid-template-rows: repeat(2, 9vmin);
+    gap: 1vmin;
+    z-index: 10005;
+}
+
+/* Control Positions */
+.touch-movement { left: 4vw; }
+.touch-flags    { right: 4vw; }
+
+/* Control Buttons Base */
+.touch-btn, .flag-btn {
+    width: 120%;
+    height: 120%;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease;
+}
+
+/* Control Buttons Hover Effect */
+.touch-btn:hover, .flag-btn:hover{
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+    transform: scale(1.05);
+}
+
+/* Control Buttons Active Effect */
+.touch-btn:active, .flag-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
+}
+
+/* WASD / Arrow Keys Grid Positioning */
+.touch-w, .flag-up    { grid-column: 2; grid-row: 1; }
+.touch-a, .flag-left  { grid-column: 1; grid-row: 2; }
+.touch-s, .flag-down  { grid-column: 2; grid-row: 2; }
+.touch-d, .flag-right { grid-column: 3; grid-row: 2; }
+
+/* ========================================================= */
+/* ==================== ADAPTIVE ADJUSTMENTS =============== */
+/* ========================================================= */
+
+/* Responsive Adjustments for Short Screens */
+@media screen and (max-height: 450px) {
+    /* Scale down HUD elements */
+    .hud-character-group { scale: 0.8; transform-origin: top left; }
+    .hud-health-group    { scale: 0.8; top: 18vmin; transform-origin: top left; }
+    .hud-stats-row       { scale: 0.8; top: 30vmin; transform-origin: top left; }
+    
+    /* Adjust controls position */
+    .touch-movement, .touch-flags { bottom: 2vh; scale: 1.1; }
+}
+
+/* ========================================================= */
+/* ==================== SIMPLE ANIMATIONS ================== */
+/* ========================================================= */
+
+/* Animated HUD Elements Base */
+.hud-health-icon,
+.hud-icon-tile,
+.hud-tired-icon,
+.hud-geohaz-alert,
+.hud-geoobs-alert {
+    transition: transform 0.15s ease-out;
+    transform: scale(1); /* Base state */
+}
+
+/* Animation Class for Pulse Effect */
+.animate {
+    transform: scale(1.2) !important;
+}
+
+/* ========================================================= */
+/* ===================== SCOREBOARD ======================== */
+/* ========================================================= */
+
+/* Scoreboard Overlay Background */
+.scoreboard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+/* Active State for Scoreboard */
+.scoreboard-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Scoreboard Main Panel */
+.hud-scoreboard {
+    position: relative;
+    width: 800px;
+    height: 500px;
+    background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
+    background-size: contain;
+    transform: scale(var(--sb-scale, 1));
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Score Text Wrapper Container */
+.score-text-wrapper {
+    position: absolute;
+    top: 47%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 37px 70px;
+    text-align: center;
+    font-family: 'Pencilant';
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+/* Total Score Display */
+.total-score {
+    position: absolute;
+    top: 75%;
+    left: 63%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 37px 70px;
+    text-align: center;
+    font-family: 'Pencilant';
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+/* Score Items Grid Positions */
+.rescued-score { grid-column: 1; grid-row: 1; }
+.deaths-score  { grid-column: 2; grid-row: 1; }
+.marked-score  { grid-column: 1; grid-row: 2; }
+.failed-score  { grid-column: 2; grid-row: 2; }
+.total-score   { grid-column: 1 / span 2; grid-row: 3; margin-top: 10px; font-size: 2rem; font-weight: bold; }
+
+/* Grade / Rank Image */
+.grade {
+    position: absolute;
+    bottom: 13%;
+    right: 15%;
+    width: 90px;
+    height: auto;
+}
+
+/* Scoreboard Action Buttons Row */
+.scoreboard-button-row {
+    position: absolute;
+    bottom: -10.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+/* Individual Button Styles */
+.continue-btn, .retry-btn, .home-btn {
+    width: 100px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* Button Hover Effect */
+.continue-btn:hover, .retry-btn:hover, .home-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+/* Button Active Effect */
+.continue-btn:active, .retry-btn:active, .home-btn:active {
+    transform: scale(0.95);
+}

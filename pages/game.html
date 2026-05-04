@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nuclear-Stic Mines - Game</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/game.css">
+</head>
+
+<body>
+
+    <!-- ====================================================== -->
+    <!-- ===================== HUD WRAPPER ===================== -->
+    <!-- ====================================================== -->
+
+    <!-- Main container for all HUD elements -->
+    <div class="hud-main-wrapper">
+
+        <!-- ================= MOVEMENT CONTROLS (WASD Style) ================= -->
+        <div class="touch-movement">
+            <img src="../assets/hud/game/control/w.png" class="touch-btn touch-w" data-dir="Up">
+            <img src="../assets/hud/game/control/a.png" class="touch-btn touch-a" data-dir="Left">
+            <img src="../assets/hud/game/control/s.png" class="touch-btn touch-s" data-dir="Down">
+            <img src="../assets/hud/game/control/d.png" class="touch-btn touch-d" data-dir="Right">
+        </div>
+
+        <!-- ================= FLAG CONTROLS (Arrow Keys Style) ================= -->
+        <div class="touch-flags">
+            <img src="../assets/hud/game/control/up.png" class="flag-btn flag-up" data-flag="Up">
+            <img src="../assets/hud/game/control/left.png" class="flag-btn flag-left" data-flag="Left">
+            <img src="../assets/hud/game/control/down.png" class="flag-btn flag-down" data-flag="Down">
+            <img src="../assets/hud/game/control/right.png" class="flag-btn flag-right" data-flag="Right">
+        </div>
+
+        <!-- ================= GROUP 1: Character and Alerts (Top Left) ================= -->
+        <div class="hud-container hud-character-group">
+            <!-- Character Icon -->
+            <img id="hud-character-icon" class="hud-icon-character" src="../assets/hud/game/charactericon/chef.png" alt="Character">
+
+            <!-- Geohazard Alert Icon -->
+            <img id="hud-geohaz-alert" class="hud-geohaz-alert" style="display: none;">
+
+            <!-- Geoobstacle Alert Icon -->
+            <img id="hud-geoobs-alert" class="hud-geoobs-alert" style="display: none;">
+
+            <!-- Tired Status Icon -->
+            <img id="hud-tired-icon" class="hud-tired-icon" style="display: none;" src="../assets/hud/game/stats/tired.png">
+        </div>
+
+        <!-- ================= GROUP 2: Health (Below Character) ================= -->
+        <div class="hud-container hud-health-group">
+            <!-- Health Bar Image -->
+            <img id="hud-health-bar" class="hud-health-bar" src="../assets/hud/game/stats/barlife.png" alt="Health Bar">
+
+            <!-- Health Icon -->
+            <img id="hud-health-icon" class="hud-health-icon" src="../assets/hud/game/stats/fulllife.png" alt="Health">
+
+            <!-- Health Numeric Text -->
+            <div id="hud-health-text" class="hud-health-text">5</div>
+        </div>
+
+        <!-- ================= ROW 3: Flags and Rescued Stats (Below Health) ================= -->
+        <div class="hud-stats-row">
+
+            <!-- Flags Remaining Container -->
+            <div class="hud-container hud-flags-group">
+                <img id="hud-flags-icon" class="hud-flags-icon" src="../assets/hud/game/stats/remainingflags.png" alt="Flags">
+                <div id="hud-flags-text" class="hud-flags-text">0</div>
+            </div>
+
+            <!-- Rescued Count Container -->
+            <div class="hud-container hud-rescued-group">
+                <img id="hud-rescued-icon" class="hud-rescued-icon" src="../assets/hud/game/stats/rescued.png" alt="Rescued">
+                <div id="hud-rescued-text" class="hud-rescued-text">0</div>
+            </div>
+
+        </div>
+
+        <!-- ================= TOP CENTER: Current Tile Indicator ================= -->
+        <div class="hud-container hud-tile-group">
+            <!-- Tile Margin / Border Icon -->
+            <img id="hud-tilemarin-icon" class="hud-icon-tilemargin" src="../assets/hud/game/stats/currentile.png" alt="margin">
+
+            <!-- Current Tile Type Icon -->
+            <img id="hud-tile-icon" class="hud-icon-tile" alt="currentile">
+        </div>
+
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- ================= GAME CANVAS ======================== -->
+    <!-- ====================================================== -->
+
+    <!-- Background overlay filter -->
+    <div class="filter"></div>
+
+    <!-- Main game rendering canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- ====================================================== -->
+    <!-- ================= SCRIPTS & DEBUG ==================== -->
+    <!-- ====================================================== -->
+
+    <!-- Game Logic Module -->
+    <script type="module" src="../js/Game.js"></script>
+
+    <!-- Debug Panel Container -->
+    <div id="debugPanel"></div>
+
+    <!-- ====================================================== -->
+    <!-- ================= SCOREBOARD OVERLAY ================= -->
+    <!-- ====================================================== -->
+
+    <div id="scoreboard-overlay" class="scoreboard-overlay">
+
+        <!-- Scoreboard Main Container -->
+        <div class="hud-scoreboard">
+
+            <!-- Statistics Text Wrapper -->
+            <div class="score-text-wrapper">
+                <div id="rescued-score" class="rescued-score">0/0</div>
+                <div id="marked-score" class="marked-score">0/0</div>
+                <div id="deaths-score" class="deaths-score">0/0</div>
+                <div id="failed-score" class="failed-score">0/0</div>
+            </div>
+
+            <!-- Total Score Display -->
+            <div id="total-score" class="total-score">0/0</div>
+
+            <!-- Grade / Rank Image -->
+            <img id="score-grade" class="grade" src="../assets/hud/game/gameover/f.png" alt="grade">
+
+            <!-- Action Buttons Row -->
+            <div class="scoreboard-button-row">
+                <img id="score-continue" class="continue-btn" src="../assets/hud/game/gameover/continue.png" alt="continue">
+                <img id="score-retry" class="retry-btn" src="../assets/hud/game/gameover/retry.png" alt="retry">
+                <img id="score-home" class="home-btn" src="../assets/hud/game/gameover/home.png" alt="home">
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
