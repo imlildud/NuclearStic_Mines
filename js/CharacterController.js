@@ -9,6 +9,7 @@ export class CharacterController {
     // Set number of goals
     setCharacterGoals(v) {
         this.remainingGoals = v;
+        this.totalGoals = v;
     }
 
     // Find the start tile coordinates
@@ -124,14 +125,14 @@ export class CharacterController {
             }
             if (ability === 3) {
                 if (this.character.getAp() <= 0) {
-                    this.character.decrementPoints(200);
+                    this.character.decrementPoints(100);
                     this.hurtCharacter();
                 } else {
                     this.character.decrementAp(1);
                 }
                 return;
             }
-            this.character.decrementPoints(200);
+            this.character.decrementPoints(100);
             this.hurtCharacter();
             return;
         }
@@ -139,9 +140,7 @@ export class CharacterController {
         // Detection hazards
         if (hasDetectionRatio) {
             if (ability === 2 && Math.floor(rand() * 4) === 0) {
-                this.character.decrementPoints(50);
             } else if (ability !== 2) {
-                this.character.decrementPoints(500);
             }
         }
 
@@ -149,7 +148,6 @@ export class CharacterController {
         if (goalType !== "none") {
             if (this.character.getForce() > this.character.getRescued()) {
                 this.character.incrementRescue();
-                this.character.incrementPoints(500);
                 tile.setGoaltype("none");
                 tile.setGoallive(false);
                 this.character.setRegen(true);
@@ -181,6 +179,8 @@ export class CharacterController {
             }
             this.remainingGoals -= rescued;
             this.character.decrementRescue(rescued);
+            this.character.incrementTotalRescued(rescued);
+            this.character.incrementPoints(500);
         }
     }
 
@@ -196,6 +196,9 @@ export class CharacterController {
 
     killCharacter() {
         this.character.setAlive(false);
+        if (this.boardController && this.boardController.gameManager) {
+            this.boardController.gameManager.handleGameOver();
+        }
     }
 
     getTotalGoals() { return this.totalGoals; }
