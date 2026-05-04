@@ -1,7 +1,6 @@
 /* ========================================================= */
 /* ======================== GAME.js ======================== */
 /* ========================================================= */
-
 // This script initializes the game screen based on the configuration
 // saved by the menu (index.html). It sets the background according to
 // the selected zone and prepares the canvas for future game logic.
@@ -9,6 +8,38 @@
 import { GameManager } from "./GameManager.js";
 import { Renderer } from "./Renderer.js";
 
+// ==============================================================
+// ======================== SFX SYSTEM ==========================
+// ==============================================================
+
+let sfxEnabled = true;
+let moveAudio = null;
+let flagAudio = null;
+
+// Play sound effect from file
+function playSFX(soundFile) {
+    if (!sfxEnabled) return;
+    const audio = new Audio(`../assets/audio/sfx/${soundFile}`);
+    audio.volume = 0.5;
+    audio.play().catch(e => console.log("SFX failed:", soundFile, e));
+}
+
+// Play movement sound effect (prevents spam)
+function playMoveSFX() {
+    if (moveAudio && !moveAudio.ended) return;
+    moveAudio = playSFX("move.mp3");
+}
+
+// Play flag placement sound effect
+function playFlagSFX() {
+    flagAudio = playSFX("flag.mp3");
+}
+
+// ==============================================================
+// ====================== GAME INITIALIZATION ===================
+// ==============================================================
+
+// Load configuration from localStorage
 const configJSON = localStorage.getItem("gameConfig");
 
 if (!configJSON) {
@@ -19,22 +50,26 @@ if (!configJSON) {
 const config = JSON.parse(configJSON);
 const debug = document.getElementById("debugPanel");
 
+// Zone to background image mapping
 const zoneMap = {
     "desert": "desert.png",
     "snow": "snow.png",
     "ash": "ash.png"
 };
 
+// Set body background based on selected zone
 document.body.style.backgroundImage =
     `url("../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
 
-// Game engine motor
+// Initialize game engine
 const game = new GameManager(config);
 game.startGame();
 
-// Renderer maded
+// Initialize renderer
 const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
+
+// Arrow keys for flag controls
 window.addEventListener("keydown", (e) => {
     switch (e.key) {
         case "ArrowUp":    game.handleFlagDirection("Up"); break;
@@ -44,21 +79,72 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-// ======================================================
-// ======================== HUD =========================
-// ======================================================
+// ==============================================================
+// ======================== MUSIC SYSTEM ========================
+// ==============================================================
 
+let currentMusic = null;
+let musicStarted = false;
+
+// Load and prepare music based on zone
+function playMusic(zone) {
+    if (currentMusic) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0;
+    }
+    
+    let musicFile = "";
+    switch (zone) {
+        case "desert":
+            musicFile = "../assets/audio/music/desert.mp3";
+            break;
+        case "snow":
+            musicFile = "../assets/audio/music/snow.mp3";
+            break;
+        case "ash":
+            musicFile = "../assets/audio/music/ash.mp3";
+            break;
+        default:
+            return;
+    }
+    
+    currentMusic = new Audio(musicFile);
+    currentMusic.loop = true;
+    currentMusic.volume = 0.5;
+}
+
+// Start music playback (requires user interaction first)
+function startMusic() {
+    if (musicStarted) return;
+    if (currentMusic) {
+        currentMusic.play().catch(e => console.log("Music play failed:", e));
+        musicStarted = true;
+    }
+}
+
+// Configure music based on zone
+playMusic(config.zone);
+
+// Start music on first user interaction (keyboard or mouse)
+window.addEventListener("keydown", startMusic, { once: true });
+window.addEventListener("click", startMusic, { once: true });
+
+// ==============================================================
+// ======================== HUD SYSTEM ==========================
+// ==============================================================
+
+// Main HUD update function
 function updateHUD() {
     const player = game.getPlayer();
     if (!player) return;
     
-    // Character icon
+    // ----- Character Icon -----
     const characterIcon = document.getElementById("hud-character-icon");
     if (characterIcon) {
         characterIcon.src = `../assets/hud/game/charactericon/${player.getType()}.png`;
     }
 
-    // Health
+    // ----- Health Display -----
     const hp = player.getHp();
     const maxHp = getMaxHpByCharacter(player.getType());
     const healthIcon = document.getElementById("hud-health-icon");
@@ -78,25 +164,27 @@ function updateHUD() {
         }
     }
 
-    // Flags
+    // ----- Flags Display -----
     const flagsText = document.getElementById("hud-flags-text");
     if (flagsText) flagsText.textContent = player.getFlags();
 
-    // Rescued children
+    // ----- Rescued Children Display -----
     const rescuedText = document.getElementById("hud-rescued-text");
     if (rescuedText) rescuedText.textContent = player.getRescued();
 
-    // Remaining goals (necesitas exponerlo en GameManager)
+    // ----- Remaining Goals Display -----
     const goalsText = document.getElementById("hud-goals-text");
     if (goalsText && game.charCtrl) {
         goalsText.textContent = game.charCtrl.getRemainingGoals();
     }
 
+    // Update additional UI elements
     updateCurrentTile();
     updateGeologicalAlert();
-    updateFatigue();  
+    updateFatigue();
 }
 
+// Update fatigue/tired icon based on rescued vs force ratio
 function updateFatigue() {
     const player = game.getPlayer();
     const rescued = player.getRescued();
@@ -110,7 +198,9 @@ function updateFatigue() {
     }
 }
 
+// Update geological hazard/obstacle alerts (Mosquito ability)
 function updateGeologicalAlert() {
+    // Only Mosquito (ability 2) can see geological alerts
     if (game.getPlayer().getAbilityId() != 2) {
         document.getElementById("hud-geohaz-alert").style.display = "none";
         document.getElementById("hud-geoobs-alert").style.display = "none";
@@ -130,6 +220,7 @@ function updateGeologicalAlert() {
     
     const directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
     
+    // Check all adjacent tiles for hazards and obstacles
     for (const [dx, dy] of directions) {
         const nx = x + dx;
         const ny = y + dy;
@@ -137,6 +228,7 @@ function updateGeologicalAlert() {
             const hazardType = board[nx][ny].getHazardtype();
             const obstacleType = board[nx][ny].getObstacletype();
                 
+            // Hazard detection
             if (hazardType === "mine" || hazardType === "spiderMine") {
                 hasKill = true;
             } else if (hazardType === "cactus" || hazardType === "deadbush" || board[nx][ny].getDamageratio()) {
@@ -145,6 +237,7 @@ function updateGeologicalAlert() {
                 hasLive = true;
             }
             
+            // Obstacle detection
             if (obstacleType === "river") {
                 hasRiver = true;
             } else if (obstacleType === "pit") {
@@ -158,6 +251,7 @@ function updateGeologicalAlert() {
     let alertType = null;
     let alertType2 = null;
     
+    // Determine hazard alert type
     if (hasLive) {
         alertType = "live.png";
     } else if (hasDamage && hasKill) {
@@ -168,6 +262,7 @@ function updateGeologicalAlert() {
         alertType = "damage.png";
     }
 
+    // Determine obstacle alert type
     if (hasRiver) {
         alertType2 = "obsriver.png";
     } else if (hasPit && hasRiver) {
@@ -176,6 +271,7 @@ function updateGeologicalAlert() {
         alertType2 = "obspit.png";
     }
     
+    // Apply hazard alert
     if (alertType) {
         alertIcon.src = `../assets/hud/game/stats/${alertType}`;
         alertIcon.style.display = "block";
@@ -183,6 +279,7 @@ function updateGeologicalAlert() {
         alertIcon.style.display = "none";
     }
 
+    // Apply obstacle alert
     if (alertType2) {
         alertIcon2.src = `../assets/hud/game/stats/${alertType2}`;
         alertIcon2.style.display = "block";
@@ -191,7 +288,7 @@ function updateGeologicalAlert() {
     }
 }
 
-// Current tile
+// Update current tile information display
 function updateCurrentTile() {
     const board = game.getBoard();
     const player = game.getPlayer();
@@ -212,6 +309,7 @@ function updateCurrentTile() {
     const hazardCount = tile.getHazardcount();
     const goalType = tile.getGoaltype();
 
+    // Priority: hazard > obstacle > hazard count > goal > start
     if (hazardType !== "none") {
         textureName = hazardType;
     } else if (obstacleType !== "none") {
@@ -223,9 +321,10 @@ function updateCurrentTile() {
     } else if (tile.isStart()) {
         textureName = "start";
     } else {
-    textureName = null;
+        textureName = null;
     }
 
+    // Load appropriate sprite based on zone for obstacles
     if (textureName && obstacleType !== "none"){
         tileIcon.src = `../assets/sprites/tiles/${zone}/${textureName}.png`;
         tileIcon.style.display = "block";
@@ -238,6 +337,7 @@ function updateCurrentTile() {
     }
 }
 
+// Get maximum health points based on character type
 function getMaxHpByCharacter(characterType) {
     switch (characterType) {
         case "chef": return 5;
@@ -248,12 +348,22 @@ function getMaxHpByCharacter(characterType) {
     }
 }
 
+// ==============================================================
+// ==================== RENDERER EXTENSIONS =====================
+// ==============================================================
+
+// Extend renderer to update HUD after each render
 const originalRender = renderer.render;
 renderer.render = function() {
     originalRender.call(renderer);
     updateHUD();
 };
 
+// ==============================================================
+// ==================== INPUT HANDLING EXTENSIONS ===============
+// ==============================================================
+
+// Extend movement input to trigger move effects and sound
 const originalHandleInput = game.handleInput.bind(game);
 game.handleInput = function(direction) {
     const oldX = game.getPlayer().getPosX();
@@ -267,10 +377,12 @@ game.handleInput = function(direction) {
     if (oldX !== newX || oldY !== newY) {
         renderer.justMoved = true;
         renderer.justMovedFrames = 12;
+        playMoveSFX();
     }
     updateHUD();
 };
 
+// Extend flag input to trigger flag effects and sound
 const originalHandleFlag = game.handleFlagDirection.bind(game);
 game.handleFlagDirection = function(direction) {
     const oldX = game.getPlayer().getPosX();
@@ -281,7 +393,9 @@ game.handleFlagDirection = function(direction) {
     
     const newX = game.getPlayer().getPosX();
     const newY = game.getPlayer().getPosY();
+    playFlagSFX();
     
+    // Different animation for Scout's jump flag
     if (isScout && (oldX !== newX || oldY !== newY)) {
         renderer.justMoved = true;
         renderer.justMovedFrames = 12;
@@ -294,13 +408,18 @@ game.handleFlagDirection = function(direction) {
     updateHUD();
 };
 
+// Initial HUD update
 updateHUD();
 
-// Loop
+// ==============================================================
+// ====================== GAME LOOP ============================
+// ==============================================================
+
 let lastRender = 0;
-const FPS_LIMIT = 60; // 30 frames por segundo
+const FPS_LIMIT = 60;
 const FRAME_TIME = 30 / FPS_LIMIT;
 
+// Main animation loop with frame rate limiting
 function loop(now) {
     requestAnimationFrame(loop);
     
@@ -311,7 +430,11 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 
-// Input
+// ==============================================================
+// ====================== KEYBOARD INPUT =======================
+// ==============================================================
+
+// WASD keys for movement
 window.addEventListener("keydown", (e) => {
     switch (e.key.toLowerCase()) {
         case "w": game.handleInput("Up"); break;
@@ -321,9 +444,11 @@ window.addEventListener("keydown", (e) => {
     }
 });
 
-// ==================== TOUCH CONTROLS ====================
+// ==============================================================
+// ====================== TOUCH CONTROLS =======================
+// ==============================================================
 
-// Movement buttons
+// Movement buttons (WASD style)
 document.querySelectorAll('.touch-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -331,7 +456,7 @@ document.querySelectorAll('.touch-btn').forEach(btn => {
         if (dir) game.handleInput(dir);
     });
     
-    // Para móvil, también touchstart
+    // Mobile touch support
     btn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const dir = btn.dataset.dir;
@@ -339,7 +464,7 @@ document.querySelectorAll('.touch-btn').forEach(btn => {
     });
 });
 
-// Flag buttons
+// Flag buttons (arrow keys style)
 document.querySelectorAll('.flag-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -347,6 +472,7 @@ document.querySelectorAll('.flag-btn').forEach(btn => {
         if (dir) game.handleFlagDirection(dir);
     });
     
+    // Mobile touch support
     btn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const dir = btn.dataset.flag;
