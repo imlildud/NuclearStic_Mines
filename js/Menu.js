@@ -1,6 +1,12 @@
 /* ========================================================= */
 /* ========================= MENU ========================== */
 /* ========================================================= */
+// Main menu controller. Handles mode selection (Legacy/Daily/Custom),
+// punchcard configuration, music/sfx, and game launch.
+
+// ==============================================================
+// ====================== GLOBAL STATE ==========================
+// ==============================================================
 
 // Current punchcard mode state
 let punchcardMode = null;
@@ -9,7 +15,11 @@ let punchcardMode = null;
 let dailyConfig = null;
 
 // Current game config
-let currentConfig = null; 
+let currentConfig = null;
+
+// ==============================================================
+// ====================== DOM EVENT LISTENERS ===================
+// ==============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -18,18 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const customButton = document.querySelector('.custom-button');
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
-    const startButton = document.querySelector('.pc-start'); 
+    const startButton = document.querySelector('.pc-start');
 
     /* -------------------- Mode Buttons -------------------- */
 
-    // Legacy Mode Button
+    // ----- Legacy Mode Button -----
     legacyButton.addEventListener('click', () => {
         punchcardMode = "legacy";
         punchcardScreen.classList.add('active');
         generateLegacyConfig();
+        updatePunchcardScale();
     });
 
-    // Daily Mode Button
+    // ----- Daily Mode Button -----
     dailyButton.addEventListener('click', () => {
         const today = new Date().toDateString();
         const alreadyPlayed = localStorage.getItem(`daily_completed_${today}`);
@@ -42,39 +53,40 @@ document.addEventListener("DOMContentLoaded", () => {
         punchcardMode = "daily";
         punchcardScreen.classList.add('active');
         generateDailyConfig();
+        updatePunchcardScale();
     });
 
-    // Custom Mode Button
+    // ----- Custom Mode Button -----
     customButton.addEventListener("click", () => {
         punchcardMode = "custom";
         punchcardScreen.classList.add('active');
         generateCustomConfig();
+        updatePunchcardScale();
     });
 
     /* -------------------- Select Listeners -------------------- */
 
-    // Character select behaves differently depending on current mode
+    // Legacy character select
     document.getElementById("legacy-character-select")
-    .addEventListener("change", (e) => {
-
-        const value = e.target.value;
-
-        // Legacy Mode updates stored config
-        if (punchcardMode === "legacy") {
-            if (!dailyConfig) return;
-            dailyConfig.character = value;
-            updatePunchcardTextures(dailyConfig);
-        }
-    });
+        .addEventListener("change", (e) => {
+            const value = e.target.value;
+            // Legacy Mode updates stored config
+            if (punchcardMode === "legacy") {
+                if (!dailyConfig) return;
+                dailyConfig.character = value;
+                updatePunchcardTextures(dailyConfig);
+            }
+        });
 
     /* -------------------- Start Button -------------------- */
     startButton.addEventListener('click', () => {
-        if (!currentConfig) return;            
+        if (!currentConfig) return;
+        playMenuGradeSFX();
         localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
         window.location.href = 'pages/game.html';
     });
 
-    // Custom-only selects
+    /* -------------------- Custom Mode Select Listeners -------------------- */
     document.getElementById("custom-character-select")
         .addEventListener("change", updateCustomTextures);
 
@@ -94,17 +106,64 @@ document.addEventListener("DOMContentLoaded", () => {
         .addEventListener("change", updateCustomTextures);
 
     /* -------------------- Close Button -------------------- */
-
-    // Close punchcard overlay
     closeButton.addEventListener('click', () => {
         punchcardScreen.classList.remove('active');
     });
 });
 
+// ==============================================================
+// ======================== MUSIC SYSTEM ========================
+// ==============================================================
 
-/* ========================================================= */
-/* ======================= PUNCHCARD ======================= */
-/* ========================================================= */
+let menuMusic = null;
+let musicStarted = false;
+
+// Load menu music file
+function loadMenuMusic() {
+    menuMusic = new Audio("../assets/audio/music/menu.mp3");
+    menuMusic.loop = true;
+    menuMusic.volume = 0.5;
+    menuMusic.load(); // Preload
+}
+
+// Start playing menu music
+function startMenuMusic() {
+    if (musicStarted) return;
+    if (menuMusic) {
+        menuMusic.play().catch(e => console.log("Music play failed:", e));
+        musicStarted = true;
+    }
+}
+
+// Load music but don't play yet (wait for user interaction)
+loadMenuMusic();
+
+// Start music on FIRST user interaction (keyboard, click, or touch)
+const startMusicOnce = () => {
+    startMenuMusic();
+    window.removeEventListener("keydown", startMusicOnce);
+    window.removeEventListener("click", startMusicOnce);
+    window.removeEventListener("touchstart", startMusicOnce);
+};
+
+window.addEventListener("keydown", startMusicOnce);
+window.addEventListener("click", startMusicOnce);
+window.addEventListener("touchstart", startMusicOnce);
+
+// ==============================================================
+// ======================== SFX SYSTEM ==========================
+// ==============================================================
+
+// Play grade reveal sound effect
+function playMenuGradeSFX() {
+    const audio = new Audio("../assets/audio/sfx/grade.mp3");
+    audio.volume = 0.5;
+    audio.play().catch(e => console.log("SFX failed:", e));
+}
+
+// ==============================================================
+// ====================== PUNCHCARD SYSTEM ======================
+// ==============================================================
 
 // Creates a base configuration object with default values
 function createBaseConfig() {
@@ -121,7 +180,7 @@ function createBaseConfig() {
     };
 }
 
-// Updates all punchcard images and UI elements
+// Updates all punchcard images and UI elements based on config
 function updatePunchcardTextures(config) {
 
     const seedLabel = document.getElementById("pc-seed-label");
@@ -134,41 +193,33 @@ function updatePunchcardTextures(config) {
 
     /* -------------------- Daily Mode -------------------- */
     if (config.mode === "daily") {
-
         seedLabel.style.display = "block";
         seedLabel.textContent = "Seed: " + config.seed;
-
         const today = new Date();
         dateNote.textContent = today.toLocaleDateString();
     }
 
     /* -------------------- Legacy Mode -------------------- */
     if (config.mode === "legacy") {
-
         dateNote.textContent = "Lvl " + config.level;
         legacySelect.style.display = "block";
     }
 
     /* -------------------- Texture Rendering -------------------- */
+    document.getElementById("pcCharacter").src = getCharTexture(config.character);
 
-    document.getElementById("pcCharacter").src =
-        getCharTexture(config.character);
+    if (config.mode === "legacy") {
+        document.getElementById("pcSize").src = getLegacySizeTexture(config.level);
+    } else {
+        document.getElementById("pcSize").src = getSizeTexture(config.size);
+    }
 
-    document.getElementById("pcSize").src =
-        getSizeTexture(config.size);
+    document.getElementById("pcHazards").src = getHazardTexture(config.hazards);
+    document.getElementById("pcObstacles").src = getObstacleTexture(config.obstacles);
+    document.getElementById("pcWanted").src = getGoalsTexture(config.goals);
+    document.getElementById("pcZone").src = getZoneTexture(config.zone);
 
-    document.getElementById("pcHazards").src =
-        getHazardTexture(config.hazards);
-
-    document.getElementById("pcObstacles").src =
-        getObstacleTexture(config.obstacles);
-
-    document.getElementById("pcWanted").src =
-        getGoalsTexture(config.goals);
-
-    document.getElementById("pcZone").src =
-        getZoneTexture(config.zone);
-
+    // Trigger fade animations
     triggerIconFade("pcCharacter");
     triggerIconFade("pcSize");
     triggerIconFade("pcHazards");
@@ -177,10 +228,9 @@ function updatePunchcardTextures(config) {
     triggerIconFade("pcZone");
 }
 
-
-/* ========================================================= */
-/* ======================== LEGACY ========================= */
-/* ========================================================= */
+// ==============================================================
+// ======================== LEGACY MODE =========================
+// ==============================================================
 
 // Generates legacy mode configuration
 function generateLegacyConfig() {
@@ -191,13 +241,13 @@ function generateLegacyConfig() {
     document.querySelector(".pc-title").style.display = "block";
 
     const config = createBaseConfig();
-
     config.mode = "legacy";
 
+    // Load saved level from localStorage
     const savedLevel = localStorage.getItem("legacy_level");
     const level = savedLevel ? parseInt(savedLevel) : 1;
     config.level = level;
-    
+
     config.character = "chef";
 
     // Legacy scaling is tied to level
@@ -206,17 +256,16 @@ function generateLegacyConfig() {
     config.obstacles = config.level;
 
     dailyConfig = config;
-    currentConfig = config;   
+    currentConfig = config;
     updatePunchcardTextures(config);
 }
 
-/* ========================================================= */
-/* ========================= DAILY ========================= */
-/* ========================================================= */
+// ==============================================================
+// ======================== DAILY MODE ==========================
+// ==============================================================
 
 // Generates deterministic seed based on today's date
 function generateDailySeed() {
-
     const today = new Date();
     const dateString =
         today.getFullYear() + "-" +
@@ -232,7 +281,7 @@ function generateDailySeed() {
     return Math.abs(hash);
 }
 
-// Returns a seeded pseudo-random generator
+// Returns a seeded pseudo-random generator (linear congruential)
 function createSeededRandom(seed) {
     return function() {
         seed = (seed * 9301 + 49297) % 233280;
@@ -240,12 +289,12 @@ function createSeededRandom(seed) {
     };
 }
 
-// Returns a random integer within range
+// Returns a random integer within range (min-max inclusive)
 function getRandomInRange(random, min, max) {
     return Math.floor(random() * (max - min + 1)) + min;
 }
 
-// Generates daily mode configuration
+// Generates daily mode configuration with deterministic randomness
 function generateDailyConfig() {
 
     hideAllSelects();
@@ -261,41 +310,45 @@ function generateDailyConfig() {
     const size = validSizes[sizeIndex];
 
     const config = createBaseConfig();
-
     config.mode = "daily";
     config.seed = seed;
     config.size = size;
+
+    // Random character selection
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
     config.goals = getRandomInRange(random, 1, 5);
+
+    // Random zone selection
     const zoneNum = getRandomInRange(random, 1, 3);
     const zoneMap = {1: "desert", 2: "snow", 3: "ash"};
     config.zone = zoneMap[zoneNum];
+
     config.hazards = getRandomInRange(random, 1, size);
     config.obstacles = getRandomInRange(random, 1, size);
 
     dailyConfig = config;
-    currentConfig = config;   
+    currentConfig = config;
     updatePunchcardTextures(config);
 }
 
+// ==============================================================
+// ======================== CUSTOM MODE =========================
+// ==============================================================
 
-/* ========================================================= */
-/* ========================= CUSTOM ======================== */
-/* ========================================================= */
-
-// Generates custom mode configuration
+// Generates custom mode configuration (shows all selects)
 function generateCustomConfig() {
 
     hideAllSelects();
-    
+
     document.getElementById("pc-date-note").textContent = "Custom";
     document.getElementById("pc-seed-label").textContent = "idk put something";
 
     document.querySelector(".pc-title").style.display = "none";
     document.querySelector(".pct-title").style.display = "block";
-    
-    document.getElementById("legacy-character-select").style.display= "none";
+
+    // Show custom mode selects
+    document.getElementById("legacy-character-select").style.display = "none";
     document.getElementById("custom-character-select").style.display = "block";
     document.getElementById("custom-size-select").style.display = "block";
     document.getElementById("custom-hazards-select").style.display = "block";
@@ -317,13 +370,13 @@ function updateCustomTextures() {
     config.hazards = parseInt(document.getElementById("custom-hazards-select").value);
     config.obstacles = parseInt(document.getElementById("custom-obstacles-select").value);
     config.goals = parseInt(document.getElementById("custom-wanted-select").value);
-    config.zone = (document.getElementById("custom-zone-select").value);
+    config.zone = document.getElementById("custom-zone-select").value;
 
     currentConfig = config;
     updatePunchcardTextures(config);
 }
 
-// Hides all select elements
+// Hides all select elements (used when switching modes)
 function hideAllSelects() {
 
     document.getElementById("legacy-character-select").style.display = "none";
@@ -335,12 +388,11 @@ function hideAllSelects() {
     document.getElementById("custom-zone-select").style.display = "none";
 }
 
+// ==============================================================
+// ======================== TEXTURES ============================
+// ==============================================================
 
-/* ========================================================= */
-/* ======================= TEXTURES ======================== */
-/* ========================================================= */
-
-// Returns character texture based on ID
+// Returns character texture based on character ID
 function getCharTexture(value) {
     if (value === "chef") return "assets/hud/punchcard/character/chefpin.png";
     if (value === "mosquito") return "assets/hud/punchcard/character/mosquitopin.png";
@@ -349,7 +401,16 @@ function getCharTexture(value) {
     return "assets/hud/punchcard/character/chefpin.png";
 }
 
-// Returns size texture based on numeric range
+// Returns size texture for legacy mode (based on level)
+function getLegacySizeTexture(level) {
+    if (level <= 4) return "assets/hud/punchcard/size/small.png";
+    if (level <= 9) return "assets/hud/punchcard/size/medium.png";
+    if (level <= 14) return "assets/hud/punchcard/size/large.png";
+    if (level <= 19) return "assets/hud/punchcard/size/xtralarge.png";
+    return "assets/hud/punchcard/size/ultralarge.png";
+}
+
+// Returns size texture based on numeric value (custom/daily)
 function getSizeTexture(value) {
     if (value <= 8) return "assets/hud/punchcard/size/small.png";
     if (value <= 12) return "assets/hud/punchcard/size/medium.png";
@@ -359,7 +420,7 @@ function getSizeTexture(value) {
     return "assets/hud/punchcard/size/ultralarge.png";
 }
 
-// Hazard texture by difficulty range
+// Returns hazard texture based on difficulty range
 function getHazardTexture(value) {
     if (value <= 4) return "assets/hud/punchcard/hazard/low.png";
     if (value <= 7) return "assets/hud/punchcard/hazard/medium.png";
@@ -369,7 +430,7 @@ function getHazardTexture(value) {
     return "assets/hud/punchcard/hazard/nsanlyhigh.png";
 }
 
-// Obstacle texture by difficulty range
+// Returns obstacle texture based on difficulty range
 function getObstacleTexture(value) {
     if (value <= 2) return "assets/hud/punchcard/obstacles/low.png";
     if (value <= 3) return "assets/hud/punchcard/obstacles/medium.png";
@@ -379,7 +440,7 @@ function getObstacleTexture(value) {
     return "assets/hud/punchcard/obstacles/nsanlyhigh.png";
 }
 
-// Goal texture based on amount range
+// Returns goal texture based on amount
 function getGoalsTexture(value) {
     if (value == 1) return "assets/hud/punchcard/goals/1.png";
     if (value == 2) return "assets/hud/punchcard/goals/2.png";
@@ -389,7 +450,7 @@ function getGoalsTexture(value) {
     return "assets/hud/punchcard/goals/5.png";
 }
 
-// Zone texture based on biome ID
+// Returns zone texture based on biome type
 function getZoneTexture(value) {
     if (value === "desert") return "assets/hud/punchcard/zone/desert.png";
     if (value === "snow") return "assets/hud/punchcard/zone/snow.png";
@@ -397,7 +458,11 @@ function getZoneTexture(value) {
     return "assets/hud/punchcard/zone/desert.png";
 }
 
-// Updates punchcard scale based on window size
+// ==============================================================
+// ======================== UI HELPERS ==========================
+// ==============================================================
+
+// Updates punchcard scale based on window size (responsive)
 function updatePunchcardScale() {
     const pc = document.querySelector('.punchcard');
     if (!pc || !document.getElementById('punchcard-screen').classList.contains('active')) return;
@@ -406,7 +471,7 @@ function updatePunchcardScale() {
     // Using 0.95 to leave a small safety margin
     const scaleX = (window.innerWidth * 0.95) / 800;
     const scaleY = (window.innerHeight * 0.95) / 500;
-    
+
     // Choose the smallest value so nothing gets cut off
     // Math.min(..., 1.2) allows slight growth on large screens but not infinite
     const finalScale = Math.min(scaleX, scaleY, 1.2);
@@ -424,5 +489,5 @@ function triggerIconFade(imgId) {
     }
 }
 
-// Call this function every time you open the punchcard and on resize
+// Update scale when window is resized
 window.addEventListener('resize', updatePunchcardScale);
