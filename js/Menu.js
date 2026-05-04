@@ -33,10 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
     dailyButton.addEventListener('click', () => {
         const today = new Date().toDateString();
         const alreadyPlayed = localStorage.getItem(`daily_completed_${today}`);
-    
+
         if (alreadyPlayed) {
             alert("Daily mission already completed today! Come back tomorrow.");
-        return;
+            return;
         }
 
         punchcardMode = "daily";
@@ -145,7 +145,7 @@ function updatePunchcardTextures(config) {
     /* -------------------- Legacy Mode -------------------- */
     if (config.mode === "legacy") {
 
-        dateNote.textContent = "Lvl_" + config.level;
+        dateNote.textContent = "Lvl " + config.level;
         legacySelect.style.display = "block";
     }
 
@@ -193,7 +193,11 @@ function generateLegacyConfig() {
     const config = createBaseConfig();
 
     config.mode = "legacy";
-    config.level = 1;
+
+    const savedLevel = localStorage.getItem("legacy_level");
+    const level = savedLevel ? parseInt(savedLevel) : 1;
+    config.level = level;
+    
     config.character = "chef";
 
     // Legacy scaling is tied to level
@@ -205,7 +209,6 @@ function generateLegacyConfig() {
     currentConfig = config;   
     updatePunchcardTextures(config);
 }
-
 
 /* ========================================================= */
 /* ========================= DAILY ========================= */
