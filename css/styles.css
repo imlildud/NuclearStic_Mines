@@ -2,6 +2,7 @@
 /* ====================== LOCAL FONTS ===================== */
 /* ========================================================= */
 
+/* Shampoos Font - Main Menu Font */
 @font-face {
     font-family: 'Shampoos';
     src: url('../assets/font/Shampoos-Regular.ttf') format('truetype');
@@ -13,6 +14,8 @@
 /* ========================================================= */
 /* ====================== GLOBAL LAYOUT ==================== */
 /* ========================================================= */
+
+/* Global Overlay Filter */
 .filter {
     position: fixed;
     top: 0;
@@ -26,6 +29,7 @@
     z-index: 9999;
 }
 
+/* Body Base Styles */
 body {
     margin: 0;
     height: 100vh;
@@ -45,7 +49,7 @@ body {
 /* ===================== MAIN MENU UI ====================== */
 /* ========================================================= */
 
-/* Wrapper that contains everything except the background */
+/* Main Menu Overlay Container */
 .overlay {
     display: flex;
     flex-direction: column;
@@ -57,7 +61,9 @@ body {
     box-sizing: border-box;
 }
 
-/* Corner logo (CloudToons) */
+/* ==================== CORNER LOGO ==================== */
+
+/* CloudToons Corner Logo */
 .cloud {
     position: fixed;
     bottom: 3vmin;
@@ -66,7 +72,9 @@ body {
     z-index: 2;
 }
 
-/* --- HEADER: Logo and Legacy --- */
+/* ==================== HEADER SECTION ==================== */
+
+/* Top Bar Container */
 .top-bar {
     position: relative;
     display: flex;
@@ -75,12 +83,14 @@ body {
     margin-bottom: 2vh;
 }
 
+/* Main Game Logo */
 .logo {
     width: 45vmin;
     max-width: 400px;
     height: auto;
 }
 
+/* Legacy Mode Toggle Button */
 .legacy-button {
     position: absolute;
     top: 50%;
@@ -93,7 +103,9 @@ body {
     z-index: 10;
 }
 
-/* --- MODE BUTTONS (Daily / Custom) --- */
+/* ==================== MODE BUTTONS ==================== */
+
+/* Daily and Custom Mission Buttons */
 .daily-button,
 .custom-button {
     width: 45vmin;
@@ -116,10 +128,15 @@ body {
     transition: transform 0.2s ease;
 }
 
+/* Daily Mission Button Background */
 .daily-button { background-image: url('../assets/hud/menu/daily.png'); }
+
+/* Custom Mission Button Background */
 .custom-button { background-image: url('../assets/hud/menu/custom.png'); }
 
-/* --- BOTTOM ROW (Diary / Options) --- */
+/* ==================== BOTTOM ACTION BUTTONS ==================== */
+
+/* Bottom Row Container */
 .bottom-row {
     margin-top: 2vh;
     display: flex;
@@ -127,6 +144,7 @@ body {
     gap: 2vmin;
 }
 
+/* Diary and Options Buttons */
 .diary-button,
 .option-button {
     width: 25vmin;
@@ -139,10 +157,15 @@ body {
     cursor: pointer;
 }
 
+/* Diary Button Background */
 .diary-button { background-image: url('../assets/hud/menu/diary.png'); }
+
+/* Options Button Background */
 .option-button { background-image: url('../assets/hud/menu/options.png'); }
 
-/* Global Effects */
+/* ==================== GLOBAL BUTTON EFFECTS ==================== */
+
+/* Hover Effect for All Buttons */
 .legacy-button:hover,
 .daily-button:hover,
 .custom-button:hover,
@@ -152,6 +175,7 @@ body {
     transform: scale(1.05);
 }
 
+/* Active/Click Effect for All Buttons */
 .legacy-button:active,
 .daily-button:active,
 .custom-button:active,
@@ -161,11 +185,11 @@ body {
     transform: scale(0.95);
 }
 
-
 /* ========================================================= */
 /* ==================== PUNCHCARD OVERLAY ================== */
 /* ========================================================= */
 
+/* Punchcard Screen Container */
 #punchcard-screen {
     position: fixed;
     inset: 0;
@@ -178,14 +202,41 @@ body {
     touch-action: none;
 }
 
+/* Active State for Punchcard Screen (First Definition) */
 #punchcard-screen.active {
     display: flex;
+}
+
+/* Secondary Definition with Fade Effect */
+#punchcard-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    
+    /* Centering */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    
+    /* FADE EFFECT */
+    opacity: 0;
+    pointer-events: none; /* Prevents clicks when invisible */
+    transition: opacity 0.7s ease, visibility 0.7s;
+    visibility: hidden;
+}
+
+/* Active State with Fade Effect */
+#punchcard-screen.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* Re-enables clicks */
 }
 
 /* ========================================================= */
 /* ====================== PUNCHCARD BASE =================== */
 /* ========================================================= */
 
+/* Punchcard Main Container */
 .punchcard {
     position: relative; /* Changed to relative so parent flex centers it */
     width: 800px;
@@ -198,29 +249,7 @@ body {
     transition: transform 0.1s ease-out;
 }
 
-#punchcard-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    
-    /* Centering */
-    display: flex; 
-    justify-content: center;
-    align-items: center;
-    
-    /* --- FADE EFFECT --- */
-    opacity: 0;
-    pointer-events: none; /* Prevents clicks when invisible */
-    transition: opacity 0.7s ease, visibility 0.7s;
-    visibility: hidden;
-}
-
-#punchcard-screen.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto; /* Re-enables clicks */
-}
-
+/* Punchcard Background Base Image */
 .pc-base {
     position: absolute;
     top: 0;
@@ -233,7 +262,7 @@ body {
 /* ======================= TITLES ========================== */
 /* ========================================================= */
 
-/* Both hidden by default, JS will set display: block based on mode */
+/* Daily and Custom Title Images */
 .pc-title,
 .pct-title {
     position: absolute;
@@ -244,14 +273,17 @@ body {
     display: none; 
 }
 
-/* Helper classes for JS to control which one to show */
+/* Daily Mode Title Display */
 #punchcard-screen.daily-mode .pc-title { display: block; }
+
+/* Custom Mode Title Display */
 #punchcard-screen.custom-mode .pct-title { display: block; }
 
 /* ========================================================= */
 /* ===================== DATE & SEED ======================= */
 /* ========================================================= */
 
+/* Date Note Icon */
 .pc-date {
     position: absolute;
     top: 5px;
@@ -260,6 +292,7 @@ body {
     z-index: 3;
 }
 
+/* Dynamic Date Text */
 .pc-date-note {
     position: absolute;
     top: 106px;
@@ -272,6 +305,7 @@ body {
 /* ===================== CLOSE BUTTON ====================== */
 /* ========================================================= */
 
+/* Close Button Image */
 .pc-close {
     position: absolute;
     top: -20px;   /* Sticks out a bit for visibility */
@@ -281,11 +315,13 @@ body {
     z-index: 10;
 }
 
+/* Close Button Hover Effect */
 .pc-close:hover {
     filter: brightness(1.25);
     transform: scale(1.05);
 }
 
+/* Close Button Active Effect */
 .pc-close:active {
     filter: brightness(0.75);
     transform: scale(0.95);
@@ -295,6 +331,7 @@ body {
 /* =================== PUNCHCARD ELEMENTS ================== */
 /* ========================================================= */
 
+/* Common Styles for All Config Sections */
 .pc-char, .pc-size, .pc-hazards, .pc-obstacles, .pc-wanted, .pc-zone {
     position: absolute;
     display: flex;
@@ -307,7 +344,7 @@ body {
     height: 150px; 
 }
 
-/* Keeping your exact coordinates */
+/* Section Positions - Keeping original coordinates */
 .pc-char      { top: 170px; left: 100px; }
 .pc-size      { top: 180px; left: 260px; }
 .pc-hazards   { top: 190px; left: 450px; }
@@ -315,6 +352,7 @@ body {
 .pc-wanted    { bottom: 30px; left: 160px; } /* Adjusted to give space for select */
 .pc-zone      { bottom: 20px; left: 510px; }
 
+/* Section Labels */
 .pc-label {
     height: 30px; /* Fixed height for label */
     margin-bottom: 5px;
@@ -323,6 +361,7 @@ body {
     align-items: center;
 }
 
+/* Section Icon Images */
 .pc-char img, .pc-size img, .pc-hazards img,
 .pc-obstacles img, .pc-wanted img, .pc-zone img {
     width: 80px;
@@ -331,7 +370,9 @@ body {
     margin-bottom: 5px;
 }
 
-/* Select styles */
+/* ==================== SELECT DROPDOWNS ==================== */
+
+/* Select/Dropdown Styles */
 .punchcard select {
     position: absolute; /* Removed from flow so it doesn't push anything */
     bottom: 0;         /* Sticks to the bottom of its 150px container */
@@ -342,55 +383,14 @@ body {
     width: 90%;        /* Prevents overflow */
 }
 
-/* If select is hidden (Daily mode), the icon won't move because the container is always 150px tall */
+/* Hidden Helper Class */
 .hidden {
     display: none !important;
 }
 
-/* ========================================================= */
-/* ===================== START BUTTON ====================== */
-/* ========================================================= */
+/* ==================== CUSTOM SELECT STYLES ==================== */
 
-.pc-start {
-    position: absolute;
-    bottom: 50px;
-    left: 340px; /* Centered in the empty space you left */
-    width: 120px;
-    cursor: pointer;
-    z-index: 5;
-}
-
-.pc-start:hover {
-    filter: brightness(1.25);
-    transform: scale(1.05);
-}
-
-.pc-start:active {
-    filter: brightness(0.75);
-    transform: scale(0.95);
-}
-
-/* Entry animation */
-@keyframes iconFade {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* This class is applied temporarily via JS */
-.icon-react {
-    animation: iconFade 0.3s ease-out;
-}
-
-/* ========================================================= */
-/* ================= CUSTOM SELECT STYLE =================== */
-/* ========================================================= */
-
+/* Custom Styled Dropdowns */
 .punchcard select {
     /* Removing default browser styling */
     appearance: none;
@@ -419,15 +419,62 @@ body {
     transition: transform 0.2s ease, background-color 0.2s;
 }
 
-/* Hover effect */
+/* Select Dropdown Hover Effect */
 .punchcard select:hover {
     background-color: rgba(255, 255, 255, 0.9);
     transform: rotate(-1deg) scale(1.02);
 }
 
-/* Option styling*/
+/* Select Option Styles */
 .punchcard select option {
     font-family: "Indie Flower", bold;
     background-color: #d6c794;
     color: #000000;
+}
+
+/* ========================================================= */
+/* ===================== START BUTTON ====================== */
+/* ========================================================= */
+
+/* Start Game Button */
+.pc-start {
+    position: absolute;
+    bottom: 50px;
+    left: 340px; /* Centered in the empty space you left */
+    width: 120px;
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* Start Button Hover Effect */
+.pc-start:hover {
+    filter: brightness(1.25);
+    transform: scale(1.05);
+}
+
+/* Start Button Active Effect */
+.pc-start:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
+}
+
+/* ========================================================= */
+/* ===================== ANIMATIONS ======================== */
+/* ========================================================= */
+
+/* Icon Fade-In Entry Animation */
+@keyframes iconFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Temporary Animation Class Applied via JS */
+.icon-react {
+    animation: iconFade 0.3s ease-out;
 }

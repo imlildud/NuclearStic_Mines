@@ -17,196 +17,204 @@
 
 <body>
 
-<!-- ====================================================== -->
-<!-- ===================== MAIN MENU ====================== -->
-<!-- ====================================================== -->
-<div class="filter"></div>
-<div class="overlay">
+    <!-- ====================================================== -->
+    <!-- ===================== MAIN MENU ====================== -->
+    <!-- ====================================================== -->
 
-    <!-- Corner Logo -->
-    <img src="assets/hud/cloudcon.png" class="cloud" alt="CloudToons">
+    <!-- Background overlay filter -->
+    <div class="filter"></div>
 
-    <!-- Header -->
-    <div class="top-bar">
+    <!-- Main Menu Overlay Container -->
+    <div class="overlay">
 
-        <!-- Main Logo -->
-        <img src="assets/hud/nuclearlogo.png" class="logo" alt="Game Logo">
+        <!-- Top Left Corner Logo -->
+        <img src="assets/hud/cloudcon.png" class="cloud" alt="CloudToons">
 
-        <!-- Legacy Mode Button -->
-        <div class="legacy-button"></div>
+        <!-- ================= HEADER SECTION ================= -->
+        <div class="top-bar">
+
+            <!-- Main Game Logo -->
+            <img src="assets/hud/nuclearlogo.png" class="logo" alt="Game Logo">
+
+            <!-- Legacy Mode Toggle Button -->
+            <div class="legacy-button"></div>
+
+        </div>
+
+        <!-- ================= GAME MODE BUTTONS ================= -->
+        <!-- Daily Mission Button -->
+        <div class="daily-button">
+            Daily Mission
+        </div>
+
+        <!-- Custom Mission Button -->
+        <div class="custom-button">
+            Custom Mission
+        </div>
+
+        <!-- ================= BOTTOM ACTION BUTTONS ================= -->
+        <div class="bottom-row">
+
+            <!-- Diary / Stats Button -->
+            <div class="diary-button"></div>
+
+            <!-- Options / Settings Button -->
+            <div class="option-button"></div>
+
+        </div>
 
     </div>
 
-    <!-- Daily Mode -->
-    <div class="daily-button">
-        Daily Mission
+    <!-- ====================================================== -->
+    <!-- =================== PUNCHCARD OVERLAY ================= -->
+    <!-- ====================================================== -->
+
+    <div id="punchcard-screen">
+
+        <!-- Punchcard Main Container -->
+        <div class="punchcard">
+
+            <!-- Punchcard Background Base Image -->
+            <img src="assets/hud/punchcard/punchcard.png"
+                 class="pc-base"
+                 alt="Punchcard Base">
+
+            <!-- ================= HEADER ================= -->
+            <div class="puncheader">
+
+                <!-- Punchcard Titles -->
+                <img src="assets/hud/punchcard/daily punch.png"
+                     class="pc-title"
+                     alt="Punchcard Title">
+
+                <img src="assets/hud/punchcard/custom punch.png"
+                     class="pct-title"
+                     alt="Custom Title">
+
+                <!-- Date Note Icon -->
+                <img src="assets/hud/punchcard/note.png"
+                     class="pc-date"
+                     alt="Punchcard Date">
+
+                <!-- Dynamic Date Text -->
+                <div id="pc-date-note" class="pc-date-note"></div>
+
+                <!-- Close Button -->
+                <img src="assets/hud/punchcard/close.png"
+                     class="pc-close"
+                     alt="Close Punchcard">
+
+            </div>
+
+            <!-- ================= CONFIG SECTIONS ================= -->
+
+            <!-- Character Selection -->
+            <div class="pc-char">
+                <div class="pc-label">Character</div>
+                <img id="pcCharacter">
+
+                <!-- Legacy Mode Character Dropdown -->
+                <select id="legacy-character-select">
+                    <option value="chef">Chef</option>
+                    <option value="mosquito">Mosquito</option>
+                    <option value="mommy">Mommy</option>
+                    <option value="scout">Scout</option>
+                </select>
+
+                <!-- Custom Mode Character Dropdown -->
+                <select id="custom-character-select">
+                    <option value="chef">Chef</option>
+                    <option value="mosquito">Mosquito</option>
+                    <option value="mommy">Mommy</option>
+                    <option value="scout">Scout</option>
+                </select>
+            </div>
+
+            <!-- Grid Size Selection -->
+            <div class="pc-size">
+                <div class="pc-label">Size</div>
+                <img id="pcSize">
+
+                <select id="custom-size-select">
+                    <option value="8">Small</option>
+                    <option value="12">Medium</option>
+                    <option value="16">Large</option>
+                    <option value="20">Xtra-Large</option>
+                    <option value="24">Ultra-Large</option>
+                </select>
+            </div>
+
+            <!-- Hazards Count Selection -->
+            <div class="pc-hazards">
+                <div class="pc-label">Hazards</div>
+                <img id="pcHazards">
+
+                <select id="custom-hazards-select">
+                    <option value="1">Low</option>
+                    <option value="5">Medium</option>
+                    <option value="8">High</option>
+                    <option value="12">Xtra-High</option>
+                    <option value="20">Ultra-High</option>
+                    <option value="30">Nsanely-High</option>
+                </select>
+            </div>
+
+            <!-- Obstacles Count Selection -->
+            <div class="pc-obstacles">
+                <div class="pc-label">Obstacles</div>
+                <img id="pcObstacles">
+
+                <select id="custom-obstacles-select">
+                    <option value="1">Low</option>
+                    <option value="3">Medium</option>
+                    <option value="5">High</option>
+                    <option value="10">Xtra-High</option>
+                    <option value="15">Ultra-High</option>
+                    <option value="30">Nsanely-High</option>
+                </select>
+            </div>
+
+            <!-- Goals / Wanted Count Selection -->
+            <div class="pc-wanted">
+                <div class="pc-label">Wanted:</div>
+                <img id="pcWanted">
+
+                <select id="custom-wanted-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <!-- Environment Zone Selection -->
+            <div class="pc-zone">
+                <div class="pc-label">Zone</div>
+                <img id="pcZone">
+
+                <select id="custom-zone-select">
+                    <option value="desert">Desert</option>
+                    <option value="snow">Snow</option>
+                    <option value="ash">Ash</option>
+                </select>
+            </div>
+
+            <!-- ================= ACTIONS ================= -->
+
+            <!-- Start Game Button -->
+            <img src="assets/hud/punchcard/ready.png"
+                 class="pc-start"
+                 id="pcStart"
+                 alt="Start Game">
+
+            <!-- Dynamic Seed Display -->
+            <div id="pc-seed-label" class="pc-seed-label"></div>
+
+        </div>
+
     </div>
 
-    <!-- Custom Mode -->
-    <div class="custom-button">
-        Custom Mission
-    </div>
-
-    <!-- Bottom Buttons -->
-    <div class="bottom-row">
-
-        <div class="diary-button"></div>
-        <div class="option-button"></div>
-
-    </div>
-
-</div>
-
-
-<!-- ====================================================== -->
-<!-- =================== PUNCHCARD OVERLAY ================= -->
-<!-- ====================================================== -->
-
-<div id="punchcard-screen">
-
-    <div class="punchcard">
-
-        <!-- Base -->
-        <img src="assets/hud/punchcard/punchcard.png"
-             class="pc-base"
-             alt="Punchcard Base">
-
-        <!-- ================= HEADER ================= -->
-
-        <div class="puncheader">
-
-            <!-- Titles -->
-            <img src="assets/hud/punchcard/daily punch.png"
-                 class="pc-title"
-                 alt="Punchcard Title">
-
-            <img src="assets/hud/punchcard/custom punch.png"
-                 class="pct-title"
-                 alt="Custom Title">
-
-            <!-- Date -->
-            <img src="assets/hud/punchcard/note.png"
-                 class="pc-date"
-                 alt="Punchcard Date">
-
-            <div id="pc-date-note" class="pc-date-note"></div>
-
-            <!-- Close Button -->
-            <img src="assets/hud/punchcard/close.png"
-                 class="pc-close"
-                 alt="Close Punchcard">
-
-        </div>
-
-
-        <!-- ================= CONFIG SECTIONS ================= -->
-
-        <!-- Character -->
-        <div class="pc-char">
-            <div class="pc-label">Character</div>
-            <img id="pcCharacter">
-
-            <select id="legacy-character-select">
-                <option value="chef">Chef</option>
-                <option value="mosquito">Mosquito</option>
-                <option value="mommy">Mommy</option>
-                <option value="scout">Scout</option>
-            </select>
-            <select id="custom-character-select">
-                <option value="chef">Chef</option>
-                <option value="mosquito">Mosquito</option>
-                <option value="mommy">Mommy</option>
-                <option value="scout">Scout</option>
-            </select>
-        </div>
-
-
-        <!-- Size -->
-        <div class="pc-size">
-            <div class="pc-label">Size</div>
-            <img id="pcSize">
-
-            <select id="custom-size-select">
-                <option value="8">Small</option>
-                <option value="12">Medium</option>
-                <option value="16">Large</option>
-                <option value="20">Xtra-Large</option>
-                <option value="24">Ultra-Large</option>
-            </select>
-        </div>
-
-
-        <!-- Hazards -->
-        <div class="pc-hazards">
-            <div class="pc-label">Hazards</div>
-            <img id="pcHazards">
-
-            <select id="custom-hazards-select">
-                <option value="1">Low</option>
-                <option value="5">Medium</option>
-                <option value="8">High</option>
-                <option value="12">Xtra-High</option>
-                <option value="20">Ultra-High</option>
-                <option value="30">Nsanely-High</option>
-            </select>
-        </div>
-
-
-        <!-- Obstacles -->
-        <div class="pc-obstacles">
-            <div class="pc-label">Obstacles</div>
-            <img id="pcObstacles">
-
-            <select id="custom-obstacles-select">
-                <option value="1">Low</option>
-                <option value="3">Medium</option>
-                <option value="5">High</option>
-                <option value="10">Xtra-High</option>
-                <option value="15">Ultra-High</option>
-                <option value="30">Nsanely-High</option>
-            </select>
-        </div>
-
-
-        <!-- Goals -->
-        <div class="pc-wanted">
-            <div class="pc-label">Wanted:</div>
-            <img id="pcWanted">
-
-            <select id="custom-wanted-select">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-        </div>
-
-
-        <!-- Zone -->
-        <div class="pc-zone">
-            <div class="pc-label">Zone</div>
-            <img id="pcZone">
-
-            <select id="custom-zone-select">
-                <option value="desert">Desert</option>
-                <option value="snow">Snow</option>
-                <option value="ash">Ash</option>
-            </select>
-        </div>
-
-
-        <!-- ================= ACTIONS ================= -->
-
-        <!-- Start Button -->
-        <img src="assets/hud/punchcard/ready.png"
-             class="pc-start"
-             id="pcStart"
-             alt="Start Game">
-
-        <!-- Seed Label -->
-        <div id="pc-seed-label" class="pc-seed-label"></div>
-    </div>
-</div>
 </body>
+
 </html>

@@ -1,94 +1,115 @@
+// ==============================================================
+// ======================= TILE MODEL ===========================
+// ==============================================================
+// Manages the state and properties of a single tile in the game grid
+
 export class TileModel {
+    
+    // ======================= CONSTRUCTOR =======================
+    // Initializes all tile properties with default values
+    
     constructor() {
-        // Initialization of the view status
-        this.hide = true; // Hide the content of the tile
-
-        // Initialization of the start and finish tiles
-        this.start = false; // Define if the tile is the start
-        this.goaltype = "none"; // Define if the tile is a goal
-        this.goallive = false; // Define if the goal is lost
-
-        // Initialization of the conditions for tile mapping
-        this.secure = false; // Define if the tile is a secure area
-        this.securehidden = false; // Define if the tile is a secure hidden area
-        this.flagged = false; // Define if the tile is a flagged tile
-        this.marked = false; // Define if the tile is a flagged hazard
-
-        // Initialization of tile height
-        this.height = 0; // 0 default height
-
-        // Initialization of obstacle tile
-        this.obstacletype = "none"; // Define the type of obstacle
-
-        // Hazard initialization
-        this.hazardcount = 0; // Define how many hazards are around the tile
-        this.damageratio = false; // Define a damage radius
-        this.detectionratio = false; // Define a detection radius
-        this.hazardtype = "none"; // Define the type of hazard
-        this.hazardlive = false; // Define if the hazard is live
+        // ========== VIEW STATUS ==========
+        this.hide = true;               // Hide the content of the tile (undiscovered)
+        
+        // ========== START & GOAL TILES ==========
+        this.start = false;             // Define if the tile is the starting position
+        this.goaltype = "none";         // Define if the tile is a goal (rescue target)
+        this.goallive = false;          // Define if the goal is still active (not lost)
+        
+        // ========== MAP CONDITIONS ==========
+        this.secure = false;            // Define if the tile is a secure area
+        this.securehidden = false;      // Define if the tile is a secure hidden area
+        this.flagged = false;           // Define if the tile has a flag marker
+        this.jumpflagged = false;       // Define if the tile has a jump flag marker
+        this.marked = false;            // Define if the tile is marked as a hazard
+        
+        // ========== TILE HEIGHT ==========
+        this.height = 0;                // 0 = default height (terrain elevation)
+        
+        // ========== OBSTACLE ==========
+        this.obstacletype = "none";     // Define the type of obstacle on the tile
+        
+        // ========== HAZARD PROPERTIES ==========
+        this.hazardcount = 0;           // Number of hazards adjacent to the tile
+        this.damageratio = false;       // Flag for damage radius presence
+        this.detectionratio = false;    // Flag for detection radius presence
+        this.hazardtype = "none";       // Type of hazard on the tile
+        this.hazardlive = false;        // Flag indicating if hazard is active
     }
-
-    // Getter & Setter Hide
+    
+    // ======================= HIDE GETTERS & SETTERS =======================
+    
     isHide() { return this.hide; }
     setHide(v) { this.hide = v; }
-
-    // Getter & Setter Start
+    
+    // ======================= START GETTERS & SETTERS =======================
+    
     isStart() { return this.start; }
     setStart(v) { this.start = v; }
-
-    // Getter & Setter Goal
+    
+    // ======================= GOAL GETTERS & SETTERS =======================
+    
     getGoaltype() { return this.goaltype; }
     setGoaltype(v) { this.goaltype = v; }
-
-    // Getter & Setter Goal Status
+    
     isGoallive() { return this.goallive; }
     setGoallive(v) { this.goallive = v; }
-
-    // Getter & Setter Secure
+    
+    // ======================= SECURE GETTERS & SETTERS =======================
+    
     isSecure() { return this.secure; }
     setSecure(v) { this.secure = v; }
-
-    // Getter & Setter Secure hidden
+    
     isSecurehidden() { return this.securehidden; }
     setSecurehidden(v) { this.securehidden = v; }
-
-    // Getter & Setter Flagged
+    
+    // ======================= FLAGGED GETTERS & SETTERS =======================
+    
     isFlagged() { return this.flagged; }
     setFlagged(v) { this.flagged = v; }
-
+    
     isJumpflagged() { return this.jumpflagged; }
     setJumpflagged(v) { this.jumpflagged = v; }
-
-    // Getter & Setter Marked
+    
+    // ======================= MARKED GETTERS & SETTERS =======================
+    
     isMarked() { return this.marked; }
     setMarked(v) { this.marked = v; }
-
-    // Getter & Setter Height
+    
+    // ======================= HEIGHT GETTERS & SETTERS =======================
+    
     getTileheight() { return this.height; }
     setTileheight(v) { this.height = v; }
-
-    // Getter & Setter Obstacle Type
+    
+    // ======================= OBSTACLE GETTERS & SETTERS =======================
+    
     getObstacletype() { return this.obstacletype; }
     setObstacletype(v) { this.obstacletype = v; }
-
-    // Getter & Increment Hazard Count
+    
+    // ======================= HAZARD COUNT GETTERS & SETTERS =======================
+    
     getHazardcount() { return this.hazardcount; }
     incrementHazardcount() { this.hazardcount++; }
     setHazardcount(v) { this.hazardcount = v; }
-
-    // Getter & Setter Damage Ratio
+    
+    // ======================= DAMAGE RATIO GETTERS & SETTERS =======================
+    
     getDamageratio() { return this.damageratio; }
     setDamageratio(v) { this.damageratio = v; }
-
-    // Getter & Setter Detection Ratio
+    
+    // ======================= DETECTION RATIO GETTERS & SETTERS =======================
+    
     getDetectionratio() { return this.detectionratio; }
     setDetectionratio(v) { this.detectionratio = v; }
-
-    // Getter & Setter Hazard Type
+    
+    // ======================= HAZARD TYPE GETTERS & SETTERS =======================
+    
     getHazardtype() { return this.hazardtype; }
     setHazardtype(v) { this.hazardtype = v; }
-
-    // Getter & Setter Hazard Live
+    
+    // ======================= HAZARD LIVE GETTERS & SETTERS =======================
+    
     isHazardlive() { return this.hazardlive; }
     setHazardlive(v) { this.hazardlive = v; }
 }
