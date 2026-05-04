@@ -3,7 +3,7 @@
 > A roguelike where Minesweeper meets chess in a nuclear wasteland.
 
 [![Play Now](https://img.shields.io/badge/Play%20Now-itch.io-FA5C5C?style=for-the-badge&logo=itch.io&logoColor=white)](https://imlildud.itch.io/nuclear-stic-mines-retrashd)
-[![GitHub stars](https://img.shields.io/github/stars/imlildud/NuclearStic_Mines?style=for-the-badge&logo=github)](https://github.com/imlildud/NuclearStic_Mines)
+[![GitHub stars](https://img.shields.io/badge/dynamic/json?style=for-the-badge&logo=github&label=Stars&query=%24.stargazers_count&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fimlildud%2FNuclearStic_Mines)](https://github.com/imlildud/NuclearStic_Mines)
 
 ---
 
@@ -22,8 +22,9 @@ A **turn-based tactical game** where you:
 
 1. **Move** with `WASD`
 2. **Place flags** with `Arrow Keys`
-3. **Rescue children** → take them to the **start tile** (green)
-4. **Win** when all children are rescued
+3. **Or use the virtual pad**
+4. **Rescue children** → take them to the **start tile** (house)
+5. **Win** when all children are rescued
 
 ---
 
@@ -43,18 +44,19 @@ A **turn-based tactical game** where you:
 | Mode | Description |
 |------|-------------|
 | **Legacy** | Progressive difficulty. Each win = higher level. |
-| **Daily** | Same board for everyone. One attempt per day. |
-| **Custom** | Choose size, hazards, obstacles, goals and biome. |
+| **Daily** | Same config for everyone. One attempt per day. |
+| **Custom** | Choose size, hazards, obstacles, goals and zone. |
 
 ---
 
-## 📦 Tech
+## 👥 Characters
 
-- Vanilla JavaScript
-- HTML5 Canvas
-- CSS3
-
-No frameworks. No dependencies. Just code.
+| Character | Ability | Playstyle |
+|-----------|---------|-----------|
+| **Chef** | Mark hazards automatically | Balanced |
+| **Mosquito** | See geological alerts | Recon |
+| **Mommy** | Armor protection | Tank |
+| **Scout** | Anti-Obstacle | Agile |
 
 ---
 
