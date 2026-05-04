@@ -1,8 +1,26 @@
 /* ========================================================= */
-/* ====================== BASE CONFIGURATION =============== */
+/* ====================== LOCAL FONTS ===================== */
 /* ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Indie+Flower&display=swap');
+@font-face {
+    font-family: 'Shampoos';
+    src: url('../assets/font/Shampoos-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pencilant';
+    src: url('../assets/font/pencilant.script.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ========================================================= */
+/* ====================== BASE CONFIGURATION =============== */
+/* ========================================================= */
 
 body {
     margin: 0;
@@ -10,7 +28,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    font-family: 'Indie Flower', cursive;
+    font-family: 'Shampoos';
     overflow: hidden;
     touch-action: none;
 }
@@ -84,7 +102,7 @@ canvas {
 .hud-health-text { 
     position: absolute; 
     left: 15vmin; 
-    top: 2vmin; 
+    top: 2.6vmin; 
     font-size: 6vmin; 
     color: white; 
     z-index: 3; 
@@ -109,7 +127,7 @@ canvas {
 .hud-flags-text, .hud-rescued-text {
     position: absolute;
     right: 2%;
-    bottom: 10%;
+    bottom: 18%;
     color: white;
     font-size: 4vmin;
 }
@@ -191,4 +209,124 @@ canvas {
 
 .animate {
     transform: scale(1.2) !important;
+}
+
+/* ========================================================= */
+/* ===================== SCOREBOARD ======================== */
+/* ========================================================= */
+
+.scoreboard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.scoreboard-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hud-scoreboard {
+    position: relative;
+    width: 800px;
+    height: 500px;
+    background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
+    background-size: contain;
+    transform: scale(var(--sb-scale, 1));
+    transform-origin: center center;
+    transition: transform 0.1s ease-out;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-text-wrapper {
+    position: absolute;
+    top: 47%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 37px 70px;
+    text-align: center;
+    font-family: 'Pencilant';
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+.total-score {
+    position: absolute;
+    top: 75%;
+    left: 63%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 37px 70px;
+    text-align: center;
+    font-family: 'Pencilant';
+    font-size: 1.6rem;
+    color: #ffffff;
+}
+
+.rescued-score { grid-column: 1; grid-row: 1; }
+.deaths-score  { grid-column: 2; grid-row: 1; }
+.marked-score  { grid-column: 1; grid-row: 2; }
+.failed-score  { grid-column: 2; grid-row: 2; }
+.total-score   { grid-column: 1 / span 2; grid-row: 3; margin-top: 10px; font-size: 2rem; font-weight: bold; }
+
+/* Calificación (grade) */
+.grade {
+    position: absolute;
+    bottom: 13%;
+    right: 15%;
+    width: 90px;
+    height: auto;
+}
+
+/* Botones */
+.scoreboard-button-row {
+    position: absolute;
+    bottom: -13.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.continue-btn, .retry-btn, .home-btn {
+    width: 100px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.continue-btn:hover, .retry-btn:hover, .home-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+.continue-btn:active, .retry-btn:active, .home-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsive como punchcard */
+@media screen and (max-width: 1024px) {
+    .hud-scoreboard { transform: scale(0.8); }
+}
+@media screen and (max-width: 768px) {
+    .hud-scoreboard { transform: scale(0.65); }
+}
+@media screen and (max-width: 480px) {
+    .hud-scoreboard { transform: scale(0.5); }
 }
