@@ -16,6 +16,7 @@ export class GameManager {
         this.lastMoveTime = 0;
         this.MOVE_DELAY = 200;
         this.renderer = null;
+        this.lastResult = null;
     }
 
     setRenderer(renderer) {
@@ -25,7 +26,8 @@ export class GameManager {
 
     startGame() {
         this.gameInputLocked = false;
-    
+
+        this.currentLevel = this.config.level || 1;
         this.player = CharacterFactory.createCharacter(this.config.character);
         this.boardCtrl = new BoardController(this.player);
         this.charCtrl = new CharacterController(this.player, this.boardCtrl);
@@ -33,6 +35,7 @@ export class GameManager {
         this.configLevel(this.currentLevel);
     
         this.boardCtrl.updateVision(this.board, this.player);
+        this.boardCtrl.setGameManager(this);
     }
 
     configLevel() {
@@ -172,32 +175,24 @@ export class GameManager {
         }
     }
 
-        // ==================== VICTORY ====================
+        // ==================== GAME OVERS ====================
     handleVictory() {
         this.gameInputLocked = true;
-        this.gameOver = true;
-        
-        const mode = this.config.mode;
-        const score = this.player.getPoints();
-        
-        console.log(`VICTORY! Mode: ${mode}, Score: ${score}`);
-        
-        // this.showVictoryScreen();
-        // this.showScoreTable(score);
-        
-        if (mode === "legacy") {
-            this.handleLegacyVictory();
-        } else if (mode === "daily") {
-            this.handleDailyVictory(score);
-        } else if (mode === "custom") {
-            this.handleCustomVictory(score);
-        }
+        this.showScoreboard(true);
+        this.lastResult = "victory";
+    }
+
+    handleGameOver() {
+        this.gameInputLocked = true;
+        this.showScoreboard(false);
+        this.lastResult = "gameover";
     }
 
     handleLegacyVictory() {
         console.log(`Legacy: Next level ${this.currentLevel + 1}`);
         
         this.currentLevel++;
+        localStorage.setItem("legacy_level", this.currentLevel);
         
         const currentPoints = this.player.getPoints();
         const currentType = this.player.getType();
@@ -216,80 +211,31 @@ export class GameManager {
         console.log(`Level ${this.currentLevel} started`);
     }
 
+    handleLegacyLose() {
+        console.log(`Game over: Record ${this.currentLevel}`);
+        localStorage.removeItem("legacy_level"); // Borrar progreso
+        this.currentLevel = 1;
+    }
+
     handleDailyVictory(score) {
         console.log(`Daily complete! Score: ${score}`);
-        
+    
         const today = new Date().toDateString();
         localStorage.setItem(`daily_completed_${today}`, "true");
         localStorage.setItem(`daily_score_${today}`, score);
-        
-        console.log(`Daily locked`);
-        
-        this.returnToMenu();
-    }
-
-    handleCustomVictory(score) {
-        console.log(`Custom complete! Score: ${score}`);
-        this.returnToMenu();
-    }
-
-    // ==================== GAME OVER ====================
-    handleGameOver() {
-        this.gameInputLocked = true;
-        this.gameOver = true;
-        
-        const mode = this.config.mode;
-        const score = this.player.getPoints();
-        
-        console.log(`GAME OVER! Mode: ${mode}, Score: ${score}, Level: ${this.currentLevel}`);
-        
-        // this.showGameOverScreen();
-        // this.showScoreTable(score);
-        
-        if (mode === "legacy") {
-            this.handleLegacyLose();
-        } else if (mode === "daily") {
-            this.handleDailyLose(score);
-        } else if (mode === "custom") {
-            this.handleCustomLose(score);
-        }
-    }
-
-    handleLegacyLose() {
-        console.log(`Game over: Record ${this.currentLevel}`);
-        
-        this.currentLevel = 1;
-        this.startGame();
-        
-        console.log(`Restarting`);
-    }
     
+        console.log(`Daily locked`);
+    }
+
     handleDailyLose(score) {
         console.log(`Daily failed! Score: ${score}`);
-        
+    
         const today = new Date().toDateString();
         localStorage.setItem(`daily_completed_${today}`, "failed");
         localStorage.setItem(`daily_score_${today}`, score);
-        
-        console.log(`Daily locked`);
-        
-        this.returnToMenu();
-    }
     
-    handleCustomLose(score) {
-        console.log(`Custom failed! Score: ${score}`);
-        this.returnToMenu();
+        console.log(`Daily locked`);
     }
-
-    // ==================== UTILS ====================
-    returnToMenu() {
-        console.log(`Exit...`);
-        window.location.href = '../index.html';
-    }
-
-    // showVictoryScreen() { ... }
-    // showGameOverScreen() { ... }
-    // showScoreTable(score) { ... }
 
     // Flag system
     handleFlagDirection(direction) {
@@ -361,12 +307,173 @@ export class GameManager {
         }
     }
 
-    handleGameOver(){
-        console.log("You're cooked");
-    }
-
 
     getBoard() { return this.board; }
     getPlayer() { return this.player; }
     getZone() { return this.config.zone; }
+
+    // ==================== SCOREBOARD ====================
+
+    showScoreboard(isVictory) {
+        const overlay = document.getElementById("scoreboard-overlay");
+        if (!overlay) return;
+    
+        const scores = this.calculateScores();
+
+        document.getElementById("rescued-score").textContent = scores.rescuedDisplay;
+        document.getElementById("marked-score").textContent = scores.markedDisplay;
+        document.getElementById("deaths-score").textContent = scores.deaths;
+        document.getElementById("failed-score").textContent = scores.failed;
+        document.getElementById("total-score").textContent = scores.totalDisplay;
+    
+        const percentage = (scores.total / scores.maxTotal) * 100;
+        let gradeFile = "f.png";
+        if (percentage >= 100) gradeFile = "s.png";
+        else if (percentage >= 90) gradeFile = "a.png";
+        else if (percentage >= 80) gradeFile = "b.png";
+        else if (percentage >= 70) gradeFile = "c.png";
+        else if (percentage >= 60) gradeFile = "d.png";
+        else if (percentage >= 50) gradeFile = "e.png";
+    
+        document.getElementById("score-grade").src = `../assets/hud/game/gameover/${gradeFile}`;
+    
+        this.setupScoreboardButtons(isVictory);
+
+        if (this.config.mode === "legacy") {
+            if (!isVictory) {
+                this.handleLegacyLose();
+            }
+        } else if (this.config.mode === "daily") {
+            const totalPoints = scores.total;
+    
+            const today = new Date().toDateString();
+            localStorage.setItem(`daily_completed_${today}`, "true");
+            localStorage.setItem(`daily_score_${today}`, totalPoints);
+    
+            console.log(`Daily locked with score: ${totalPoints}`);
+        }
+        overlay.classList.add("active");
+        this.gameInputLocked = true;
+    }
+
+    calculateScores() {
+        const player = this.player;
+        const maxFlags = this.getMaxFlagsByCharacter(player.getType());
+    
+        // ===== RESCUED =====
+        const totalGoals = this.charCtrl.getTotalGoals();
+        const rescuedCount = player.getTotalRescued();
+        const rescuedPoints = rescuedCount * 500;
+        const maxRescuedPoints = totalGoals * 500;
+    
+        // ===== MARKED =====
+        let markedPoints = 0;
+        let maxMarkedPoints = 0;
+
+        let markedCount = 0;
+        for (let i = 0; i < this.board.length; i++) {
+            for (let j = 0; j < this.board.length; j++) {
+                if (this.board[i][j].isMarked()) markedCount++;
+            }
+        }
+
+        markedPoints = markedCount * 200;
+        maxMarkedPoints = maxFlags * 200;
+        
+        // ===== DEATHS =====
+        let deathsCount = 0;
+        const deathsPoints = -(deathsCount * 500);
+        const deathsDisplay = deathsPoints.toString();
+
+        // ===== FAILED =====
+        const failedFlags = this.player.getFailedFlags ? this.player.getFailedFlags() : 0;
+        const failedJumpFlags = this.player.getFailedJumpFlags ? this.player.getFailedJumpFlags() : 0;
+        const failedPoints = -((failedFlags * 200) + (failedJumpFlags * 50));
+        const failedDisplay = `- ${(failedFlags * 200) + (failedJumpFlags * 50)}`;
+
+        // ===== TOTAL =====
+        const totalPoints = rescuedPoints + markedPoints + deathsPoints + failedPoints;
+        const maxTotal = maxRescuedPoints + maxMarkedPoints;
+    
+        return {
+            rescued: rescuedPoints,
+            maxRescued: maxRescuedPoints,
+            rescuedDisplay: `${rescuedPoints}/${maxRescuedPoints}`,
+        
+            marked: markedPoints,
+            maxMarked: maxMarkedPoints,
+            markedDisplay: `${markedPoints}/${maxMarkedPoints}`,
+        
+            deaths: deathsDisplay,
+            failed: failedDisplay,
+        
+            total: totalPoints,
+            maxTotal: maxTotal,
+            totalDisplay: `${totalPoints}/${maxTotal}`
+        };
+    }
+
+    getMaxFlagsByCharacter(characterType) {
+        switch (characterType) {
+            case "chef": return 5;
+            case "mosquito": return 8;
+            case "mommy": return 1;
+            case "scout": return 0;
+            default: return 5;
+        }
+    }
+
+    setupScoreboardButtons(isVictory) {
+        const mode = this.config.mode;
+        const continueBtn = document.getElementById("score-continue");
+        const retryBtn = document.getElementById("score-retry");
+        const homeBtn = document.getElementById("score-home");
+    
+        continueBtn.style.display = "none";
+        retryBtn.style.display = "none";
+        homeBtn.style.display = "block";
+    
+        if (mode === "legacy") {
+            if (isVictory) {
+                continueBtn.style.display = "block";
+            }
+        } else if (mode === "daily") {
+        } else if (mode === "custom") {
+        retryBtn.style.display = "block";
+        }
+    
+        const newContinue = continueBtn.cloneNode(true);
+        const newRetry = retryBtn.cloneNode(true);
+        const newHome = homeBtn.cloneNode(true);
+        continueBtn.parentNode.replaceChild(newContinue, continueBtn);
+        retryBtn.parentNode.replaceChild(newRetry, retryBtn);
+        homeBtn.parentNode.replaceChild(newHome, homeBtn);
+    
+        newContinue.addEventListener("click", () => this.nextLevel());
+        newRetry.addEventListener("click", () => this.retryLevel());
+        newHome.addEventListener("click", () => this.returnToMenu());
+    }
+
+    nextLevel() {
+        if (this.config.mode === "legacy") {
+            this.handleLegacyVictory();
+            document.getElementById("scoreboard-overlay").classList.remove("active");
+        }
+    }
+
+    retryLevel() {
+        if (this.config.mode === "custom") {
+            this.startGame();
+        }
+        document.getElementById("scoreboard-overlay").classList.remove("active");
+    }
+
+    returnToMenu() {
+        if (this.config.mode === "legacy" && this.lastResult === "victory") {
+            this.currentLevel ++;
+            localStorage.setItem("legacy_level", this.currentLevel);
+            console.log(`Saving level on Home: ${this.currentLevel}`);
+        }
+        window.location.href = '../index.html';
+    }
 }
