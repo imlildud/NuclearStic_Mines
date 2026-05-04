@@ -55,7 +55,7 @@ export class Renderer {
     
         this.canvas.width = canvasSize;
         this.canvas.height = canvasSize;
-    
+        this.TILE_SIZE = Math.floor(this.canvas.width / 7);
         this.TILE_SIZE = Math.max(12, Math.min(100, this.TILE_SIZE));
     }
     
