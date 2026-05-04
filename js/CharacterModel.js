@@ -18,6 +18,9 @@ export class CharacterModel {
         this.alive = true;
         this.regen = false;
         this.rescued = 0;
+        this.totalRescued = 0;
+        this.failedFlags = 0;
+        this.failedJumpFlags = 0;
 
         // Who
         this.type = "none";
@@ -46,6 +49,16 @@ export class CharacterModel {
     setFlags(v) { this.flags = v; }
     incrementFlags() { this.flags++; }
     decrementFlags() { this.flags--; }
+
+    getFailedFlags() { return this.failedFlags; }
+    setFailedFlags(v) { this.failedFlags = v; }
+    incrementFailedFlags() { this.failedFlags++; }
+    resetFailedFlags() { this.failedFlags = 0; }
+
+    getFailedJumpFlags() { return this.failedJumpFlags; }
+    setFailedJumpFlags(v) { this.failedJumpFlags = v; }
+    incrementJumpFailedFlags() { this.failedJumpFlags++; }
+    resetJumpFailedFlags() { this.failedJumpFlags = 0; }
 
     // Inventory
     getInventorySize() { return this.inventory.length; }
@@ -93,6 +106,9 @@ export class CharacterModel {
     getRescued() { return this.rescued; }
     incrementRescue() { this.rescued++; }
     decrementRescue(v) { this.rescued -= v; }
+
+    getTotalRescued() { return this.totalRescued; }
+    incrementTotalRescued(v) { this.totalRescued += v; }
 
     // Who
     getType() { return this.type; }
