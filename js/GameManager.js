@@ -473,11 +473,16 @@ export class GameManager {
     updateScoreboardScale() {
         const scoreboard = document.querySelector('.hud-scoreboard');
         if (!scoreboard) return;
+
+        const targetWidth = 850; 
+        const targetHeight = 620;
+    
+        const scaleX = (window.innerWidth * 0.95) / targetWidth;
+        const scaleY = (window.innerHeight * 0.95) / targetHeight;
         
-        const scaleX = (window.innerWidth * 0.95) / 900;
-        const scaleY = (window.innerHeight * 0.95) / 600;
-        const finalScale = Math.min(scaleX, scaleY, 1.2);
-        
+        let finalScale = Math.min(scaleX, scaleY);
+        finalScale = Math.min(finalScale, 1.2);
+    
         scoreboard.style.setProperty('--sb-scale', finalScale);
     }
     

@@ -188,22 +188,22 @@ canvas {
 /* Movement and Flag Controls Containers */
 .touch-movement, .touch-flags {
     position: fixed;
-    bottom: 4vh;
+    bottom: 8vh;
     display: grid;
     grid-template-columns: repeat(3, 9vmin);
     grid-template-rows: repeat(2, 9vmin);
-    gap: 5vmin;
+    gap: 4vmin;
     z-index: 10005;
 }
 
 /* Control Positions */
-.touch-movement { left: 4vw; }
-.touch-flags    { right: 4vw; }
+.touch-movement { left: 3vw; }
+.touch-flags    { right: 3vw; }
 
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
-    width: 160%;
-    height: 160%;
+    width: 120%;
+    height: 120%;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s ease;
@@ -289,20 +289,18 @@ canvas {
 /* Scoreboard Main Panel - Responsive version */
 .hud-scoreboard {
     position: relative;
-    width: min(90vw, 800px);
-    height: auto;
-    aspect-ratio: 800 / 500;
+    width: 800px; 
+    height: 500px;
     background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
     background-size: contain;
+    transform: translate(0, 0) scale(var(--sb-scale, 1));
     transform-origin: center center;
-    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-/* Score Text Wrapper Container */
 .score-text-wrapper {
     position: absolute;
     top: 47%;
@@ -353,7 +351,7 @@ canvas {
 /* Scoreboard Action Buttons Row */
 .scoreboard-button-row {
     position: absolute;
-    bottom: -10.5%;
+    bottom: -5%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -379,108 +377,21 @@ canvas {
 }
 
 /* ========================================================= */
-/* ================ SCOREBOARD RESPONSIVE ================== */
+/* ============= SCOREBOARD PORTRAIT RESOLUTION ============ */
 /* ========================================================= */
 
-/* Tablet and smaller screens */
-@media screen and (max-width: 768px) {
-    .score-text-wrapper {
-        gap: 20px 40px;
-        font-size: 1.2rem;
-        top: 46%;
-    }
-    
-    .total-score {
-        font-size: 1.3rem;
-        top: 74%;
-    }
-    
-    .grade {
-        width: 70px;
-        bottom: 11%;
-        right: 12%;
-    }
-    
-    .continue-btn, .retry-btn, .home-btn {
-        width: 80px;
-    }
-}
+/* Portrait responsive */
+@media screen and (orientation: portrait) {
 
-/* Mobile portrait mode */
-@media screen and (max-width: 600px) {
-    .score-text-wrapper {
-        gap: 12px 25px;
-        font-size: 0.9rem;
-        top: 45%;
-        left: 58%;
-    }
-    
     .total-score {
-        font-size: 1rem;
-        top: 72%;
-        left: 60%;
+        top: 70%
     }
-    
+
     .grade {
-        width: 50px;
-        bottom: 10%;
-        right: 10%;
+        bottom: 18%
     }
-    
-    .continue-btn, .retry-btn, .home-btn {
-        width: 60px;
-    }
-    
+
     .scoreboard-button-row {
-        gap: 12px;
-        bottom: -8%;
-    }
-}
-
-/* Small phones (portrait) */
-@media screen and (max-width: 450px) {
-    .score-text-wrapper {
-        gap: 8px 15px;
-        font-size: 0.75rem;
-        top: 44%;
-        left: 57%;
-    }
-    
-    .total-score {
-        font-size: 0.85rem;
-        top: 71%;
-        left: 59%;
-    }
-    
-    .grade {
-        width: 40px;
-        bottom: 9%;
-        right: 9%;
-    }
-    
-    .continue-btn, .retry-btn, .home-btn {
-        width: 50px;
-    }
-}
-
-/* Extra small devices */
-@media screen and (max-width: 380px) {
-    .score-text-wrapper {
-        gap: 5px 12px;
-        font-size: 0.65rem;
-        top: 43%;
-        left: 56%;
-    }
-    
-    .total-score {
-        font-size: 0.75rem;
-        top: 70%;
-        left: 58%;
-    }
-    
-    .grade {
-        width: 35px;
-        bottom: 8%;
-        right: 8%;
+        bottom: 2%
     }
 }
