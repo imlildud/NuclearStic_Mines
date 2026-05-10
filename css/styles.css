@@ -61,7 +61,7 @@ body {
     box-sizing: border-box;
 }
 
-/* ==================== CORNER LOGO ==================== */
+/* ==================== CORNER LOGO / Version ==================== */
 
 /* CloudToons Corner Logo */
 .cloud {
@@ -70,6 +70,17 @@ body {
     left: 3vmin;
     width: 15vmin; /* Scales with screen */
     z-index: 2;
+}
+
+.version {
+    position: fixed;
+    bottom: 3vmin;
+    right: 3vmin;
+    width: 15vmin; /* Scales with screen */
+    z-index: 2;
+    font-size: 6vmin;
+    color: white;
+    opacity: 60%;
 }
 
 /* ==================== HEADER SECTION ==================== */
@@ -158,10 +169,16 @@ body {
 }
 
 /* Diary Button Background */
-.diary-button { background-image: url('../assets/hud/menu/diary.png'); }
+.diary-button { 
+    background-image: url('../assets/hud/menu/diary.png'); 
+    display: none;
+}
 
 /* Options Button Background */
-.option-button { background-image: url('../assets/hud/menu/options.png'); }
+.option-button { 
+    background-image: url('../assets/hud/menu/options.png');
+    display: none; 
+}
 
 /* ==================== GLOBAL BUTTON EFFECTS ==================== */
 
