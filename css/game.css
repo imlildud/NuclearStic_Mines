@@ -188,17 +188,17 @@ canvas {
 /* Movement and Flag Controls Containers */
 .touch-movement, .touch-flags {
     position: fixed;
-    bottom: 4vh;
+    bottom: 8vh;
     display: grid;
     grid-template-columns: repeat(3, 9vmin);
     grid-template-rows: repeat(2, 9vmin);
-    gap: 1vmin;
+    gap: 4vmin;
     z-index: 10005;
 }
 
 /* Control Positions */
-.touch-movement { left: 4vw; }
-.touch-flags    { right: 4vw; }
+.touch-movement { left: 3vw; }
+.touch-flags    { right: 3vw; }
 
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
@@ -286,24 +286,21 @@ canvas {
     visibility: visible;
 }
 
-/* Scoreboard Main Panel */
+/* Scoreboard Main Panel - Responsive version */
 .hud-scoreboard {
     position: relative;
-    width: 800px;
+    width: 800px; 
     height: 500px;
     background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
     background-size: contain;
-    transform: scale(var(--sb-scale, 1));
+    transform: translate(0, 0) scale(var(--sb-scale, 1));
     transform-origin: center center;
-    transition: transform 0.1s ease-out;
-    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-/* Score Text Wrapper Container */
 .score-text-wrapper {
     position: absolute;
     top: 47%;
@@ -354,7 +351,7 @@ canvas {
 /* Scoreboard Action Buttons Row */
 .scoreboard-button-row {
     position: absolute;
-    bottom: -10.5%;
+    bottom: -5%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -377,4 +374,24 @@ canvas {
 /* Button Active Effect */
 .continue-btn:active, .retry-btn:active, .home-btn:active {
     transform: scale(0.95);
+}
+
+/* ========================================================= */
+/* ============= SCOREBOARD PORTRAIT RESOLUTION ============ */
+/* ========================================================= */
+
+/* Portrait responsive */
+@media screen and (orientation: portrait) {
+
+    .total-score {
+        top: 70%
+    }
+
+    .grade {
+        bottom: 18%
+    }
+
+    .scoreboard-button-row {
+        bottom: 2%
+    }
 }
