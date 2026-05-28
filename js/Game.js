@@ -308,20 +308,23 @@ function updateCurrentTile() {
     const obstacleType = tile.getObstacletype();
     const hazardCount = tile.getHazardcount();
     const goalType = tile.getGoaltype();
+    const pipe = tile.isSmoke();
 
     // Priority: hazard > obstacle > hazard count > goal > start
-    if (hazardType !== "none") {
-        textureName = hazardType;
-    } else if (obstacleType !== "none") {
-        textureName = obstacleType;
-    } else if (hazardCount > 0) {
-        textureName = hazardCount.toString();
-    } else if (goalType !== "none") {
-        textureName = goalType;
-    } else if (tile.isStart()) {
-        textureName = "start";
-    } else {
-        textureName = null;
+    if (!pipe){
+        if (hazardType !== "none") {
+            textureName = hazardType;
+        } else if (obstacleType !== "none") {
+            textureName = obstacleType;
+        } else if (hazardCount > 0) {
+            textureName = hazardCount.toString();
+        } else if (goalType !== "none") {
+            textureName = goalType;
+        } else if (tile.isStart()) {
+            textureName = "start";
+        } else {
+            textureName = null;
+        }
     }
 
     // Load appropriate sprite based on zone for obstacles
