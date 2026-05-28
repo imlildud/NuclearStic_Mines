@@ -627,7 +627,7 @@ export class GameManager {
             case 8: return 100;
             case 12: return 150;
             case 20: return 200;
-            case 30: return 250;
+            case 30: return 300;
             default: return 20;
         }
     }
