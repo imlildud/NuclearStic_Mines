@@ -288,16 +288,15 @@ canvas {
 /* Scoreboard Main Panel - Responsive version */
 .hud-scoreboard {
     position: relative;
-    width: 560px; 
-    height: 560px;
+    width: min(95vmin, 560px); 
+    height: min(95vmin, 560px);
     background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
     background-size: contain;
-    transform: scale(var(--sb-scale, 1));
-    transform-origin: center center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    container-type: inline-size;
 }
 
 /* Score Containers */
@@ -317,11 +316,13 @@ canvas {
 
 .scoreboard-labels,
 .scoreboard-values {
+    position: absolute;
+    top: 48%;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 3.2cqi;
     font-family: 'Pencilant';
-    font-size: 1.4rem;
+    font-size: 4.5cqi;
     color: white;
 }
 
@@ -332,11 +333,11 @@ canvas {
 /* Total Score Display */
 .total-score {
     position: absolute;
-    bottom: 18%;
+    bottom: 14%;
     left: 50%;
     transform: translateX(-50%);
     font-family: 'Pencilant';
-    font-size: 1.8rem;
+    font-size: 6cqi;
     color: white;
     text-align: center;
     white-space: nowrap;
@@ -345,25 +346,25 @@ canvas {
 /* Grade / Rank Image */
 .grade {
     position: absolute;
-    bottom: 15%;
-    right: 35%;
-    width: 80px;
+    bottom: 10%;
+    right: 10%;
+    width: 14cqi;
     height: auto;
 }
 
 /* Scoreboard Action Buttons Row */
 .scoreboard-button-row {
     position: absolute;
-    bottom: 3%;
+    bottom: 0%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 20px;
+    gap: 3.5cqi;
 }
 
 /* Individual Button Styles */
 .continue-btn, .retry-btn, .home-btn {
-    width: 80px;
+    width: 14cqi;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
