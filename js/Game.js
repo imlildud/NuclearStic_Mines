@@ -482,12 +482,3 @@ document.querySelectorAll('.flag-btn').forEach(btn => {
         if (dir) game.handleFlagDirection(dir);
     });
 });
-
-// ==============================================================
-// ======================== UI HELPERS ==========================
-// ==============================================================
-
-// Updates scoreboard scale based on window size (responsive)
-window.addEventListener("resize", () => {
-    if (game) game.updateScoreboardScale();
-});
