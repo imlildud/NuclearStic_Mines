@@ -4,9 +4,9 @@
 // Core game logic controller. Manages game state, level progression,
 // input handling, victory/defeat conditions, and scoreboard display.
 
-import { CharacterFactory } from "./CharacterFactory.js";
-import { BoardController } from "./BoardController.js";
-import { CharacterController } from "./CharacterController.js";
+import { CharacterFactory } from "../factory/CharacterFactory.js";
+import { BoardController } from "../controllers/BoardController.js";
+import { CharacterController } from "../controllers/CharacterController.js";
 
 export class GameManager {
     
