@@ -16,8 +16,8 @@ export class BoardController {
     }
     
     // ======================= DIFFICULTY LOADERS =======================
-    // Calculate board size based on difficulty level
     
+    // Calculate board size based on difficulty level
     loadDifficulty(level) {
         const startSize = 8;
         const step = 4;
@@ -51,17 +51,18 @@ export class BoardController {
         const goals = startGoals + Math.floor(step * (level / 5));
         return goals;
     }
-    
-    // Randomly select zone type based on difficulty
+
+    // Select zone type based on difficulty level
     loadTypeOfZone(level) {
-        const zoneMap = {
-            1: "desert",
-            2: "snow",
-            3: "ash"
-        };
+        const lvl = Math.floor(Number(level));
     
-        const randomZone = Math.floor(Math.random() * 3) + 1;
-        return zoneMap[randomZone];
+        if (lvl <= 9) {
+            return "desert";
+        } else if (lvl <= 19) {
+            return "snow";
+        } else {
+            return "ash";
+        }
     }
     
     // ======================= BOARD GENERATION =======================
@@ -318,8 +319,8 @@ export class BoardController {
             // Obstacle types with weights and minimum level requirements
             const obstacleTypes = [
                 { type: "natural", weight: 0.45, minLevel: 3 },
-                { type: "pit", weight: 0.35, minLevel: 5 },
-                { type: "river", weight: 0.15, minLevel: 10 }
+                { type: "river", weight: 0.35, minLevel: 5 },
+                { type: "pit", weight: 0.15, minLevel: 10 }
             ];
             
             // Filter by current level
@@ -374,9 +375,10 @@ export class BoardController {
         const hazardTypes = [
             { type: "mine", weight: 0.3, minLevel: 0 },
             { type: "cactus", weight: 0.3, minLevel: 0 },
-            { type: "radioactive", weight: 0.2, minLevel: 5 },
-            { type: "deadbush", weight: 0.3, minLevel: 9999 },      // Level 8
-            { type: "spiderMine", weight: 0.15, minLevel: 9999 },   // Level 12
+            { type: "pipe", weight: 0.15, minLevel: 5},
+            { type: "radioactive", weight: 0.2, minLevel: 8 },
+            { type: "deadbush", weight: 0.3, minLevel: 9999 },      // Level 3
+            { type: "spiderMine", weight: 0.15, minLevel: 9999 },   // Level 10
             { type: "bandit", weight: 0.05, minLevel: 9999 },       // Level 15
             { type: "liberal", weight: 0.1, minLevel: 9999 },       // Level 15
             { type: "sandsnake", weight: 0.03, minLevel: 9999 },    // Level 20
@@ -428,6 +430,11 @@ export class BoardController {
                     tile.setHazardlive(true);
                 }
                 
+                // Apply smoke radius for pipe
+                if (chosenType === "pipe") {
+                    this.applyRadius(tile, board, x, y, "setSmoke");
+                }
+
                 // Apply damage radius for radioactive
                 if (chosenType === "radioactive") {
                     this.applyRadius(tile, board, x, y, "setDamageratio");
@@ -455,7 +462,7 @@ export class BoardController {
         const boardSize = board.length;
         const directions = [
             [-1, 0], [1, 0], [0, -1], [0, 1],
-            [-1, 1], [-1, -1], [1, 1], [1, -1]
+            [-1, 1], [-1, -1], [1, 1], [1, -1], [0, 0]
         ];
         
         for (const [dx, dy] of directions) {

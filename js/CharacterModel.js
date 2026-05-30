@@ -25,6 +25,7 @@ export class CharacterModel {
         // ========== STATUS TRACKING ==========
         this.points = 0;            // Total score points
         this.alive = true;          // Alive status flag
+        this.damageTaken = 0;       // Damage tracker
         this.regen = false;         // Health regeneration flag
         this.rescued = 0;           // Currently rescued count (current mission)
         this.totalRescued = 0;      // Total rescued across all missions
@@ -123,6 +124,12 @@ export class CharacterModel {
     
     isAlive() { return this.alive; }
     setAlive(v) { this.alive = v; }
+
+    // ========================= DAMAGE TRACKER ============================
+    
+    getDamageTaken() { return this.damageTaken; }
+    incrementDamageTaken(v) { this.damageTaken += v; }
+    resetDamageTaken() { this.damageTaken = 0; }
     
     // ======================= REGENERATION GETTERS & SETTERS =======================
     

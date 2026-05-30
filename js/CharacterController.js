@@ -68,6 +68,7 @@ export class CharacterController {
         
         // ===== OBSTACLE HANDLING =====
         const obst = targetTile.getObstacletype();
+        const pipe = targetTile.getHazardtype() === "pipe";
         
         switch (obst) {
             case "natural":
@@ -99,6 +100,15 @@ export class CharacterController {
                         this.character.setHp(0);
                         this.killCharacter();
                     }
+                }
+                return;
+        }
+
+        // ===== OBSTACLE HANDLING =====
+        if (pipe){
+            if (this.character.getAbilityId() === 4) {
+                    this.character.setPosX(newX);
+                    this.character.setPosY(newY);
                 }
                 return;
         }
@@ -246,12 +256,14 @@ export class CharacterController {
     // Apply damage to character
     hurtCharacter() {
         this.character.decrementHp(1);
+        this.character.incrementDamageTaken(1); 
         if (this.character.getHp() <= 0) this.killCharacter();
     }
     
     // Kill character and trigger game over
     killCharacter() {
         this.character.setAlive(false);
+        this.character.incrementDamageTaken(10); 
         if (this.boardController && this.boardController.gameManager) {
             this.boardController.gameManager.handleGameOver();
         }

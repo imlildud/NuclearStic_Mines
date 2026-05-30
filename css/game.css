@@ -192,7 +192,7 @@ canvas {
     display: grid;
     grid-template-columns: repeat(3, 9vmin);
     grid-template-rows: repeat(2, 9vmin);
-    gap: 4vmin;
+    gap: 2.5vmin;
     z-index: 10005;
 }
 
@@ -202,8 +202,8 @@ canvas {
 
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
-    width: 120%;
-    height: 120%;
+    width: 130%;
+    height: 130%;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s ease;
@@ -280,7 +280,6 @@ canvas {
     transition: opacity 0.3s ease, visibility 0.3s;
 }
 
-/* Active State for Scoreboard */
 .scoreboard-overlay.active {
     opacity: 1;
     visibility: visible;
@@ -289,109 +288,92 @@ canvas {
 /* Scoreboard Main Panel - Responsive version */
 .hud-scoreboard {
     position: relative;
-    width: 800px; 
-    height: 500px;
+    width: min(95vmin, 560px); 
+    height: min(95vmin, 560px);
     background: url('../assets/hud/game/gameover/scoreboard.png') no-repeat center center;
     background-size: contain;
-    transform: translate(0, 0) scale(var(--sb-scale, 1));
-    transform-origin: center center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    container-type: inline-size;
 }
 
-.score-text-wrapper {
+/* Score Containers */
+.scoreboard-labels {
     position: absolute;
-    top: 47%;
-    left: 60%;
+    top: 48%;
+    left: 33%;
     transform: translate(-50%, -50%);
-    width: 60%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 37px 70px;
-    text-align: center;
+}
+
+.scoreboard-values {
+    position: absolute;
+    top: 48%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+}
+
+.scoreboard-labels,
+.scoreboard-values {
+    position: absolute;
+    top: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 3.2cqi;
     font-family: 'Pencilant';
-    font-size: 1.6rem;
-    color: #ffffff;
+    font-size: 4.5cqi;
+    color: white;
+}
+
+.label-row {
+    white-space: nowrap;
 }
 
 /* Total Score Display */
 .total-score {
     position: absolute;
-    top: 75%;
-    left: 63%;
-    transform: translate(-50%, -50%);
-    width: 60%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 37px 70px;
-    text-align: center;
+    bottom: 14%;
+    left: 50%;
+    transform: translateX(-50%);
     font-family: 'Pencilant';
-    font-size: 1.6rem;
-    color: #ffffff;
+    font-size: 6cqi;
+    color: white;
+    text-align: center;
+    white-space: nowrap;
 }
-
-/* Score Items Grid Positions */
-.rescued-score { grid-column: 1; grid-row: 1; }
-.deaths-score  { grid-column: 2; grid-row: 1; }
-.marked-score  { grid-column: 1; grid-row: 2; }
-.failed-score  { grid-column: 2; grid-row: 2; }
-.total-score   { grid-column: 1 / span 2; grid-row: 3; margin-top: 10px; font-size: 2rem; font-weight: bold; }
 
 /* Grade / Rank Image */
 .grade {
     position: absolute;
-    bottom: 13%;
-    right: 15%;
-    width: 90px;
+    bottom: 10%;
+    right: 10%;
+    width: 14cqi;
     height: auto;
 }
 
 /* Scoreboard Action Buttons Row */
 .scoreboard-button-row {
     position: absolute;
-    bottom: -5%;
+    bottom: 0%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 20px;
+    gap: 3.5cqi;
 }
 
 /* Individual Button Styles */
 .continue-btn, .retry-btn, .home-btn {
-    width: 100px;
+    width: 14cqi;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
-/* Button Hover Effect */
 .continue-btn:hover, .retry-btn:hover, .home-btn:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
 }
 
-/* Button Active Effect */
 .continue-btn:active, .retry-btn:active, .home-btn:active {
     transform: scale(0.95);
-}
-
-/* ========================================================= */
-/* ============= SCOREBOARD PORTRAIT RESOLUTION ============ */
-/* ========================================================= */
-
-/* Portrait responsive */
-@media screen and (orientation: portrait) {
-
-    .total-score {
-        top: 70%
-    }
-
-    .grade {
-        bottom: 18%
-    }
-
-    .scoreboard-button-row {
-        bottom: 2%
-    }
 }
