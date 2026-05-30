@@ -4,7 +4,7 @@
 // Factory pattern implementation for creating character instances
 // with predefined stats based on character type
 
-import { CharacterModel } from "./CharacterModel.js";
+import { CharacterModel } from "../models/CharacterModel.js";
 
 export class CharacterFactory {
     

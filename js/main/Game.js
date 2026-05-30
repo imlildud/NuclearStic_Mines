@@ -5,8 +5,8 @@
 // saved by the menu (index.html). It sets the background according to
 // the selected zone and prepares the canvas for future game logic.
 
-import { GameManager } from "./GameManager.js";
-import { Renderer } from "./Renderer.js";
+import { GameManager } from "../managers/GameManager.js";
+import { Renderer } from "../views/Renderer.js";
 
 // ==============================================================
 // ======================== SFX SYSTEM ==========================

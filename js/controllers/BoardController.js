@@ -4,7 +4,7 @@
 // Handles board generation, hazard placement, vision system,
 // and all grid-related game logic
 
-import { TileModel } from "./TileModel.js";
+import { TileModel } from "../models/TileModel.js";
 
 export class BoardController {
     
