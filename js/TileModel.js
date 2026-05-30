@@ -32,6 +32,7 @@ export class TileModel {
         
         // ========== HAZARD PROPERTIES ==========
         this.hazardcount = 0;           // Number of hazards adjacent to the tile
+        this.smoke = false;             // Flag for smoke presence
         this.damageratio = false;       // Flag for damage radius presence
         this.detectionratio = false;    // Flag for detection radius presence
         this.hazardtype = "none";       // Type of hazard on the tile
@@ -92,6 +93,12 @@ export class TileModel {
     getHazardcount() { return this.hazardcount; }
     incrementHazardcount() { this.hazardcount++; }
     setHazardcount(v) { this.hazardcount = v; }
+
+    // ======================= SMOKE GETTERS & SETTERS =======================
+    
+    isSmoke() { return this.smoke; }
+    setSmoke(v) { this.smoke = v; }
+    
     
     // ======================= DAMAGE RATIO GETTERS & SETTERS =======================
     

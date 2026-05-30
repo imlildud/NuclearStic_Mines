@@ -114,16 +114,23 @@
     <!-- ====================================================== -->
 
     <div id="scoreboard-overlay" class="scoreboard-overlay">
-
-        <!-- Scoreboard Main Container -->
         <div class="hud-scoreboard">
+            <div class="scoreboard-labels">
+                <div class="label-row">Rescued</div>
+                <div class="label-row">Marked Hazard</div>
+                <div class="label-row">Difficulty Bonus</div>
+                <div class="label-row">Deaths Penalty</div>
+                <div class="label-row">Failed Penalty</div>
+                <div class="label-row">Damage Penalty</div>
+            </div>
 
-            <!-- Statistics Text Wrapper -->
-            <div class="score-text-wrapper">
-                <div id="rescued-score" class="rescued-score">0/0</div>
-                <div id="marked-score" class="marked-score">0/0</div>
-                <div id="deaths-score" class="deaths-score">0/0</div>
-                <div id="failed-score" class="failed-score">0/0</div>
+            <div class="scoreboard-values">
+                <div class="value-row" id="rescued-score">0/0</div>
+                <div class="value-row" id="marked-score">0/0</div>
+                <div class="value-row" id="size-score">0</div>
+                <div class="value-row" id="deaths-score">0</div>
+                <div class="value-row" id="failed-score">0</div>
+                <div class="value-row" id="hurt-score">0</div>
             </div>
 
             <!-- Total Score Display -->
@@ -138,10 +145,7 @@
                 <img id="score-retry" class="retry-btn" src="../assets/hud/game/gameover/retry.png" alt="retry">
                 <img id="score-home" class="home-btn" src="../assets/hud/game/gameover/home.png" alt="home">
             </div>
-
         </div>
-
     </div>
-
 </body>
 </html>

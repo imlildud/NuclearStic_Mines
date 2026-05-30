@@ -415,6 +415,8 @@ export class GameManager {
             maxRescued: scores.maxRescued,
             marked: scores.marked,
             maxMarked: scores.maxMarked,
+            size: scores.size,
+            hurt: scores.hurt, 
             deaths: parseInt(scores.deaths) || 0,
             failed: parseInt(scores.failed.replace(/[^0-9-]/g, '')) || 0,
             total: scores.total,
@@ -427,8 +429,10 @@ export class GameManager {
         // Set initial score displays
         document.getElementById("rescued-score").textContent = scores.rescuedDisplay;
         document.getElementById("marked-score").textContent = scores.markedDisplay;
+        document.getElementById("size-score").textContent = scores.sizeDisplay;
         document.getElementById("deaths-score").textContent = scores.deaths;
         document.getElementById("failed-score").textContent = scores.failed;
+        document.getElementById("hurt-score").textContent = scores.hurt;
         document.getElementById("total-score").textContent = scores.totalDisplay;
         
         // Determine grade based on percentage
@@ -493,8 +497,10 @@ export class GameManager {
         const elements = [
             { id: "rescued-score", finalValue: `${this.finalScores.rescued}/${this.finalScores.maxRescued}`, type: "fraction", animateTransform: true },
             { id: "marked-score", finalValue: `${this.finalScores.marked}/${this.finalScores.maxMarked}`, type: "fraction", animateTransform: true },
+            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "number", animateTransform: true },
             { id: "deaths-score", finalValue: this.finalScores.deaths.toString(), type: "number", animateTransform: true },
             { id: "failed-score", finalValue: this.finalScores.failed.toString(), type: "number", animateTransform: true },
+            { id: "hurt-score", finalValue: this.finalScores.hurt.toString(), type: "number", animateTransform: true },
             { id: "total-score", finalValue: `${this.finalScores.total}/${this.finalScores.maxTotal}`, type: "fraction", animateTransform: false }
         ];
         
@@ -600,11 +606,71 @@ export class GameManager {
             requestAnimationFrame(animate);
         }
     }
+
+    // Calculate bonus based on grid size
+    getSizeBonus(size) {
+        switch(size) {
+            case 8: return 10;
+            case 12: return 30;
+            case 16: return 50;
+            case 20: return 80;
+            case 24: return 100;
+            default: return 10;
+        }
+    }
+
+    // Calculate bonus based on hazards amount
+    getHazardsBonus(hazards) {
+        switch(hazards) {
+            case 1: return 20;
+            case 5: return 50;
+            case 8: return 100;
+            case 12: return 150;
+            case 20: return 200;
+            case 30: return 300;
+            default: return 20;
+        }
+    }
+
+    // Calculate bonus based on obstacles amount
+    getObstaclesBonus(obstacles) {
+        switch(obstacles) {
+            case 1: return 0;
+            case 3: return 20;
+            case 5: return 40;
+            case 10: return 60;
+            case 15: return 80;
+            case 30: return 100;
+            default: return 0;
+        }
+    }
+
+    // Calculate total difficulty bonus (size + hazards + obstacles)
+    getDifficultyBonus() {
+        let size, hazards, obstacles;
+
+        if (this.config.mode === "legacy") {
+            size = this.boardCtrl.loadDifficulty(this.currentLevel);
+            hazards = this.currentLevel;
+            obstacles = this.currentLevel;
+        } else {
+            size = this.config.size;
+            hazards = this.config.hazards;
+            obstacles = this.config.obstacles;
+        }
+
+        const sizeBonus = this.getSizeBonus(size);
+        const hazardsBonus = this.getHazardsBonus(hazards);
+        const obstaclesBonus = this.getObstaclesBonus(obstacles);
+
+        return sizeBonus + hazardsBonus + obstaclesBonus;
+    }
     
     // Calculate all score components
     calculateScores() {
         const player = this.player;
         const maxFlags = this.getMaxFlagsByCharacter(player.getType());
+        const size = this.board.length;
         
         // ===== RESCUED SCORE =====
         const totalGoals = this.charCtrl.getTotalGoals();
@@ -625,6 +691,9 @@ export class GameManager {
         
         markedPoints = markedCount * 200;
         maxMarkedPoints = maxFlags * 200;
+
+        // ===== DIFFICULTY BONUS (Size + Hazards + Obstacles) =====
+        const difficultyBonus = this.getDifficultyBonus();
         
         // ===== DEATHS PENALTY =====
         let deathsCount = 0;
@@ -636,10 +705,15 @@ export class GameManager {
         const failedJumpFlags = this.player.getFailedJumpFlags ? this.player.getFailedJumpFlags() : 0;
         const failedPoints = -((failedFlags * 200) + (failedJumpFlags * 100));
         const failedDisplay = `- ${(failedFlags * 200) + (failedJumpFlags * 100)}`;
+
+        // ===== HURT PENALTY =====
+        const hurtCount = player.getDamageTaken ? player.getDamageTaken() : 0;
+        const hurtPoints = -(hurtCount * 100);
+        const hurtDisplay = hurtPoints.toString();
         
         // ===== TOTAL SCORE =====
-        const totalPoints = rescuedPoints + markedPoints + deathsPoints + failedPoints;
-        const maxTotal = maxRescuedPoints + maxMarkedPoints;
+        const totalPoints = rescuedPoints + markedPoints + difficultyBonus + deathsPoints + failedPoints + hurtPoints;
+        const maxTotal = maxRescuedPoints + maxMarkedPoints + difficultyBonus;
         
         return {
             rescued: rescuedPoints,
@@ -649,9 +723,13 @@ export class GameManager {
             marked: markedPoints,
             maxMarked: maxMarkedPoints,
             markedDisplay: `${markedPoints}/${maxMarkedPoints}`,
+
+            size: difficultyBonus,
+            sizeDisplay: difficultyBonus.toString(),
             
             deaths: deathsDisplay,
             failed: failedDisplay,
+            hurt: hurtDisplay,
             
             total: totalPoints,
             maxTotal: maxTotal,

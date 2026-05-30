@@ -105,12 +105,14 @@ export class Renderer {
         const globalTextures = [
             "start",         // Start tile
             "mine",          // Mine hazard
+            "pipe",          // Pipe hazard
             "radioactive",   // Radioactive hazard
             "cactus",        // Cactus hazard
             "flagged",       // Flag marker
             "jumpflag",      // Jump flag (Scout ability)
             "marked",        // Marked hazard (Chef ability)
             "toxic",         // Damage radius indicator
+            "smoke",         // Smoke radius
             "1","2","3","4","5","6","7","8","9"  // Hazard count numbers
         ];
         
@@ -264,7 +266,7 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
-                if (tile.isMarked()) {
+                if (tile.isMarked() && !tile.isSmoke()) {
                     const flagHeight = spriteSize * 1.3;
                     this.safeDraw(
                         "marked",
@@ -272,7 +274,7 @@ export class Renderer {
                         drawY - offsetY - (flagHeight - spriteSize),
                         spriteSize
                     );
-                } else if (tile.isFlagged()) {
+                } else if (tile.isFlagged() && !tile.isSmoke()) {
                     const flagHeight = spriteSize * 1.3;
                     this.safeDraw(
                         "flagged",
@@ -280,7 +282,7 @@ export class Renderer {
                         drawY - offsetY - (flagHeight - spriteSize),
                         spriteSize
                     );
-                } else if (tile.isJumpflagged()) {
+                } else if (tile.isJumpflagged() && !tile.isSmoke()) {
                     const flagHeight = spriteSize * 1.3;
                     this.safeDraw(
                         "jumpflag",
@@ -302,7 +304,7 @@ export class Renderer {
                 
                 // ===== LAYER 7.5: GOALS (Children to rescue) =====
                 const goalType = tile.getGoaltype();
-                if (goalType !== "none") {
+                if (goalType !== "none" && !tile.isSmoke()) {
                     // Joni is only visible when tile is revealed
                     const shouldDraw = (goalType !== "joni") || (goalType === "joni" && !tile.isHide());
                     if (shouldDraw) {
@@ -317,7 +319,7 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 8: PLAYER CHARACTER =====
-                if (player.getPosX() === x && player.getPosY() === y) {
+                if (player.getPosX() === x && player.getPosY() === y && !tile.isSmoke()) {
                     const playerHeight = spriteSize * 1.2;
                     const img = this.images[player.getType()];
                     
@@ -383,6 +385,16 @@ export class Renderer {
                             ctx.drawImage(img, drawPlayerX, drawPlayerY, spriteSize, spriteSize);
                         }
                     }
+                }
+
+                // ===== LAYER 9: SMOKE =====
+                if (tile.isSmoke()) {
+                    this.safeDraw(
+                        "smoke",
+                        drawX - offsetX,
+                        drawY - offsetY,
+                        spriteSize
+                    );
                 }
             }
         }
