@@ -120,7 +120,7 @@ let musicStarted = false;
 
 // Load menu music file
 function loadMenuMusic() {
-    menuMusic = new Audio("../assets/audio/music/menu.mp3");
+    menuMusic = new Audio("../../assets/audio/music/menu.mp3");
     menuMusic.loop = true;
     menuMusic.volume = 0.5;
     menuMusic.load(); // Preload
@@ -156,7 +156,7 @@ window.addEventListener("touchstart", startMusicOnce);
 
 // Play grade reveal sound effect
 function playMenuGradeSFX() {
-    const audio = new Audio("../assets/audio/sfx/grade.mp3");
+    const audio = new Audio("../../assets/audio/sfx/grade.mp3");
     audio.volume = 0.5;
     audio.play().catch(e => console.log("SFX failed:", e));
 }
@@ -452,6 +452,7 @@ function getGoalsTexture(value) {
 
 // Returns zone texture based on biome type
 function getZoneTexture(value) {
+    if (value === "backyard") return "assets/hud/punchcard/zone/backyard.png"; 
     if (value === "desert") return "assets/hud/punchcard/zone/desert.png";
     if (value === "snow") return "assets/hud/punchcard/zone/snow.png";
     if (value === "ash") return "assets/hud/punchcard/zone/ash.png";
