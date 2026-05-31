@@ -84,9 +84,9 @@ export class Renderer {
     
     // Load all game sprites (biome, global, and character textures)
     loadImages() {
-        const biomePath = `../assets/sprites/tiles/${this.zone}`;
-        const globalPath = `../assets/sprites/tiles`;
-        const charPath = `../assets/sprites/characters`;
+        const biomePath = `../../assets/sprites/tiles/${this.zone}`;
+        const globalPath = `../../assets/sprites/tiles`;
+        const charPath = `../../assets/sprites/characters`;
         
         // Biome-specific textures (desert/snow/ash)
         const biomeTextures = [
@@ -98,6 +98,7 @@ export class Renderer {
             "hide",          // Hidden tile cover
             "natural",       // Natural obstacle
             "pit",           // Pit obstacle
+            "safepit",       // Pit without death
             "river"          // River obstacle
         ];
         
@@ -109,6 +110,7 @@ export class Renderer {
             "radioactive",   // Radioactive hazard
             "cactus",        // Cactus hazard
             "flagged",       // Flag marker
+            "flaggoal",      // Goal
             "jumpflag",      // Jump flag (Scout ability)
             "marked",        // Marked hazard (Chef ability)
             "toxic",         // Damage radius indicator
@@ -122,6 +124,8 @@ export class Renderer {
             "mosquito",      // Mosquito character
             "mommy",         // Mommy character
             "scout",         // Scout character
+            "student",       // Tutorial character
+            "dummie",        // Tutorial goal
             "charlie",       // Goal type
             "joni",          // Hidden goal type
             "ru"             // Goal type
@@ -316,6 +320,16 @@ export class Renderer {
                             spriteSize
                         );
                     }
+                }
+
+                // ===== LAYER 7.6: FLAGGOAL ====
+                if (tile.isFlaggoal()){
+                    this.safeDraw(
+                        "flaggoal",
+                        drawX - offsetX,
+                        drawY - offsetY,
+                        spriteSize
+                    )
                 }
                 
                 // ===== LAYER 8: PLAYER CHARACTER =====
