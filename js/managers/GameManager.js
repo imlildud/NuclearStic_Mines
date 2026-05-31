@@ -36,7 +36,7 @@ export class GameManager {
     // Play sound effect (optional loop)
     playSFX(soundFile, loop = false) {
         if (!this.sfxEnabled) return;
-        const audio = new Audio(`../assets/audio/sfx/${soundFile}`);
+        const audio = new Audio(`../../assets/audio/sfx/${soundFile}`);
         audio.loop = loop;
         audio.volume = 0.3;
         audio.play().catch(e => console.log("SFX failed:", soundFile, e));
