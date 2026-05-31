@@ -4,6 +4,9 @@
 // Main menu controller. Handles mode selection (Legacy/Daily/Custom),
 // punchcard configuration, music/sfx, and game launch.
 
+import { SaveManager } from "../managers/SaveManager.js";
+import { AudioManager } from "../managers/AudioManager.js";
+
 // ==============================================================
 // ====================== GLOBAL STATE ==========================
 // ==============================================================
@@ -81,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* -------------------- Start Button -------------------- */
     startButton.addEventListener('click', () => {
         if (!currentConfig) return;
-        playMenuGradeSFX();
+        audioManager.playSFX("grade.mp3", false, 0.5);
         localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
         window.location.href = 'pages/game.html';
     });
@@ -115,51 +118,21 @@ document.addEventListener("DOMContentLoaded", () => {
 // ======================== MUSIC SYSTEM ========================
 // ==============================================================
 
-let menuMusic = null;
-let musicStarted = false;
+const audioManager = new AudioManager();
 
-// Load menu music file
-function loadMenuMusic() {
-    menuMusic = new Audio("../../assets/audio/music/menu.mp3");
-    menuMusic.loop = true;
-    menuMusic.volume = 0.5;
-    menuMusic.load(); // Preload
-}
+// Load and prepare menu music
+audioManager.playMenuMusic();
 
-// Start playing menu music
-function startMenuMusic() {
-    if (musicStarted) return;
-    if (menuMusic) {
-        menuMusic.play().catch(e => console.log("Music play failed:", e));
-        musicStarted = true;
-    }
-}
-
-// Load music but don't play yet (wait for user interaction)
-loadMenuMusic();
-
-// Start music on FIRST user interaction (keyboard, click, or touch)
+// Start music on FIRST user interaction
 const startMusicOnce = () => {
-    startMenuMusic();
+    audioManager.startMusic();
     window.removeEventListener("keydown", startMusicOnce);
     window.removeEventListener("click", startMusicOnce);
     window.removeEventListener("touchstart", startMusicOnce);
 };
-
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
-
-// ==============================================================
-// ======================== SFX SYSTEM ==========================
-// ==============================================================
-
-// Play grade reveal sound effect
-function playMenuGradeSFX() {
-    const audio = new Audio("../../assets/audio/sfx/grade.mp3");
-    audio.volume = 0.5;
-    audio.play().catch(e => console.log("SFX failed:", e));
-}
 
 // ==============================================================
 // ====================== PUNCHCARD SYSTEM ======================
