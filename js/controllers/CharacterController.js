@@ -46,7 +46,11 @@ export class CharacterController {
         const boardsize = board.length;
         let newX = this.character.getPosX();
         let newY = this.character.getPosY();
-        
+    
+        const oldX = this.character.getPosX();
+        const oldY = this.character.getPosY();
+        const oldTile = board[oldX][oldY];
+    
         // Calculate new position based on direction
         switch (direction) {
             case "Up": newY--; break;
@@ -54,43 +58,46 @@ export class CharacterController {
             case "Left": newX--; break;
             case "Right": newX++; break;
         }
-        
+    
         // Boundary check
         if (newX < 0 || newX >= boardsize || newY < 0 || newY >= boardsize) return;
-        
+    
         const currentTile = board[this.character.getPosX()][this.character.getPosY()];
         const targetTile = board[newX][newY];
-        
+    
         // ===== HEIGHT DIFFERENCE CHECK =====
-        const heightDiff = Math.abs(targetTile.getTileheight() - currentTile.getTileheight());
-        // Ability 4 (climber) ignores height restrictions
-        if (this.character.getAbilityId() != 4 && heightDiff >= 2) return;
-        
+        const heightDiff = targetTile.getTileheight() - currentTile.getTileheight();
+    
+        // Ability 4 (Scout) ignores all height restrictions
+        if (this.character.getAbilityId() !== 4) {
+            // Can't climb up 2 or more levels
+            if (heightDiff >= 2) return;
+
+            // Can fall down 2 or more levels, but take damage
+            if (heightDiff <= -2) {
+                const fallDamage = Math.abs(heightDiff) - 1; 
+                this.character.decrementHp(fallDamage);
+                this.character.incrementDamageTaken(1);
+            
+                if (this.character.getHp() <= 0) {
+                    this.killCharacter();
+                    return;
+                }
+            }
+        }
+
         // ===== OBSTACLE HANDLING =====
         const obst = targetTile.getObstacletype();
         const pipe = targetTile.getHazardtype() === "pipe";
-        
+    
         switch (obst) {
             case "natural":
-                // Natural obstacle - only climbers can enter
                 if (this.character.getAbilityId() === 4) {
                     this.character.setPosX(newX);
                     this.character.setPosY(newY);
                 }
-                return;
-                
-            case "pit":
-                // Pit - always enter, but kills non-climbers
-                this.character.setPosX(newX);
-                this.character.setPosY(newY);
-                if (this.character.getAbilityId() !== 4) {
-                    this.character.setHp(0);
-                    this.killCharacter();
-                }
-                return;
-                
+            return;
             case "river":
-                // River - can be traversed multiple times, drowning after 5 steps
                 this.character.setPosX(newX);
                 this.character.setPosY(newY);
                 if (this.character.getAbilityId() !== 4) {
@@ -101,21 +108,44 @@ export class CharacterController {
                         this.killCharacter();
                     }
                 }
-                return;
+            return;
+            case "pit":
+                this.character.setPosX(newX);
+                this.character.setPosY(newY);
+                if (this.character.getAbilityId() !== 4) {
+                    this.character.setHp(0);
+                    this.killCharacter();
+                }
+            return;
         }
 
-        // ===== OBSTACLE HANDLING =====
-        if (pipe){
+        if (pipe) {
             if (this.character.getAbilityId() === 4) {
-                    this.character.setPosX(newX);
-                    this.character.setPosY(newY);
-                }
-                return;
+                this.character.setPosX(newX);
+                this.character.setPosY(newY);
+            }
+            return;
         }
-        
+    
         // Normal movement (no obstacle)
         this.character.setPosX(newX);
         this.character.setPosY(newY);
+
+        // ===== MOMMY SMOKE CLEARING ABILITY (Ability 3) =====
+        if (this.character.getAbilityId() === 3) {
+            // Restore smoke on previous tile if it was cleared by Mommy
+            if (oldTile.wasSmokeCleared()) {
+                oldTile.setSmoke(true);
+                oldTile.setSmokeCleared(false);
+            }
+        
+            // Clear smoke on new tile
+            const newTile = board[newX][newY];
+            if (newTile.isSmoke()) {
+                newTile.setSmoke(false);
+                newTile.setSmokeCleared(true);
+            }
+        }
     }
     
     // ======================= TILE VERIFICATION =======================
