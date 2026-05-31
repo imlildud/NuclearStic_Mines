@@ -16,6 +16,7 @@ export class TileModel {
         this.start = false;             // Define if the tile is the starting position
         this.goaltype = "none";         // Define if the tile is a goal (rescue target)
         this.goallive = false;          // Define if the goal is still active (not lost)
+        this.flaggoal = false;          // Define if the tile is a tutorial goal
         
         // ========== MAP CONDITIONS ==========
         this.secure = false;            // Define if the tile is a secure area
@@ -56,6 +57,11 @@ export class TileModel {
     
     isGoallive() { return this.goallive; }
     setGoallive(v) { this.goallive = v; }
+
+    // ===================== FLAG GOAL GETTERS & SETTERS =====================
+    
+    isFlaggoal() { return this.flaggoal; }
+    setFlaggoal(v) { this.flaggoal = v; }
     
     // ======================= SECURE GETTERS & SETTERS =======================
     
