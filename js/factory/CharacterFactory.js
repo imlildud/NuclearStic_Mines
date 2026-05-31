@@ -26,6 +26,8 @@ export class CharacterFactory {
                 return this.createMommy(character);
             case "chef":
                 return this.createChef(character);
+            case "student":
+                return this.createStudent(character);
             default:
                 throw new Error(`Unknown character: ${characterType}`);
         }
@@ -42,7 +44,7 @@ export class CharacterFactory {
         character.setInventorySize(4);   // 4 inventory slots
         character.setAbilityId(1);       // Ability ID 1
         character.setVision(2);          // 2 tile vision range
-        character.setForce(3);            // Medium force
+        character.setForce(3);           // Medium force
         return character;
     }
     
@@ -55,7 +57,7 @@ export class CharacterFactory {
         character.setInventorySize(5);   // Large inventory
         character.setAbilityId(2);       // Ability ID 2
         character.setVision(5);          // Extended vision range
-        character.setForce(2);            // Low force
+        character.setForce(2);           // Low force
         return character;
     }
     
@@ -69,7 +71,7 @@ export class CharacterFactory {
         character.setInventorySize(1);   // Small inventory
         character.setAbilityId(3);       // Ability ID 3
         character.setVision(1);          // Limited vision
-        character.setForce(1);            // Low force
+        character.setForce(1);           // Low force
         return character;
     }
     
@@ -83,7 +85,18 @@ export class CharacterFactory {
         character.setInventorySize(2);   // Small inventory
         character.setAbilityId(4);       // Ability ID 4
         character.setVision(2);          // 2 tile vision range
-        character.setForce(5);            // High force
+        character.setForce(5);           // High force
+        return character;
+    }
+
+    // ----- STUDENT CHARACTER -----
+    static createStudent(character) {
+        character.setHp(2);              // Low health
+        character.setFlags(5);           // 5 flag capacity
+        character.setInventorySize(0);   // 0 inventory slots
+        character.setAbilityId(0);       // Ability ID 0 
+        character.setVision(3);          // 3 tile vision range
+        character.setForce(1);           // Low force
         return character;
     }
 }
