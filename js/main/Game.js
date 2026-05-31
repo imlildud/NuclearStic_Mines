@@ -19,7 +19,7 @@ let flagAudio = null;
 // Play sound effect from file
 function playSFX(soundFile) {
     if (!sfxEnabled) return;
-    const audio = new Audio(`../assets/audio/sfx/${soundFile}`);
+    const audio = new Audio(`../../assets/audio/sfx/${soundFile}`);
     audio.volume = 0.5;
     audio.play().catch(e => console.log("SFX failed:", soundFile, e));
 }
@@ -52,6 +52,7 @@ const debug = document.getElementById("debugPanel");
 
 // Zone to background image mapping
 const zoneMap = {
+    "backyard": "backyard.png",
     "desert": "desert.png",
     "snow": "snow.png",
     "ash": "ash.png"
@@ -59,7 +60,7 @@ const zoneMap = {
 
 // Set body background based on selected zone
 document.body.style.backgroundImage =
-    `url("../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
+    `url("../../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
 
 // Initialize game engine
 const game = new GameManager(config);
@@ -95,14 +96,17 @@ function playMusic(zone) {
     
     let musicFile = "";
     switch (zone) {
+        case "backyard":
+            musicFile = "../../assets/audio/music/backyard.mp3";
+            break;
         case "desert":
-            musicFile = "../assets/audio/music/desert.mp3";
+            musicFile = "../../assets/audio/music/desert.mp3";
             break;
         case "snow":
-            musicFile = "../assets/audio/music/snow.mp3";
+            musicFile = "../../assets/audio/music/snow.mp3";
             break;
         case "ash":
-            musicFile = "../assets/audio/music/ash.mp3";
+            musicFile = "../../assets/audio/music/ash.mp3";
             break;
         default:
             return;
@@ -141,7 +145,7 @@ function updateHUD() {
     // ----- Character Icon -----
     const characterIcon = document.getElementById("hud-character-icon");
     if (characterIcon) {
-        characterIcon.src = `../assets/hud/game/charactericon/${player.getType()}.png`;
+        characterIcon.src = `../../assets/hud/game/charactericon/${player.getType()}.png`;
     }
 
     // ----- Health Display -----
@@ -154,13 +158,13 @@ function updateHUD() {
 
     if (healthIcon) {
         if (hp === maxHp) {
-            healthIcon.src = "../assets/hud/game/stats/fulllife.png";
+            healthIcon.src = "../../assets/hud/game/stats/fulllife.png";
         } else if (hp >= maxHp / 2) {
-            healthIcon.src = "../assets/hud/game/stats/halflife.png";
+            healthIcon.src = "../../assets/hud/game/stats/halflife.png";
         } else if (hp > 0) {
-            healthIcon.src = "../assets/hud/game/stats/quarterlife.png";
+            healthIcon.src = "../../assets/hud/game/stats/quarterlife.png";
         } else {
-            healthIcon.src = "../assets/hud/game/stats/emptylife.png";
+            healthIcon.src = "../../assets/hud/game/stats/emptylife.png";
         }
     }
 
@@ -273,7 +277,7 @@ function updateGeologicalAlert() {
     
     // Apply hazard alert
     if (alertType) {
-        alertIcon.src = `../assets/hud/game/stats/${alertType}`;
+        alertIcon.src = `../../assets/hud/game/stats/${alertType}`;
         alertIcon.style.display = "block";
     } else {
         alertIcon.style.display = "none";
@@ -281,7 +285,7 @@ function updateGeologicalAlert() {
 
     // Apply obstacle alert
     if (alertType2) {
-        alertIcon2.src = `../assets/hud/game/stats/${alertType2}`;
+        alertIcon2.src = `../../assets/hud/game/stats/${alertType2}`;
         alertIcon2.style.display = "block";
     } else {
         alertIcon2.style.display = "none";
@@ -329,11 +333,11 @@ function updateCurrentTile() {
 
     // Load appropriate sprite based on zone for obstacles
     if (textureName && obstacleType !== "none"){
-        tileIcon.src = `../assets/sprites/tiles/${zone}/${textureName}.png`;
+        tileIcon.src = `../../assets/sprites/tiles/${zone}/${textureName}.png`;
         tileIcon.style.display = "block";
     }
     else if (textureName) {
-        tileIcon.src = `../assets/sprites/tiles/${textureName}.png`;
+        tileIcon.src = `../../assets/sprites/tiles/${textureName}.png`;
         tileIcon.style.display = "block";
     } else {
         tileIcon.style.display = "none";
