@@ -49,7 +49,12 @@ export class Renderer {
         let result = { offsetX: 0, offsetY: 0, size: tileSize };
         
         if (height > 0) {
-            const scaleMap = { 1: 1.15, 2: 1.35, 3: 1.55, 4: 1.75 };
+            const scaleMap = { 
+                1: 1.05, 
+                2: 1.08, 
+                3: 1.10, 
+                4: 1.12  
+            };
             const scale = scaleMap[height] || 1;
             const size = tileSize * scale;
             result = {
@@ -171,8 +176,8 @@ export class Renderer {
                 const drawY = y * TILE_SIZE - this.camera.y;
                 const height = tile.getTileheight();
                 
-                // Calculate mountain offset and size
-                let offsetX = 0, offsetY = 0, spriteSize = TILE_SIZE;
+                // Base mountain dimensions and offsets
+                let mountainOffsetX = 0, mountainOffsetY = 0, mountainSize = TILE_SIZE;
                 
                 if (height > 0) {
                     const mountainScaleMap = {
@@ -182,9 +187,31 @@ export class Renderer {
                         4: 1.75
                     };
                     const scale = mountainScaleMap[height] || 1;
-                    spriteSize = TILE_SIZE * scale;
-                    offsetX = spriteSize - TILE_SIZE;
-                    offsetY = spriteSize - TILE_SIZE;
+                    mountainSize = TILE_SIZE * scale;
+                    mountainOffsetX = mountainSize - TILE_SIZE;
+                    mountainOffsetY = mountainSize - TILE_SIZE;
+                }
+
+                // Upper elements dimensions and custom fine-tuned offsets
+                let objOffsetX = mountainOffsetX;
+                let objOffsetY = mountainOffsetY;
+                let objSize = TILE_SIZE;
+
+                if (height > 0) {
+                    const objectScaleMap = { 
+                        1: 1.1, 
+                        2: 1.18, 
+                        3: 1.28, 
+                        4: 1.38  
+                    };
+                    const scale = objectScaleMap[height] || 1;
+                    objSize = TILE_SIZE * scale;
+
+                    const manualPushX = { 1: 14, 2: 27, 3: 45, 4: 62 }; 
+                    const manualPushY = { 1: 12, 2: 28, 3: 46, 4: 63 }; 
+
+                    objOffsetX = manualPushX[height] || 0;
+                    objOffsetY = manualPushY[height] || 0;
                 }
                 
                 // ===== LAYER 0: BASE / MOUNTAIN =====
@@ -193,9 +220,9 @@ export class Renderer {
                 } else {
                     this.mountainDraw(
                         "mountain" + height,
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - mountainOffsetX,
+                        drawY - mountainOffsetY,
+                        mountainSize
                     );
                 }
                 
@@ -204,9 +231,9 @@ export class Renderer {
                 if (hazard !== "none" && !tile.isHide()) {
                     this.safeDraw(
                         hazard,
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
                 
@@ -215,9 +242,9 @@ export class Renderer {
                 if (obstacle !== "none" && !tile.isHide()) {
                     this.safeDraw(
                         obstacle,
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
                 
@@ -226,9 +253,9 @@ export class Renderer {
                 if (count > 0 && !tile.isHide() && obstacle === "none" && hazard === "none") {
                     this.safeDraw(
                         String(count),
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
                 
@@ -237,24 +264,11 @@ export class Renderer {
                     if (height === 0) {
                         this.safeDraw("hide", drawX, drawY, TILE_SIZE);
                     } else {
-                        const hideScaleMap = {
-                            1: 1.15,
-                            2: 1.3,
-                            3: 1.5,
-                            4: 1.6
-                        };
-                        
-                        const hideScale = hideScaleMap[height] || 1;
-                        const hideSize = TILE_SIZE * hideScale;
-                        const extraOffset = 4;
-                        const hideOffsetX = (hideSize - TILE_SIZE) + extraOffset;
-                        const hideOffsetY = (hideSize - TILE_SIZE) + extraOffset;
-                        
                         this.safeDraw(
                             "hide",
-                            drawX - hideOffsetX,
-                            drawY - hideOffsetY,
-                            hideSize
+                            drawX - objOffsetX,
+                            drawY - objOffsetY,
+                            objSize
                         );
                     }
                 }
@@ -263,36 +277,36 @@ export class Renderer {
                 if (tile.getDamageratio()) {
                     this.safeDraw(
                         "toxic",
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
                 if (tile.isMarked() && !tile.isSmoke()) {
-                    const flagHeight = spriteSize * 1.3;
+                    const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "marked",
-                        drawX - offsetX,
-                        drawY - offsetY - (flagHeight - spriteSize),
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
                     );
                 } else if (tile.isFlagged() && !tile.isSmoke()) {
-                    const flagHeight = spriteSize * 1.3;
+                    const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "flagged",
-                        drawX - offsetX,
-                        drawY - offsetY - (flagHeight - spriteSize),
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
                     );
                 } else if (tile.isJumpflagged() && !tile.isSmoke()) {
-                    const flagHeight = spriteSize * 1.3;
+                    const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "jumpflag",
-                        drawX - offsetX,
-                        drawY - offsetY - (flagHeight - spriteSize),
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
                     );
                 }
                 
@@ -300,24 +314,23 @@ export class Renderer {
                 if (tile.isStart()) {
                     this.safeDraw(
                         "start",
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
                 
                 // ===== LAYER 7.5: GOALS (Children to rescue) =====
                 const goalType = tile.getGoaltype();
                 if (goalType !== "none" && !tile.isSmoke()) {
-                    // Joni is only visible when tile is revealed
                     const shouldDraw = (goalType !== "joni") || (goalType === "joni" && !tile.isHide());
                     if (shouldDraw) {
-                        const goalHeight = spriteSize * 1.3;
+                        const goalHeight = objSize * 1.3;
                         this.safeDraw(
                             goalType,
-                            drawX - offsetX,
-                            drawY - offsetY - (goalHeight - spriteSize),
-                            spriteSize
+                            drawX - objOffsetX,
+                            drawY - objOffsetY - (goalHeight - objSize),
+                            objSize
                         );
                     }
                 }
@@ -326,27 +339,27 @@ export class Renderer {
                 if (tile.isFlaggoal()){
                     this.safeDraw(
                         "flaggoal",
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     )
                 }
                 
                 // ===== LAYER 8: PLAYER CHARACTER =====
                 if (player.getPosX() === x && player.getPosY() === y && !tile.isSmoke()) {
-                    const playerHeight = spriteSize * 1.2;
+                    const playerHeight = objSize * 1.2;
                     const img = this.images[player.getType()];
                     
                     if (img && img.complete && img.naturalWidth !== 0) {
-                        let drawPlayerX = drawX - offsetX;
-                        let drawPlayerY = drawY - offsetY - (playerHeight - spriteSize);
+                        let drawPlayerX = drawX - objOffsetX;
+                        let drawPlayerY = drawY - objOffsetY - (playerHeight - objSize);
                         
                         // ===== MOVEMENT ANIMATION =====
                         if (this.justMoved && this.justMovedFrames > 0) {
                             ctx.save();
                             
-                            const centerX = drawPlayerX + spriteSize / 2;
-                            const centerY = drawPlayerY + spriteSize / 2;
+                            const centerX = drawPlayerX + objSize / 2;
+                            const centerY = drawPlayerY + objSize / 2;
                             const progress = 1 - (this.justMovedFrames / 12);
                             
                             let yOffset = 0;
@@ -385,7 +398,7 @@ export class Renderer {
                             // Apply transform and draw
                             ctx.translate(centerX, centerY + yOffset);
                             ctx.rotate(tilt);
-                            ctx.drawImage(img, -spriteSize / 2, -spriteSize / 2, spriteSize, spriteSize);
+                            ctx.drawImage(img, -objSize / 2, -objSize / 2, objSize, objSize);
                             ctx.restore();
                             
                             // Decrement animation counter
@@ -396,7 +409,7 @@ export class Renderer {
                             }
                         } else {
                             // Static draw (no animation)
-                            ctx.drawImage(img, drawPlayerX, drawPlayerY, spriteSize, spriteSize);
+                            ctx.drawImage(img, drawPlayerX, drawPlayerY, objSize, objSize);
                         }
                     }
                 }
@@ -405,9 +418,9 @@ export class Renderer {
                 if (tile.isSmoke()) {
                     this.safeDraw(
                         "smoke",
-                        drawX - offsetX,
-                        drawY - offsetY,
-                        spriteSize
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
                     );
                 }
             }
