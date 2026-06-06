@@ -370,6 +370,10 @@ export class ScoreboardManager {
             continueBtn.style.display = "block";
         } else if (mode === "custom") {
             retryBtn.style.display = "block";
+        } else if (mode === "tutorial"){
+            continueBtn.style.display = "none";
+            retryBtn.style.display = "none";
+            homeBtn.style.display = "none";
         }
         
         // Clone buttons to remove existing event listeners

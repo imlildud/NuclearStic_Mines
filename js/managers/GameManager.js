@@ -6,6 +6,7 @@
 
 import { CharacterFactory } from "../factory/CharacterFactory.js";
 import { BoardController } from "../controllers/BoardController.js";
+import { TutorialController } from "../controllers/TutorialController.js";
 import { CharacterController } from "../controllers/CharacterController.js";
 import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
@@ -29,6 +30,9 @@ export class GameManager {
         this.renderer = null;                       // Reference to renderer
         this.lastResult = null;                     // Last game result (victory/gameover)
         
+        // Optional tutorial manager (only used in tutorial mode)
+        this.tutorialManager = null;
+        
         // Managers
         this.audio = new AudioManager();
         this.save = new SaveManager();
@@ -43,7 +47,14 @@ export class GameManager {
         
         this.currentLevel = this.save.getLegacyLevel();
         this.player = CharacterFactory.createCharacter(this.config.character);
-        this.boardCtrl = new BoardController(this.player);
+        
+        // Select board controller based on mode
+        if (this.config.mode === "tutorial") {
+            this.boardCtrl = new TutorialController(this.player);
+        } else {
+            this.boardCtrl = new BoardController(this.player);
+        }
+
         this.charCtrl = new CharacterController(this.player, this.boardCtrl);
         
         // Initialize ScoreboardManager after player/board are ready
@@ -55,9 +66,17 @@ export class GameManager {
         this.boardCtrl.setGameManager(this);
     }
     
-    // Configure level based on game mode (legacy or custom/daily)
+    // Configure level based on game mode
     configLevel() {
         let size, goals, hazardAmount, hazardIntensity, heightIntensity, obstacleIntensity, zone, childLevel;
+        
+        // ===== TUTORIAL MODE =====
+        if (this.config.mode === "tutorial") {
+            this.board = this.boardCtrl.generateBoard(5);
+            this.charCtrl.getStartCoords(this.board);
+            this.boardCtrl.updateVision(this.board, this.player);
+            return;
+        }
         
         // ===== LEGACY MODE =====
         if (this.config.mode === "legacy") {
@@ -83,7 +102,6 @@ export class GameManager {
         
         // Generate board step by step
         this.board = this.boardCtrl.generateBoard(size);
-        
         this.board = this.boardCtrl.generateStartAndGoal(this.board, goals, childLevel);
         this.board = this.boardCtrl.setSafeTiles(this.board, size);
         this.board = this.boardCtrl.generateHeights(this.board, heightIntensity, size);
@@ -96,7 +114,7 @@ export class GameManager {
         this.charCtrl.getStartCoords(this.board);
         this.boardCtrl.updateVision(this.board, this.player);
         
-        // ========== DEBUG OUTPUT ==========
+        // Debug output
         console.log("========== GAME CONFIGURATION ==========");
         console.log(`Mode: ${this.config.mode}`);
         console.log(`Size: ${size}`);
@@ -147,14 +165,37 @@ export class GameManager {
             this.boardCtrl.trackHazardCount(this.board);
             this.boardCtrl.updateVision(this.board, this.player);
             this.player.setRegen(false);
+            
+        }
+
+        // ===== TUTORIAL PHASE COMPLETION (flaggoal) =====
+        if (this.config.mode === "tutorial" && this.tutorialManager) {
+            const currentTile = this.board[this.player.getPosX()][this.player.getPosY()];
+            
+            if (currentTile && currentTile.isFlaggoal()) {
+                // Only advance if the player has flagged correctly in phase 2
+                if (this.boardCtrl.currentPhase >= 2 && this.boardCtrl.currentPhase <= 4) {
+                    return;
+                } else {
+                    this.tutorialManager.nextPhase();
+                    return;
+                }
+            }
         }
         
         // ===== VICTORY CHECK =====
-        if (this.charCtrl.winCondition(this.board)) {
-            this.handleVictory();
-            return;
+        if (this.config.mode === "tutorial") {
+            if (this.boardCtrl.currentPhase === 5 && this.charCtrl.winCondition(this.board)) {
+                // No hacer nada aquí - TutorialManager manejará la entrega
+                return;
+            }
+        } else {
+            if (this.charCtrl.winCondition(this.board)) {
+                this.handleVictory();
+                return;
+            }
         }
-        
+                
         // ===== DEFEAT CHECK =====
         if (!this.player.isAlive()) {
             this.gameInputLocked = true;
@@ -299,6 +340,20 @@ export class GameManager {
     getBoard() { return this.board; }
     getPlayer() { return this.player; }
     getZone() { return this.config.zone; }
+
+    // ======================= SETTERS =======================
+
+    setRenderer(renderer) { this.renderer = renderer; }
+    setTutorialManager(tutorialManager) { this.tutorialManager = tutorialManager; }
+    setGameInputLocked(locked) { this.gameInputLocked = locked; }
+
+    // ======================= TUTORIAL DELEGATION =======================
+
+    onTutorialPitFall() {
+        if (this.tutorialManager) {
+            this.tutorialManager.onPitFall();
+        }
+    }
     
     // ======================= UI CALLBACKS =======================
     
@@ -323,9 +378,5 @@ export class GameManager {
             console.log(`Saving level on Home: ${this.currentLevel}`);
         }
         window.location.href = '../../index.html';
-    }
-    
-    setRenderer(renderer) {
-        this.renderer = renderer;
     }
 }

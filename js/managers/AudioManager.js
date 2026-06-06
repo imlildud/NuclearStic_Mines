@@ -14,6 +14,7 @@ export class AudioManager {
         this.moveAudio = null;
         this.flagAudio = null;
         this.scoreAudio = null;
+        this.textAudio = null;
         
         // Music
         this.currentMusic = null;
@@ -23,6 +24,9 @@ export class AudioManager {
         
         // Animation flag for score sound
         this.isScoreAnimating = false;
+
+        // Animation flag for text sound
+        this.isWriteAnimating = false;
     }
     
     // ======================= SFX METHODS =======================
@@ -86,6 +90,25 @@ export class AudioManager {
         }
         this.isScoreAnimating = false;
     }
+
+    // Start looping text animation sound
+    startWriteAnimationSFX() {
+        if (this.isWriteAnimating) return;
+        this.isWriteAnimating = true;
+        this.textAudio = this.playSFX("writing.mp3", true, 0.3);
+    }
+
+    // Stop text animation sound
+    stopWriteAnimationSFX() {
+        if (this.isWriteAnimating) {
+            this.textAudio.pause();
+            this.textAudio.currentTime = 0;
+            this.textAudio = null;
+        }
+        this.isWriteAnimating = false;
+    }
+
+
     
     // ======================= MUSIC METHODS =======================
     
