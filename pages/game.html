@@ -78,13 +78,19 @@
 
         </div>
 
-        <!-- ================= TOP CENTER: Current Tile Indicator ================= -->
-        <div class="hud-container hud-tile-group">
-            <!-- Tile Margin / Border Icon -->
-            <img id="hud-tilemarin-icon" class="hud-icon-tilemargin" src="../assets/hud/game/stats/currentile.png" alt="margin">
+        <!-- ================= TOP CENTER: Current Tile & Heightometer ================= -->
+        <div class="hud-top-center-group">
+            <!-- Height-O-Meter -->
+            <div class="hud-heightometer-group">
+                <img id="hud-heightometer-icon" class="hud-icon-heightometer" src="../assets/hud/game/stats/heightometer.png" alt="heightometer">
+                <div id="hud-heightometer-number" class="hud-heightometer-number">0</div>
+            </div>
 
-            <!-- Current Tile Type Icon -->
-            <img id="hud-tile-icon" class="hud-icon-tile" alt="currentile">
+            <!-- Current Tile -->
+            <div class="hud-tile-group">
+                <img id="hud-tilemarin-icon" class="hud-icon-tilemargin" src="../assets/hud/game/stats/currentile.png" alt="margin">
+                <img id="hud-tile-icon" class="hud-icon-tile" alt="currentile">
+            </div>
         </div>
 
     </div>
@@ -104,10 +110,21 @@
     <!-- ====================================================== -->
 
     <!-- Game Logic Module -->
-    <script type="module" src="../js/Game.js"></script>
+    <script type="module" src="../js/main/Game.js"></script>
 
     <!-- Debug Panel Container -->
     <div id="debugPanel"></div>
+
+    <!-- ====================================================== -->
+    <!-- ================= TUTORIAL RADIO ====================== -->
+    <!-- ====================================================== -->
+
+    <div class="tutorial-radio-container">
+        <img id="tutorial-radio" class="tutorial-radio" src="../../assets/hud/game/radio/walkie.png" alt="Radio" style="display: none;">
+        <div id="tutorial-bubble" class="tutorial-bubble" style="display: none;">
+            <div id="tutorial-text" class="tutorial-text"></div>
+        </div>
+    </div>
 
     <!-- ====================================================== -->
     <!-- ================= SCOREBOARD OVERLAY ================= -->

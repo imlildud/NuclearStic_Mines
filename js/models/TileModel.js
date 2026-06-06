@@ -16,6 +16,7 @@ export class TileModel {
         this.start = false;             // Define if the tile is the starting position
         this.goaltype = "none";         // Define if the tile is a goal (rescue target)
         this.goallive = false;          // Define if the goal is still active (not lost)
+        this.flaggoal = false;          // Define if the tile is a tutorial goal
         
         // ========== MAP CONDITIONS ==========
         this.secure = false;            // Define if the tile is a secure area
@@ -32,7 +33,8 @@ export class TileModel {
         
         // ========== HAZARD PROPERTIES ==========
         this.hazardcount = 0;           // Number of hazards adjacent to the tile
-        this.smoke = false;             // Flag for smoke presence
+        this.smoke = false;             // Flag for smoke presence     
+        this.smokeCleared = false;      // Smoke cleared tracker
         this.damageratio = false;       // Flag for damage radius presence
         this.detectionratio = false;    // Flag for detection radius presence
         this.hazardtype = "none";       // Type of hazard on the tile
@@ -56,6 +58,11 @@ export class TileModel {
     
     isGoallive() { return this.goallive; }
     setGoallive(v) { this.goallive = v; }
+
+    // ===================== FLAG GOAL GETTERS & SETTERS =====================
+    
+    isFlaggoal() { return this.flaggoal; }
+    setFlaggoal(v) { this.flaggoal = v; }
     
     // ======================= SECURE GETTERS & SETTERS =======================
     
@@ -98,7 +105,8 @@ export class TileModel {
     
     isSmoke() { return this.smoke; }
     setSmoke(v) { this.smoke = v; }
-    
+    wasSmokeCleared() { return this.smokeCleared; }
+    setSmokeCleared(v) { this.smokeCleared = v; }
     
     // ======================= DAMAGE RATIO GETTERS & SETTERS =======================
     
