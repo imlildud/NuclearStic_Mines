@@ -9,6 +9,7 @@ import { GameManager } from "../managers/GameManager.js";
 import { Renderer } from "../views/Renderer.js";
 import { AudioManager } from "../managers/AudioManager.js";
 import { SaveManager } from "../managers/SaveManager.js";
+import { TutorialDialogManager } from "../managers/TutorialDialogManager.js";
 
 // ==============================================================
 // ====================== INITIALIZATION ========================
@@ -66,6 +67,18 @@ game.startGame();
 // Initialize renderer
 const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
+
+// ==============================================================
+// ==================== TUTORIAL MANAGER ========================
+// ==============================================================
+
+if (config.mode === "tutorial") {
+    const { TutorialManager } = await import("../managers/TutorialManager.js");
+    
+    const tutorialManager = new TutorialManager(game, audio);
+    tutorialManager.init();
+    game.setTutorialManager(tutorialManager);
+}
 
 // ==============================================================
 // ======================== HUD SYSTEM ==========================
@@ -292,6 +305,7 @@ function getMaxHpByCharacter(characterType) {
         case "mosquito": return 3;
         case "mommy": return 10;
         case "scout": return 1;
+        case "student": return 2;
         default: return 5;
     }
 }
@@ -396,32 +410,33 @@ requestAnimationFrame(loop);
 // ====================== TOUCH CONTROLS =======================
 // ==============================================================
 
+// Movement buttons (WASD style)
 document.querySelectorAll('.touch-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    const handleMove = (e) => {
         e.preventDefault();
         const dir = btn.dataset.dir;
-        if (dir) game.handleInput(dir);
-    });
+        if (dir) {
+            // Disparar evento personalizado para el tutorial
+            const customEvent = new CustomEvent('touch-move', { detail: { source: "touch", dir: dir } });
+            document.dispatchEvent(customEvent);
+            game.handleInput(dir);
+        }
+    };
     
-    btn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const dir = btn.dataset.dir;
-        if (dir) game.handleInput(dir);
-    });
+    btn.addEventListener('click', handleMove);
+    btn.addEventListener('touchstart', handleMove);
 });
 
+// Flag buttons (arrow keys style)
 document.querySelectorAll('.flag-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    const handleFlag = (e) => {
         e.preventDefault();
         const dir = btn.dataset.flag;
         if (dir) game.handleFlagDirection(dir);
-    });
+    };
     
-    btn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const dir = btn.dataset.flag;
-        if (dir) game.handleFlagDirection(dir);
-    });
+    btn.addEventListener('click', handleFlag);
+    btn.addEventListener('touchstart', handleFlag);
 });
 
 // Initial HUD update
