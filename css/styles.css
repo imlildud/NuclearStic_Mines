@@ -29,6 +29,99 @@
     z-index: 9999;
 }
 
+/* ========================================================= */
+/* ==================== WELCOME SCREEN ===================== */
+/* ========================================================= */
+
+.welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 50000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-card {
+    position: relative;
+    width: min(100vw, 100vh, 1200px);
+    height: min(100vw, 100vh, 900px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.welcome-content {
+    position: relative;
+    z-index: 2;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 5%;
+    box-sizing: border-box;
+}
+
+.welcome-text {
+    font-family: 'Shampoos';
+    font-size: min(3vmin, 25px);
+    color: #000000;
+    margin-bottom: 4vmin;
+    line-height: 1.5;
+}
+
+.welcome-buttons {
+    display: flex;
+    gap: 4vmin;
+    justify-content: center;
+}
+
+.welcome-btn {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 32px);
+    padding: 1.5vmin 4vmin;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.welcome-yes {
+    background-color: #4a7c59;
+    color: white;
+    box-shadow: 0 4px 0 #2a4a35;
+}
+
+.welcome-no {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 4px 0 #4a2a2a;
+}
+
+.welcome-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.welcome-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #2a4a35;
+}
+
 /* Body Base Styles */
 body {
     margin: 0;

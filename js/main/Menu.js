@@ -4,18 +4,82 @@
 // Main menu controller. Handles mode selection (Legacy/Daily/Custom),
 // punchcard configuration, music/sfx, and game launch.
 
+import { SaveManager } from "../managers/SaveManager.js";
+import { AudioManager } from "../managers/AudioManager.js";
+
 // ==============================================================
 // ====================== GLOBAL STATE ==========================
 // ==============================================================
 
-// Current punchcard mode state
 let punchcardMode = null;
-
-// Shared config reference (used by legacy & daily)
 let dailyConfig = null;
-
-// Current game config
 let currentConfig = null;
+
+// ==================== MANAGERS ====================
+const saveManager = new SaveManager();
+const audioManager = new AudioManager();
+
+// ==============================================================
+// ==================== WELCOME SCREEN LOGIC ====================
+// ==============================================================
+
+function initWelcomeScreen() {
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const mainMenu = document.querySelector(".overlay");  // ✅ usar clase .overlay
+    const yesBtn = document.getElementById("welcome-yes");
+    const noBtn = document.getElementById("welcome-no");
+    
+    // Check if tutorial was already completed
+    const tutorialCompleted = saveManager.isTutorialCompleted();  // ✅ declarar const
+    
+    if (tutorialCompleted) {
+        // Already completed, show main menu directly
+        if (welcomeScreen) welcomeScreen.style.display = "none";
+        if (mainMenu) mainMenu.style.display = "flex";
+        return;
+    }
+    
+    // First time, show welcome screen
+    if (welcomeScreen) welcomeScreen.style.display = "flex";
+    if (mainMenu) mainMenu.style.display = "none";
+    
+    // Yep button - start tutorial
+    if (yesBtn) {
+        yesBtn.addEventListener("click", () => {
+            // Save that tutorial was started (not completed yet)
+            saveManager.setTutorialCompleted(false);
+            
+            // Create tutorial config
+            const config = {
+                mode: "tutorial",
+                seed: null,
+                level: 1,
+                character: "student",
+                size: 5,
+                hazards: 1,
+                obstacles: 1,
+                goals: 1,
+                zone: "backyard"
+            };
+            
+            // Save config and go to game
+            saveManager.saveConfig(config);
+            window.location.href = "../../pages/game.html";
+        });
+    }
+    
+    // No ty button - skip tutorial
+    if (noBtn) {
+        noBtn.addEventListener("click", () => {
+            // Mark tutorial as completed (skipped)
+            saveManager.setTutorialCompleted(true);
+            
+            // Hide welcome, show main menu
+            if (welcomeScreen) welcomeScreen.style.display = "none";
+            if (mainMenu) mainMenu.style.display = "flex";
+        });
+    }
+}
 
 // ==============================================================
 // ====================== DOM EVENT LISTENERS ===================
@@ -23,14 +87,15 @@ let currentConfig = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Initialize welcome screen
+    initWelcomeScreen();
+
     const legacyButton = document.querySelector('.legacy-button');
     const dailyButton = document.querySelector('.daily-button');
     const customButton = document.querySelector('.custom-button');
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
     const startButton = document.querySelector('.pc-start');
-
-    /* -------------------- Mode Buttons -------------------- */
 
     // ----- Legacy Mode Button -----
     legacyButton.addEventListener('click', () => {
@@ -40,12 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePunchcardScale();
     });
 
-    // ----- Daily Mode Button -----
+    // ----- Daily Mode Button (usando SaveManager) -----
     dailyButton.addEventListener('click', () => {
-        const today = new Date().toDateString();
-        const alreadyPlayed = localStorage.getItem(`daily_completed_${today}`);
-
-        if (alreadyPlayed) {
+        if (saveManager.isDailyAttemptedToday()) {
             alert("Daily mission already completed today! Come back tomorrow.");
             return;
         }
@@ -64,13 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePunchcardScale();
     });
 
-    /* -------------------- Select Listeners -------------------- */
-
     // Legacy character select
     document.getElementById("legacy-character-select")
         .addEventListener("change", (e) => {
             const value = e.target.value;
-            // Legacy Mode updates stored config
             if (punchcardMode === "legacy") {
                 if (!dailyConfig) return;
                 dailyConfig.character = value;
@@ -78,15 +137,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-    /* -------------------- Start Button -------------------- */
+    // Start Button (usando SaveManager)
     startButton.addEventListener('click', () => {
         if (!currentConfig) return;
-        playMenuGradeSFX();
-        localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
+        audioManager.playSFX("grade.mp3", false, 0.5);
+        saveManager.saveConfig(currentConfig);  // ✅ usar saveManager
         window.location.href = 'pages/game.html';
     });
 
-    /* -------------------- Custom Mode Select Listeners -------------------- */
+    // Custom Mode Select Listeners
     document.getElementById("custom-character-select")
         .addEventListener("change", updateCustomTextures);
 
@@ -105,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("custom-zone-select")
         .addEventListener("change", updateCustomTextures);
 
-    /* -------------------- Close Button -------------------- */
+    // Close Button
     closeButton.addEventListener('click', () => {
         punchcardScreen.classList.remove('active');
     });
@@ -115,51 +174,19 @@ document.addEventListener("DOMContentLoaded", () => {
 // ======================== MUSIC SYSTEM ========================
 // ==============================================================
 
-let menuMusic = null;
-let musicStarted = false;
+// Load and prepare menu music
+audioManager.playMenuMusic();
 
-// Load menu music file
-function loadMenuMusic() {
-    menuMusic = new Audio("../assets/audio/music/menu.mp3");
-    menuMusic.loop = true;
-    menuMusic.volume = 0.5;
-    menuMusic.load(); // Preload
-}
-
-// Start playing menu music
-function startMenuMusic() {
-    if (musicStarted) return;
-    if (menuMusic) {
-        menuMusic.play().catch(e => console.log("Music play failed:", e));
-        musicStarted = true;
-    }
-}
-
-// Load music but don't play yet (wait for user interaction)
-loadMenuMusic();
-
-// Start music on FIRST user interaction (keyboard, click, or touch)
+// Start music on FIRST user interaction
 const startMusicOnce = () => {
-    startMenuMusic();
+    audioManager.startMusic();
     window.removeEventListener("keydown", startMusicOnce);
     window.removeEventListener("click", startMusicOnce);
     window.removeEventListener("touchstart", startMusicOnce);
 };
-
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
-
-// ==============================================================
-// ======================== SFX SYSTEM ==========================
-// ==============================================================
-
-// Play grade reveal sound effect
-function playMenuGradeSFX() {
-    const audio = new Audio("../assets/audio/sfx/grade.mp3");
-    audio.volume = 0.5;
-    audio.play().catch(e => console.log("SFX failed:", e));
-}
 
 // ==============================================================
 // ====================== PUNCHCARD SYSTEM ======================
@@ -452,6 +479,7 @@ function getGoalsTexture(value) {
 
 // Returns zone texture based on biome type
 function getZoneTexture(value) {
+    if (value === "backyard") return "assets/hud/punchcard/zone/backyard.png"; 
     if (value === "desert") return "assets/hud/punchcard/zone/desert.png";
     if (value === "snow") return "assets/hud/punchcard/zone/snow.png";
     if (value === "ash") return "assets/hud/punchcard/zone/ash.png";
