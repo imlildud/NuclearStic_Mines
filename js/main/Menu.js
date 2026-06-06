@@ -11,14 +11,75 @@ import { AudioManager } from "../managers/AudioManager.js";
 // ====================== GLOBAL STATE ==========================
 // ==============================================================
 
-// Current punchcard mode state
 let punchcardMode = null;
-
-// Shared config reference (used by legacy & daily)
 let dailyConfig = null;
-
-// Current game config
 let currentConfig = null;
+
+// ==================== MANAGERS ====================
+const saveManager = new SaveManager();
+const audioManager = new AudioManager();
+
+// ==============================================================
+// ==================== WELCOME SCREEN LOGIC ====================
+// ==============================================================
+
+function initWelcomeScreen() {
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const mainMenu = document.querySelector(".overlay");  // ✅ usar clase .overlay
+    const yesBtn = document.getElementById("welcome-yes");
+    const noBtn = document.getElementById("welcome-no");
+    
+    // Check if tutorial was already completed
+    const tutorialCompleted = saveManager.isTutorialCompleted();  // ✅ declarar const
+    
+    if (tutorialCompleted) {
+        // Already completed, show main menu directly
+        if (welcomeScreen) welcomeScreen.style.display = "none";
+        if (mainMenu) mainMenu.style.display = "flex";
+        return;
+    }
+    
+    // First time, show welcome screen
+    if (welcomeScreen) welcomeScreen.style.display = "flex";
+    if (mainMenu) mainMenu.style.display = "none";
+    
+    // Yep button - start tutorial
+    if (yesBtn) {
+        yesBtn.addEventListener("click", () => {
+            // Save that tutorial was started (not completed yet)
+            saveManager.setTutorialCompleted(false);
+            
+            // Create tutorial config
+            const config = {
+                mode: "tutorial",
+                seed: null,
+                level: 1,
+                character: "student",
+                size: 5,
+                hazards: 1,
+                obstacles: 1,
+                goals: 1,
+                zone: "backyard"
+            };
+            
+            // Save config and go to game
+            saveManager.saveConfig(config);
+            window.location.href = "../../pages/game.html";
+        });
+    }
+    
+    // No ty button - skip tutorial
+    if (noBtn) {
+        noBtn.addEventListener("click", () => {
+            // Mark tutorial as completed (skipped)
+            saveManager.setTutorialCompleted(true);
+            
+            // Hide welcome, show main menu
+            if (welcomeScreen) welcomeScreen.style.display = "none";
+            if (mainMenu) mainMenu.style.display = "flex";
+        });
+    }
+}
 
 // ==============================================================
 // ====================== DOM EVENT LISTENERS ===================
@@ -26,14 +87,15 @@ let currentConfig = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Initialize welcome screen
+    initWelcomeScreen();
+
     const legacyButton = document.querySelector('.legacy-button');
     const dailyButton = document.querySelector('.daily-button');
     const customButton = document.querySelector('.custom-button');
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
     const startButton = document.querySelector('.pc-start');
-
-    /* -------------------- Mode Buttons -------------------- */
 
     // ----- Legacy Mode Button -----
     legacyButton.addEventListener('click', () => {
@@ -43,12 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePunchcardScale();
     });
 
-    // ----- Daily Mode Button -----
+    // ----- Daily Mode Button (usando SaveManager) -----
     dailyButton.addEventListener('click', () => {
-        const today = new Date().toDateString();
-        const alreadyPlayed = localStorage.getItem(`daily_completed_${today}`);
-
-        if (alreadyPlayed) {
+        if (saveManager.isDailyAttemptedToday()) {
             alert("Daily mission already completed today! Come back tomorrow.");
             return;
         }
@@ -67,13 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updatePunchcardScale();
     });
 
-    /* -------------------- Select Listeners -------------------- */
-
     // Legacy character select
     document.getElementById("legacy-character-select")
         .addEventListener("change", (e) => {
             const value = e.target.value;
-            // Legacy Mode updates stored config
             if (punchcardMode === "legacy") {
                 if (!dailyConfig) return;
                 dailyConfig.character = value;
@@ -81,15 +137,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-    /* -------------------- Start Button -------------------- */
+    // Start Button (usando SaveManager)
     startButton.addEventListener('click', () => {
         if (!currentConfig) return;
         audioManager.playSFX("grade.mp3", false, 0.5);
-        localStorage.setItem('gameConfig', JSON.stringify(currentConfig));
+        saveManager.saveConfig(currentConfig);  // ✅ usar saveManager
         window.location.href = 'pages/game.html';
     });
 
-    /* -------------------- Custom Mode Select Listeners -------------------- */
+    // Custom Mode Select Listeners
     document.getElementById("custom-character-select")
         .addEventListener("change", updateCustomTextures);
 
@@ -108,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("custom-zone-select")
         .addEventListener("change", updateCustomTextures);
 
-    /* -------------------- Close Button -------------------- */
+    // Close Button
     closeButton.addEventListener('click', () => {
         punchcardScreen.classList.remove('active');
     });
@@ -117,8 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==============================================================
 // ======================== MUSIC SYSTEM ========================
 // ==============================================================
-
-const audioManager = new AudioManager();
 
 // Load and prepare menu music
 audioManager.playMenuMusic();
