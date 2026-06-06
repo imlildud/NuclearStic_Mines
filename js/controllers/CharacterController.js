@@ -117,6 +117,15 @@ export class CharacterController {
                     this.killCharacter();
                 }
             return;
+            case "safepit":
+                // Safe pit for tutorial - shows message but doesn't kill
+                this.character.setPosX(newX);
+                this.character.setPosY(newY);
+
+                if (this.boardController && this.boardController.gameManager) {
+                    this.boardController.gameManager.onTutorialPitFall();
+                }
+            return;
         }
 
         if (pipe) {
