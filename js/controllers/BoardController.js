@@ -159,8 +159,8 @@ export class BoardController extends BaseBoardController {
             const heightTypes = [
                 { type: 1, weight: 0.45, minLevel: 3 },
                 { type: 2, weight: 0.35, minLevel: 5 },
-                { type: 3, weight: 0.15, minLevel: 10 },
-                { type: 4, weight: 0.05, minLevel: 15 }
+                { type: 3, weight: 0.3, minLevel: 10 },
+                { type: 4, weight: 0.25, minLevel: 15 }
             ];
             
             const validHeights = heightTypes.filter(ht => level >= ht.minLevel);
@@ -201,7 +201,7 @@ export class BoardController extends BaseBoardController {
                 
                 if (tile.getTileheight() > 1) {
                     const heightFounded = tile.getTileheight();
-                    const caseNum = this.randInt(0, 3);
+                    const caseNum = this.randInt(0, 25);
                     let directions = [];
                     
                     switch (caseNum) {
@@ -213,6 +213,50 @@ export class BoardController extends BaseBoardController {
                             directions = [[1, 0], [0, -1], [0, 1], [1, 1], [1, -1]]; break;
                         case 3:
                             directions = [[-1, 0], [1, 0], [-1, 1], [-1, -1]]; break;
+                        case 4:
+                            directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; break;
+                        case 5:
+                            directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]]; break;
+                        case 6:
+                            directions = [[-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [1, -2], [-1, 2], [1, 2]]; break;
+                        case 7:
+                            directions = [[-2, -2], [-1, -1], [1, 1], [2, 2]]; break;
+                        case 8:
+                            directions = [[-2, 0], [2, 0], [0, -2], [0, 2]]; break;
+                        case 9:
+                            directions = [[-1, -1], [-2, -2], [-1, 0], [0, -1], [-2, 0], [0, -2]]; break;
+                        case 10:
+                            directions = [[0, 1], [0, 2], [0, -1], [0, -2]]; break;
+                        case 11:
+                            directions = [[-1, 0], [-2, 0], [1, 0], [2, 0]]; break;
+                        case 12:
+                            directions = [[-2, -2], [-2, 2], [2, -2], [2, 2]]; break;
+                        case 13:
+                            directions = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]]; break;
+                        case 14:
+                            directions = [[-3, 0], [-2, 0], [2, 0], [3, 0]]; break;
+                        case 15:
+                            directions = [[0, -3], [0, -2], [0, 2], [0, 3]]; break;
+                        case 16:
+                            directions = [[-3, -1], [-3, 1], [3, -1], [3, 1], [-1, -3], [1, -3], [-1, 3], [1, 3]]; break;
+                        case 17:
+                            directions = [[-2, -2], [-2, 0], [-2, 2], [0, -2], [0, 2], [2, -2], [2, 0], [2, 2]]; break;
+                        case 18:
+                            directions = [[-3, -2], [-3, 2], [3, -2], [3, 2], [-2, -3], [2, -3], [-2, 3], [2, 3]]; break;
+                        case 19:
+                            directions = [[-4, 0], [-3, 0], [3, 0], [4, 0], [0, -4], [0, -3], [0, 3], [0, 4]]; break;
+                        case 20:
+                            directions = [[-2, -2], [-2, 0], [-2, 2], [0, -2], [0, 2], [2, -2], [2, 0], [2, 2], [-1, -1], [-1, 1], [1, -1], [1, 1]]; break;
+                        case 21:
+                            directions = [[-3, -3], [-3, 3], [3, -3], [3, 3], [-2, -2], [2, -2], [-2, 2], [2, 2]]; break;
+                        case 22:
+                            directions = [[-1, -3], [-1, 3], [1, -3], [1, 3], [-3, -1], [-3, 1], [3, -1], [3, 1]]; break;
+                        case 23:
+                            directions = [[-4, -1], [-4, 1], [4, -1], [4, 1], [-1, -4], [1, -4], [-1, 4], [1, 4], [-2, -2], [2, -2], [-2, 2], [2, 2]]; break;
+                        case 24:
+                            directions = [[-2, -3], [-2, 3], [2, -3], [2, 3], [-3, -2], [3, -2], [-3, 2], [3, 2]]; break;
+                        case 25:
+                            directions = [[-4, -2], [-4, 2], [4, -2], [4, 2], [-2, -4], [2, -4], [-2, 4], [2, 4], [-3, -3], [3, -3], [-3, 3], [3, 3]]; break;
                     }
                     
                     for (const [dx, dy] of directions) {

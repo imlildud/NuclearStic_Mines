@@ -21,17 +21,19 @@ export class TutorialController extends BaseBoardController {
         const size = 5;
         const board = this.createEmptyBoard(size);
         
-        board[4][0].setStart(true);
-        board[0][4].setFlaggoal(true);
-        board[0][4].setSecure(true);
+        board[0][4].setStart(true);
         
-        board[1][1].setObstacletype("natural");
-        board[1][2].setObstacletype("natural");
-        board[1][3].setObstacletype("natural");
-        board[1][4].setObstacletype("natural");
-        board[3][0].setObstacletype("natural");
+        // Goal (child) at top-right corner
+        board[4][0].setFlaggoal(true);
+        
+        // Natural obstacles (walls) forming a path
+        board[1][1].setObstacletype("safepit");
+        board[2][1].setObstacletype("natural");
         board[3][1].setObstacletype("natural");
-        board[0][2].setObstacletype("natural");
+        board[4][1].setObstacletype("natural");
+        board[0][3].setObstacletype("natural");
+        board[1][3].setObstacletype("natural");
+        board[2][3].setObstacletype("natural");
         
         return board;
     }
@@ -57,20 +59,19 @@ export class TutorialController extends BaseBoardController {
         const size = 5;
         const board = this.createEmptyBoard(size);
         
-        board[4][2].setStart(true);
-        board[0][4].setFlaggoal(true);
-        board[0][4].setSecure(true);
+        board[2][4].setStart(true);
+        board[4][0].setFlaggoal(true);
         
         board[0][0].setHazardtype("cactus");
         this._setHazardCountAround(board, 0, 0);
-        board[0][2].setHazardtype("cactus");
-        this._setHazardCountAround(board, 0, 2);
-        board[2][1].setHazardtype("cactus");
-        this._setHazardCountAround(board, 2, 1);
-        board[2][3].setHazardtype("cactus");
-        this._setHazardCountAround(board, 2, 3);
+        board[2][0].setHazardtype("cactus");
+        this._setHazardCountAround(board, 2, 0);
+        board[1][2].setHazardtype("cactus");
+        this._setHazardCountAround(board, 1, 2);
+        board[3][2].setHazardtype("cactus");
+        this._setHazardCountAround(board, 3, 2);
         
-        board[4][3].setObstacletype("natural");
+        board[3][4].setObstacletype("natural");
         board[4][4].setObstacletype("natural");
         
         return board;
@@ -80,20 +81,52 @@ export class TutorialController extends BaseBoardController {
         const size = 5;
         const board = this.createEmptyBoard(size);
         
-        board[4][0].setStart(true);
-        board[0][4].setFlaggoal(true);
-        board[0][4].setSecure(true);
+        board[0][4].setStart(true);
+        board[4][0].setFlaggoal(true);
         
-        board[0][0].setHazardtype("mine");
+        board[0][0].setHazardtype("cactus");
         this._setHazardCountAround(board, 0, 0);
-        board[1][1].setHazardtype("mine");
+        board[1][1].setHazardtype("cactus");
         this._setHazardCountAround(board, 1, 1);
-        board[2][2].setHazardtype("mine");
+        board[2][2].setHazardtype("cactus");
         this._setHazardCountAround(board, 2, 2);
-        board[3][3].setHazardtype("mine");
-        this._setHazardCountAround(board, 3, 3);
-        board[4][4].setHazardtype("mine");
+        board[4][4].setHazardtype("cactus");
         this._setHazardCountAround(board, 4, 4);
+
+        // Row 0: [4][3][2][1][0]
+        board[0][0].setTileheight(4);
+        board[0][1].setTileheight(3);
+        board[0][2].setTileheight(2);
+        board[0][3].setTileheight(1);
+        board[0][4].setTileheight(0);
+    
+        // Row 1: [3][4][3][2][1]
+        board[1][0].setTileheight(3);
+        board[1][1].setTileheight(4);
+        board[1][2].setTileheight(3);
+        board[1][3].setTileheight(2);
+        board[1][4].setTileheight(1);
+    
+        // Row 2: [2][3][4][3][2]
+        board[2][0].setTileheight(2);
+        board[2][1].setTileheight(3);
+        board[2][2].setTileheight(4);
+        board[2][3].setTileheight(3);
+        board[2][4].setTileheight(2);
+    
+        // Row 3: [1][2][3][4][3]
+        board[3][0].setTileheight(1);
+        board[3][1].setTileheight(2);
+        board[3][2].setTileheight(3);
+        board[3][3].setTileheight(4);
+        board[3][4].setTileheight(3);
+    
+        // Row 4: [0][1][2][3][4]
+        board[4][0].setTileheight(0);
+        board[4][1].setTileheight(1);
+        board[4][2].setTileheight(2);
+        board[4][3].setTileheight(3);
+        board[4][4].setTileheight(4);
         
         return board;
     }
@@ -106,13 +139,13 @@ export class TutorialController extends BaseBoardController {
         board[0][3].setGoaltype("dummie");
         board[0][3].setSecure(true);
         
-        board[0][1].setHazardtype("mine");
+        board[0][1].setHazardtype("cactus");
         this._setHazardCountAround(board, 0, 1);
-        board[2][2].setHazardtype("mine");
+        board[2][2].setHazardtype("cactus");
         this._setHazardCountAround(board, 2, 2);
-        board[3][4].setHazardtype("mine");
+        board[3][4].setHazardtype("cactus");
         this._setHazardCountAround(board, 3, 4);
-        board[4][4].setHazardtype("mine");
+        board[4][4].setHazardtype("cactus");
         this._setHazardCountAround(board, 4, 4);
         
         return board;
@@ -155,6 +188,23 @@ export class TutorialController extends BaseBoardController {
             }
         }
     }
+
+    updateVision(board, character) {
+        // For phases that need normal vision (2, 3, 4), don't reveal all
+        if (this.currentPhase >= 2) {
+            super.updateVision(board, character);
+        } else {
+            this.revealAllTiles(board);
+        }
+    }
+
+    updateVisionAroundPlayer(board, character) {
+        if (this.currentPhase >= 2) {
+            super.updateVisionAroundPlayer(board, character);
+        } else {
+            this.revealAllTiles(board);
+        }
+    }
     
     // ======================= OVERRIDDEN METHODS =======================
     
@@ -175,14 +225,6 @@ export class TutorialController extends BaseBoardController {
     generateObstacles(board, level, size) { return board; }
     generateHazards(board, totalHazards, level, size) { return board; }
     trackHazardCount(board, size) { return board; }
-    
-    updateVision(board, character) {
-        this.revealAllTiles(board);
-    }
-    
-    updateVisionAroundPlayer(board, character) {
-        this.updateVision(board, character);
-    }
     
     regenerateHazards(board, totalHazards, level, size) { return board; }
     resetHazardCount(board) { return board; }
