@@ -92,9 +92,9 @@ export class CharacterFactory {
     // ----- STUDENT CHARACTER -----
     static createStudent(character) {
         character.setHp(2);              // Low health
-        character.setFlags(5);           // 5 flag capacity
+        character.setFlags(4);           // 5 flag capacity
         character.setInventorySize(0);   // 0 inventory slots
-        character.setAbilityId(0);       // Ability ID 0 
+        character.setAbilityId(1);       // Ability ID 1 
         character.setVision(3);          // 3 tile vision range
         character.setForce(1);           // Low force
         return character;
