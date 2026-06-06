@@ -139,6 +139,7 @@ export class CharacterModel {
     // ======================= RESCUED COUNT GETTERS & SETTERS =======================
     
     getRescued() { return this.rescued; }
+    setRescued(v) { this.rescued = v; }
     incrementRescue() { this.rescued++; }
     decrementRescue(v) { this.rescued -= v; }
     
