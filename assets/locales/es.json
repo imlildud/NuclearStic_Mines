@@ -1,0 +1,117 @@
+{
+    "menu": {
+        "welcome": "Bienvenido a Nuclear-Stic Mines.\nPrepárate para aventurarte en el yermo, sobrevivir a sus peligros y \"divertirte\"... después de cada muerte en este juego táctico, procedural y roguelike inspirado en Buscaminas.\n¿Quieres jugar el tutorial?",
+        "yes": "Sí",
+        "no": "No, gracias",
+        "daily": "Misión Diaria",
+        "custom": "Misión\nPersonalizada",
+        "dailyCompleted": "¡La misión diaria ya fue completada hoy! Vuelve mañana.",
+        "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
+        "punchcard": {
+            "character": "Personaje",
+            "size": "Tamaño",
+            "hazards": "Peligros",
+            "obstacles": "Obstáculos",
+            "wanted": "Objetivo:",
+            "zone": "Zona",
+            "small": "Pequeño",
+            "medium": "Mediano",
+            "large": "Grande",
+            "xtraLarge": "Extra Grande",
+            "ultraLarge": "Ultra Grande",
+            "low": "Bajo",
+            "high": "Alto",
+            "xtraHigh": "Extra Alto",
+            "ultraHigh": "Ultra Alto",
+            "nsanelyHigh": "Locamente Alto",
+            "backyard": "Patio",
+            "desert": "Desierto",
+            "snow": "Nieve",
+            "ash": "Ceniza",
+            "chef": "Chef",
+            "mosquito": "Mosquito",
+            "mommy": "Madre",
+            "scout": "Explorador",
+            "custom": "Personalizada",
+            "seed": "Semilla: "
+        }
+    },
+
+    "game": {
+        "scoreboard": {
+            "rescued": "Rescatados",
+            "marked": "Riesgos Marcados",
+            "difficulty": "Bonus Dificultad",
+            "deaths": "Muertes",
+            "failed": "Banderas Falladas",
+            "damage": "Daño Recibido"
+        }
+    },
+
+    "config": {
+        "volume": "Volumen",
+        "music": "Música",
+        "sfx": "Efectos",
+        "language": "Idioma / Language",
+        "gameplay": "Jugabilidad",
+        "showTouch": "Mostrar Botones Táctiles",
+        "fallDamage": "Activar Daño por Caída",
+        "other": "Otros",
+        "replayTutorial": "Jugar Tutorial",
+        "manual": "Abrir Manual",
+        "save": "GUARDAR",
+        "langEn": "Inglés",
+        "langEs": "Español"
+    },
+
+    "tutorial": {
+        "phase1": {
+            "dialog1": "Hola, rescatista. Bienvenido a tu curso de entrenamiento, donde te prepararás para salir al yermo y rescatar personas.",
+            "dialog2": "Empezaremos con lo básico. Aprende a caminar... Se suponía que debías haber aprendido eso hace años... lo que sea. Usa las teclas 'WASD' para moverte.",
+            "dialog3": "Bien. Llega a ese marcador que está adelante y muévete con cuidado. Algunas cosas allá afuera son un dolor de cabeza, así que generalmente es mejor rodearlas."
+        },
+        "phase2": {
+            "dialog1": "Genial. Ahora que sabes caminar, debes aprender a usar tus banderas sabiamente. Debajo de tu icono, encontrarás un contador que muestra cuántas tienes disponibles.",
+            "dialog2": "El yermo está lleno de Peligros, y querrás evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
+            "dialog3": "Usa los botones de flechas para colocar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes ver.",
+            "dialog4": "¿Entendido? Ve a marcar ese maldito Peligro, luego dirígete a la meta.",
+            "damageMessage": "Vamos, no es tan difícil, idiota. Correr a abrazar un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
+            "wrongFlagMessage": "¿Tienes algún problema? Inténtalo de nuevo.",
+            "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a colocar la bandera...",
+            "successMessage": "Bien hecho. Ahora dirígete a la meta."
+        },
+        "phase3": {
+            "dialog1": "Ahora que dominaste el arte de banderear, debes entender que los Peligros son completamente impredecibles.",
+            "dialog2": "Nadie sabe exactamente dónde están. Si varios están agrupados en Casillas cercanas, el Contador de Peligros aumentará.",
+            "dialog3": "Necesitarás agudizar tus habilidades deductivas si quieres marcarlos o evitarlos.",
+            "dialog4": "Usa todas tus banderas y márcalos todos.",
+            "damageMessage": "Lee los malditos números. Allá afuera en el yermo, ya estarías esparcido en cien pedazos.",
+            "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de desperdiciarlas, carajo.",
+            "goalWithoutMarkingMessage": "Aún no has marcado todos los peligros. Sigue buscando.",
+            "successMessage": "¡Todos los peligros fueron marcados! Bien hecho. Ahora dirígete a la meta."
+        },
+        "phase4": {
+            "dialog1": "Ahora que puedo confiar en que entiendes los números, debes saber que el terreno allá afuera no es plano. Enfrentarás valles, colinas y terrenos suficientemente desafiantes como para hacerte arrepentir de haberte levantado de la cama.",
+            "dialog2": "He preparado este curso con diferentes elevaciones para que te acostumbres a cómo se ven. No intentes caer más de dos niveles de una vez, o te romperás las malditas piernas.",
+            "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta.",
+            "dialog4": "Marca los Peligros que dejé allá arriba, luego llega a la meta.",
+            "damageMessage": "No estoy seguro de si debería preocuparme por tu estado mental en este punto.",
+            "wrongFlagMessage": "Sigue practicando. Lo vas a necesitar...",
+            "goalWithoutMarkingMessage": "Aún no los has marcado todos. Sigue buscando.",
+            "successMessage": "Fantástico. Estoy orgulloso de ti. Dirígete a la meta para el desafío final. Tengo algo especial preparado."
+        },
+        "phase5": {
+            "dialog1": "Tu trabajo allá afuera es encontrar niños varados y traerlos de vuelta al punto de inicio. Bastante fácil, ¿verdad?",
+            "dialog2": "Para esta prueba final, quiero que simules un rescate. Preparé un maniquí para que lo recuperes y lo traigas de vuelta. Buena suerte.",
+            "dialog3": "Ve a buscar el maniquí y tráelo de vuelta al inicio. Y trata de no matarte en el camino.",
+            "damageMessage": "Si traes de vuelta a un niño, dudo que quiera ser rescatado por alguien con una extraña obsesión por abrazar cactus. Por favor, deja de hacer eso.",
+            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera encontrarás muchas cosas que no verás en este aburrido patio de entrenamiento. Buena suerte...",
+            "manualPrompt": "Ah, y por cierto, tengo un manual que podría mantenerte con vida si te apetece leerlo.",
+            "manualQuestion": "¿Leer el manual?",
+            "yes": "Sí",
+            "no": "No"
+        },
+        "pitFall": "¡JA! Mira por dónde pisas. El suelo allá afuera está lleno de agujeros tan profundos que ni un buitre se molestaría en ir tras tu cadáver. Inténtalo de nuevo.",
+        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotas de sudor en tu icono? Significa que estás exhausto y no puedes cargar más niños. Si hubiera más para rescatar, tendrías que dejar los que llevas y volver por el resto."
+    }
+}
