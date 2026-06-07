@@ -8,11 +8,17 @@ export class CharacterController {
     
     // ======================= CONSTRUCTOR =======================
     
-    constructor(character, boardController) {
+    constructor(character, boardController, gameManager) {
         this.character = character;              // Reference to CharacterModel
         this.boardController = boardController;  // Reference to BoardController
+        this.gameManager = gameManager;          // Reference to GameManager for settings
         this.totalGoals = 0;                     // Total goals to rescue
         this.remainingGoals = 0;                 // Goals still needing rescue
+    }
+    
+    // Helper to check if fall damage is enabled
+    isFallDamageEnabled() {
+        return this.gameManager && this.gameManager.isFallDamageEnabled();
     }
     
     // ======================= GOAL SETTER =======================
@@ -73,14 +79,27 @@ export class CharacterController {
             // Can't climb up 2 or more levels
             if (heightDiff >= 2) return;
 
-            // Can fall down 2 or more levels, but take damage
+            // Can fall down 2 or more levels
             if (heightDiff <= -2) {
-                const fallDamage = Math.abs(heightDiff) - 1; 
-                this.character.decrementHp(fallDamage);
-                this.character.incrementDamageTaken(1);
-            
-                if (this.character.getHp() <= 0) {
-                    this.killCharacter();
+                const fallDamageEnabled = this.isFallDamageEnabled();
+                const fallDistance = Math.abs(heightDiff);
+                
+                if (fallDamageEnabled) {
+                    // FALL DAMAGE ENABLED: Allow fall but take damage
+                    const fallDamage = fallDistance - 1;
+                    if (fallDamage > 0) {
+                        this.character.decrementHp(fallDamage);
+                        this.character.incrementDamageTaken(1);
+                    
+                        if (this.character.getHp() <= 0) {
+                            this.killCharacter();
+                            return;
+                        }
+                    }
+                    // Continue with movement after fall
+                } else {
+                    // FALL DAMAGE DISABLED: Block the fall (original behavior)
+                    // Cannot fall 2 or more levels
                     return;
                 }
             }
