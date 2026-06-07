@@ -9,7 +9,7 @@ import { GameManager } from "../managers/GameManager.js";
 import { Renderer } from "../views/Renderer.js";
 import { AudioManager } from "../managers/AudioManager.js";
 import { SaveManager } from "../managers/SaveManager.js";
-import { TutorialDialogManager } from "../managers/TutorialDialogManager.js";
+import { LocaleManager } from "../managers/LocaleManager.js";
 
 // ==============================================================
 // ====================== INITIALIZATION ========================
@@ -18,6 +18,7 @@ import { TutorialDialogManager } from "../managers/TutorialDialogManager.js";
 // Load configuration from localStorage
 const saveManager = new SaveManager();
 let config;
+let localeManager = null;
 
 try {
     config = saveManager.loadConfig();
@@ -25,6 +26,57 @@ try {
     document.body.style.background = "#333";
     throw new Error("No configuration found.");
 }
+
+// ==============================================================
+// ====================== LOCALE INIT ===========================
+// ==============================================================
+
+// Initialize the locale manager and load language files
+async function initLocale() {
+    localeManager = new LocaleManager();
+    await localeManager.init();
+    console.log("LocaleManager initialized, language:", localeManager.currentLocale);
+    applyGameLanguage();
+}
+
+// Apply translated text to all UI elements
+function applyGameLanguage() {
+    if (!localeManager) return;
+    
+    // Scoreboard labels
+    const rescuedLabel = document.getElementById("score-label-rescued");
+    const markedLabel = document.getElementById("score-labeled");
+    const difficultyLabel = document.getElementById("score-label-difficulty");
+    const deathsLabel = document.getElementById("score-label-deaths");
+    const failedLabel = document.getElementById("score-label-failed");
+    const damageLabel = document.getElementById("score-label-damage");
+    
+    if (rescuedLabel) rescuedLabel.textContent = localeManager.get('game.scoreboard.rescued');
+    if (markedLabel) markedLabel.textContent = localeManager.get('game.scoreboard.marked');
+    if (difficultyLabel) difficultyLabel.textContent = localeManager.get('game.scoreboard.difficulty');
+    if (deathsLabel) deathsLabel.textContent = localeManager.get('game.scoreboard.deaths');
+    if (failedLabel) failedLabel.textContent = localeManager.get('game.scoreboard.failed');
+    if (damageLabel) damageLabel.textContent = localeManager.get('game.scoreboard.damage');
+}
+
+// ==============================================================
+// ====================== TUTORIAL INIT =========================
+// ==============================================================
+
+// Initialize tutorial mode if needed (must run AFTER localeManager is ready)
+async function initTutorial() {
+    if (config.mode !== "tutorial") return;
+    
+    console.log("Initializing tutorial with localeManager:", localeManager);
+    const { TutorialManager } = await import("../managers/TutorialManager.js");
+    const tutorialManager = new TutorialManager(game, audio, localeManager);
+    tutorialManager.init();
+    game.setTutorialManager(tutorialManager);
+}
+
+// ==============================================================
+// ====================== REST OF INIT ==========================
+// ==============================================================
 
 // Zone to background image mapping
 const zoneMap = {
@@ -35,12 +87,15 @@ const zoneMap = {
 };
 
 // Set body background based on selected zone
-document.body.style.backgroundImage =
-    `url("../../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
+document.body.style.backgroundImage = `url("../../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
 
 // Initialize game engine and audio
 const game = new GameManager(config);
 const audio = new AudioManager();
+const saveManagerVolumes = new SaveManager();
+audio.setMusicVolume(saveManagerVolumes.getMusicVolume() / 100);
+audio.setSFXVolume(saveManagerVolumes.getSFXVolume() / 100);
+audio.setSFXEnabled(saveManagerVolumes.isSFXEnabled());
 
 // Apply saved volume settings
 audio.setMusicVolume(saveManager.getMusicVolume() / 100);
@@ -69,15 +124,39 @@ const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
 
 // ==============================================================
-// ==================== TUTORIAL MANAGER ========================
+// ==================== STARTUP SEQUENCE ========================
 // ==============================================================
 
-if (config.mode === "tutorial") {
-    const { TutorialManager } = await import("../managers/TutorialManager.js");
+// Main startup function - ensures correct order of async operations
+async function start() {
+    await initLocale();      // Load language FIRST
+    await initTutorial();    // Then initialize tutorial (needs localeManager)
+    updateHUD();             // Finally update HUD
+    applyTouchButtonsVisibility();
+}
+
+start();
+
+// ==============================================================
+// ====================== TOUCH BUTTONS VISIBILITY ==============
+// ==============================================================
+
+// Apply touch buttons visibility based on saved setting
+function applyTouchButtonsVisibility() {
+    const touchMovement = document.querySelector('.touch-movement');
+    const touchFlags = document.querySelector('.touch-flags');
     
-    const tutorialManager = new TutorialManager(game, audio);
-    tutorialManager.init();
-    game.setTutorialManager(tutorialManager);
+    if (!touchMovement || !touchFlags) return;
+    
+    const touchEnabled = saveManager.getTouchEnabled();
+    
+    if (touchEnabled) {
+        touchMovement.style.display = 'grid';
+        touchFlags.style.display = 'grid';
+    } else {
+        touchMovement.style.display = 'none';
+        touchFlags.style.display = 'none';
+    }
 }
 
 // ==============================================================
@@ -314,6 +393,7 @@ function getMaxHpByCharacter(characterType) {
 // ==================== RENDERER EXTENSIONS =====================
 // ==============================================================
 
+// Extend renderer to update HUD after each frame
 const originalRender = renderer.render;
 renderer.render = function() {
     originalRender.call(renderer);
@@ -392,6 +472,7 @@ game.handleFlagDirection = function(direction) {
 // ====================== GAME LOOP ============================
 // ==============================================================
 
+// Game render loop with FPS limiting
 let lastRender = 0;
 const FPS_LIMIT = 60;
 const FRAME_TIME = 30 / FPS_LIMIT;
@@ -416,7 +497,7 @@ document.querySelectorAll('.touch-btn').forEach(btn => {
         e.preventDefault();
         const dir = btn.dataset.dir;
         if (dir) {
-            // Disparar evento personalizado para el tutorial
+            // Dispatch custom event for tutorial
             const customEvent = new CustomEvent('touch-move', { detail: { source: "touch", dir: dir } });
             document.dispatchEvent(customEvent);
             game.handleInput(dir);
@@ -438,6 +519,3 @@ document.querySelectorAll('.flag-btn').forEach(btn => {
     btn.addEventListener('click', handleFlag);
     btn.addEventListener('touchstart', handleFlag);
 });
-
-// Initial HUD update
-updateHUD();
