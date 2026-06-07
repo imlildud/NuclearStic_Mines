@@ -6,6 +6,7 @@
 
 import { SaveManager } from "../managers/SaveManager.js";
 import { AudioManager } from "../managers/AudioManager.js";
+import { LocaleManager } from "../managers/LocaleManager.js";
 
 // ==============================================================
 // ====================== GLOBAL STATE ==========================
@@ -14,10 +15,16 @@ import { AudioManager } from "../managers/AudioManager.js";
 let punchcardMode = null;
 let dailyConfig = null;
 let currentConfig = null;
+let localeManager = null;
 
 // ==================== MANAGERS ====================
 const saveManager = new SaveManager();
 const audioManager = new AudioManager();
+const saveManagerVolumes = new SaveManager();
+audioManager.setMusicVolume(saveManagerVolumes.getMusicVolume() / 100);
+audioManager.setSFXVolume(saveManagerVolumes.getSFXVolume() / 100);
+audioManager.setSFXEnabled(saveManagerVolumes.isSFXEnabled());
+
 
 // ==============================================================
 // ==================== WELCOME SCREEN LOGIC ====================
@@ -25,12 +32,12 @@ const audioManager = new AudioManager();
 
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
-    const mainMenu = document.querySelector(".overlay");  // ✅ usar clase .overlay
+    const mainMenu = document.querySelector(".overlay");
     const yesBtn = document.getElementById("welcome-yes");
     const noBtn = document.getElementById("welcome-no");
     
     // Check if tutorial was already completed
-    const tutorialCompleted = saveManager.isTutorialCompleted();  // ✅ declarar const
+    const tutorialCompleted = saveManager.isTutorialCompleted();
     
     if (tutorialCompleted) {
         // Already completed, show main menu directly
@@ -82,13 +89,121 @@ function initWelcomeScreen() {
 }
 
 // ==============================================================
+// ======================= MENU LANGUAGES =======================
+// ==============================================================
+
+function applyMenuLanguage() {
+    if (!localeManager) return;
+    
+    // Welcome screen
+    const welcomeText = document.getElementById("welcome-text");
+    const yesBtn = document.getElementById("welcome-yes");
+    const noBtn = document.getElementById("welcome-no");
+    
+    if (welcomeText) welcomeText.innerHTML = localeManager.get('menu.welcome').replace(/\n/g, '<br><br>');
+    if (yesBtn) yesBtn.textContent = localeManager.get('menu.yes');
+    if (noBtn) noBtn.textContent = localeManager.get('menu.no');
+    
+    // Mode buttons
+    const dailyBtn = document.getElementById("daily-button");
+    const customBtn = document.getElementById("custom-button");
+    if (dailyBtn) dailyBtn.textContent = localeManager.get('menu.daily');
+    if (customBtn) customBtn.textContent = localeManager.get('menu.custom');
+    
+    // Punchcard labels
+    const charLabel = document.getElementById("pc-label-character");
+    const sizeLabel = document.getElementById("pc-label-size");
+    const hazardsLabel = document.getElementById("pc-label-hazards");
+    const obstaclesLabel = document.getElementById("pc-label-obstacles");
+    const wantedLabel = document.getElementById("pc-label-wanted");
+    const zoneLabel = document.getElementById("pc-label-zone");
+    
+    if (charLabel) charLabel.textContent = localeManager.get('menu.punchcard.character');
+    if (sizeLabel) sizeLabel.textContent = localeManager.get('menu.punchcard.size');
+    if (hazardsLabel) hazardsLabel.textContent = localeManager.get('menu.punchcard.hazards');
+    if (obstaclesLabel) obstaclesLabel.textContent = localeManager.get('menu.punchcard.obstacles');
+    if (wantedLabel) wantedLabel.textContent = localeManager.get('menu.punchcard.wanted');
+    if (zoneLabel) zoneLabel.textContent = localeManager.get('menu.punchcard.zone');
+    
+    // Punchcard select options
+    updateSelectOptions();
+}
+
+function updateSelectOptions() {
+    if (!localeManager) return;
+    
+    // Size select options
+    const sizeSelect = document.getElementById("custom-size-select");
+    if (sizeSelect) {
+        const sizeOptions = sizeSelect.options;
+        const sizeTexts = ['small', 'medium', 'large', 'xtraLarge', 'ultraLarge'];
+        for (let i = 0; i < sizeOptions.length && i < sizeTexts.length; i++) {
+            sizeOptions[i].text = localeManager.get(`menu.punchcard.${sizeTexts[i]}`);
+        }
+    }
+    
+    // Hazards select options
+    const hazardsSelect = document.getElementById("custom-hazards-select");
+    if (hazardsSelect) {
+        const hazardOptions = hazardsSelect.options;
+        const hazardTexts = ['low', 'medium', 'high', 'xtraHigh', 'ultraHigh', 'nsanelyHigh'];
+        for (let i = 0; i < hazardOptions.length && i < hazardTexts.length; i++) {
+            hazardOptions[i].text = localeManager.get(`menu.punchcard.${hazardTexts[i]}`);
+        }
+    }
+    
+    // Obstacles select options
+    const obstaclesSelect = document.getElementById("custom-obstacles-select");
+    if (obstaclesSelect) {
+        const obstacleOptions = obstaclesSelect.options;
+        const obstacleTexts = ['low', 'medium', 'high', 'xtraHigh', 'ultraHigh', 'nsanelyHigh'];
+        for (let i = 0; i < obstacleOptions.length && i < obstacleTexts.length; i++) {
+            obstacleOptions[i].text = localeManager.get(`menu.punchcard.${obstacleTexts[i]}`);
+        }
+    }
+    
+    // Zone select options
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (zoneSelect) {
+        const zoneOptions = zoneSelect.options;
+        const zoneTexts = ['backyard', 'desert', 'snow', 'ash'];
+        for (let i = 0; i < zoneOptions.length && i < zoneTexts.length; i++) {
+            zoneOptions[i].text = localeManager.get(`menu.punchcard.${zoneTexts[i]}`);
+        }
+    }
+    
+    // Character select options (legacy and custom)
+    const charSelects = ["legacy-character-select", "custom-character-select"];
+    for (const selectId of charSelects) {
+        const charSelect = document.getElementById(selectId);
+        if (charSelect) {
+            const charOptions = charSelect.options;
+            const charTexts = ['chef', 'mosquito', 'mommy', 'scout'];
+            for (let i = 0; i < charOptions.length && i < charTexts.length; i++) {
+                charOptions[i].text = localeManager.get(`menu.punchcard.${charTexts[i]}`);
+            }
+        }
+    }
+}
+
+// ==============================================================
 // ====================== DOM EVENT LISTENERS ===================
 // ==============================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    // Initialize welcome screen
-    initWelcomeScreen();
+document.addEventListener("DOMContentLoaded", async () => {
+    
+    // Initialize LocaleManager
+    localeManager = new LocaleManager();
+    await localeManager.init();
+    
+    await initWelcomeScreen();
+    applyMenuLanguage();
+    
+    localeManager.onChange(async () => {
+        await initWelcomeScreen();
+        applyMenuLanguage();
+        updatePunchcardTextures(currentConfig);
+    });
 
     const legacyButton = document.querySelector('.legacy-button');
     const dailyButton = document.querySelector('.daily-button');
@@ -168,6 +283,14 @@ document.addEventListener("DOMContentLoaded", () => {
     closeButton.addEventListener('click', () => {
         punchcardScreen.classList.remove('active');
     });
+
+    // Options Button
+    const optionButton = document.querySelector('.option-button');
+    if (optionButton) {
+        optionButton.addEventListener('click', () => {
+            window.location.href = 'pages/configuration.html';
+        });
+    }
 });
 
 // ==============================================================
@@ -184,6 +307,7 @@ const startMusicOnce = () => {
     window.removeEventListener("click", startMusicOnce);
     window.removeEventListener("touchstart", startMusicOnce);
 };
+
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
