@@ -199,7 +199,29 @@ export class SaveManager {
     setSFXVolume(volume) {
         localStorage.setItem("sfxVolume", Math.min(100, Math.max(0, volume)));
     }
-    
+
+    // ======================= TOUCH BUTTONS =======================
+
+    getTouchEnabled() {
+        const value = localStorage.getItem("touchEnabled");
+        return value !== null ? value === "true" : true;
+    }
+
+    setTouchEnabled(enabled) {
+        localStorage.setItem("touchEnabled", enabled);
+    }
+
+    // ======================= FALL DAMAGE =======================
+
+    isFallDamageEnabled() {
+        const value = localStorage.getItem("fallDamageEnabled");
+        return value !== null ? value === "true" : false;
+    }
+
+    setFallDamageEnabled(enabled) {
+        localStorage.setItem("fallDamageEnabled", enabled);
+    }
+        
     // ======================= UTILITY =======================
     
     // Clear all game data (but preserve settings if needed)

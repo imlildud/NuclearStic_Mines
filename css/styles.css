@@ -212,8 +212,8 @@ body {
 /* Daily and Custom Mission Buttons */
 .daily-button,
 .custom-button {
-    width: 45vmin;
-    max-width: 350px;
+    width: 75vmin;
+    max-width: 400px;
     height: 18vmin;
     max-height: 140px;
     
@@ -221,6 +221,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: pre-line;
     padding-left: 12vmin;
     
     background-size: contain;
@@ -270,7 +271,7 @@ body {
 /* Options Button Background */
 .option-button { 
     background-image: url('../assets/hud/menu/options.png');
-    display: none; 
+    display: block; 
 }
 
 /* ==================== GLOBAL BUTTON EFFECTS ==================== */

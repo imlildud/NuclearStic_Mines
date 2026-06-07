@@ -1,0 +1,453 @@
+/* ========================================================= */
+/* ====================== LOCAL FONTS ===================== */
+/* ========================================================= */
+
+@font-face {
+    font-family: 'Shampoos';
+    src: url('../assets/font/Shampoos-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ========================================================= */
+/* ====================== BASE CONFIGURATION =============== */
+/* ========================================================= */
+
+.filter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: url('../assets/hud/filter.png') no-repeat center center;
+    background-size: cover;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: url('../assets/hud/NuclearSticMines.png') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Shampoos', sans-serif;
+    overflow-x: hidden;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* ========================================================= */
+/* ================== CONFIGURATION PANEL ================== */
+/* ========================================================= */
+
+.config-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 10000;
+    overflow-y: auto;
+    padding: 6vh 0;
+    
+    scrollbar-width: thin;
+    scrollbar-color: #5c4028 rgba(0,0,0,0.1);
+}
+
+.config-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.config-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.config-container::-webkit-scrollbar-thumb {
+    background: #5c4028;
+    border-radius: 4px;
+    border: 1px solid #492700;
+}
+
+.config-card {
+    position: relative;
+    margin: 0 auto;
+    width: min(100vw, 700px);
+    background: url('../assets/hud/options/optionscard.png') no-repeat center top;
+    background-size: 100% 100%;
+    padding: 16vmin 8% 6vmin 8%;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.config-title {
+    position: absolute;
+    top: 3.5vmin;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 42vmin;
+    height: auto;
+    z-index: 5;
+    filter: drop-shadow(2px 4px 5px rgba(0,0,0,0.6));
+}
+
+.close-btn {
+    position: absolute;
+    top: 2vmin;
+    right: 2vmin;
+    width: 14vmin;
+    height: 14vmin;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 10;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.4));
+}
+
+.close-btn:hover {
+    filter: brightness(1.2) drop-shadow(0px 3px 6px rgba(0,0,0,0.5));
+    transform: scale(1.05);
+}
+
+.close-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========================================================= */
+/* ===================== CONTENT WRAPPER =================== */
+/* ========================================================= */
+
+.scrollable-content {
+    position: relative;
+    width: 100%;
+    z-index: 5;
+}
+
+/* ========================================================= */
+/* ===================== SECTION CARDS ===================== */
+/* ========================================================= */
+
+.section-card {
+    position: relative;
+    width: 100%;
+    margin-bottom: 3.5vmin;
+    min-height: 18vmin;
+}
+
+.section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    z-index: 1;
+    filter: drop-shadow(1px 3px 4px rgba(0,0,0,0.35));
+}
+
+.section-content {
+    position: relative;
+    z-index: 2;
+    padding: 3vmin 5vmin;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 3vmin;
+    color: #2b1608;
+    text-align: center;
+    margin-bottom: 2.5vmin;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    border-radius: 12px;
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.764);
+}
+
+/* ========================================================= */
+/* ===================== CONTROLS ALIGNMENT ================ */
+/* ========================================================= */
+
+.slider-group, .toggle-group {
+    display: table;
+    width: 100%;
+    margin: 2vmin 0;
+}
+
+.slider-row, .toggle-row {
+    display: table-row;
+}
+
+.slider-label, .toggle-label {
+    display: table-cell;
+    font-size: 4vmin;
+    color: #201005;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.slider-label { width: 18%; }
+.toggle-label { width: auto; }
+
+.volume-slider {
+    display: table-cell;
+    width: 70%;
+    height: 1.2vmin;
+    background: #bfa38a;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    border: 1px solid #6e5441;
+    margin: 0 1.5vmin;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 3.5vmin;
+    height: 3.5vmin;
+    background: #4a6b53;
+    border: 2px solid #fffdfa;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 3.5vmin;
+    height: 3.5vmin;
+    background: #4a6b53;
+    border: 2px solid #fffdfa;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.4);
+}
+
+.volume-percent {
+    display: table-cell;
+    width: 12%;
+    font-size: 5vmin;
+    color: #3b200c;
+    vertical-align: middle;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* ========================================================= */
+/* ===================== LANGUAGE BUTTONS ================== */
+/* ========================================================= */
+
+.language-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 4vmin;
+    width: 100%;
+    margin-top: 1vmin;
+}
+
+/* New custom class replacing the bare image rules */
+.lang-btn-prop {
+    font-family: 'Shampoos', sans-serif;
+    font-size: 2.2vmin;
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    background: url('../assets/hud/options/optionbtn.png') no-repeat center center;
+    background-size: 100% 100%;
+    width: 32%;
+    max-width: 150px;
+    height: 7vmin;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.5vmin; /* Subtle shift down if font asset has high baseline */
+    transition: all 0.2s ease;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));
+}
+
+.lang-btn-prop.active {
+    filter: drop-shadow(0px 0px 8px rgba(255, 215, 140, 0.9)) brightness(1.15);
+    transform: scale(1.04);
+    color: #000000;
+}
+
+.lang-btn-prop:hover:not(.active) {
+    transform: scale(1.05);
+    filter: brightness(1.1) drop-shadow(0px 2px 6px rgba(0,0,0,0.4));
+}
+
+.lang-btn-prop:active {
+    transform: scale(0.97);
+}
+
+/* ========================================================= */
+/* ===================== TOGGLE SWITCHES =================== */
+/* ========================================================= */
+
+.toggle-switch {
+    display: inline-block;
+    width: 10vmin;
+    height: 4.8vmin;
+    background: #090400;
+    border-radius: 24px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s ease;
+    border: 2px solid #4a382b;
+    box-shadow: inset 0px 2px 4px rgba(0,0,0,0.3);
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 3.6vmin;
+    height: 3.6vmin;
+    background: #e8d0b5;
+    border-radius: 50%;
+    top: 0.3vmin;
+    left: 0.5vmin;
+    transition: transform 0.2s ease;
+    box-shadow: 0px 2px 3px rgba(0,0,0,0.4);
+    border: 1px solid #aa9178;
+}
+
+.toggle-switch.active {
+    background: #b56b39;
+}
+
+.toggle-switch.active::after {
+    transform: translateX(4.8vmin);
+    background: #fffdfa;
+}
+
+/* ========================================================= */
+/* ===================== CONFIG BUTTONS ==================== */
+/* ========================================================= */
+
+/* Other utilities rewritten using the exact same asset wrapper requested */
+.config-button {
+    font-family: 'Shampoos', sans-serif;
+    font-size: 2.7vmin;
+    color: #2b1608;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    background: url('../assets/hud/options/optionbtn.png') no-repeat center center;
+    background-size: 100% 100%;
+    width: 60%;
+    max-width: 240px;
+    height: 12vmin;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2vmin auto;
+    padding-bottom: 0.5vmin;
+    padding-left: 5vmin;
+    transition: all 0.2s ease;
+    filter: drop-shadow(0px 3px 4px rgba(0,0,0,0.34));
+}
+
+.config-button:hover {
+    background-size: 100% 100%; /* Keeps texture maps locked tight */
+    transform: scale(1.03);
+    filter: brightness(1.1) drop-shadow(0px 3px 6px rgba(0,0,0,0.4));
+}
+
+.config-button:active {
+    transform: scale(0.98);
+}
+
+/* ========================================================= */
+/* ===================== SAVE ROW ========================== */
+/* ========================================================= */
+
+/* Container to perfectly space and align [EXPORT] [SAVE] [IMPORT] */
+.action-buttons-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2vmin; /* Spacing between the prop labels */
+    width: 100%;
+    margin: 4vmin auto 0 auto;
+}
+
+/* Base style for the new side buttons (Export / Import) */
+.action-btn-side {
+    font-family: 'Shampoos', sans-serif;
+    font-size: 2vmin;
+    color: #2b1608;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20vmin;
+    max-width: 130px;
+    height: 20vmin;
+    min-height: 40px;
+    transition: all 0.2s ease;
+    filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.35));
+    padding-bottom: 0.5vmin; /* Dynamic vertical text baseline shift */
+}
+
+/* Specific background asset maps for Export */
+.export-btn {
+    background: url('../assets/hud/options/export.png') no-repeat center center;
+    background-size: 100% 100%;
+}
+
+/* Specific background asset maps for Import */
+.import-btn {
+    background: url('../assets/hud/options/import.png') no-repeat center center;
+    background-size: 100% 100%;
+}
+
+/* Hover and active animations for side buttons */
+.action-btn-side:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15) drop-shadow(0px 4px 7px rgba(0,0,0,0.45));
+}
+
+.action-btn-side:active {
+    transform: scale(0.97);
+}
+
+/* Converted to flexible text layout containing standard block flow rules */
+.save-btn-prop {
+    font-family: 'Shampoos', sans-serif;
+    font-size: 3.2vmin;
+    color: #000000;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    background: url('../assets/hud/options/tag.png') no-repeat center center;
+    background-size: 100% 100%;
+    display: block;
+    margin: 3vmin auto 0 auto;
+    width: 28vmin;
+    max-width: 190px;
+    height: 15vmin;
+    min-height: 55px;
+    text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.6);
+    transition: all 0.2s ease;
+    filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.4));
+    padding-bottom: 6vmin;
+    padding-left: 5vmin;
+}
+
+.save-btn-prop:hover {
+    transform: scale(1.05);
+    filter: brightness(1.15) drop-shadow(0px 4px 8px rgba(0,0,0,0.5));
+}
+
+.save-btn-prop:active {
+    transform: scale(0.97);
+}

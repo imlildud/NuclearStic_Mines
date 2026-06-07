@@ -287,7 +287,8 @@ clearWaiters() {
     showPitFallMessage(gameManager, onComplete) {
         this.clearWaiters();
         this.gameManager = gameManager;
-        this.typeWriter("HA! Watch where you're stepping. The ground out there is full of holes so deep that not even a vulture would bother going after your corpse. Try again.", () => {
+        const pitMessage = gameManager.tutorialManager?.getText('tutorial.pitFall') || "HA! Watch where you're stepping...";
+        this.typeWriter(pitMessage, () => {
             this.stopRadioAnimationOnly();
             this.waitForMoveWithTimeout(() => {
                 console.log("Pit fall - movement detected, calling onComplete");

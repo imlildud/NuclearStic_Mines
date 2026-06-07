@@ -1,0 +1,117 @@
+{
+    "menu": {
+        "welcome": "Welcome to Nuclear-Stic Mines.\nPrepare to venture into the wasteland, survive its dangers, and \"have fun\"... after every death in this tactical, procedural roguelike strategy game inspired by Minesweeper.\nWould you like to play the tutorial?",
+        "yes": "Yep",
+        "no": "No ty",
+        "daily": "Daily Mission",
+        "custom": "Custom Mission",
+        "dailyCompleted": "Daily mission already completed today! Come back tomorrow.",
+        "tutorialCompleted": "Tutorial completed! Returning to main menu.",
+        "punchcard": {
+            "character": "Character",
+            "size": "Size",
+            "hazards": "Hazards",
+            "obstacles": "Obstacles",
+            "wanted": "Wanted:",
+            "zone": "Zone",
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large",
+            "xtraLarge": "Xtra-Large",
+            "ultraLarge": "Ultra-Large",
+            "low": "Low",
+            "high": "High",
+            "xtraHigh": "Xtra-High",
+            "ultraHigh": "Ultra-High",
+            "nsanelyHigh": "Nsanely-High",
+            "backyard": "Backyard",
+            "desert": "Desert",
+            "snow": "Snow",
+            "ash": "Ash",
+            "chef": "Chef",
+            "mosquito": "Mosquito",
+            "mommy": "Mommy",
+            "scout": "Scout",
+            "custom": "Custom",
+            "seed": "Seed: "
+        }
+    },
+    
+    "game": {
+        "scoreboard": {
+            "rescued": "Rescued",
+            "marked": "Marked Hazard",
+            "difficulty": "Difficulty Bonus",
+            "deaths": "Deaths Penalty",
+            "failed": "Failed Penalty",
+            "damage": "Damage Penalty"
+        }
+    },
+
+    "config": {
+        "volume": "Volume",
+        "music": "Music",
+        "sfx": "SFX",
+        "language": "Language / Idioma",
+        "gameplay": "Gameplay",
+        "showTouch": "Show Touch Buttons",
+        "fallDamage": "Enable Fall Damage",
+        "other": "Other",
+        "replayTutorial": "Play Tutorial",
+        "manual": "Open Manual",
+        "save": "SAVE",
+        "langEn": "English",
+        "langEs": "Español"
+    },
+
+    "tutorial": {
+        "phase1": {
+            "dialog1": "Hello, rescuer. Welcome to your training course, where you'll get ready to head out into the wasteland and rescue people.",
+            "dialog2": "We'll start with the basics. Learn how to walk... You were supposed to have learned that years ago... whatever. Use the 'WASD' keys to move around.",
+            "dialog3": "Good. Reach that marker ahead, and move carefully. Some things out there are a pain to get through, so it's usually best to go around them."
+        },
+        "phase2": {
+            "dialog1": "Great. Now that you know how to walk, you should learn how to use your flags wisely. Below your icon, you'll find a counter showing how many you have available.",
+            "dialog2": "The wasteland out there is full of Hazards, and you'll want to avoid them. To identify them, you'll use the Hazard Count numbers, which indicate whether there are any Hazards in adjacent Tiles.",
+            "dialog3": "Use the arrow controls to place flags. They only work on hidden Tiles, the ones you can't see yet.",
+            "dialog4": "Got it? Go mark that damn Hazard, then head for the goal.",
+            "damageMessage": "Come on, it's not that hard, idiot. Running over to hug a cactus isn't exactly a good solution. Try again.",
+            "wrongFlagMessage": "Do you have some kind of problem? Try again.",
+            "goalWithoutMarkingMessage": "You haven't marked anything yet. Go place the flag...",
+            "successMessage": "Well done. Now head for the goal."
+        },
+        "phase3": {
+            "dialog1": "Now that you've mastered the art of flagging, you need to understand that Hazards are completely unpredictable.",
+            "dialog2": "No one ever knows exactly where they are. If several of them are clustered in nearby Tiles, the Hazard Count will increase.",
+            "dialog3": "You'll need to sharpen your deductive skills if you want to mark them or avoid them.",
+            "dialog4": "Use all your flags and mark every one of them.",
+            "damageMessage": "Read the damn numbers. Out in the wasteland, you'd be scattered across a hundred pieces by now.",
+            "wrongFlagMessage": "Do you think flags grow on trees? Quit wasting them, damn it.",
+            "goalWithoutMarkingMessage": "You haven't marked all the hazards yet. Keep searching.",
+            "successMessage": "All hazards marked! Well done. Now head for the goal."
+        },
+        "phase4": {
+            "dialog1": "Now that I can trust you to understand the numbers, you need to know that the terrain out there isn't flat. You'll face valleys, hills, and terrain challenging enough to make you regret getting out of bed.",
+            "dialog2": "I've put this course together with different elevations so you can get used to how they look. Don't try to drop more than two levels at once, or you'll break your damn legs.",
+            "dialog3": "Mark the Hazards I've left up there, then make your way to the goal.",
+            "dialog4": "Mark the Hazards I've left up there, then make your way to the goal.",
+            "damageMessage": "I'm not sure whether I should be worried about your mental state at this point.",
+            "wrongFlagMessage": "Keep practicing. You're going to need it...",
+            "goalWithoutMarkingMessage": "You still haven't marked them all. Keep looking.",
+            "successMessage": "Fantastic. I'm proud of you. Head to the goal for the final challenge. I've got something special prepared."
+        },
+        "phase5": {
+            "dialog1": "Your job out there is to find stranded children and bring them back to the starting point. Easy enough, right?",
+            "dialog2": "For this final test, I want you to simulate a rescue. I've set up a dummy for you to retrieve and bring back. Good luck.",
+            "dialog3": "Go find the dummy and bring it back to the start. And try not to kill yourself on the way.",
+            "damageMessage": "If you bring back a child, I doubt they'll want to be rescued by someone with a strange obsession with hugging cacti. Please stop doing that.",
+            "successMessage": "That's everything I can teach you. Out there, you'll find plenty of things you won't see in this boring little training yard. Good luck...",
+            "manualPrompt": "Oh, and by the way, I've got a manual that might actually keep you alive if you feel like reading it.",
+            "manualQuestion": "Read the manual?",
+            "yes": "Yes",
+            "no": "No"
+        },
+        "pitFall": "HA! Watch where you're stepping. The ground out there is full of holes so deep that not even a vulture would bother going after your corpse. Try again.",
+        "exhaustion": "Heavy, isn't it? See those sweat drops on your icon? That means you're exhausted and can't carry any more children. If there were others to rescue, you'd have to drop off the ones you're carrying and go back for the rest."
+    }
+}
