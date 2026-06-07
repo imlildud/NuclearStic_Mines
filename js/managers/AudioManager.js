@@ -16,6 +16,9 @@ export class AudioManager {
         this.scoreAudio = null;
         this.textAudio = null;
         
+        // Track all active audio elements for real-time volume control
+        this.activeAudio = [];
+        
         // Music
         this.currentMusic = null;
         this.musicStarted = false;
@@ -34,11 +37,53 @@ export class AudioManager {
     // Enable or disable all sound effects
     setSFXEnabled(enabled) {
         this.sfxEnabled = enabled;
+        if (!enabled) {
+            this.stopAllSFX();
+        }
     }
     
-    // Set SFX volume (0.0 to 1.0)
+    // Set SFX volume (0.0 to 1.0) - Updates all currently playing SFX
     setSFXVolume(volume) {
         this.sfxVolume = Math.min(1, Math.max(0, volume));
+        // Update all currently playing audio (SFX and music)
+        for (const audio of this.activeAudio) {
+            if (audio && !audio.ended) {
+                audio.volume = this.sfxVolume;
+            }
+        }
+    }
+    
+    // Set music volume (0.0 to 1.0) - Updates current music in real time
+    setMusicVolume(volume) {
+        this.musicVolume = Math.min(1, Math.max(0, volume));
+        if (this.currentMusic) {
+            this.currentMusic.volume = this.musicVolume;
+        }
+    }
+    
+    // Track an audio element for volume control
+    trackAudio(audio, isMusic = false) {
+        if (!audio) return;
+        
+        // Set volume based on type
+        if (isMusic) {
+            audio.volume = this.musicVolume;
+        } else {
+            audio.volume = this.sfxVolume;
+        }
+        
+        this.activeAudio.push(audio);
+        
+        // Remove from tracking when finished
+        const cleanup = () => {
+            const index = this.activeAudio.indexOf(audio);
+            if (index > -1) this.activeAudio.splice(index, 1);
+            audio.removeEventListener('ended', cleanup);
+            audio.removeEventListener('pause', cleanup);
+        };
+        
+        audio.addEventListener('ended', cleanup);
+        audio.addEventListener('pause', cleanup);
     }
     
     // Play a sound effect (optional loop)
@@ -49,13 +94,43 @@ export class AudioManager {
         const audio = new Audio(`../../assets/audio/sfx/${soundFile}`);
         audio.loop = loop;
         audio.volume = vol;
+        
+        this.trackAudio(audio, false);
+        
         audio.play().catch(e => console.log("SFX failed:", soundFile, e));
         return audio;
     }
     
+    // Stop all currently playing SFX (but not music)
+    stopAllSFX() {
+        for (const audio of this.activeAudio) {
+            if (audio && !audio.ended && audio !== this.currentMusic) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
+        this.activeAudio = this.activeAudio.filter(a => a === this.currentMusic);
+    }
+    
+    // Stop all audio including music
+    stopAllAudio() {
+        for (const audio of this.activeAudio) {
+            if (audio && !audio.ended) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
+        this.activeAudio = [];
+        this.currentMusic = null;
+        this.musicStarted = false;
+    }
+    
     // Play movement sound (prevents spam)
     playMoveSFX() {
-        if (this.moveAudio && !this.moveAudio.ended) return;
+        if (this.moveAudio && !this.moveAudio.ended) {
+            // Still playing, don't spam
+            return;
+        }
         this.moveAudio = this.playSFX("move.mp3", false, 0.5);
     }
     
@@ -86,6 +161,8 @@ export class AudioManager {
         if (this.scoreAudio) {
             this.scoreAudio.pause();
             this.scoreAudio.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.scoreAudio);
+            if (index > -1) this.activeAudio.splice(index, 1);
             this.scoreAudio = null;
         }
         this.isScoreAnimating = false;
@@ -103,22 +180,14 @@ export class AudioManager {
         if (this.isWriteAnimating) {
             this.textAudio.pause();
             this.textAudio.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.textAudio);
+            if (index > -1) this.activeAudio.splice(index, 1);
             this.textAudio = null;
         }
         this.isWriteAnimating = false;
     }
-
-
     
     // ======================= MUSIC METHODS =======================
-    
-    // Set music volume (0.0 to 1.0)
-    setMusicVolume(volume) {
-        this.musicVolume = Math.min(1, Math.max(0, volume));
-        if (this.currentMusic) {
-            this.currentMusic.volume = this.musicVolume;
-        }
-    }
     
     // Load and play music based on zone
     playMusic(zone, autoStart = false) {
@@ -126,6 +195,8 @@ export class AudioManager {
         if (this.currentMusic) {
             this.currentMusic.pause();
             this.currentMusic.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.currentMusic);
+            if (index > -1) this.activeAudio.splice(index, 1);
         }
         
         let musicFile = "";
@@ -149,6 +220,8 @@ export class AudioManager {
         this.currentMusic = new Audio(musicFile);
         this.currentMusic.loop = true;
         this.currentMusic.volume = this.musicVolume;
+        
+        this.trackAudio(this.currentMusic, true);
         
         if (autoStart) {
             this.startMusic();
@@ -191,14 +264,19 @@ export class AudioManager {
     
     // Load menu music
     playMenuMusic(autoStart = false) {
+        // Stop current music if playing
         if (this.currentMusic) {
             this.currentMusic.pause();
             this.currentMusic.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.currentMusic);
+            if (index > -1) this.activeAudio.splice(index, 1);
         }
         
         this.currentMusic = new Audio("../../assets/audio/music/menu.mp3");
         this.currentMusic.loop = true;
         this.currentMusic.volume = this.musicVolume;
+        
+        this.trackAudio(this.currentMusic, true);
         
         if (autoStart) {
             this.startMusic();
@@ -210,5 +288,18 @@ export class AudioManager {
     // Check if music is currently playing
     isMusicPlaying() {
         return this.musicStarted && this.currentMusic && !this.currentMusic.paused;
+    }
+    
+    // Force update all volumes (useful after loading settings)
+    updateAllVolumes() {
+        for (const audio of this.activeAudio) {
+            if (audio && !audio.ended) {
+                if (audio === this.currentMusic) {
+                    audio.volume = this.musicVolume;
+                } else {
+                    audio.volume = this.sfxVolume;
+                }
+            }
+        }
     }
 }

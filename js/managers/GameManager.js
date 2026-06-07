@@ -55,7 +55,7 @@ export class GameManager {
             this.boardCtrl = new BoardController(this.player);
         }
 
-        this.charCtrl = new CharacterController(this.player, this.boardCtrl);
+        this.charCtrl = new CharacterController(this.player, this.boardCtrl, this);
         
         // Initialize ScoreboardManager after player/board are ready
         this.scoreboard = new ScoreboardManager(this);
@@ -64,6 +64,13 @@ export class GameManager {
         
         this.boardCtrl.updateVision(this.board, this.player);
         this.boardCtrl.setGameManager(this);
+    }
+
+    // ======================= FALL DAMAGE SETTING =======================
+
+    // Check if fall damage is enabled in settings
+    isFallDamageEnabled() {
+        return this.save.isFallDamageEnabled();
     }
     
     // Configure level based on game mode
