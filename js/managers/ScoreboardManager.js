@@ -23,6 +23,7 @@ export class ScoreboardManager {
         const overlay = document.getElementById("scoreboard-overlay");
         if (!overlay) return;
         
+        this.updateScoreboardLabels();
         const scores = this.calculateScores();
         
         // Store final scores for animation
@@ -65,6 +66,27 @@ export class ScoreboardManager {
         
         // Update scale for responsive design
         this.updateScale();
+    }
+
+    // ======================= TRANSLATION METHOD =======================
+
+    updateScoreboardLabels() {
+        const lm = this.gameManager.localeManager;
+        if (!lm) return;
+        
+        const rescuedLabel = document.getElementById("score-label-rescued");
+        const markedLabel = document.getElementById("score-labeled");
+        const difficultyLabel = document.getElementById("score-label-difficulty");
+        const deathsLabel = document.getElementById("score-label-deaths");
+        const failedLabel = document.getElementById("score-label-failed");
+        const damageLabel = document.getElementById("score-label-damage");
+        
+        if (rescuedLabel) rescuedLabel.textContent = lm.get('game.scoreboard.rescued');
+        if (markedLabel) markedLabel.textContent = lm.get('game.scoreboard.marked');
+        if (difficultyLabel) difficultyLabel.textContent = lm.get('game.scoreboard.difficulty');
+        if (deathsLabel) deathsLabel.textContent = lm.get('game.scoreboard.deaths');
+        if (failedLabel) failedLabel.textContent = lm.get('game.scoreboard.failed');
+        if (damageLabel) damageLabel.textContent = lm.get('game.scoreboard.damage');
     }
     
     // Hide the scoreboard overlay
