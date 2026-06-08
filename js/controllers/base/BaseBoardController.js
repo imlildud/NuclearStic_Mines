@@ -18,6 +18,40 @@ export class BaseBoardController {
         
         // Flag to indicate if this controller uses procedural generation
         this.isProcedural = true;
+        
+        // ======================= SEED SYSTEM =======================
+        this.seed = null;
+        this.randomGenerator = null;
+    }
+    
+    // ======================= SEED METHODS =======================
+    
+    // Set seed for deterministic generation
+    setSeed(seed) {
+        this.seed = seed;
+        this.randomGenerator = this.createSeededRandom(seed);
+        console.log(`[BaseBoardController] Seed set to: ${seed}`);
+    }
+    
+    // Create seeded pseudo-random generator (linear congruential)
+    createSeededRandom(seed) {
+        return function() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+    }
+    
+    // Get random number between 0 and 1 (uses seed if available)
+    random() {
+        if (this.randomGenerator) {
+            return this.randomGenerator();
+        }
+        return Math.random();
+    }
+    
+    // Generate random integer between min and max (inclusive)
+    randInt(min, max) {
+        return Math.floor(this.random() * (max - min + 1)) + min;
     }
     
     // ======================= ABSTRACT METHODS (Override in child classes) =======================
@@ -69,11 +103,6 @@ export class BaseBoardController {
             Array.from({ length: boardSize }, () => new TileModel())
         );
         return board;
-    }
-    
-    // Generate random integer between min and max (inclusive)
-    randInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
     // Apply radius with height check (does NOT affect higher tiles)

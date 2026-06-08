@@ -52,10 +52,10 @@ export class BoardController extends BaseBoardController {
     
     generateStartAndGoal(board, numGoals, level) {
         const boardSize = board.length;
-        const probability = Math.floor(Math.random() * 4);
+        const probability = this.randInt(0, 3);
         const edgemin = 0;
         const edgemax = boardSize - 1;
-        const randomPos = Math.floor(Math.random() * boardSize);
+        const randomPos = this.randInt(0, boardSize - 1);
         
         const goalTypes = [
             { type: "charlie", minLevel: 0 },
@@ -85,20 +85,20 @@ export class BoardController extends BaseBoardController {
     
         while (remainingGoals > 0 && attempts < maxattempts) {
             attempts++;
-            let goalX = Math.floor(Math.random() * boardSize);
-            let goalY = Math.floor(Math.random() * boardSize);
+            let goalX = this.randInt(0, boardSize - 1);
+            let goalY = this.randInt(0, boardSize - 1);
             
             switch (probability) {
-                case 0: if (goalX <= boardSize / 2) goalX = Math.floor(boardSize / 2 + Math.random() * (boardSize / 2)); break;
-                case 1: if (goalY <= boardSize / 2) goalY = Math.floor(boardSize / 2 + Math.random() * (boardSize / 2)); break;
-                case 2: if (goalX >= boardSize / 2) goalX = Math.floor(Math.random() * (boardSize / 2)); break;
-                case 3: if (goalY >= boardSize / 2) goalY = Math.floor(Math.random() * (boardSize / 2)); break;
+                case 0: if (goalX <= boardSize / 2) goalX = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
+                case 1: if (goalY <= boardSize / 2) goalY = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
+                case 2: if (goalX >= boardSize / 2) goalX = Math.floor(this.random() * (boardSize / 2)); break;
+                case 3: if (goalY >= boardSize / 2) goalY = Math.floor(this.random() * (boardSize / 2)); break;
             }
             
             const tile = board[goalX][goalY];
             
             if (tile.getGoaltype() === "none" && !tile.isStart()) {
-                const goalIndex = Math.floor(Math.random() * validGoals.length);
+                const goalIndex = this.randInt(0, validGoals.length - 1);
                 tile.setGoaltype(validGoals[goalIndex].type);
                 
                 if (validGoals[goalIndex].type === "joni") {
@@ -170,7 +170,7 @@ export class BoardController extends BaseBoardController {
             let remaining = totalHeights;
             
             while (remaining > 0) {
-                const roll = Math.random();
+                const roll = this.random();
                 let acc = 0;
                 let chosenType = 1;
                 
@@ -201,69 +201,42 @@ export class BoardController extends BaseBoardController {
                 
                 if (tile.getTileheight() > 1) {
                     const heightFounded = tile.getTileheight();
-                    const caseNum = this.randInt(0, 25);
+                    
+                    // Generate random pattern type
+                    const patternType = this.randInt(0, 5);
+                    
                     let directions = [];
                     
-                    switch (caseNum) {
-                        case 0:
-                            directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [-1, -1], [1, 1], [1, -1]]; break;
-                        case 1:
-                            directions = [[-1, 0], [0, -1], [0, 1], [-1, 1], [-1, -1]]; break;
-                        case 2:
-                            directions = [[1, 0], [0, -1], [0, 1], [1, 1], [1, -1]]; break;
-                        case 3:
-                            directions = [[-1, 0], [1, 0], [-1, 1], [-1, -1]]; break;
-                        case 4:
-                            directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; break;
-                        case 5:
-                            directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]]; break;
-                        case 6:
-                            directions = [[-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [1, -2], [-1, 2], [1, 2]]; break;
-                        case 7:
-                            directions = [[-2, -2], [-1, -1], [1, 1], [2, 2]]; break;
-                        case 8:
-                            directions = [[-2, 0], [2, 0], [0, -2], [0, 2]]; break;
-                        case 9:
-                            directions = [[-1, -1], [-2, -2], [-1, 0], [0, -1], [-2, 0], [0, -2]]; break;
-                        case 10:
-                            directions = [[0, 1], [0, 2], [0, -1], [0, -2]]; break;
-                        case 11:
-                            directions = [[-1, 0], [-2, 0], [1, 0], [2, 0]]; break;
-                        case 12:
-                            directions = [[-2, -2], [-2, 2], [2, -2], [2, 2]]; break;
-                        case 13:
-                            directions = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]]; break;
-                        case 14:
-                            directions = [[-3, 0], [-2, 0], [2, 0], [3, 0]]; break;
-                        case 15:
-                            directions = [[0, -3], [0, -2], [0, 2], [0, 3]]; break;
-                        case 16:
-                            directions = [[-3, -1], [-3, 1], [3, -1], [3, 1], [-1, -3], [1, -3], [-1, 3], [1, 3]]; break;
-                        case 17:
-                            directions = [[-2, -2], [-2, 0], [-2, 2], [0, -2], [0, 2], [2, -2], [2, 0], [2, 2]]; break;
-                        case 18:
-                            directions = [[-3, -2], [-3, 2], [3, -2], [3, 2], [-2, -3], [2, -3], [-2, 3], [2, 3]]; break;
-                        case 19:
-                            directions = [[-4, 0], [-3, 0], [3, 0], [4, 0], [0, -4], [0, -3], [0, 3], [0, 4]]; break;
-                        case 20:
-                            directions = [[-2, -2], [-2, 0], [-2, 2], [0, -2], [0, 2], [2, -2], [2, 0], [2, 2], [-1, -1], [-1, 1], [1, -1], [1, 1]]; break;
-                        case 21:
-                            directions = [[-3, -3], [-3, 3], [3, -3], [3, 3], [-2, -2], [2, -2], [-2, 2], [2, 2]]; break;
-                        case 22:
-                            directions = [[-1, -3], [-1, 3], [1, -3], [1, 3], [-3, -1], [-3, 1], [3, -1], [3, 1]]; break;
-                        case 23:
-                            directions = [[-4, -1], [-4, 1], [4, -1], [4, 1], [-1, -4], [1, -4], [-1, 4], [1, 4], [-2, -2], [2, -2], [-2, 2], [2, 2]]; break;
-                        case 24:
-                            directions = [[-2, -3], [-2, 3], [2, -3], [2, 3], [-3, -2], [3, -2], [-3, 2], [3, 2]]; break;
-                        case 25:
-                            directions = [[-4, -2], [-4, 2], [4, -2], [4, 2], [-2, -4], [2, -4], [-2, 4], [2, 4], [-3, -3], [3, -3], [-3, 3], [3, 3]]; break;
+                    switch (patternType) {
+                        case 0: // Full 3x3
+                            directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+                            break;
+                        case 1: // Cross only
+                            directions = [[-1,0],[1,0],[0,-1],[0,1]];
+                            break;
+                        case 2: // X shape only
+                            directions = [[-1,-1],[-1,1],[1,-1],[1,1]];
+                            break;
+                        case 3: // Extended cross (2 steps)
+                            directions = [[-2,0],[2,0],[0,-2],[0,2],[-1,0],[1,0],[0,-1],[0,1]];
+                            break;
+                        case 4: // Extended X (2 steps)
+                            directions = [[-2,-2],[-2,2],[2,-2],[2,2],[-1,-1],[-1,1],[1,-1],[1,1]];
+                            break;
+                        case 5: // Random single direction (for variety)
+                            const dx = this.randInt(-4, 4);
+                            const dy = this.randInt(-4, 4);
+                            directions = [[dx, dy]];
+                            break;
                     }
                     
                     for (const [dx, dy] of directions) {
                         const x = i + dx;
                         const y = j + dy;
                         if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
-                            board[x][y].setTileheight(heightFounded - 1);
+                            // Don't reduce below 1
+                            const newHeight = Math.max(1, heightFounded - 1);
+                            board[x][y].setTileheight(newHeight);
                         }
                     }
                 }
@@ -290,7 +263,7 @@ export class BoardController extends BaseBoardController {
             
             let remaining = totalObstacles;
             while (remaining > 0) {
-                const roll = Math.random();
+                const roll = this.random();
                 let acc = 0;
                 let chosenType = "natural";
                 
@@ -342,7 +315,7 @@ export class BoardController extends BaseBoardController {
         const maxAttempts = 5000;
     
         while (remaining > 0 && attempts < maxAttempts) {
-            const roll = Math.random();
+            const roll = this.random();
             let acc = 0;
             let chosenType = "mine";
         
