@@ -38,6 +38,17 @@
     },
 
     "game": {
+        "level": "NIVEL",
+        "wanted": "MORROS",
+        "customMission": "JALE AL GUSTO",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ruben",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Maniquí"
+        },
         "scoreboard": {
             "rescued": "Salvados",
             "marked": "Madres Marcadas",
@@ -108,7 +119,7 @@
             "dialog1": "Tu chamba allá afuera es encontrar morrillos perdidos y traerlos de regreso al punto de inicio. Bien fácil, ¿no?",
             "dialog2": "Para la prueba final, quiero que simules un rescate, ¿va? Dejé un maniquí para que lo recojas y lo traigas de vuelta. Éxito, wey.",
             "dialog3": "Ve por el maniquí y tráelo al inicio. Y trata de no matarte en el camino, ogete.",
-            "damageMessage": "Si traes de vuelta a un morrillo, dudo que quiera ser rescatado por alguien con una obsesión bien rara de abrazar pinches cactus. Por favor, ya párate de mama...",
+            "damageMessage": "Si traes de vuelta a un morrillo, dudo que quiera ser rescatado por alguien con una obsesión bien rara de abrazar pinches cactus. Por favor, ya dejate de mamadas.",
             "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera te esperan cosas que no vas a ver en este patiecito aburrido. Suerte, carnal...",
             "manualPrompt": "Ah, y por cierto, tengo un manual que tal vez te mantenga vivo si te gusta leer, ¿va?",
             "manualQuestion": "¿Leer el manual?",

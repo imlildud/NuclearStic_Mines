@@ -38,6 +38,17 @@
     },
     
     "game": {
+        "level": "LEVEL",
+        "wanted": "WANTED",
+        "customMission": "CUSTOM MISSION",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ru",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Dummy"
+        },
         "scoreboard": {
             "rescued": "Rescued",
             "marked": "Marked Hazard",

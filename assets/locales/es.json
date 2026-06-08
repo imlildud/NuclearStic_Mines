@@ -38,6 +38,17 @@
     },
 
     "game": {
+        "level": "NIVEL",
+        "wanted": "SE BUSCA",
+        "customMission": "MISIÓN PERSONALIZADA",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ru",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Maniquí"
+        },
         "scoreboard": {
             "rescued": "Rescatados",
             "marked": "Riesgos Marcados",
