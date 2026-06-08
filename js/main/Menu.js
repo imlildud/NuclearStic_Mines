@@ -218,19 +218,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         punchcardScreen.classList.add('active');
         generateLegacyConfig();
         updatePunchcardScale();
+        updateBadges();
     });
 
-    // ----- Daily Mode Button (usando SaveManager) -----
+    // ----- Daily Mode Button -----
     dailyButton.addEventListener('click', () => {
         if (saveManager.isDailyAttemptedToday()) {
-            alert("Daily mission already completed today! Come back tomorrow.");
-            return;
+            const message = localeManager 
+                ? localeManager.get('menu.dailyCompleted')
+                : "Daily mission already completed today! Come back tomorrow.";
+            showModal(message);
+            const startButton = document.querySelector('.pc-start');
+            if (startButton) startButton.style.display = "none";
         }
 
         punchcardMode = "daily";
         punchcardScreen.classList.add('active');
         generateDailyConfig();
         updatePunchcardScale();
+        updateBadges();
+        
     });
 
     // ----- Custom Mode Button -----
@@ -239,6 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         punchcardScreen.classList.add('active');
         generateCustomConfig();
         updatePunchcardScale();
+        updateBadges();
     });
 
     // Legacy character select
@@ -252,11 +260,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-    // Start Button (usando SaveManager)
     startButton.addEventListener('click', () => {
         if (!currentConfig) return;
         audioManager.playSFX("grade.mp3", false, 0.5);
-        saveManager.saveConfig(currentConfig);  // ✅ usar saveManager
+        saveManager.saveConfig(currentConfig);
         window.location.href = 'pages/game.html';
     });
 
@@ -611,21 +618,122 @@ function getZoneTexture(value) {
 }
 
 // ==============================================================
+// ====================== MODAL DIALOG ==========================
+// ==============================================================
+
+function showModal(message, onOk = null) {
+    const modal = document.getElementById("modal-dialog");
+    const modalText = document.getElementById("modal-text");
+    const okBtn = document.getElementById("modal-ok");
+    
+    if (!modal || !modalText) return;
+    
+    modalText.innerHTML = message.replace(/\n/g, '<br><br>');
+    modal.style.display = "flex";
+    
+    // Remove previous event listener to avoid duplicates
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    
+    newOkBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        if (onOk) onOk();
+    });
+}
+
+function initModal() {
+    const modal = document.getElementById("modal-dialog");
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    }
+}
+
+// ==============================================================
+// ======================= BADGES SYSTEM ========================
+// ==============================================================
+
+function getLegacyBadge(level) {
+    if (level <= 3) return "paper.png";
+    if (level <= 7) return "cardboard.png";
+    if (level <= 11) return "telegram.png";
+    if (level <= 15) return "bronze.png";
+    if (level <= 19) return "silver.png";
+    if (level <= 23) return "gold.png";
+    return "platinum.png";
+}
+
+function updateBadges() {
+    const legacyContainer = document.querySelector('.legacy-badge-container');
+    const dailyContainer = document.getElementById('daily-badge-container');
+    const legacyHighScore = saveManager.getLegacyHighScore();
+    const badgeImg = document.getElementById("legacy-record-badge");
+    const badgeLabel = document.getElementById("legacy-record-label");
+    
+    if (punchcardMode === "legacy") {
+        if (legacyContainer) legacyContainer.style.display = "flex";
+        if (dailyContainer) dailyContainer.style.display = "none";
+        
+        if (badgeImg) {
+            const badgeFile = getLegacyBadge(legacyHighScore);
+            badgeImg.src = `assets/hud/badges/${badgeFile}`;
+        }
+        if (badgeLabel) {
+            badgeLabel.textContent = `Record: ${legacyHighScore}`;
+        }
+    } 
+    else if (punchcardMode === "daily") {
+        if (legacyContainer) legacyContainer.style.display = "none";
+        if (dailyContainer) dailyContainer.style.display = "flex";
+        updateDailyBadge();
+    }
+    else {
+        if (legacyContainer) legacyContainer.style.display = "none";
+        if (dailyContainer) dailyContainer.style.display = "none";
+    }
+}
+
+// ======================= DAILY STREAK BADGE =======================
+
+function getDailyFireImage(streak) {
+    if (streak <= 0) return "fire0.png";
+    if (streak <= 6) return "fire1.png";
+    if (streak <= 13) return "fire2.png";
+    if (streak <= 29) return "fire3.png";
+    if (streak <= 179) return "fire4.png";
+    return "fire5.png";
+}
+
+function updateDailyBadge() {
+    const dailyContainer = document.getElementById("daily-badge-container");
+    const streakLabel = document.getElementById("daily-streak-label");
+    const streakNumber = document.getElementById("daily-streak-number");
+    const fireImg = document.getElementById("daily-streak-fire");
+    
+    if (!dailyContainer) return;
+    
+    const streak = saveManager.getDailyStreak();
+    const fireFile = getDailyFireImage(streak);
+    
+    if (streakLabel) streakLabel.textContent = `Streak: ${streak}`;
+    if (streakNumber) streakNumber.textContent = streak;
+    if (fireImg) fireImg.src = `assets/hud/badges/${fireFile}`;
+}
+
+// ==============================================================
 // ======================== UI HELPERS ==========================
 // ==============================================================
 
-// Updates punchcard scale based on window size (responsive)
 function updatePunchcardScale() {
     const pc = document.querySelector('.punchcard');
     if (!pc || !document.getElementById('punchcard-screen').classList.contains('active')) return;
 
-    // Calculate scale based on available width and height
-    // Using 0.95 to leave a small safety margin
-    const scaleX = (window.innerWidth * 0.95) / 800;
+    const scaleX = (window.innerWidth * 0.95) / 900;
     const scaleY = (window.innerHeight * 0.95) / 500;
 
-    // Choose the smallest value so nothing gets cut off
-    // Math.min(..., 1.2) allows slight growth on large screens but not infinite
     const finalScale = Math.min(scaleX, scaleY, 1.2);
 
     pc.style.setProperty('--pc-scale', finalScale);
