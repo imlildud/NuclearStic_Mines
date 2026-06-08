@@ -33,7 +33,9 @@
             "mommy": "Jefa",
             "scout": "Ratero",
             "custom": "Al gusto",
-            "seed": "Semilla: "
+            "seed": "Semilla: ",
+            "enterSeed": "Pon el número de semilla:",
+            "copied": "¡Copeado!"
         }
     },
 

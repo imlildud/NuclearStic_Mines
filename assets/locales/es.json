@@ -33,7 +33,9 @@
             "mommy": "Madre",
             "scout": "Explorador",
             "custom": "Personalizada",
-            "seed": "Semilla: "
+            "seed": "Semilla: ",
+            "enterSeed": "Ingrese el número de semilla:",
+            "copied": "¡Copiado!"
         }
     },
 
