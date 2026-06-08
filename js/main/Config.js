@@ -132,8 +132,6 @@ function initLanguageControls() {
     // Set active button
     if (currentLang === 'es') {
         esBtn.classList.add('active');
-    } else if (currentLang === 'mx') {
-        mxBtn.classList.add('active');
     } else {
         enBtn.classList.add('active');
     }
@@ -284,6 +282,145 @@ function initToggleControls() {
 }
 
 // ==============================================================
+// ========================= TEST ===============================
+// ==============================================================
+
+let secretClickCount = 0;
+let secretClickTimer = null;
+
+function initSecretCodeSystem() {
+    const configTitle = document.querySelector('.config-title');
+    if (!configTitle) return;
+    
+    // Remove pointer cursor (keep default)
+    configTitle.style.cursor = 'default';
+    
+    // Add click counter (5 clicks within 3 seconds)
+    configTitle.addEventListener('click', () => {
+        secretClickCount++;
+        
+        // Reset timer
+        if (secretClickTimer) clearTimeout(secretClickTimer);
+        secretClickTimer = setTimeout(() => {
+            secretClickCount = 0;
+        }, 3000);
+        
+        // Show secret code modal after 5 clicks
+        if (secretClickCount >= 5) {
+            secretClickCount = 0;
+            showSecretCodeModal();
+        }
+    });
+}
+
+function showSecretCodeModal() {
+    const modal = document.getElementById("secret-code-modal");
+    const input = document.getElementById("secret-code-input");
+    const message = document.getElementById("secret-code-message");
+    const submitBtn = document.getElementById("secret-code-submit");
+    const cancelBtn = document.getElementById("secret-code-cancel");
+    
+    if (!modal) return;
+    
+    input.value = "";
+    message.textContent = "";
+    modal.style.display = "flex";
+    
+    const newSubmit = submitBtn.cloneNode(true);
+    const newCancel = cancelBtn.cloneNode(true);
+    submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+    
+    newSubmit.addEventListener("click", () => {
+        const code = input.value.trim().toLowerCase();
+        processSecretCode(code);
+        modal.style.display = "none";
+    });
+    
+    newCancel.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+    
+    input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            const code = input.value.trim().toLowerCase();
+            processSecretCode(code);
+            modal.style.display = "none";
+        }
+    };
+}
+
+function processSecretCode(code) {
+    if (!code) return;
+    
+    switch(code) {
+        case 'back2school':
+            if (!saveManager.isSecretCodeActivated('back2school')) {
+                saveManager.activateSecretCode('back2school');
+                addBackyardToZoneSelect();
+                showModal("Backyard zone unlocked!");
+            } else {
+                showModal("Code already activated!");
+            }
+            break;
+            
+        case 'masiosare':
+            if (localeManager) {
+                localeManager.setLocale('mx');
+                applyLanguage();
+                updateActiveLanguageButton('mx');
+                saveManager.setLanguage('mx');
+                showModal("Language changed to Mexican!");
+            } else {
+                showModal("Could not change language");
+            }
+            break;
+            
+        case 'debugthis':
+                const config = {
+                    mode: "test",
+                    seed: null,
+                    level: 1,
+                    character: "chef",
+                    size: 24,
+                    hazards: 1,
+                    obstacles: 1,
+                    goals: 1,
+                    zone: "backyard"
+                };
+                saveManager.saveConfig(config);
+                window.location.href = '../../pages/game.html';
+            break;
+        default:
+            showModal("Invalid code!");
+    }
+}
+
+function addBackyardToZoneSelect() {
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (!zoneSelect) return;
+    
+    let hasBackyard = false;
+    for (let i = 0; i < zoneSelect.options.length; i++) {
+        if (zoneSelect.options[i].value === 'backyard') {
+            hasBackyard = true;
+            break;
+        }
+    }
+    
+    if (!hasBackyard) {
+        const option = document.createElement('option');
+        option.value = 'backyard';
+        option.textContent = localeManager ? localeManager.get('menu.punchcard.backyard') : 'Backyard';
+        zoneSelect.appendChild(option);
+        
+        if (localeManager) {
+            updateSelectOptions();
+        }
+    }
+}
+
+// ==============================================================
 // ====================== OTHER BUTTONS =========================
 // ==============================================================
 
@@ -336,13 +473,21 @@ function initImportExport() {
             allData[key] = localStorage.getItem(key);
         }
         const dataStr = JSON.stringify(allData, null, 2);
-        const blob = new Blob([dataStr], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `nuclearstic_save_${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+        
+        // Detect if running in Cordova
+        if (window.cordova) {
+            // Android/Cordova: use cordova-plugin-file
+            saveFileInCordova(dataStr);
+        } else {
+            // PC / Browser: normal download
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nuclearstic_save_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
     });
     
     importBtn.addEventListener('click', () => {
@@ -374,6 +519,106 @@ function initImportExport() {
             reader.readAsText(file);
         };
         input.click();
+    });
+}
+
+// Cordova file save function
+function saveFileInCordova(dataStr) {
+    // Request permission for storage (Android 11+)
+    if (window.cordova && cordova.platformId === 'android') {
+        // Use cordova-plugin-file
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, (fs) => {
+            const fileName = `nuclearstic_save_${Date.now()}.json`;
+            fs.root.getFile(fileName, { create: true, exclusive: false }, (fileEntry) => {
+                fileEntry.createWriter((writer) => {
+                    writer.onwriteend = () => {
+                        // Show success and the file path
+                        const successMsg = localeManager 
+                            ? localeManager.get('config.exportSuccess')
+                            : `File saved: ${fileName}`;
+                        showModal(successMsg);
+                    };
+                    writer.onerror = (err) => {
+                        console.error('Write error:', err);
+                        fallbackAndroidSave(dataStr, fileName);
+                    };
+                    
+                    // Write file
+                    const blob = new Blob([dataStr], {type: 'application/json'});
+                    writer.write(blob);
+                }, (err) => {
+                    console.error('File create error:', err);
+                    fallbackAndroidSave(dataStr, fileName);
+                });
+            }, (err) => {
+                console.error('File system error:', err);
+                fallbackAndroidSave(dataStr, fileName);
+            });
+        }, (err) => {
+            console.error('Request file system error:', err);
+            fallbackAndroidSave(dataStr, fileName);
+        });
+    } else {
+        fallbackAndroidSave(dataStr, `nuclearstic_save_${Date.now()}.json`);
+    }
+}
+
+// Fallback: copy to clipboard and show instructions
+function fallbackAndroidSave(dataStr, fileName) {
+    // Copy JSON to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(dataStr).then(() => {
+            const msg = localeManager 
+                ? localeManager.get('config.exportClipboard')
+                : 'Configuration copied to clipboard. You can paste it into a file.';
+            showModal(msg);
+        }).catch(() => {
+            showManualSaveDialog(dataStr);
+        });
+    } else {
+        showManualSaveDialog(dataStr);
+    }
+}
+
+// Manual save dialog (shows textarea with JSON)
+function showManualSaveDialog(dataStr) {
+    const modal = document.getElementById("modal-dialog");
+    const modalText = document.getElementById("modal-text");
+    const okBtn = document.getElementById("modal-ok");
+    
+    if (!modal || !modalText) return;
+    
+    const msg = localeManager 
+        ? localeManager.get('config.exportManual')
+        : 'Copy this JSON to save your configuration:';
+    
+    modalText.innerHTML = `
+        <div style="margin-bottom: 2vmin;">${msg}</div>
+        <textarea id="manual-export-text" style="width: 90%; height: 30vmin; font-family: monospace; font-size: 2vmin; padding: 1vmin;">${dataStr}</textarea>
+        <button id="manual-copy-btn" style="margin-top: 2vmin; padding: 1vmin 2vmin; font-family: 'Shampoos'; background: #4a7c59; color: white; border: none; border-radius: 8px; cursor: pointer;">Copy to Clipboard</button>
+    `;
+    modal.style.display = "flex";
+    
+    const copyBtn = document.getElementById("manual-copy-btn");
+    if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+            const textarea = document.getElementById("manual-export-text");
+            textarea.select();
+            document.execCommand('copy');
+            const copiedMsg = localeManager 
+                ? localeManager.get('config.copied')
+                : 'Copied!';
+            copyBtn.textContent = copiedMsg;
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy to Clipboard';
+            }, 2000);
+        });
+    }
+    
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    newOkBtn.addEventListener("click", () => {
+        modal.style.display = "none";
     });
 }
 
@@ -414,7 +659,13 @@ async function init() {
     initCloseButton();
     initSaveButton();
     initImportExport();
+    initSecretCodeSystem(); 
     applyLanguage();
+
+    // Apply any activated codes on load
+    if (saveManager.isSecretCodeActivated('back2school')) {
+        addBackyardToZoneSelect();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -87,9 +87,22 @@
         "langEn": "Inglés",
         "langEs": "Español",
         "langMx": "Mexicano",
+        "exportSuccess": "¡Configuración guardada exitosamente!",
+        "exportClipboard": "Configuración copiada al portapapeles. Puedes pegarla en un archivo.",
+        "exportManual": "Copia este JSON para guardar tu configuración:",
+        "copied": "¡Copiado!",
         "importSuccess": "Configuración importada exitosamente. Reinicia el juego.",
         "importError": "Archivo de respaldo inválido",
-        "fallDamageWarning": "ADVERTENCIA:\nActivar daño por caída te permite caer desde cualquier altura. Esto puede causar SOFTLOCK (quedarte atrapado en áreas de las que no puedes subir). ¿Estás seguro de que quieres activar el daño por caída?"
+        "fallDamageWarning": "ADVERTENCIA:\nActivar daño por caída te permite caer desde cualquier altura. Esto puede causar SOFTLOCK (quedarte atrapado en áreas de las que no puedes subir). ¿Estás seguro de que quieres activar el daño por caída?",
+        "secretTitle": "Ingresa el Código Secreto",
+        "secretPlaceholder": "Ingresa el código...",
+        "secretSubmit": "Enviar",
+        "secretCancel": "Cancelar",
+        "secretInvalid": "¡Código inválido!",
+        "secretAlready": "¡Código ya activado!",
+        "secretBack2school": "¡CÓDIGO ACTIVADO: Zona Backyard desbloqueada en modo Custom!",
+        "secretMasiosare": "¡CÓDIGO ACTIVADO! Idioma cambiado a Mexicano.",
+        "secretDebugthis": "¡CÓDIGO ACTIVADO! Modo de prueba disponible en modo Custom."
     },
 
     "tutorial": {

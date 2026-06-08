@@ -51,6 +51,10 @@ export class GameManager {
         // Select board controller based on mode
         if (this.config.mode === "tutorial") {
             this.boardCtrl = new TutorialController(this.player);
+        } else if (this.config.mode === "test") {
+            const { TestController } = await import("../controllers/TestController.js");
+            this.boardCtrl = new TestController(this.player);
+            console.log("[GameManager] Test mode activated with TestController");
         } else {
             this.boardCtrl = new BoardController(this.player);
         }
@@ -87,6 +91,14 @@ export class GameManager {
         // ===== TUTORIAL MODE =====
         if (this.config.mode === "tutorial") {
             this.board = this.boardCtrl.generateBoard(5);
+            this.charCtrl.getStartCoords(this.board);
+            this.boardCtrl.updateVision(this.board, this.player);
+            return;
+        }
+
+        // ===== TEST MODE =====
+        if (this.config.mode === "test") {
+            this.board = this.boardCtrl.generateBoard(24);
             this.charCtrl.getStartCoords(this.board);
             this.boardCtrl.updateVision(this.board, this.player);
             return;
