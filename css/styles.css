@@ -32,7 +32,6 @@
 /* ========================================================= */
 /* ==================== WELCOME SCREEN ===================== */
 /* ========================================================= */
-
 .welcome-screen {
     position: fixed;
     inset: 0;
@@ -122,7 +121,179 @@
     box-shadow: 0 2px 0 #2a4a35;
 }
 
-/* Body Base Styles */
+/* Welcome Panel (returning player) */
+.welcome-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+.welcome-greeting {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 32px);
+    color: #000000;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 1vmin;
+}
+
+/* Name Panel (first time) */
+.name-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+.welcome-input {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 32px);
+    padding: 1.5vmin 2vmin;
+    width: 80%;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #6a4a2a;
+    border-radius: 12px;
+    outline: none;
+}
+
+.welcome-input:focus {
+    border-color: #4a7c59;
+    box-shadow: 0 0 8px rgba(74, 124, 89, 0.5);
+}
+
+/* Tutorial Prompt Panel */
+.tutorial-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+/* ========================================================= */
+/* ==================== WELCOME STATS ====================== */
+/* ========================================================= */
+
+.welcome-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Shampoos';
+    border-radius: 16px;
+    margin-bottom: 2vmin;
+    min-width: 200px;
+}
+
+/* Row for current level (horizontal) */
+.welcome-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-stat-label {
+    font-weight: bold;
+    color: #2b1608;
+    font-size: min(3vmin, 24px);
+}
+
+.welcome-stat-value {
+    color: #000000;
+    font-weight: bold;
+    font-size: min(4vmin, 28px);
+}
+
+/* Items for record and streak (vertical centering) */
+.welcome-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-badge-img {
+    width: 10vmin;
+    height: 12vmin;
+    object-fit: contain;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+}
+
+/* Welcome Record Wrapper */
+.welcome-record-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-record-number {
+    position: absolute;
+    font-family: 'Shampoos';
+    font-size: 3vmin;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+}
+
+/* Welcome Streak Wrapper */
+.welcome-streak-wrapper {
+    position: relative;
+    width: 12vmin;
+    height: 12vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-streak-frame {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.welcome-streak-number {
+    position: absolute;
+    font-family: 'Shampoos';
+    font-size: 4vmin;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    z-index: 2;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.welcome-streak-fire {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ========================================================= */
+/* ==================== BODY STYLES ===================== */
+/* ========================================================= */
 body {
     margin: 0;
     height: 100vh;
@@ -358,6 +529,7 @@ body {
     transform: scale(var(--pc-scale, 1));
     transform-origin: center center;
     transition: transform 0.1s ease-out;
+    container-type: inline-size;
 }
 
 /* Punchcard Background Base Image */
@@ -613,59 +785,59 @@ body {
 }
 
 /* ========================================================= */
-/* ==================== LEGACY BADGE ======================= */
+/* ================= LEGACY BADGE SECTION ================== */
 /* ========================================================= */
 
 .legacy-badge-container {
     position: absolute;
-    top: 28%;
+    top: 26%;
     left: -5%;
     transform: rotate(20deg);
-    display: flex;
     z-index: 6;
 }
 
 .badge-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 10px;
-    padding: 1vmin;
-}
-
-.badge-label {
-    font-family: 'Shampoos';
-    font-size: 3vmin;
-    color: #000000;
-    margin-bottom: 0.5vmin;
-    text-align: center;
-    white-space: nowrap;
 }
 
 .badge-img {
-    width: 9vmin;
-    height: 12vmin;
-    object-fit: contain;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+    width: 10cqi;
+    height: auto;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.6));
+}
+
+.badge-label {
+    position: absolute;
+    bottom: 10%; 
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shampoos', sans-serif;
+    color: #fff;
+    font-size: 3cqi;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 2;
 }
 
 /* ========================================================= */
-/* ==================== DAILY STREAK BADGE ================= */
+/* ================= DAILY STREAK BADGE ==================== */
 /* ========================================================= */
 
 .daily-badge-container {
     position: absolute;
-    top: 28%;
-    left: -3%;
+    top: 25%;
+    left: -6%;
     transform: rotate(20deg);
-    display: flex;
     z-index: 6;
 }
 
 .daily-streak-wrapper {
     position: relative;
-    width: 9vmin;
-    height: 12vmin;
+    width: 14cqi;
+    height: 14cqi;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -673,22 +845,20 @@ body {
 
 .daily-streak-number {
     position: absolute;
-    font-family: 'Shampoos';
-    font-size: 3.5vmin;
-    font-weight: bold;
-    color: #000000;
-    text-shadow: 1px 1px 0 #ffffff;
-    z-index: 2;
-    text-align: center;
-    top: 50%;
+    top: 53%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-family: 'Shampoos', sans-serif;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-size: 5cqi;
+    z-index: 2;
 }
 
 .daily-fire-img {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 70%;
+    height: 70%;
     object-fit: contain;
     z-index: 1;
 }
@@ -699,14 +869,14 @@ body {
 
 .pc-seed-button-container {
     position: absolute;
-    bottom: 15px;
-    right: -20px;
+    bottom: -1%;
+    right: -3%;
     z-index: 7;
 }
 
 .pc-seed-btn {
-    width: 15vmin;
-    height: 15vmin;
+    width: 12cqi;
+    height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
     filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
@@ -728,7 +898,7 @@ body {
 
 .custom-dice-container {
     position: absolute;
-    top: 28%;
+    top: 25%;
     left: -5%;
     transform: rotate(20deg);
     display: flex;
@@ -736,12 +906,10 @@ body {
 }
 
 .custom-dice-btn {
-    width: 12vmin;
-    height: 12vmin;
-    object-fit: contain;
+    width: 12cqi;
+    height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
 }
 
 .custom-dice-btn:hover {

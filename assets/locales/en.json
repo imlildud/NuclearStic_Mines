@@ -7,6 +7,17 @@
         "custom": "Custom Mission",
         "dailyCompleted": "Daily mission already completed today! Come back tomorrow.",
         "tutorialCompleted": "Tutorial completed! Returning to main menu.",
+        
+        "welcomeBack": "Welcome back, {name}!\nReady to play?",
+        "currentLevel": "Current Level: ",
+        "recordLevel": "Record Level",
+        "dailyStreak": "Daily Streak",
+        "play": "Play",
+        "enterName": "Enter your name, rescuer:",
+        "namePlaceholder": "Your name",
+        "continue": "Continue",
+        "tutorialQuestion": "Would you like to play the tutorial?",
+        
         "punchcard": {
             "character": "Character",
             "size": "Size",

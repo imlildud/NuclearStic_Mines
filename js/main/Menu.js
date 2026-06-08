@@ -30,33 +30,161 @@ audioManager.setSFXEnabled(saveManagerVolumes.isSFXEnabled());
 // ==================== WELCOME SCREEN LOGIC ====================
 // ==============================================================
 
+// Initialize welcome screen with multi-panel flow
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const mainMenu = document.querySelector(".overlay");
+    
+    const welcomePanel = document.getElementById("welcome-panel");
+    const namePanel = document.getElementById("name-panel");
+    const tutorialPanel = document.getElementById("tutorial-panel");
+    
+    // Hide all panels first
+    if (welcomePanel) welcomePanel.style.display = "none";
+    if (namePanel) namePanel.style.display = "none";
+    if (tutorialPanel) tutorialPanel.style.display = "none";
+    
+    const tutorialCompleted = saveManager.isTutorialCompleted();
+    const username = saveManager.getUsername();
+    
+    // Existing player - show welcome panel with stats
+    if (tutorialCompleted && username) {
+        showWelcomePanel(username);
+        if (welcomePanel) welcomePanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+    }
+    // Has name but not completed tutorial - ask to play tutorial
+    else if (username && username !== "") {
+        showTutorialPrompt();
+        if (tutorialPanel) tutorialPanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+    }
+    // First time - ask for name
+    else {
+        showNamePrompt();
+        if (namePanel) namePanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+    }
+}
+
+// Show welcome panel with user stats (returning player)
+function showWelcomePanel(username) {
+    const greetingEl = document.getElementById("welcome-greeting");
+    const statsEl = document.getElementById("welcome-stats");
+    const playBtn = document.getElementById("welcome-play");
+    
+    if (!greetingEl || !statsEl) return;
+    
+    const legacyLevel = saveManager.getLegacyLevel();
+    const legacyHighScore = saveManager.getLegacyHighScore();
+    const dailyStreak = saveManager.getDailyStreak();
+    
+    // Get badge image for legacy record
+    const badgeFile = getLegacyBadge(legacyHighScore);
+    const badgeImgPath = `assets/hud/badges/${badgeFile}`;
+    
+    // Get fire image for daily streak
+    const fireFile = getDailyFireImage(dailyStreak);
+    const fireImgPath = `assets/hud/badges/${fireFile}`;
+    
+    // Build greeting text
+    const greetingText = localeManager 
+        ? localeManager.get('menu.welcomeBack').replace('{name}', username)
+        : `Welcome back, ${username}!\nReady to play?`;
+    
+    // Build stats
+    const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
+    
+    const statsHTML = `
+        <div class="welcome-stat-row">
+            <span class="welcome-stat-label">${currentLevelText}</span>
+            <span class="welcome-stat-value">${legacyLevel}</span>
+        </div>
+        <div class="welcome-stat-item">
+            <div class="welcome-record-wrapper">
+                <span class="welcome-record-number">${legacyHighScore}</span>
+                <img src="${badgeImgPath}" class="welcome-badge-img" alt="badge">
+            </div>
+        </div>
+        <div class="welcome-stat-item">
+            <div class="welcome-streak-wrapper">
+                <img src="assets/hud/badges/calendar.png" class="welcome-streak-frame" alt="frame">
+                <span class="welcome-streak-number">${dailyStreak}</span>
+                <img src="${fireImgPath}" class="welcome-streak-fire" alt="fire">
+            </div>
+        </div>
+    `;
+    
+    greetingEl.innerHTML = greetingText.replace(/\n/g, '<br>');
+    statsEl.innerHTML = statsHTML;
+    
+    if (playBtn) {
+        playBtn.textContent = localeManager ? localeManager.get('menu.play') : "Play";
+        playBtn.onclick = () => {
+            const welcomeScreen = document.getElementById("welcome-screen");
+            const mainMenu = document.querySelector(".overlay");
+            if (welcomeScreen) welcomeScreen.style.display = "none";
+            if (mainMenu) mainMenu.style.display = "flex";
+        };
+    }
+}
+
+// Show name input panel (first time player)
+function showNamePrompt() {
+    const promptEl = document.getElementById("name-prompt");
+    const inputEl = document.getElementById("username-input");
+    const continueBtn = document.getElementById("name-continue");
+    
+    if (promptEl) {
+        promptEl.textContent = localeManager ? localeManager.get('menu.enterName') : "Enter your name, rescuer:";
+    }
+    if (inputEl) {
+        inputEl.placeholder = localeManager ? localeManager.get('menu.namePlaceholder') : "Your name";
+        inputEl.value = "";
+        // Allow enter key to submit
+        inputEl.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                const name = inputEl.value.trim();
+                if (name) {
+                    saveManager.setUsername(name);
+                    showTutorialPrompt();
+                    document.getElementById("name-panel").style.display = "none";
+                    document.getElementById("tutorial-panel").style.display = "flex";
+                }
+            }
+        };
+    }
+    if (continueBtn) {
+        continueBtn.textContent = localeManager ? localeManager.get('menu.continue') : "Continue";
+        continueBtn.onclick = () => {
+            const name = inputEl.value.trim();
+            if (name) {
+                saveManager.setUsername(name);
+                showTutorialPrompt();
+                document.getElementById("name-panel").style.display = "none";
+                document.getElementById("tutorial-panel").style.display = "flex";
+            }
+        };
+    }
+}
+
+// Show tutorial prompt panel
+function showTutorialPrompt() {
+    const questionEl = document.getElementById("tutorial-question");
     const yesBtn = document.getElementById("welcome-yes");
     const noBtn = document.getElementById("welcome-no");
     
-    // Check if tutorial was already completed
-    const tutorialCompleted = saveManager.isTutorialCompleted();
-    
-    if (tutorialCompleted) {
-        // Already completed, show main menu directly
-        if (welcomeScreen) welcomeScreen.style.display = "none";
-        if (mainMenu) mainMenu.style.display = "flex";
-        return;
+    if (questionEl) {
+        questionEl.innerHTML = (localeManager ? localeManager.get('menu.tutorialQuestion') : "Would you like to play the tutorial?").replace(/\n/g, '<br><br>');
     }
     
-    // First time, show welcome screen
-    if (welcomeScreen) welcomeScreen.style.display = "flex";
-    if (mainMenu) mainMenu.style.display = "none";
-    
-    // Yep button - start tutorial
     if (yesBtn) {
-        yesBtn.addEventListener("click", () => {
-            // Save that tutorial was started (not completed yet)
+        yesBtn.textContent = localeManager ? localeManager.get('menu.yes') : "Yep";
+        yesBtn.onclick = () => {
             saveManager.setTutorialCompleted(false);
-            
-            // Create tutorial config
             const config = {
                 mode: "tutorial",
                 seed: null,
@@ -68,23 +196,18 @@ function initWelcomeScreen() {
                 goals: 1,
                 zone: "backyard"
             };
-            
-            // Save config and go to game
             saveManager.saveConfig(config);
             window.location.href = "../../pages/game.html";
-        });
+        };
     }
     
-    // No ty button - skip tutorial
     if (noBtn) {
-        noBtn.addEventListener("click", () => {
-            // Mark tutorial as completed (skipped)
+        noBtn.textContent = localeManager ? localeManager.get('menu.no') : "No ty";
+        noBtn.onclick = () => {
             saveManager.setTutorialCompleted(true);
-            
-            // Hide welcome, show main menu
-            if (welcomeScreen) welcomeScreen.style.display = "none";
-            if (mainMenu) mainMenu.style.display = "flex";
-        });
+            // Reload to show welcome panel
+            window.location.reload();
+        };
     }
 }
 

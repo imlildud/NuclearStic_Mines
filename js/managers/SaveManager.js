@@ -29,6 +29,18 @@ export class SaveManager {
         localStorage.setItem('gameConfig', JSON.stringify(config));
         this.config = config;
     }
+
+    // ======================= USERNAME =======================
+
+    // Get saved username
+    getUsername() {
+        return localStorage.getItem("username") || "";
+    }
+
+    // Set username
+    setUsername(name) {
+        localStorage.setItem("username", name);
+    }
     
     // ======================= LEGACY MODE PROGRESS =======================
     

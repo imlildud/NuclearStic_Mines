@@ -7,6 +7,17 @@
         "custom": "Jale al\ngusto",
         "dailyCompleted": "¡La chamba de hoy ya fue completada, Vuelve mañana.",
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
+        
+        "welcomeBack": "¡Qué pedo, {name}!\n¿Listo para chambear?",
+        "currentLevel": "Nivel Actual: ",
+        "recordLevel": "Récord",
+        "dailyStreak": "Racha Diaria",
+        "play": "Jalar",
+        "enterName": "Pon tu nombre, rescatador:",
+        "namePlaceholder": "Tu nombre, wey",
+        "continue": "Seguir",
+        "tutorialQuestion": "¿Quieres echarte el tutorial?",
+
         "punchcard": {
             "character": "Chambeador",
             "size": "Talla",
