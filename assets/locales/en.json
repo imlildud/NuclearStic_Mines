@@ -33,7 +33,9 @@
             "mommy": "Mommy",
             "scout": "Scout",
             "custom": "Custom",
-            "seed": "Seed: "
+            "seed": "Seed: ",
+            "enterSeed": "Enter seed number:",
+            "copied": "Copied!"
         }
     },
     
