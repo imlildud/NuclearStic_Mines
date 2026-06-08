@@ -18,12 +18,10 @@ export class TutorialManager {
         console.log("TutorialManager received localeManager:", localeManager);
     }
     
-    // Helper method to get localized text
     getText(key) {
         return this.localeManager ? this.localeManager.get(key) : key;
     }
     
-    // Initialize tutorial UI and start phase 1
     init() {
         this.dialogManager = new TutorialDialogManager(this.audioManager);
         this.dialogManager.init();
@@ -39,9 +37,9 @@ export class TutorialManager {
     // Phase 1: Movement tutorial
     startPhase1() {
         const dialogues = [
-            { text: this.getText('tutorial.phase1.dialog1'), waitForTap: true },
-            { text: this.getText('tutorial.phase1.dialog2'), waitForMove: true },
-            { text: this.getText('tutorial.phase1.dialog3'), waitForMove: true }
+            { text: this.getText('tutorial.phase1.dialog1') },
+            { text: this.getText('tutorial.phase1.dialog2') },
+            { text: this.getText('tutorial.phase1.dialog3') }
         ];
         
         this.dialogManager.sequence(dialogues, this.gameManager, () => {
@@ -50,19 +48,19 @@ export class TutorialManager {
         });
     }
     
-    // Phase 2: Flag tutorial (cactus marking)
+    // Phase 2: Flag tutorial
     startPhase2() {
         this.gameManager.setGameInputLocked(true);
         this.gameManager.boardCtrl.revealAllTiles(this.gameManager.board);
     
         const dialogues = [
-            { text: this.getText('tutorial.phase2.dialog1'), waitForTap: true },
-            { text: this.getText('tutorial.phase2.dialog2'), waitForTap: true },
-            { text: this.getText('tutorial.phase2.dialog3'), waitForTap: true, afterCallback: () => {
+            { text: this.getText('tutorial.phase2.dialog1') },
+            { text: this.getText('tutorial.phase2.dialog2') },
+            { text: this.getText('tutorial.phase2.dialog3'), afterCallback: () => {
                 this.gameManager.boardCtrl.hideAllTiles(this.gameManager.board);
                 this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
             }},
-            { text: this.getText('tutorial.phase2.dialog4'), waitForMove: true }
+            { text: this.getText('tutorial.phase2.dialog4') }
         ];
     
         this.dialogManager.sequenceWithCallbacks(dialogues, this.gameManager, () => {
@@ -78,7 +76,7 @@ export class TutorialManager {
         });
     }
 
-    // Phase 3: Flag tutorial 2 (multiple cactus marking)
+    // Phase 3: Multiple flags tutorial
     startPhase3() {
         this.gameManager.setGameInputLocked(true);
         this.gameManager.player.setFlags(4);
@@ -86,13 +84,13 @@ export class TutorialManager {
         this.gameManager.boardCtrl.currentPhase = 3;
     
         const dialogues = [
-            { text: this.getText('tutorial.phase3.dialog1'), waitForTap: true },
-            { text: this.getText('tutorial.phase3.dialog2'), waitForTap: true },
-            { text: this.getText('tutorial.phase3.dialog3'), waitForTap: true, afterCallback: () => {
+            { text: this.getText('tutorial.phase3.dialog1') },
+            { text: this.getText('tutorial.phase3.dialog2') },
+            { text: this.getText('tutorial.phase3.dialog3'), afterCallback: () => {
                 this.gameManager.boardCtrl.hideAllTiles(this.gameManager.board);
                 this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
             }},
-            { text: this.getText('tutorial.phase3.dialog4'), waitForMove: true }
+            { text: this.getText('tutorial.phase3.dialog4') }
         ];
     
         this.dialogManager.sequenceWithCallbacks(dialogues, this.gameManager, () => {
@@ -117,13 +115,13 @@ export class TutorialManager {
         this.gameManager.boardCtrl.currentPhase = 4;
 
         const dialogues = [
-            { text: this.getText('tutorial.phase4.dialog1'), waitForTap: true },
-            { text: this.getText('tutorial.phase4.dialog2'), waitForTap: true },
-            { text: this.getText('tutorial.phase4.dialog3'), waitForTap: true, afterCallback: () => {
+            { text: this.getText('tutorial.phase4.dialog1') },
+            { text: this.getText('tutorial.phase4.dialog2') },
+            { text: this.getText('tutorial.phase4.dialog3'), afterCallback: () => {
                 this.gameManager.boardCtrl.hideAllTiles(this.gameManager.board);
                 this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
             }},
-            { text: this.getText('tutorial.phase4.dialog4'), waitForMove: true }
+            { text: this.getText('tutorial.phase4.dialog4') }
         ];
 
         this.dialogManager.sequenceWithCallbacks(dialogues, this.gameManager, () => {
@@ -140,7 +138,7 @@ export class TutorialManager {
         });
     }
     
-    // Phase 5: Rescue tutorial (dummie rescue)
+    // Phase 5: Rescue tutorial
     startPhase5() {
         this.gameManager.setGameInputLocked(true);
         this.gameManager.player.setFlags(4);
@@ -150,9 +148,9 @@ export class TutorialManager {
         this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
 
         const dialogues = [
-            { text: this.getText('tutorial.phase5.dialog1'), waitForTap: true },
-            { text: this.getText('tutorial.phase5.dialog2'), waitForTap: true },
-            { text: this.getText('tutorial.phase5.dialog3'), waitForMove: true }
+            { text: this.getText('tutorial.phase5.dialog1') },
+            { text: this.getText('tutorial.phase5.dialog2') },
+            { text: this.getText('tutorial.phase5.dialog3') }
         ];
 
         this.dialogManager.sequenceWithCallbacks(dialogues, this.gameManager, () => {
@@ -161,7 +159,7 @@ export class TutorialManager {
         });
     }
 
-    // Start checking for rescue completion
+    // Start checking for rescue completion (unchanged from before)
     startRescueChecking() {
         let lastHp = this.gameManager.player.getHp();
         let hasRescued = false;
@@ -177,7 +175,6 @@ export class TutorialManager {
         
             if (!board || !player || isResetting) return;
         
-            // ===== CHECK FOR DAMAGE =====
             const currentHp = player.getHp();
             if (currentHp < lastHp) {
                 lastHp = currentHp;
@@ -189,7 +186,7 @@ export class TutorialManager {
                 
                 self.dialogManager.clearWaiters();
                 self.dialogManager.typeWriter(self.getText('tutorial.phase5.damageMessage'), () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         
                         self.gameManager.board = self.gameManager.boardCtrl.generateBoard(5);
@@ -219,7 +216,6 @@ export class TutorialManager {
             }
             lastHp = currentHp;
         
-            // ===== CHECK FOR EXHAUSTION =====
             const rescued = player.getRescued();
             const force = player.getForce();
         
@@ -227,7 +223,7 @@ export class TutorialManager {
                 exhaustionMessageShown = true;
                 self.dialogManager.clearWaiters();
                 self.dialogManager.typeWriter(self.getText('tutorial.exhaustion'), () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                     });
                 });
@@ -237,7 +233,6 @@ export class TutorialManager {
                 }, 3000);
             }
         
-            // ===== CHECK FOR DELIVERY =====
             const currentTile = board[player.getPosX()][player.getPosY()];
             if (currentTile && currentTile.isStart() && self.gameManager.charCtrl.remainingGoals === 0) {
                 hasDelivered = true;
@@ -248,7 +243,7 @@ export class TutorialManager {
                 self.gameManager.charCtrl.deliverGoal(board);
             
                 self.dialogManager.typeWriter(self.getText('tutorial.phase5.successMessage'), () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         self.showManualPrompt();
                     });
@@ -259,10 +254,9 @@ export class TutorialManager {
         }, 100);
     }
 
-    // Show manual prompt after rescue
     showManualPrompt() {
         this.dialogManager.typeWriter(this.getText('tutorial.phase5.manualPrompt'), () => {
-            this.dialogManager.waitForTap(() => {
+            this.dialogManager.waitForAnyInput(() => {
                 this.dialogManager.hide();
                 this.showManualButtons();
             });
@@ -270,7 +264,6 @@ export class TutorialManager {
         this.gameManager.setGameInputLocked(true);
     }
 
-    // Show Yes/No buttons for manual
     showManualButtons() {
         const overlay = document.createElement('div');
         overlay.id = 'manual-prompt-overlay';
@@ -332,19 +325,17 @@ export class TutorialManager {
         noBtn.addEventListener('click', closeOverlay);
     }
 
-    // Generic flag checking for phases 2, 3, 4
     startFlagCheckingWithConfig(config) {
         const {
             requiredMarkedCount = 1,
-            damageMessage = "Come on, it's not that hard, idiot. Running over to hug a cactus isn't exactly a good solution. Try again.",
-            wrongFlagMessage = "Do you have some kind of problem? Try again.",
-            goalWithoutMarkingMessage = "You haven't marked anything yet. Go place the flag...",
+            damageMessage = "Come on, it's not that hard...",
+            wrongFlagMessage = "Do you have some kind of problem?",
+            goalWithoutMarkingMessage = "You haven't marked anything yet...",
             successMessage = "Well done. Now head for the goal.",
             resetFlags = 4,
             resetHp = 2
         } = config;
     
-        // Clear any existing interval
         if (this.flagCheckInterval) {
             clearInterval(this.flagCheckInterval);
             this.flagCheckInterval = null;
@@ -363,7 +354,6 @@ export class TutorialManager {
         
             if (!board || !player || isResetting) return;
         
-            // ===== RESET FUNCTION =====
             const resetPhase = (shouldResetBoard) => {
                 if (isResetting) return;
                 isResetting = true;
@@ -372,21 +362,17 @@ export class TutorialManager {
                 self.flagCheckInterval = null;
             
                 if (shouldResetBoard) {
-                    // Reset entire board (new instance)
                     self.gameManager.board = self.gameManager.boardCtrl.generateBoard(5);
                     self.gameManager.charCtrl.getStartCoords(self.gameManager.board);
                     self.gameManager.boardCtrl.updateVision(self.gameManager.board, self.gameManager.player);
                 } else {
-                    // Reset position only (keep flags that were correctly placed)
                     self.gameManager.charCtrl.getStartCoords(board);
                     self.gameManager.boardCtrl.updateVisionAroundPlayer(board, self.gameManager.player);
                 }
             
-                // Reset health and flags
                 self.gameManager.player.setHp(resetHp);
                 self.gameManager.player.setFlags(resetFlags);
             
-                // Reset tracking variables
                 hasFlaggedCorrectly = false;
                 wrongFlagAttempts = 0;
                 lastHp = resetHp;
@@ -398,7 +384,6 @@ export class TutorialManager {
                 }, 100);
             };
         
-            // ===== CHECK FOR DAMAGE =====
             const currentHp = player.getHp();
             if (currentHp < lastHp) {
                 lastHp = currentHp;
@@ -406,7 +391,7 @@ export class TutorialManager {
                 self.flagCheckInterval = null;
                 self.dialogManager.clearWaiters();
                 self.dialogManager.typeWriter(damageMessage, () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         resetPhase(true);
                     });
@@ -416,14 +401,13 @@ export class TutorialManager {
             }
             lastHp = currentHp;
         
-            // ===== CHECK IF PLAYER REACHED GOAL WITHOUT MARKING =====
             const currentTile = board[player.getPosX()][player.getPosY()];
             if (currentTile && currentTile.isFlaggoal() && !hasFlaggedCorrectly) {
                 clearInterval(self.flagCheckInterval);
                 self.flagCheckInterval = null;
                 self.dialogManager.clearWaiters();
                 self.dialogManager.typeWriter(goalWithoutMarkingMessage, () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         resetPhase(false);
                     });
@@ -432,7 +416,6 @@ export class TutorialManager {
                 return;
             }
         
-            // ===== CHECK FOR CORRECTLY MARKED HAZARDS =====
             let markedCount = 0;
             for (let i = 0; i < board.length; i++) {
                 for (let j = 0; j < board.length; j++) {
@@ -446,7 +429,7 @@ export class TutorialManager {
                 self.flagCheckInterval = null;
                 self.dialogManager.typeWriter(successMessage, () => {
                     self.gameManager.setGameInputLocked(false);
-                    self.dialogManager.waitForMove(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         self.dialogManager.waitForFlaggoal(self.gameManager, () => {
                             self.nextPhase();
@@ -457,7 +440,6 @@ export class TutorialManager {
                 return;
             }
         
-            // ===== CHECK FOR WRONG FLAGS =====
             let wrongFlagCount = 0;
             for (let i = 0; i < board.length; i++) {
                 for (let j = 0; j < board.length; j++) {
@@ -474,7 +456,7 @@ export class TutorialManager {
                 self.flagCheckInterval = null;
                 self.dialogManager.clearWaiters();
                 self.dialogManager.typeWriter(wrongFlagMessage, () => {
-                    self.dialogManager.waitForTap(() => {
+                    self.dialogManager.waitForAnyInput(() => {
                         self.dialogManager.hide();
                         resetPhase(true);
                     });
@@ -485,20 +467,16 @@ export class TutorialManager {
         }, 100);
     }
     
-    // Called when player falls into pit
     onPitFall() {
         this.gameManager.setGameInputLocked(true);
-    
         this.gameManager.charCtrl.getStartCoords(this.gameManager.board);
         this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
-    
         this.dialogManager.showPitFallMessage(this.gameManager, () => {
             console.log("Pit fall message completed, unlocking input");
             this.gameManager.setGameInputLocked(false);
         });
     }
     
-    // Advance to next phase
     nextPhase() {
         this.currentPhase++;
     
@@ -508,21 +486,17 @@ export class TutorialManager {
         }
     
         this.gameManager.boardCtrl.currentPhase = this.currentPhase;
-    
-        // Load next phase board
         this.gameManager.board = this.gameManager.boardCtrl.generateBoard(5);
         this.gameManager.charCtrl.getStartCoords(this.gameManager.board);
         this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
-    
-        // Reset player stats
         this.gameManager.player.setHp(2);
+        
         while (this.gameManager.player.getRescued() > 0) {
             this.gameManager.player.decrementRescue(1);
         }
     
         this.gameManager.setGameInputLocked(false);
     
-        // Start appropriate phase
         switch(this.currentPhase) {
             case 2: this.startPhase2(); break;
             case 3: this.startPhase3(); break;
@@ -533,7 +507,6 @@ export class TutorialManager {
     
     completeTutorial() {
         this.gameManager.save.setTutorialCompleted(true);
-        
         const message = this.getText('menu.tutorialCompleted');
         this.gameManager.showMessage(message, () => {
             setTimeout(() => {
