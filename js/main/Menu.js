@@ -302,6 +302,88 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.location.href = 'pages/configuration.html';
         });
     }
+
+    // Seed button (set seed) - only for custom mode
+    const seedBtn = document.getElementById("pc-seed-btn");
+    if (seedBtn) {
+        seedBtn.addEventListener("click", () => {
+            if (punchcardMode === "custom" && currentConfig) {
+                showSeedInputModal(currentConfig.seed, (newSeed) => {
+                    currentConfig.seed = newSeed;
+                    updateSeedDisplay(newSeed);
+                    // Also update the config seed for game generation
+                    if (currentConfig) {
+                        currentConfig.seed = newSeed;
+                    }
+                });
+            }
+        });
+    }
+
+    // Dice button (randomize custom selectors)
+    const diceBtn = document.getElementById("custom-dice-btn");
+    if (diceBtn) {
+        diceBtn.addEventListener("click", () => {
+            if (punchcardMode === "custom") {
+                randomizeCustomSelectors();
+                // Generate new random seed
+                if (currentConfig) {
+                    currentConfig.seed = generateRandomSeed();
+                    updateSeedDisplay(currentConfig.seed);
+                }
+            }
+        });
+    }
+    
+    // Seed label click - copy to clipboard
+    const seedLabel = document.getElementById("pc-seed-label");
+    if (seedLabel) {
+        seedLabel.addEventListener("click", () => {
+            if (currentConfig && currentConfig.seed) {
+                const seedText = currentConfig.seed.toString();
+                const copiedText = localeManager ? localeManager.get('menu.punchcard.copied') : "Copied!";
+                
+                // Try modern clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(seedText).then(() => {
+                        const originalText = seedLabel.textContent;
+                        seedLabel.textContent = `✓ ${copiedText}`;
+                        setTimeout(() => {
+                            updateSeedDisplay(currentConfig.seed);
+                        }, 1500);
+                    }).catch(() => {
+                        fallbackCopy(seedText, copiedText);
+                    });
+                } else {
+                    fallbackCopy(seedText, copiedText);
+                }
+            }
+        });
+    }
+
+    // Fallback copy method (works on older browsers and Cordova)
+    function fallbackCopy(text, copiedText) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        // Show feedback
+        const seedLabel = document.getElementById("pc-seed-label");
+        if (seedLabel) {
+            seedLabel.textContent = `✓ ${copiedText}`;
+            setTimeout(() => {
+                if (currentConfig && currentConfig.seed) {
+                    updateSeedDisplay(currentConfig.seed);
+                }
+            }, 1500);
+        }
+    }
 });
 
 // ==============================================================
@@ -353,6 +435,16 @@ function updatePunchcardTextures(config) {
     seedLabel.style.display = "none";
     legacySelect.style.display = "none";
 
+    if (seedLabel) {
+        seedLabel.style.display = "block";
+        const seedPrefix = localeManager ? localeManager.get('menu.punchcard.seed') : "Seed: ";
+        if (config.seed) {
+            seedLabel.textContent = `${seedPrefix}${config.seed}`;
+        } else {
+            seedLabel.textContent = `${seedPrefix}---`;
+        }
+    }
+
     /* -------------------- Daily Mode -------------------- */
     if (config.mode === "daily") {
         seedLabel.style.display = "block";
@@ -396,7 +488,6 @@ function updatePunchcardTextures(config) {
 
 // Generates legacy mode configuration
 function generateLegacyConfig() {
-
     hideAllSelects();
 
     document.querySelector(".pct-title").style.display = "none";
@@ -404,8 +495,10 @@ function generateLegacyConfig() {
 
     const config = createBaseConfig();
     config.mode = "legacy";
+    
+    config.seed = generateRandomSeed();
+    updateSeedDisplay(config.seed);
 
-    // Load saved level from localStorage
     const savedLevel = localStorage.getItem("legacy_level");
     const level = savedLevel ? parseInt(savedLevel) : 1;
     config.level = level;
@@ -419,7 +512,6 @@ function generateLegacyConfig() {
     config.goals = goals;
     config.character = "chef";
 
-    // Legacy scaling is tied to level
     config.size = config.level;
     config.hazards = config.level;
     config.obstacles = config.level;
@@ -427,6 +519,9 @@ function generateLegacyConfig() {
     dailyConfig = config;
     currentConfig = config;
     updatePunchcardTextures(config);
+    
+    // Hide custom-only elements
+    updateCustomElementsVisibility(false);
 }
 
 // ==============================================================
@@ -465,7 +560,6 @@ function getRandomInRange(random, min, max) {
 
 // Generates daily mode configuration with deterministic randomness
 function generateDailyConfig() {
-
     hideAllSelects();
 
     document.querySelector(".pct-title").style.display = "none";
@@ -483,12 +577,10 @@ function generateDailyConfig() {
     config.seed = seed;
     config.size = size;
 
-    // Random character selection
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
     config.goals = getRandomInRange(random, 1, 5);
 
-    // Random zone selection
     const zoneNum = getRandomInRange(random, 1, 3);
     const zoneMap = {1: "desert", 2: "snow", 3: "ash"};
     config.zone = zoneMap[zoneNum];
@@ -499,6 +591,9 @@ function generateDailyConfig() {
     dailyConfig = config;
     currentConfig = config;
     updatePunchcardTextures(config);
+    
+    // Update seed display for daily
+    updateSeedDisplay(seed);
 
     const startButton = document.querySelector('.pc-start');
     if (startButton) {
@@ -508,6 +603,9 @@ function generateDailyConfig() {
             startButton.style.display = "block";
         }
     }
+    
+    // Hide custom-only elements
+    updateCustomElementsVisibility(false);
 }
 
 // ==============================================================
@@ -516,16 +614,19 @@ function generateDailyConfig() {
 
 // Generates custom mode configuration (shows all selects)
 function generateCustomConfig() {
-
     hideAllSelects();
 
     document.getElementById("pc-date-note").textContent = "Custom";
-    document.getElementById("pc-seed-label").textContent = "idk put something";
+    
+    if (!currentConfig || !currentConfig.seed) {
+        currentConfig = createBaseConfig();
+        currentConfig.seed = generateRandomSeed();
+    }
+    updateSeedDisplay(currentConfig.seed);
 
     document.querySelector(".pc-title").style.display = "none";
     document.querySelector(".pct-title").style.display = "block";
 
-    // Show custom mode selects
     document.getElementById("legacy-character-select").style.display = "none";
     document.getElementById("custom-character-select").style.display = "block";
     document.getElementById("custom-size-select").style.display = "block";
@@ -533,6 +634,15 @@ function generateCustomConfig() {
     document.getElementById("custom-obstacles-select").style.display = "block";
     document.getElementById("custom-wanted-select").style.display = "block";
     document.getElementById("custom-zone-select").style.display = "block";
+    
+    // Hide legacy and daily badges
+    const legacyContainer = document.getElementById("legacy-badge-container");
+    const dailyContainer = document.getElementById("daily-badge-container");
+    if (legacyContainer) legacyContainer.style.display = "none";
+    if (dailyContainer) dailyContainer.style.display = "none";
+    
+    // Show custom-only elements
+    updateCustomElementsVisibility(true);
 
     updateCustomTextures();
 }
@@ -542,6 +652,12 @@ function updateCustomTextures() {
 
     const config = createBaseConfig();
     config.mode = "custom";
+
+    if (currentConfig && currentConfig.seed) {
+        config.seed = currentConfig.seed;
+    } else {
+        config.seed = generateRandomSeed();
+    }
 
     config.character = document.getElementById("custom-character-select").value;
     config.size = parseInt(document.getElementById("custom-size-select").value);
@@ -635,6 +751,98 @@ function getZoneTexture(value) {
     if (value === "snow") return "assets/hud/punchcard/zone/snow.png";
     if (value === "ash") return "assets/hud/punchcard/zone/ash.png";
     return "assets/hud/punchcard/zone/desert.png";
+}
+
+// ==============================================================
+// ======================= SEED SYSTEM ==========================
+// ==============================================================
+
+// Generate random seed (1 - 999999999)
+function generateRandomSeed() {
+    return Math.floor(Math.random() * 999999999) + 1;
+}
+
+// Update seed label display (top center)
+function updateSeedDisplay(seed) {
+    const seedLabel = document.getElementById("pc-seed-label");
+    if (seedLabel && localeManager) {
+        seedLabel.textContent = `${localeManager.get('menu.punchcard.seed')}${seed}`;
+    } else if (seedLabel) {
+        seedLabel.textContent = `Seed: ${seed}`;
+    }
+}
+
+// Show seed input modal
+function showSeedInputModal(currentSeed, onConfirm) {
+    const modal = document.getElementById("modal-dialog");
+    const modalText = document.getElementById("modal-text");
+    const okBtn = document.getElementById("modal-ok");
+    
+    if (!modal || !modalText) return;
+    
+    const enterSeedText = localeManager 
+        ? localeManager.get('menu.punchcard.enterSeed')
+        : "Enter seed number:";
+    
+    modalText.innerHTML = `
+        <div style="margin-bottom: 2vmin;">${enterSeedText}</div>
+        <input type="number" id="seed-input" value="${currentSeed}" style="font-family: 'Shampoos'; font-size: 4vmin; padding: 1vmin; text-align: center; width: 80%;">
+    `;
+    modal.style.display = "flex";
+    
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    
+    newOkBtn.addEventListener("click", () => {
+        const input = document.getElementById("seed-input");
+        const newSeed = parseInt(input.value) || generateRandomSeed();
+        modal.style.display = "none";
+        if (onConfirm) onConfirm(newSeed);
+    });
+}
+
+// Randomize all custom selectors
+function randomizeCustomSelectors() {
+    const random = createSeededRandom(generateRandomSeed());
+    
+    const chars = ["chef", "mosquito", "mommy", "scout"];
+    const character = chars[getRandomInRange(random, 0, 3)];
+    document.getElementById("custom-character-select").value = character;
+    
+    const sizes = ["8", "12", "16", "20", "24"];
+    const size = sizes[getRandomInRange(random, 0, 4)];
+    document.getElementById("custom-size-select").value = size;
+    
+    const hazards = ["1", "5", "8", "12", "20", "30"];
+    const hazard = hazards[getRandomInRange(random, 0, 5)];
+    document.getElementById("custom-hazards-select").value = hazard;
+    
+    const obstacles = ["1", "3", "5", "10", "15", "30"];
+    const obstacle = obstacles[getRandomInRange(random, 0, 5)];
+    document.getElementById("custom-obstacles-select").value = obstacle;
+    
+    const wanted = getRandomInRange(random, 1, 5).toString();
+    document.getElementById("custom-wanted-select").value = wanted;
+    
+    const zones = ["backyard", "desert", "snow", "ash"];
+    const zone = zones[getRandomInRange(random, 0, 3)];
+    document.getElementById("custom-zone-select").value = zone;
+    
+    updateCustomTextures();
+}
+
+// Update visibility of custom-only elements
+function updateCustomElementsVisibility(isCustom) {
+    const seedButtonContainer = document.getElementById("pc-seed-button-container");
+    const diceContainer = document.getElementById("custom-dice-container");
+    
+    if (isCustom) {
+        if (seedButtonContainer) seedButtonContainer.style.display = "block";
+        if (diceContainer) diceContainer.style.display = "flex";
+    } else {
+        if (seedButtonContainer) seedButtonContainer.style.display = "none";
+        if (diceContainer) diceContainer.style.display = "none";
+    }
 }
 
 // ==============================================================
