@@ -112,6 +112,7 @@ const startMusicOnce = () => {
     window.removeEventListener("click", startMusicOnce);
     window.removeEventListener("touchstart", startMusicOnce);
 };
+
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
@@ -130,6 +131,11 @@ const renderer = new Renderer(canvas, game);
 // Main startup function - ensures correct order of async operations
 async function start() {
     await initLocale();      // Load language FIRST
+    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
+    
+    // Start the game ONLY after localeManager is set
+    game.startGame();
+    
     await initTutorial();    // Then initialize tutorial (needs localeManager)
     updateHUD();             // Finally update HUD
     applyTouchButtonsVisibility();
