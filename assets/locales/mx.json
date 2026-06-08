@@ -1,0 +1,121 @@
+{
+    "menu": {
+        "welcome": "Bienvenido a Nuclear-Stic Mines.\nPrepárate para chambear en el yermo, aguantar sus madres y \"pasartela a toda madre\"... después de cada muerte en este juego táctico, procedural y roguelike inspirado en Buscaminas.\n¿Quieres echarte el tutorial?",
+        "yes": "Sobres",
+        "no": "Nel",
+        "daily": "Chamba Diaria",
+        "custom": "Jale al\ngusto",
+        "dailyCompleted": "¡La chamba de hoy ya fue completada, Vuelve mañana.",
+        "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
+        "punchcard": {
+            "character": "Chambeador",
+            "size": "Talla",
+            "hazards": "Peligros",
+            "obstacles": "Estorbos",
+            "wanted": "Morros:",
+            "zone": "Municipio",
+            "small": "Chiquito",
+            "medium": "Mediano",
+            "large": "Grandote",
+            "xtraLarge": "De aqui palla",
+            "ultraLarge": "De aqui a marte",
+            "low": "Poquito",
+            "high": "un Chingo",
+            "xtraHigh": "un Vergo",
+            "ultraHigh": "un Putero",
+            "nsanelyHigh": "Nambre, ni madres",
+            "backyard": "Changarro",
+            "desert": "Sonora",
+            "snow": "Nevado de Toluca",
+            "ash": "Colima",
+            "chef": "Pinche",
+            "mosquito": "Mosco",
+            "mommy": "Jefa",
+            "scout": "Ratero",
+            "custom": "Al gusto",
+            "seed": "Semilla: "
+        }
+    },
+
+    "game": {
+        "scoreboard": {
+            "rescued": "Salvados",
+            "marked": "Madres Marcadas",
+            "difficulty": "Chamba",
+            "deaths": "Perecidos",
+            "failed": "Cagadas",
+            "damage": "Putasos Recibidos"
+        }
+    },
+
+    "config": {
+        "volume": "Ruido",
+        "music": "Música",
+        "sfx": "Efectos",
+        "language": "Idioma / Language",
+        "gameplay": "Jugabilidad",
+        "showTouch": "Mostrar Botones Táctiles",
+        "fallDamage": "Activar Daño por Caída",
+        "other": "Otros",
+        "replayTutorial": "Jugar Tutorial",
+        "manual": "Abrir Manual",
+        "save": "GUARDAR",
+        "langEn": "Inglés",
+        "langEs": "Español",
+        "langMx": "Mexicano",
+        "importSuccess": "Configuración importada chida. Reinicia el juego, wey.",
+        "importError": "¿Esa mamada que?, invalido",
+        "fallDamageWarning": "¡AGUAS!\nActivar el daño por caída te permite aventarte de cualquier pinche altura. Te puedes quedar ATORADO (sin poder trepar de regreso). ¿Seguro quieres prenderlo?"
+    },
+
+    "tutorial": {
+        "phase1": {
+            "dialog1": "Quiubo, chambeador. Bienvenido a tu prope de entrenamiento, donde te pondras cabron para salir al yermo y rescatar personas.",
+            "dialog2": "Empezaremos con el pilon. Aprende a caminar... Se suponía que debías haber aprendido eso hace años... lo que sea. Usa las teclas 'WASD' para moverte.",
+            "dialog3": "Eso merito. Vete a esa meta que está ahi, te vas con cuidado. Algunas madres allá afuera son un dolor de huevos, así que generalmente es mejor rodearlas."
+        },
+        "phase2": {
+            "dialog1": "A huevo. Ahora que sabes caminar, debes meterte en la cabeza como usar tus banderas sabiamente. Ahí abajo de tu icono, esta un contador que muestra cuántas traes.",
+            "dialog2": "El yermo está hasta la madre de Peligros, y ta mejor evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
+            "dialog3": "Usa los botones de flechas para echar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes wachar.",
+            "dialog4": "¿Va? Ve a marcar ese pinche Peligro, luego vete a la meta.",
+            "damageMessage": "Vamos, no es tan difícil, wey. Correr a chingarte un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
+            "wrongFlagMessage": "¿Tienes algún pedo? Vas de nuevo.",
+            "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a echar la bandera...",
+            "successMessage": "A toda madre. Ahora vete a la meta."
+        },
+        "phase3": {
+            "dialog1": "De huevos. Ahora que le sabes al bandereo, tienes que entender que los Peligros son bien cabrones e impredecibles.",
+            "dialog2": "Nadie sabe exactamente dónde están. Si varios están en putiza en casillas cercanas, el Conteo de Peligros se va a la chingada.",
+            "dialog3": "Te va a tocar usar la cabeza si quieres marcarlos o evitarlos, papá.",
+            "dialog4": "Usa todas tus banderas y márcalos todos, carajo.",
+            "damageMessage": "Lee los pinches números, wey. Allá afuera en el yermo, ya estarías más muerto que el perro de la vecina.",
+            "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de gastarlas a lo pendejo.",
+            "goalWithoutMarkingMessage": "Todavía no marcas todos los peligros. Sigue buscando, huevón.",
+            "successMessage": "¡Todos los peligros marcados! A huevo. Ahora dale a la meta."
+        },
+        "phase4": {
+            "dialog1": "Ahora que ya le entiendes a los números, debes saber que el terreno allá afuera no es parejo. Te tocarán cerros, hoyos, y un desmadre que te hará querer no levantarte de la hamaca.",
+            "dialog2": "Te puse este desmadre con diferentes alturas para que te acostumbres. No te avientes más de dos niveles de una sola vez o te vas a quebrar las pinches patas.",
+            "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta, ¿va?",
+            "dialog4": "Marca los Peligros que dejé allá arriba, luego llégale a la meta.",
+            "damageMessage": "Ya no sé si preocuparme por tu estado mental, wey. Estás pero bien pendejo.",
+            "wrongFlagMessage": "Sigue practicando, vas a necesitar mucha suerte...",
+            "goalWithoutMarkingMessage": "Todavía no los marcas todos. Sigue buscando, no te hagas.",
+            "successMessage": "¡Fantástico! Estoy orgulloso de ti, carnal. Ándale a la meta para el reto final. Tengo algo bien verga preparado."
+        },
+        "phase5": {
+            "dialog1": "Tu chamba allá afuera es encontrar morrillos perdidos y traerlos de regreso al punto de inicio. Bien fácil, ¿no?",
+            "dialog2": "Para la prueba final, quiero que simules un rescate, ¿va? Dejé un maniquí para que lo recojas y lo traigas de vuelta. Éxito, wey.",
+            "dialog3": "Ve por el maniquí y tráelo al inicio. Y trata de no matarte en el camino, ogete.",
+            "damageMessage": "Si traes de vuelta a un morrillo, dudo que quiera ser rescatado por alguien con una obsesión bien rara de abrazar pinches cactus. Por favor, ya párate de mama...",
+            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera te esperan cosas que no vas a ver en este patiecito aburrido. Suerte, carnal...",
+            "manualPrompt": "Ah, y por cierto, tengo un manual que tal vez te mantenga vivo si te gusta leer, ¿va?",
+            "manualQuestion": "¿Leer el manual?",
+            "yes": "Órale",
+            "no": "Nel"
+        },
+        "pitFall": "¡JA! Mira por dónde pisas, wey. El suelo allá afuera está lleno de hoyos tan pinches profundos que ni los zopilotes se molestan en ir por tus restos. Échale otra vez.",
+        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotitas de sudor en tu icono? Significa que estás hasta la madre y no puedes cargar más morrillos. Si hubiera más que rescatar, tendrías que dejar los que llevas y volver por ellos, cabrón."
+    }
+}
