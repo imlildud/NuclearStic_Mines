@@ -219,6 +219,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateLegacyConfig();
         updatePunchcardScale();
         updateBadges();
+
+        const startButton = document.querySelector('.pc-start');
+        if (startButton) startButton.style.display = "block";
     });
 
     // ----- Daily Mode Button -----
@@ -228,8 +231,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? localeManager.get('menu.dailyCompleted')
                 : "Daily mission already completed today! Come back tomorrow.";
             showModal(message);
-            const startButton = document.querySelector('.pc-start');
-            if (startButton) startButton.style.display = "none";
         }
 
         punchcardMode = "daily";
@@ -247,6 +248,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateCustomConfig();
         updatePunchcardScale();
         updateBadges();
+
+        const startButton = document.querySelector('.pc-start');
+        if (startButton) startButton.style.display = "block";
     });
 
     // Legacy character select
@@ -495,6 +499,15 @@ function generateDailyConfig() {
     dailyConfig = config;
     currentConfig = config;
     updatePunchcardTextures(config);
+
+    const startButton = document.querySelector('.pc-start');
+    if (startButton) {
+        if (saveManager.isDailyAttemptedToday()) {
+            startButton.style.display = "none";
+        } else {
+            startButton.style.display = "block";
+        }
+    }
 }
 
 // ==============================================================
