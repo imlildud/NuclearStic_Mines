@@ -42,7 +42,7 @@ export class GameManager {
     // ======================= GAME INITIALIZATION =======================
     
     // Start or restart the game
-    startGame() {
+    async startGame() {
         this.gameInputLocked = false;
         
         this.currentLevel = this.save.getLegacyLevel();
@@ -64,6 +64,13 @@ export class GameManager {
         
         this.boardCtrl.updateVision(this.board, this.player);
         this.boardCtrl.setGameManager(this);
+
+        // Show level start modal (only for non-tutorial modes)
+        if (this.config.mode !== "tutorial") {
+            await this.showLevelStartModal();
+        }
+
+        this.gameInputLocked = false;
     }
 
     // ======================= FALL DAMAGE SETTING =======================
@@ -365,18 +372,30 @@ export class GameManager {
     
     // ======================= UI CALLBACKS =======================
     
-    nextLevel() {
+    async nextLevel() {
         if (this.config.mode === "legacy") {
             this.handleLegacyVictory();
             document.getElementById("scoreboard-overlay").classList.remove("active");
+
+            // Show level start modal again
+            if (this.config.mode !== "tutorial") {
+                await this.showLevelStartModal();
+            }
+            this.gameInputLocked = false;
         }
     }
     
-    retryLevel() {
+    async retryLevel() {
         if (this.config.mode === "custom") {
             this.startGame();
         }
         document.getElementById("scoreboard-overlay").classList.remove("active");
+
+        // Show level start modal again
+        if (this.config.mode !== "tutorial") {
+            await this.showLevelStartModal();
+        }
+        this.gameInputLocked = false;
     }
     
     returnToMenu() {
@@ -396,5 +415,105 @@ export class GameManager {
             detail: { message, onClose } 
         });
         window.dispatchEvent(event);
+    }
+
+    // ======================= LEVEL START MODAL =======================
+
+    async showLevelStartModal() {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("level-start-modal");
+            const titleEl = document.getElementById("level-start-title");
+            const infoEl = document.getElementById("level-start-info");
+            const childrenContainer = document.getElementById("level-start-children");
+            
+            if (!modal) {
+                resolve();
+                return;
+            }
+            
+            // Clear previous children
+            childrenContainer.innerHTML = "";
+            
+            // Set title based on mode
+            let title = "";
+            let info = "";
+            
+            if (this.config.mode === "legacy") {
+                title = `${this.getText('game.level')} ${this.currentLevel}`;
+                info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
+            } else if (this.config.mode === "daily") {
+                const today = new Date();
+                title = today.toLocaleDateString();
+                info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
+            } else {
+                title = this.getText('game.customMission');
+                info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
+            }
+            
+            titleEl.textContent = title;
+            infoEl.textContent = info;
+            
+            // Get unique child types from board
+            const childTypes = this.getChildTypesFromBoard();
+            
+            // Display each child type
+            childTypes.forEach(childType => {
+                const childDiv = document.createElement("div");
+                childDiv.className = "level-start-child";
+                
+                const img = document.createElement("img");
+                img.className = "level-start-child-img";
+                img.src = `../../assets/sprites/characters/${childType}.png`;
+                img.alt = childType;
+                
+                const name = document.createElement("span");
+                name.className = "level-start-child-name";
+                name.textContent = this.getText(`game.children.${childType}`) || childType;
+                
+                childDiv.appendChild(img);
+                childDiv.appendChild(name);
+                childrenContainer.appendChild(childDiv);
+            });
+            
+            // Show modal with fade in
+            modal.style.display = "flex";
+            modal.classList.add("show");
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                modal.classList.remove("show");
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    resolve();
+                }, 500);
+            }, 5000);
+        });
+    }
+
+    getChildTypesFromBoard() {
+        const childTypes = new Set();
+        
+        for (let i = 0; i < this.board.length; i++) {
+            for (let j = 0; j < this.board.length; j++) {
+                const goalType = this.board[i][j].getGoaltype();
+                if (goalType !== "none") {
+                    childTypes.add(goalType);
+                }
+            }
+        }
+        
+        return Array.from(childTypes);
+    }
+
+    getText(key) {
+        // This will be set by Game.js
+        if (this.localeManager) {
+            return this.localeManager.get(key);
+        }
+        return key;
+    }
+
+    setLocaleManager(lm) {
+        this.localeManager = lm;
     }
 }
