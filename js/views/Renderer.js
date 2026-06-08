@@ -193,8 +193,8 @@ export class Renderer {
                 }
 
                 // Upper elements dimensions and custom fine-tuned offsets
-                let objOffsetX = mountainOffsetX;
-                let objOffsetY = mountainOffsetY;
+                let objOffsetX = 0;
+                let objOffsetY = 0;
                 let objSize = TILE_SIZE;
 
                 if (height > 0) {
@@ -207,11 +207,11 @@ export class Renderer {
                     const scale = objectScaleMap[height] || 1;
                     objSize = TILE_SIZE * scale;
 
-                    const manualPushX = { 1: 14, 2: 27, 3: 45, 4: 62 }; 
-                    const manualPushY = { 1: 12, 2: 28, 3: 46, 4: 63 }; 
+                    const pushRatioX = { 1: 0.15, 2: 0.30, 3: 0.50, 4: 0.68 }; 
+                    const pushRatioY = { 1: 0.13, 2: 0.31, 3: 0.51, 4: 0.70 }; 
 
-                    objOffsetX = manualPushX[height] || 0;
-                    objOffsetY = manualPushY[height] || 0;
+                    objOffsetX = TILE_SIZE * (pushRatioX[height] || 0);
+                    objOffsetY = TILE_SIZE * (pushRatioY[height] || 0);
                 }
                 
                 // ===== LAYER 0: BASE / MOUNTAIN =====

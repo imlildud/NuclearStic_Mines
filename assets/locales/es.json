@@ -38,6 +38,17 @@
     },
 
     "game": {
+        "level": "NIVEL",
+        "wanted": "SE BUSCA",
+        "customMission": "MISIÓN PERSONALIZADA",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ru",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Maniquí"
+        },
         "scoreboard": {
             "rescued": "Rescatados",
             "marked": "Riesgos Marcados",
@@ -61,7 +72,11 @@
         "manual": "Abrir Manual",
         "save": "GUARDAR",
         "langEn": "Inglés",
-        "langEs": "Español"
+        "langEs": "Español",
+        "langMx": "Mexicano",
+        "importSuccess": "Configuración importada exitosamente. Reinicia el juego.",
+        "importError": "Archivo de respaldo inválido",
+        "fallDamageWarning": "ADVERTENCIA:\nActivar daño por caída te permite caer desde cualquier altura. Esto puede causar SOFTLOCK (quedarte atrapado en áreas de las que no puedes subir). ¿Estás seguro de que quieres activar el daño por caída?"
     },
 
     "tutorial": {

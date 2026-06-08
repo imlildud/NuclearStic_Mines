@@ -23,6 +23,10 @@ export class TutorialDialogManager {
         this.tapHandler = null;
         this.moveHandler = null;
         this.flaggoalInterval = null;
+        this.anyInputHandler = null;
+        this.anyInputInterval = null;
+        this.moveInterval = null;
+        this.moveTimeout = null;
     }
     
     // Initialize DOM references
@@ -63,7 +67,6 @@ export class TutorialDialogManager {
     }
 
     stopRadioAnimationOnly() {
-        // Same as stopRadioAnimation but without hiding the radio
         if (this.radioAnimationInterval) {
             clearInterval(this.radioAnimationInterval);
             this.radioAnimationInterval = null;
@@ -79,7 +82,6 @@ export class TutorialDialogManager {
         if (this.bubble) this.bubble.style.display = "block";
         this.isVisible = true;
         this.startRadioAnimation();
-        // Play radio sound once
         if (this.audioManager) {
             this.audioManager.playSFX("radio.mp3", false, 0.15);
         }
@@ -138,132 +140,75 @@ export class TutorialDialogManager {
         }, 30);
     }
     
-    // Wait for tap (click or touch)
-    waitForTap(callback) {
-        const handler = () => {
-            document.removeEventListener("click", handler);
-            document.removeEventListener("touchstart", handler);
-            callback();
-        };
-        document.addEventListener("click", handler);
-        document.addEventListener("touchstart", handler);
-        this.tapHandler = handler;
-    }
-    
-    // Wait for movement by checking if player position changed
-    waitForMove(callback) {
-        let checkInterval = null;
+    // Wait for any user input (tap, click, key press, movement)
+    waitForAnyInput(callback) {
+        let completed = false;
         let lastX = null;
         let lastY = null;
-        let completed = false;
-    
-    // Function to get current player position from gameManager
-    const getPlayerPos = () => {
-        const board = this.gameManager?.getBoard();
-        const player = this.gameManager?.getPlayer();
-        if (board && player) {
-            return { x: player.getPosX(), y: player.getPosY() };
+        let checkInterval = null;
+        
+        const getPlayerPos = () => {
+            const board = this.gameManager?.getBoard();
+            const player = this.gameManager?.getPlayer();
+            if (board && player) {
+                return { x: player.getPosX(), y: player.getPosY() };
+            }
+            return null;
+        };
+        
+        const initialPos = getPlayerPos();
+        if (initialPos) {
+            lastX = initialPos.x;
+            lastY = initialPos.y;
         }
-        return null;
-    };
-    
-    // Store initial position
-    const initialPos = getPlayerPos();
-    if (initialPos) {
-        lastX = initialPos.x;
-        lastY = initialPos.y;
-    }
-    
-    // Check for movement every 100ms
-    checkInterval = setInterval(() => {
-        const currentPos = getPlayerPos();
-        if (currentPos && (currentPos.x !== lastX || currentPos.y !== lastY)) {
-            clearInterval(checkInterval);
+        
+        const onInput = () => {
+            if (completed) return;
             completed = true;
+            cleanup();
             this.hide();
             callback();
+        };
+        
+        checkInterval = setInterval(() => {
+            if (completed) return;
+            const currentPos = getPlayerPos();
+            if (currentPos && (currentPos.x !== lastX || currentPos.y !== lastY)) {
+                onInput();
+            }
+        }, 100);
+        
+        const cleanup = () => {
+            if (checkInterval) clearInterval(checkInterval);
+            document.removeEventListener("click", onInput);
+            document.removeEventListener("touchstart", onInput);
+            window.removeEventListener("keydown", onInput);
+            window.removeEventListener("keyup", onInput);
+        };
+        
+        document.addEventListener("click", onInput);
+        document.addEventListener("touchstart", onInput);
+        window.addEventListener("keydown", onInput);
+        window.addEventListener("keyup", onInput);
+        
+        this.anyInputHandler = onInput;
+        this.anyInputInterval = checkInterval;
+    }
+    
+    // Clear any input waiters
+    clearAnyInputWaiters() {
+        if (this.anyInputHandler) {
+            document.removeEventListener("click", this.anyInputHandler);
+            document.removeEventListener("touchstart", this.anyInputHandler);
+            window.removeEventListener("keydown", this.anyInputHandler);
+            window.removeEventListener("keyup", this.anyInputHandler);
+            this.anyInputHandler = null;
         }
-    }, 100);
-    
-    // Store interval to clear if needed
-    this.moveInterval = checkInterval;
-}
-
-// Wait for movement with timeout (5 seconds) - detects position changes
-waitForMoveWithTimeout(callback, timeoutMs = 5000) {
-    let checkInterval = null;
-    let timeoutId = null;
-    let lastX = null;
-    let lastY = null;
-    let completed = false;
-    
-    // Function to get current player position from stored gameManager
-    const getPlayerPos = () => {
-        const board = this.gameManager?.getBoard();
-        const player = this.gameManager?.getPlayer();
-        if (board && player) {
-            return { x: player.getPosX(), y: player.getPosY() };
+        if (this.anyInputInterval) {
+            clearInterval(this.anyInputInterval);
+            this.anyInputInterval = null;
         }
-        return null;
-    };
-    
-    // Store initial position
-    const initialPos = getPlayerPos();
-    if (initialPos) {
-        lastX = initialPos.x;
-        lastY = initialPos.y;
     }
-    
-    // Check for movement every 100ms
-    checkInterval = setInterval(() => {
-        const currentPos = getPlayerPos();
-        if (currentPos && (currentPos.x !== lastX || currentPos.y !== lastY)) {
-            clearInterval(checkInterval);
-            if (timeoutId) clearTimeout(timeoutId);
-            completed = true;
-            this.hide();
-            callback();
-        }
-    }, 100);
-    
-    // Timeout: auto-hide and continue after timeoutMs
-    timeoutId = setTimeout(() => {
-        if (!completed) {
-            clearInterval(checkInterval);
-            this.hide();
-            callback();
-        }
-    }, timeoutMs);
-    
-    // Store to cleanup later
-    this.moveInterval = checkInterval;
-    this.moveTimeout = timeoutId;
-}
-
-// Clear movement waiters (add to clearWaiters)
-clearWaiters() {
-    if (this.tapHandler) {
-        document.removeEventListener("click", this.tapHandler);
-        document.removeEventListener("touchstart", this.tapHandler);
-        this.tapHandler = null;
-    }
-    if (this.moveHandler) {
-        window.removeEventListener("keydown", this.moveHandler);
-        this.moveHandler = null;
-    }
-    if (this.moveInterval) {
-        clearInterval(this.moveInterval);
-        this.moveInterval = null;
-    }
-    if (this.moveTimeout) {
-        clearTimeout(this.moveTimeout);
-        this.moveTimeout = null;
-    }
-    if (this.flaggoalInterval) {
-        clearInterval(this.flaggoalInterval);
-        this.flaggoalInterval = null;
-    }
-}
     
     // Wait for flaggoal (tile with flaggoal = true)
     waitForFlaggoal(gameManager, callback) {
@@ -290,14 +235,40 @@ clearWaiters() {
         const pitMessage = gameManager.tutorialManager?.getText('tutorial.pitFall') || "HA! Watch where you're stepping...";
         this.typeWriter(pitMessage, () => {
             this.stopRadioAnimationOnly();
-            this.waitForMoveWithTimeout(() => {
-                console.log("Pit fall - movement detected, calling onComplete");
+            this.waitForAnyInput(() => {
+                console.log("Pit fall - input detected, calling onComplete");
                 if (onComplete) onComplete();
-            }, 1000);
+            });
         });
     }
     
-    // Sequence: type, wait, then next
+    // Clear all waiters
+    clearWaiters() {
+        if (this.tapHandler) {
+            document.removeEventListener("click", this.tapHandler);
+            document.removeEventListener("touchstart", this.tapHandler);
+            this.tapHandler = null;
+        }
+        if (this.moveHandler) {
+            window.removeEventListener("keydown", this.moveHandler);
+            this.moveHandler = null;
+        }
+        if (this.moveInterval) {
+            clearInterval(this.moveInterval);
+            this.moveInterval = null;
+        }
+        if (this.moveTimeout) {
+            clearTimeout(this.moveTimeout);
+            this.moveTimeout = null;
+        }
+        if (this.flaggoalInterval) {
+            clearInterval(this.flaggoalInterval);
+            this.flaggoalInterval = null;
+        }
+        this.clearAnyInputWaiters();
+    }
+    
+    // Sequence: type, wait for any input, then next
     sequence(dialogues, gameManager, onComplete) {
         let index = 0;
     
@@ -310,27 +281,20 @@ clearWaiters() {
             }
         
             const d = dialogues[index];
-                this.typeWriter(d.text, () => {
-                    if (d.waitForTap) {
-                        this.waitForTap(next);
-                    } else if (d.waitForMove) {
-                        gameManager.setGameInputLocked(false);
-                        this.waitForMove(() => {
-                            gameManager.setGameInputLocked(true); // Volver a bloquear
-                            next();
-                        });
-                    } else if (d.waitForMoveWithTimeout) {
-                        gameManager.setGameInputLocked(false);
-                        this.waitForMoveWithTimeout(() => {
-                            gameManager.setGameInputLocked(true);
-                            next();
-                        });
-                    } else if (d.waitForFlaggoal) {
-                        this.waitForFlaggoal(gameManager, next);
-                    } else {
+            this.typeWriter(d.text, () => {
+                if (!d.waitForFlaggoal) {
+                    gameManager.setGameInputLocked(false);
+                }
+                
+                if (d.waitForFlaggoal) {
+                    this.waitForFlaggoal(gameManager, next);
+                } else {
+                    this.waitForAnyInput(() => {
+                        gameManager.setGameInputLocked(true);
                         next();
-                    }
-                });
+                    });
+                }
+            });
             index++;
         }; 
         next();
@@ -350,29 +314,21 @@ clearWaiters() {
 
             const d = dialogues[index];
             this.typeWriter(d.text, () => {
-                // Execute afterCallback if it exists (BEFORE waiting)
                 if (d.afterCallback) {
                     d.afterCallback();
                 }
-            
-                if (d.waitForTap) {
-                    this.waitForTap(next);
-                } else if (d.waitForMove) {
+                
+                if (!d.waitForFlaggoal) {
                     gameManager.setGameInputLocked(false);
-                    this.waitForMove(() => {
-                        gameManager.setGameInputLocked(true);
-                        next();
-                    });
-                } else if (d.waitForMoveWithTimeout) {
-                    gameManager.setGameInputLocked(false);
-                    this.waitForMoveWithTimeout(() => {
-                        gameManager.setGameInputLocked(true);
-                        next();
-                    });
-                } else if (d.waitForFlaggoal) {
+                }
+                
+                if (d.waitForFlaggoal) {
                     this.waitForFlaggoal(gameManager, next);
                 } else {
-                    next();
+                    this.waitForAnyInput(() => {
+                        gameManager.setGameInputLocked(true);
+                        next();
+                    });
                 }
             });
             index++;

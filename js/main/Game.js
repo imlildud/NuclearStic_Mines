@@ -112,6 +112,7 @@ const startMusicOnce = () => {
     window.removeEventListener("click", startMusicOnce);
     window.removeEventListener("touchstart", startMusicOnce);
 };
+
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
@@ -130,6 +131,11 @@ const renderer = new Renderer(canvas, game);
 // Main startup function - ensures correct order of async operations
 async function start() {
     await initLocale();      // Load language FIRST
+    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
+    
+    // Start the game ONLY after localeManager is set
+    game.startGame();
+    
     await initTutorial();    // Then initialize tutorial (needs localeManager)
     updateHUD();             // Finally update HUD
     applyTouchButtonsVisibility();
@@ -519,3 +525,51 @@ document.querySelectorAll('.flag-btn').forEach(btn => {
     btn.addEventListener('click', handleFlag);
     btn.addEventListener('touchstart', handleFlag);
 });
+
+// ==============================================================
+// ====================== MODAL MESSAGE =========================
+// ==============================================================
+
+function initModal() {
+    const modal = document.getElementById("modal-dialog");
+    const modalText = document.getElementById("modal-text");
+    const okBtn = document.getElementById("modal-ok");
+    
+    if (!modal) return;
+    
+    // Close when clicking outside
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+            if (window._modalOnClose) {
+                window._modalOnClose();
+                window._modalOnClose = null;
+            }
+        }
+    });
+    
+    window.addEventListener('game:showMessage', (e) => {
+        const message = e.detail.message;
+        const onClose = e.detail.onClose;
+        
+        modalText.innerHTML = message.replace(/\n/g, '<br><br>');
+        modal.style.display = "flex";
+        
+        // Store callback
+        window._modalOnClose = onClose;
+        
+        // Setup OK button
+        const newOkBtn = okBtn.cloneNode(true);
+        okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+        
+        newOkBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+            if (window._modalOnClose) {
+                window._modalOnClose();
+                window._modalOnClose = null;
+            }
+        });
+    });
+}
+
+initModal();

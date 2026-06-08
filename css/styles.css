@@ -407,7 +407,8 @@ body {
 .pc-date-note {
     position: absolute;
     top: 106px;
-    left: -5px; /* Adjusted to fall inside the note image */
+    left: -10px; /* Adjusted to fall inside the note image */
+    transform: rotate(20deg);
     font-size: 30px;
     z-index: 4;
 }
@@ -588,4 +589,85 @@ body {
 /* Temporary Animation Class Applied via JS */
 .icon-react {
     animation: iconFade 0.3s ease-out;
+}
+
+/* ========================================================= */
+/* ==================== LEGACY BADGE ======================= */
+/* ========================================================= */
+
+.legacy-badge-container {
+    position: absolute;
+    top: 28%;
+    left: -5%;
+    transform: rotate(20deg);
+    display: flex;
+    z-index: 6;
+}
+
+.badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    padding: 1vmin;
+}
+
+.badge-label {
+    font-family: 'Shampoos';
+    font-size: 3vmin;
+    color: #000000;
+    margin-bottom: 0.5vmin;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.badge-img {
+    width: 9vmin;
+    height: 12vmin;
+    object-fit: contain;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* ========================================================= */
+/* ==================== DAILY STREAK BADGE ================= */
+/* ========================================================= */
+
+.daily-badge-container {
+    position: absolute;
+    top: 28%;
+    left: -3%;
+    transform: rotate(20deg);
+    display: flex;
+    z-index: 6;
+}
+
+.daily-streak-wrapper {
+    position: relative;
+    width: 9vmin;
+    height: 12vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.daily-streak-number {
+    position: absolute;
+    font-family: 'Shampoos';
+    font-size: 3.5vmin;
+    font-weight: bold;
+    color: #000000;
+    text-shadow: 1px 1px 0 #ffffff;
+    z-index: 2;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.daily-fire-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
 }

@@ -20,6 +20,44 @@ let touchButtonsEnabled = true;
 let fallDamageEnabled = true;
 
 // ==============================================================
+// ====================== MODAL DIALOG ==========================
+// ==============================================================
+
+function showModal(message, onOk = null, onCancel = null) {
+    const modal = document.getElementById("modal-dialog");
+    const modalText = document.getElementById("modal-text");
+    const okBtn = document.getElementById("modal-ok");
+    
+    if (!modal || !modalText) {
+        console.warn("Modal not found, using fallback");
+        if (onOk) onOk();
+        return;
+    }
+    
+    modalText.innerHTML = message.replace(/\n/g, '<br><br>');
+    modal.style.display = "flex";
+    
+    // Setup OK button
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    
+    newOkBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        if (onOk) onOk();
+    });
+    
+    // Close when clicking outside
+    const closeHandler = (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+            modal.removeEventListener('click', closeHandler);
+            if (onCancel) onCancel();
+        }
+    };
+    modal.addEventListener('click', closeHandler);
+}
+
+// ==============================================================
 // ====================== VOLUME UTILITIES ======================
 // ==============================================================
 
@@ -87,11 +125,15 @@ function initVolumeControls() {
 function initLanguageControls() {
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
+    const mxBtn = document.getElementById('lang-mx');
     
     const currentLang = localeManager ? localeManager.currentLocale : saveManager.getLanguage();
     
+    // Set active button
     if (currentLang === 'es') {
         esBtn.classList.add('active');
+    } else if (currentLang === 'mx') {
+        mxBtn.classList.add('active');
     } else {
         enBtn.classList.add('active');
     }
@@ -105,6 +147,7 @@ function initLanguageControls() {
             saveManager.setLanguage('en');
             applyLanguage();
         }
+        updateActiveLanguageButton('en');
     });
     
     esBtn.addEventListener('click', async () => {
@@ -116,7 +159,36 @@ function initLanguageControls() {
             saveManager.setLanguage('es');
             applyLanguage();
         }
+        updateActiveLanguageButton('es');
     });
+    
+    if (mxBtn) {
+        mxBtn.addEventListener('click', async () => {
+            if (localeManager && localeManager.currentLocale === 'mx') return;
+            if (localeManager) {
+                await localeManager.setLocale('mx');
+                applyLanguage();
+            } else {
+                saveManager.setLanguage('mx');
+                applyLanguage();
+            }
+            updateActiveLanguageButton('mx');
+        });
+    }
+}
+
+function updateActiveLanguageButton(activeLang) {
+    const enBtn = document.getElementById('lang-en');
+    const esBtn = document.getElementById('lang-es');
+    const mxBtn = document.getElementById('lang-mx');
+    
+    if (enBtn) enBtn.classList.remove('active');
+    if (esBtn) esBtn.classList.remove('active');
+    if (mxBtn) mxBtn.classList.remove('active');
+    
+    if (activeLang === 'es' && esBtn) esBtn.classList.add('active');
+    else if (activeLang === 'mx' && mxBtn) mxBtn.classList.add('active');
+    else if (enBtn) enBtn.classList.add('active');
 }
 
 // Apply language to all UI text elements
@@ -148,8 +220,10 @@ function applyLanguage() {
     // Language buttons text
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
+    const mxBtn = document.getElementById('lang-mx');
     if (enBtn) enBtn.textContent = localeManager.get('config.langEn');
     if (esBtn) esBtn.textContent = localeManager.get('config.langEs');
+    if (mxBtn) mxBtn.textContent = localeManager.get('config.langMx');
     
     // Save button
     const saveBtn = document.getElementById('save-config');
@@ -181,32 +255,31 @@ function initToggleControls() {
         saveManager.setTouchEnabled(touchButtonsEnabled);
     });
     
-    // Fall damage toggle with warning
+    // Fall damage toggle with modal warning
     toggleFall.addEventListener('click', () => {
         const newState = !fallDamageEnabled;
         
-        // Show warning ONLY when enabling (turning ON)
         if (newState === true) {
             const warningMessage = localeManager 
                 ? localeManager.get('config.fallDamageWarning')
                 : "WARNING: Enabling fall damage allows you to drop from any height.\n\nThis can cause SOFTLOCK (getting stuck in areas you can't climb back from).\n\nAre you sure you want to enable fall damage?";
             
-            const confirmed = confirm(warningMessage);
-            
-            if (!confirmed) {
-                return; // Don't toggle if user cancels
-            }
-        }
-        
-        fallDamageEnabled = newState;
-        
-        if (fallDamageEnabled) {
-            toggleFall.classList.add('active');
+            showModal(warningMessage, () => {
+                // User confirmed
+                fallDamageEnabled = newState;
+                if (fallDamageEnabled) {
+                    toggleFall.classList.add('active');
+                } else {
+                    toggleFall.classList.remove('active');
+                }
+                saveManager.setFallDamageEnabled(fallDamageEnabled);
+            });
         } else {
+            // Turning OFF, no warning needed
+            fallDamageEnabled = newState;
             toggleFall.classList.remove('active');
+            saveManager.setFallDamageEnabled(fallDamageEnabled);
         }
-        
-        saveManager.setFallDamageEnabled(fallDamageEnabled);
     });
 }
 
@@ -241,7 +314,9 @@ function initOtherButtons() {
         const lang = localeManager ? localeManager.currentLocale : saveManager.getLanguage();
         const manualFile = lang === 'es' 
             ? '../../NuclearStic Manual(es).pdf' 
-            : '../../NuclearStic Manual(en).pdf';
+            : lang === 'mx'
+                ? '../../NuclearStic Manual(es).pdf'
+                : '../../NuclearStic Manual(en).pdf';
         window.open(manualFile, '_blank');
     });
 }
@@ -265,7 +340,7 @@ function initImportExport() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `nuclearstic_backup_${Date.now()}.json`;
+        a.download = `nuclearstic_save_${Date.now()}.json`;
         a.click();
         URL.revokeObjectURL(url);
     });
@@ -283,9 +358,17 @@ function initImportExport() {
                     for (const [key, value] of Object.entries(data)) {
                         localStorage.setItem(key, value);
                     }
-                    alert('Configuration imported successfully! Please restart the game.');
+                    const successMsg = localeManager 
+                        ? localeManager.get('config.importSuccess')
+                        : 'Configuration imported successfully! Please restart the game.';
+                    showModal(successMsg, () => {
+                        window.location.reload();
+                    });
                 } catch (err) {
-                    alert('Invalid backup file');
+                    const errorMsg = localeManager 
+                        ? localeManager.get('config.importError')
+                        : 'Invalid backup file';
+                    showModal(errorMsg);
                 }
             };
             reader.readAsText(file);

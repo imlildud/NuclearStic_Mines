@@ -41,11 +41,34 @@ export class SaveManager {
     // Set legacy level
     setLegacyLevel(level) {
         localStorage.setItem("legacy_level", level);
+        this.updateLegacyHighScore(level);
+    }
+    
+    // Get legacy high score (highest level ever reached)
+    getLegacyHighScore() {
+        const highScore = localStorage.getItem("legacy_highscore");
+        return highScore ? parseInt(highScore) : 1;
+    }
+    
+    // Update legacy high score if new level is higher
+    updateLegacyHighScore(level) {
+        const currentHigh = this.getLegacyHighScore();
+        if (level > currentHigh) {
+            localStorage.setItem("legacy_highscore", level);
+            console.log(`[SaveManager] New legacy high score: ${level}`);
+        }
     }
     
     // Clear legacy progress (when losing)
     clearLegacyProgress() {
         localStorage.removeItem("legacy_level");
+        localStorage.setItem("legacy_level", 1);
+    }
+    
+    // Reset legacy high score (if needed for debugging)
+    resetLegacyHighScore() {
+        localStorage.removeItem("legacy_highscore");
+        console.log("[SaveManager] Legacy high score reset");
     }
     
     // ======================= DAILY MODE =======================
@@ -82,12 +105,45 @@ export class SaveManager {
         localStorage.setItem(`daily_completed_${today}`, completed ? "true" : "failed");
         localStorage.setItem(`daily_score_${today}`, score.toString());
         console.log(`[SaveManager] Daily saved for ${today}: score=${score}, completed=${completed}`);
+        
+        this.updateDailyStreak(completed);
+    }
+
+    // ======================= DAILY STREAK =======================
+
+    // Get current daily streak (consecutive wins)
+    getDailyStreak() {
+        const streak = localStorage.getItem("daily_streak");
+        return streak ? parseInt(streak) : 0;
+    }
+
+    // Set daily streak
+    setDailyStreak(streak) {
+        localStorage.setItem("daily_streak", streak);
+        console.log(`[SaveManager] Daily streak updated: ${streak}`);
+    }
+
+    // Update streak based on today's result
+    updateDailyStreak(completed) {
+        console.log(`[SaveManager] updateDailyStreak - completed: ${completed}`);
+        
+        if (completed === true) {
+            // Won today - increase streak
+            const currentStreak = this.getDailyStreak();
+            const newStreak = currentStreak + 1;
+            this.setDailyStreak(newStreak);
+            console.log(`[SaveManager] Streak increased from ${currentStreak} to ${newStreak}`);
+        } else if (completed === false) {
+            // Lost today - reset streak to 0
+            this.setDailyStreak(0);
+            console.log(`[SaveManager] Streak reset to 0 due to loss`);
+        }
     }
     
     // ======================= DAILY CLEANUP =======================
     
-    // Remove daily entries older than maxDays (default 7)
-    cleanupOldDailyEntries(maxDays = 7) {
+    // Remove old daily entries
+    cleanupOldDailyEntries(maxDays = 1) {
         const keys = Object.keys(localStorage);
         const now = new Date();
         let removedCount = 0;
@@ -236,6 +292,7 @@ export class SaveManager {
         // Clear all keys related to game data
         localStorage.removeItem("gameConfig");
         localStorage.removeItem("legacy_level");
+        localStorage.removeItem("legacy_highscore");
         localStorage.removeItem("tutorialCompleted");
         
         // Clean up all daily entries

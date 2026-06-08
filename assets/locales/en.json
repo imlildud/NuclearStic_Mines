@@ -38,6 +38,17 @@
     },
     
     "game": {
+        "level": "LEVEL",
+        "wanted": "WANTED",
+        "customMission": "CUSTOM MISSION",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ru",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Dummy"
+        },
         "scoreboard": {
             "rescued": "Rescued",
             "marked": "Marked Hazard",
@@ -61,7 +72,11 @@
         "manual": "Open Manual",
         "save": "SAVE",
         "langEn": "English",
-        "langEs": "Español"
+        "langEs": "Spanish",
+        "langMx": "Mexican",
+        "importSuccess": "Configuration imported successfully! Please restart the game.",
+        "importError": "Invalid backup file",
+        "fallDamageWarning": "WARNING:\nEnabling fall damage allows you to drop from any height. This can cause SOFTLOCK (getting stuck in areas you can't climb back from). Are you sure you want to enable fall damage?"
     },
 
     "tutorial": {
