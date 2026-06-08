@@ -116,6 +116,10 @@ export class GameManager {
         
         // Generate board step by step
         this.board = this.boardCtrl.generateBoard(size);
+            if (this.config.seed) {
+            this.boardCtrl.setSeed(this.config.seed);
+            console.log(`[GameManager] Setting board seed: ${this.config.seed}`);
+        }
         this.board = this.boardCtrl.generateStartAndGoal(this.board, goals, childLevel);
         this.board = this.boardCtrl.setSafeTiles(this.board, size);
         this.board = this.boardCtrl.generateHeights(this.board, heightIntensity, size);
@@ -131,6 +135,7 @@ export class GameManager {
         // Debug output
         console.log("========== GAME CONFIGURATION ==========");
         console.log(`Mode: ${this.config.mode}`);
+        console.log(`Seed: ${this.config.seed}`);
         console.log(`Size: ${size}`);
         console.log(`Goals: ${goals}`);
         console.log(`Hazard Amount: ${hazardAmount}`);
@@ -254,6 +259,11 @@ export class GameManager {
         console.log(`Legacy: Next level ${this.currentLevel + 1}`);
         this.currentLevel++;
         this.save.setLegacyLevel(this.currentLevel);
+
+        if (this.config.seed) {
+            this.config.seed = Math.floor(Math.random() * 999999999) + 1;
+            console.log(`[GameManager] New seed for level ${this.currentLevel}: ${this.config.seed}`);
+        }
         
         const currentPoints = this.player.getPoints();
         const currentType = this.player.getType();
@@ -423,6 +433,7 @@ export class GameManager {
         return new Promise((resolve) => {
             const modal = document.getElementById("level-start-modal");
             const titleEl = document.getElementById("level-start-title");
+            const seedEl = document.getElementById("level-start-seed");
             const infoEl = document.getElementById("level-start-info");
             const childrenContainer = document.getElementById("level-start-children");
             
@@ -436,21 +447,26 @@ export class GameManager {
             
             // Set title based on mode
             let title = "";
+            let seedText = "";
             let info = "";
             
             if (this.config.mode === "legacy") {
                 title = `${this.getText('game.level')} ${this.currentLevel}`;
+                seedText = `${this.getText('menu.punchcard.seed')}${this.config.seed || '---'}`;
                 info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
             } else if (this.config.mode === "daily") {
                 const today = new Date();
                 title = today.toLocaleDateString();
+                seedText = `${this.getText('menu.punchcard.seed')}${this.config.seed || '---'}`;
                 info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
             } else {
                 title = this.getText('game.customMission');
+                seedText = `${this.getText('menu.punchcard.seed')}${this.config.seed || '---'}`;
                 info = `${this.getText('game.wanted')}: ${this.charCtrl.getTotalGoals()}`;
             }
             
             titleEl.textContent = title;
+            if (seedEl) seedEl.textContent = seedText;
             infoEl.textContent = info;
             
             // Get unique child types from board
@@ -477,16 +493,31 @@ export class GameManager {
             
             // Show modal with fade in
             modal.style.display = "flex";
-            modal.classList.add("show");
-            
-            // Hide after 5 seconds
             setTimeout(() => {
+                modal.classList.add("show");
+            }, 10);
+            
+            // WAIT FOR USER INPUT (click, tap, or key) instead of timeout
+            const closeModal = () => {
                 modal.classList.remove("show");
                 setTimeout(() => {
                     modal.style.display = "none";
+                    // Remove event listeners
+                    document.removeEventListener("click", onUserInput);
+                    document.removeEventListener("keydown", onUserInput);
+                    document.removeEventListener("touchstart", onUserInput);
                     resolve();
                 }, 500);
-            }, 5000);
+            };
+            
+            const onUserInput = () => {
+                closeModal();
+            };
+            
+            // Listen for any user interaction
+            document.addEventListener("click", onUserInput, { once: true });
+            document.addEventListener("keydown", onUserInput, { once: true });
+            document.addEventListener("touchstart", onUserInput, { once: true });
         });
     }
 
