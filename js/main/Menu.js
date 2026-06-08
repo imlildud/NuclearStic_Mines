@@ -406,6 +406,13 @@ function generateLegacyConfig() {
     const level = savedLevel ? parseInt(savedLevel) : 1;
     config.level = level;
 
+    let goals = 1;
+    if (level >= 5) goals = 2;
+    if (level >= 10) goals = 3;
+    if (level >= 15) goals = 4;
+    if (level >= 20) goals = 5;
+    
+    config.goals = goals;
     config.character = "chef";
 
     // Legacy scaling is tied to level
