@@ -151,6 +151,44 @@ export class SaveManager {
             console.log(`[SaveManager] Streak reset to 0 due to loss`);
         }
     }
+
+    // ======================= TEST =======================
+
+    // Check if secret code is activated
+    isSecretCodeActivated(code) {
+        const value = localStorage.getItem(`secret_${code}`);
+        return value === "true";
+    }
+
+    // Activate secret code
+    activateSecretCode(code) {
+        localStorage.setItem(`secret_${code}`, "true");
+        console.log(`[SaveManager] Secret code activated: ${code}`);
+    }
+
+    // Deactivate secret code
+    deactivateSecretCode(code) {
+        localStorage.removeItem(`secret_${code}`);
+    }
+
+    // Get all activated codes
+    getActivatedCodes() {
+        const codes = [];
+        if (this.isSecretCodeActivated('back2school')) codes.push('back2school');
+        if (this.isSecretCodeActivated('masiosare')) codes.push('masiosare');
+        if (this.isSecretCodeActivated('debugthis')) codes.push('debugthis');
+        return codes;
+    }
+
+    // ======================= DEBUG MODE =======================
+
+    isDebugModeEnabled() {
+        return localStorage.getItem("debug_mode") === "true";
+    }
+
+    setDebugMode(enabled) {
+        localStorage.setItem("debug_mode", enabled);
+    }
     
     // ======================= DAILY CLEANUP =======================
     

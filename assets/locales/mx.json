@@ -87,9 +87,22 @@
         "langEn": "Inglés",
         "langEs": "Español",
         "langMx": "Mexicano",
+        "exportSuccess": "¡Configuración guardada, wey!",
+        "exportClipboard": "Configuración copiada al portapapeles. Pégalo en un archivo.",
+        "exportManual": "Copea este JSON para guardar tu configuración, carnal:",
+        "copied": "¡Copeado!",
         "importSuccess": "Configuración importada chida. Reinicia el juego, wey.",
         "importError": "¿Esa mamada que?, invalido",
-        "fallDamageWarning": "¡AGUAS!\nActivar el daño por caída te permite aventarte de cualquier pinche altura. Te puedes quedar ATORADO (sin poder trepar de regreso). ¿Seguro quieres prenderlo?"
+        "fallDamageWarning": "¡AGUAS!\nActivar el daño por caída te permite aventarte de cualquier pinche altura. Te puedes quedar ATORADO (sin poder trepar de regreso). ¿Seguro quieres prenderlo?",
+        "secretTitle": "Pon el Código Secreto",
+        "secretPlaceholder": "Pon el código...",
+        "secretSubmit": "Mandar",
+        "secretCancel": "Cancelar",
+        "secretInvalid": "¡Código inválido, no te los inventes!",
+        "secretAlready": "¡Código ya chipeado!",
+        "secretBack2school": "¡CÓDIGO PRENDIDO: Zona Backyard desbloqueada en modo Custom!",
+        "secretMasiosare": "¡CÓDIGO PRENDIDO! Idioma cambiado a Mexicano.",
+        "secretDebugthis": "¡CÓDIGO PRENDIDO! Modo de prueba disponible en modo Custom."
     },
 
     "tutorial": {

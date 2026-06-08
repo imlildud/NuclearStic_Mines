@@ -124,6 +124,11 @@ game.startGame();
 const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
 
+setTimeout(() => {
+    renderer.resize();
+    console.log("[Game] Forced resize after game ready");
+}, 200);
+
 // ==============================================================
 // ==================== STARTUP SEQUENCE ========================
 // ==============================================================

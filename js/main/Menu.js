@@ -289,9 +289,32 @@ function updateSelectOptions() {
     const zoneSelect = document.getElementById("custom-zone-select");
     if (zoneSelect) {
         const zoneOptions = zoneSelect.options;
-        const zoneTexts = ['backyard', 'desert', 'snow', 'ash'];
-        for (let i = 0; i < zoneOptions.length && i < zoneTexts.length; i++) {
-            zoneOptions[i].text = localeManager.get(`menu.punchcard.${zoneTexts[i]}`);
+        
+        // Clear existing options except default
+        while (zoneOptions.length > 0) {
+            zoneOptions[0].remove();
+        }
+        
+        // Define available zones
+        const allZones = ['backyard', 'desert', 'snow', 'ash'];
+        const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+        
+        // Add zones based on unlock status
+        for (const zone of allZones) {
+            if (zone === 'backyard' && !backyardUnlocked) continue;
+            
+            const option = document.createElement('option');
+            option.value = zone;
+            option.textContent = localeManager.get(`menu.punchcard.${zone}`);
+            zoneSelect.appendChild(option);
+        }
+        
+        // Set default value if current zone is not available
+        const currentZone = document.getElementById("custom-zone-select").getAttribute('data-current') || 'desert';
+        if (zoneSelect.querySelector(`option[value="${currentZone}"]`)) {
+            zoneSelect.value = currentZone;
+        } else {
+            zoneSelect.value = 'desert';
         }
     }
     
@@ -615,6 +638,13 @@ function generateLegacyConfig() {
 
     document.querySelector(".pct-title").style.display = "none";
     document.querySelector(".pc-title").style.display = "block";
+    document.getElementById("custom-zone-select").style.display = "block";
+
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (!backyardUnlocked && zoneSelect.value === 'backyard') {
+        zoneSelect.value = 'desert';
+    }
 
     const config = createBaseConfig();
     config.mode = "legacy";
@@ -757,6 +787,12 @@ function generateCustomConfig() {
     document.getElementById("custom-obstacles-select").style.display = "block";
     document.getElementById("custom-wanted-select").style.display = "block";
     document.getElementById("custom-zone-select").style.display = "block";
+
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (!backyardUnlocked && zoneSelect.value === 'backyard') {
+        zoneSelect.value = 'desert';
+    }
     
     // Hide legacy and daily badges
     const legacyContainer = document.getElementById("legacy-badge-container");
@@ -947,8 +983,10 @@ function randomizeCustomSelectors() {
     const wanted = getRandomInRange(random, 1, 5).toString();
     document.getElementById("custom-wanted-select").value = wanted;
     
-    const zones = ["backyard", "desert", "snow", "ash"];
-    const zone = zones[getRandomInRange(random, 0, 3)];
+    const allZones = ["backyard", "desert", "snow", "ash"];
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const availableZones = backyardUnlocked ? allZones : allZones.filter(z => z !== 'backyard');
+    const zone = availableZones[getRandomInRange(random, 0, availableZones.length - 1)];
     document.getElementById("custom-zone-select").value = zone;
     
     updateCustomTextures();

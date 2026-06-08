@@ -14,92 +14,210 @@ export class TestController extends BaseBoardController {
         this.isProcedural = false;
     }
     
+    // ===================== GENERATE BOARD ======================
+    
+    generateBoard(boardSize) {
+        return this.getTestBoard();
+    }
+    
     // ===================== TEST BOARD ======================
     
     getTestBoard() {
-        const size = 20;
+        const size = 24;
         const board = this.createEmptyBoard(size);
         
-        board[0][0].setStart(true);
+        board[12][0].setStart(true);
 
         // Test row 1 (Heights)
-        board[3][1].setTileheight(1);
-        board[3][2].setTileheight(2);
+        board[1][3].setTileheight(1);
+        board[2][3].setTileheight(2);
         board[3][3].setTileheight(3);
-        board[3][4].setTileheight(4);
+        board[4][3].setTileheight(4);
 
         // Test row 2 (Natural)
-        board[5][0].setObstacletype("natural");
-        board[5][1].setObstacletype("natural");
-        board[5][2].setObstacletype("natural");
-        board[5][3].setObstacletype("natural");
-        board[5][4].setObstacletype("natural");
+        board[0][5].setObstacletype("natural");
+        board[1][5].setObstacletype("natural");
+        board[2][5].setObstacletype("natural");
+        board[3][5].setObstacletype("natural");
+        board[4][5].setObstacletype("natural");
 
-        board[5][1].setTileheight(1);
-        board[5][2].setTileheight(2);
-        board[5][3].setTileheight(3);
-        board[5][4].setTileheight(4);
+        board[1][5].setTileheight(1);
+        board[2][5].setTileheight(2);
+        board[3][5].setTileheight(3);
+        board[4][5].setTileheight(4);
 
         // Test row 3 (River)
-        board[7][0].setObstacletype("river");
-        board[7][1].setObstacletype("river");
-        board[7][2].setObstacletype("river");
-        board[7][3].setObstacletype("river");
-        board[7][4].setObstacletype("river");
+        board[0][7].setObstacletype("river");
+        board[1][7].setObstacletype("river");
+        board[2][7].setObstacletype("river");
+        board[3][7].setObstacletype("river");
+        board[4][7].setObstacletype("river");
 
-        board[7][1].setTileheight(1);
-        board[7][2].setTileheight(2);
-        board[7][3].setTileheight(3);
-        board[7][4].setTileheight(4);
+        board[1][7].setTileheight(1);
+        board[2][7].setTileheight(2);
+        board[3][7].setTileheight(3);
+        board[4][7].setTileheight(4);
 
         // Test row 4 (Pit)
-        board[9][0].setObstacletype("pit");
-        board[9][1].setObstacletype("pit");
-        board[9][2].setObstacletype("pit");
-        board[9][3].setObstacletype("pit");
-        board[9][4].setObstacletype("pit");
+        board[0][9].setObstacletype("pit");
+        board[1][9].setObstacletype("pit");
+        board[2][9].setObstacletype("pit");
+        board[3][9].setObstacletype("pit");
+        board[4][9].setObstacletype("pit");
 
-        board[9][1].setTileheight(1);
-        board[9][2].setTileheight(2);
-        board[9][3].setTileheight(3);
-        board[9][4].setTileheight(4);
+        board[1][9].setTileheight(1);
+        board[2][9].setTileheight(2);
+        board[3][9].setTileheight(3);
+        board[4][9].setTileheight(4);
 
         // Test row 5 (Safe Pit)
-        board[11][0].setObstacletype("safepit");
-        board[11][1].setObstacletype("safepit");
-        board[11][2].setObstacletype("safepit");
-        board[11][3].setObstacletype("safepit");
-        board[11][4].setObstacletype("safepit");
+        board[0][11].setObstacletype("safepit");
+        board[1][11].setObstacletype("safepit");
+        board[2][11].setObstacletype("safepit");
+        board[3][11].setObstacletype("safepit");
+        board[4][11].setObstacletype("safepit");
 
-        board[11][1].setTileheight(1);
-        board[11][2].setTileheight(2);
-        board[11][3].setTileheight(3);
-        board[11][4].setTileheight(4);
+        board[1][11].setTileheight(1);
+        board[2][11].setTileheight(2);
+        board[3][11].setTileheight(3);
+        board[4][11].setTileheight(4);
 
         // Test row 6 (Flags)
-        board[13][0].isFlagged(true);
-        board[13][1].isMarked(true);
-        board[13][2].isJumpflagged(true);
-        board[13][3].isFlaggoal(true);
+        board[0][13].setFlagged(true);
+        board[1][13].setMarked(true);
+        board[2][13].setJumpflagged(true);
+        board[3][13].setFlaggoal(true);
 
         // Test row 7 (Goals)
-        
-        // Natural obstacles (walls) forming a path
-        board[1][1].setObstacletype("safepit");
-        board[2][1].setObstacletype("natural");
-        board[3][1].setObstacletype("natural");
-        board[4][1].setObstacletype("natural");
-        board[0][3].setObstacletype("natural");
-        board[1][3].setObstacletype("natural");
-        board[2][3].setObstacletype("natural");
+        board[1][16].setGoaltype("charlie");
+        board[3][16].setGoaltype("joni");
+        board[2][17].setGoaltype("ru");
+
+        // Test row 8 (Hazards)
+        board[6][3].setHazardtype("mine");
+        board[6][5].setTileheight(1);
+        board[6][5].setHazardtype("mine");
+        board[6][7].setTileheight(2);
+        board[6][7].setHazardtype("mine");
+        board[6][9].setTileheight(3);
+        board[6][9].setHazardtype("mine");
+        board[6][11].setTileheight(4);
+        board[6][11].setHazardtype("mine");
+
+        board[8][3].setHazardtype("cactus");
+        board[8][5].setTileheight(1);
+        board[8][5].setHazardtype("cactus");
+        board[8][7].setTileheight(2);
+        board[8][7].setHazardtype("cactus");
+        board[8][9].setTileheight(3);
+        board[8][9].setHazardtype("cactus");
+        board[8][11].setTileheight(4);
+        board[8][11].setHazardtype("cactus");
+
+        board[10][3].setHazardtype("pipe");
+        board[10][5].setTileheight(1);
+        board[10][5].setHazardtype("pipe");
+        board[10][7].setTileheight(2);
+        board[10][7].setHazardtype("pipe");
+        board[10][9].setTileheight(3);
+        board[10][9].setHazardtype("pipe");
+        board[10][11].setTileheight(4);
+        board[10][11].setHazardtype("pipe");
+
+        board[12][3].setHazardtype("radioactive");
+        board[12][5].setTileheight(1);
+        board[12][5].setHazardtype("radioactive");
+        board[12][7].setTileheight(2);
+        board[12][7].setHazardtype("radioactive");
+        board[12][9].setTileheight(3);
+        board[12][9].setHazardtype("radioactive");
+        board[12][11].setTileheight(4);
+        board[12][11].setHazardtype("radioactive");
+
+        // Test row 9 (Hazard count)
+        board[5][16].setHazardcount(1);
+        board[6][16].setHazardcount(2);
+        board[7][16].setHazardcount(3);
+        board[8][16].setHazardcount(4);
+        board[9][16].setHazardcount(5);
+        board[10][16].setHazardcount(6);
+        board[11][16].setHazardcount(7);
+        board[12][16].setHazardcount(8);
+        board[13][16].setHazardcount(9);
+
+        // Test row 10 (Radius effects)
+        this.applyRadiusEffect(board, 17, 4, "setHide", true);
+        this.applyRadiusEffect(board, 17, 8, "setSmoke", true);
+        this.applyRadiusEffect(board, 17, 12, "setDamageratio", true);
         
         return board;
     }
     
-    // ======================= HELPER METHODS =======================
+    // Helper method to apply radius effect (8 directions)
+    applyRadiusEffect(board, x, y, method, value) {
+        const boardSize = board.length;
+        const directions = [
+            [-1, 0], [1, 0], [0, -1], [0, 1],
+            [-1, 1], [-1, -1], [1, 1], [1, -1]
+        ];
+        
+        board[x][y][method](value);
+        
+        for (const [dx, dy] of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && nx < boardSize && ny >= 0 && ny < boardSize) {
+                board[nx][ny][method](value);
+            }
+        }
+    }
     
-    loadDifficulty() { return 5; }
+    // ======================= REQUIRED OVERRIDES =======================
+    
+    generateStartAndGoal(board, numGoals, level) { 
+        return board; 
+    }
+    
+    setSafeTiles(board, size) { 
+        return board; 
+    }
+    
+    generateHeights(board, level, size) { 
+        return board; 
+    }
+    
+    generateObstacles(board, level, size) { 
+        return board; 
+    }
+    
+    generateHazards(board, totalHazards, level, size) { 
+        return board; 
+    }
+    
+    trackHazardCount(board, size) { 
+        return board; 
+    }
+    
+    // ======================= HELPER METHODS =======================
+
+    updateVision(board, character) {
+        this.revealAllTiles(board);
+    }
+
+    updateVisionAroundPlayer(board, character) {
+        this.revealAllTiles(board);
+    }
+
+    revealAllTiles(board) {
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                board[i][j].setHide(false);
+            }
+        }
+    }
+    
+    loadDifficulty() { return 24; }
     loadNumberOfHazard() { return 0; }
-    loadNumberOfGoals() { return 1; }
+    loadNumberOfGoals() { return 3; }
     loadTypeOfZone() { return "backyard"; }
 }
