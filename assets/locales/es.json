@@ -7,6 +7,17 @@
         "custom": "Misión\nPersonalizada",
         "dailyCompleted": "¡La misión diaria ya fue completada hoy! Vuelve mañana.",
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
+        
+        "welcomeBack": "¡Bienvenido de vuelta, {name}!\n¿Listo para jugar?",
+        "currentLevel": "Nivel Actual: ",
+        "recordLevel": "Nivel Récord",
+        "dailyStreak": "Racha Diaria",
+        "play": "Jugar",
+        "enterName": "Ingresa tu nombre, rescatista:",
+        "namePlaceholder": "Tu nombre",
+        "continue": "Continuar",
+        "tutorialQuestion": "¿Quieres jugar el tutorial?",
+        
         "punchcard": {
             "character": "Personaje",
             "size": "Tamaño",

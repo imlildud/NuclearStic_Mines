@@ -147,7 +147,7 @@ export class GameManager {
         console.log(`Character: ${this.config.character}`);
         console.log("========================================");
     }
-    
+
     // ======================= INPUT HANDLING =======================
     
     // Handle movement input (WASD)
@@ -407,6 +407,50 @@ export class GameManager {
         }
         this.gameInputLocked = false;
     }
+
+    randomizeNewGame() {
+        if (this.config.mode !== "custom") return;
+        
+        // Generate new random seed
+        const newSeed = Math.floor(Math.random() * 999999999) + 1;
+        
+        // Generate random configuration
+        const random = this.createSeededRandom(newSeed);
+        
+        const chars = ["chef", "mosquito", "mommy", "scout"];
+        const character = chars[Math.floor(random() * chars.length)];
+        
+        const sizes = [8, 12, 16, 20, 24];
+        const size = sizes[Math.floor(random() * sizes.length)];
+        
+        const hazardsList = [1, 5, 8, 12, 20, 30];
+        const hazards = hazardsList[Math.floor(random() * hazardsList.length)];
+        
+        const obstaclesList = [1, 3, 5, 10, 15, 30];
+        const obstacles = obstaclesList[Math.floor(random() * obstaclesList.length)];
+        
+        const goals = Math.floor(random() * 5) + 1;
+
+        // Update config
+        this.config.seed = newSeed;
+        this.config.character = character;
+        this.config.size = size;
+        this.config.hazards = hazards;
+        this.config.obstacles = obstacles;
+        this.config.goals = goals;
+        
+        // Hide scoreboard and restart game
+        document.getElementById("scoreboard-overlay").classList.remove("active");
+        this.startGame();
+    }
+
+    // Helper to create seeded random (copy from Menu.js or import)
+    createSeededRandom(seed) {
+        return function() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+    }
     
     returnToMenu() {
         if (this.config.mode === "legacy" && this.lastResult === "victory") {
@@ -491,21 +535,23 @@ export class GameManager {
                 childrenContainer.appendChild(childDiv);
             });
             
+            const cleanModal = () => {
+                modal.classList.remove("show");
+                document.removeEventListener("click", onUserInput);
+                document.removeEventListener("keydown", onUserInput);
+                document.removeEventListener("touchstart", onUserInput);
+            };
+            
             // Show modal with fade in
             modal.style.display = "flex";
             setTimeout(() => {
                 modal.classList.add("show");
             }, 10);
             
-            // WAIT FOR USER INPUT (click, tap, or key) instead of timeout
             const closeModal = () => {
-                modal.classList.remove("show");
+                cleanModal();
                 setTimeout(() => {
                     modal.style.display = "none";
-                    // Remove event listeners
-                    document.removeEventListener("click", onUserInput);
-                    document.removeEventListener("keydown", onUserInput);
-                    document.removeEventListener("touchstart", onUserInput);
                     resolve();
                 }, 500);
             };
@@ -514,10 +560,11 @@ export class GameManager {
                 closeModal();
             };
             
-            // Listen for any user interaction
-            document.addEventListener("click", onUserInput, { once: true });
-            document.addEventListener("keydown", onUserInput, { once: true });
-            document.addEventListener("touchstart", onUserInput, { once: true });
+            setTimeout(() => {
+                document.addEventListener("click", onUserInput, { once: true });
+                document.addEventListener("keydown", onUserInput, { once: true });
+                document.addEventListener("touchstart", onUserInput, { once: true });
+            }, 100);
         });
     }
 

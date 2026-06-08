@@ -383,33 +383,47 @@ export class ScoreboardManager {
         const continueBtn = document.getElementById("score-continue");
         const retryBtn = document.getElementById("score-retry");
         const homeBtn = document.getElementById("score-home");
+        const randomBtn = document.getElementById("score-random");
         
         continueBtn.style.display = "none";
         retryBtn.style.display = "none";
         homeBtn.style.display = "block";
+        if (randomBtn) randomBtn.style.display = "none";
         
         if (mode === "legacy" && isVictory) {
             continueBtn.style.display = "block";
         } else if (mode === "custom") {
             retryBtn.style.display = "block";
-        } else if (mode === "tutorial"){
+            if (randomBtn) {
+                randomBtn.style.display = "block";
+            }
+        } else if (mode === "tutorial") {
             continueBtn.style.display = "none";
             retryBtn.style.display = "none";
             homeBtn.style.display = "none";
+            if (randomBtn) randomBtn.style.display = "none";
         }
         
         // Clone buttons to remove existing event listeners
         const newContinue = continueBtn.cloneNode(true);
         const newRetry = retryBtn.cloneNode(true);
         const newHome = homeBtn.cloneNode(true);
+        const newRandom = randomBtn ? randomBtn.cloneNode(true) : null;
+        
         continueBtn.parentNode.replaceChild(newContinue, continueBtn);
         retryBtn.parentNode.replaceChild(newRetry, retryBtn);
         homeBtn.parentNode.replaceChild(newHome, homeBtn);
+        if (newRandom && randomBtn) {
+            randomBtn.parentNode.replaceChild(newRandom, randomBtn);
+        }
         
-        // Bind callbacks to GameManager methods
+        // Bind callbacks
         newContinue.addEventListener("click", () => this.gameManager.nextLevel());
         newRetry.addEventListener("click", () => this.gameManager.retryLevel());
         newHome.addEventListener("click", () => this.gameManager.returnToMenu());
+        if (newRandom) {
+            newRandom.addEventListener("click", () => this.gameManager.randomizeNewGame());
+        }
     }
     
     // ======================= RESPONSIVE SCALING =======================

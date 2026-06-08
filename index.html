@@ -24,11 +24,30 @@
         <div class="welcome-card">
             <img src="assets/hud/menu/welcome.png" class="welcome-bg" alt="Welcome">
             <div class="welcome-content">
-                <div id="welcome-text" class="welcome-text"></div>
-                <div class="welcome-buttons">
-                    <button id="welcome-yes" class="welcome-btn welcome-yes"></button>
-                    <button id="welcome-no" class="welcome-btn welcome-no"></button>
+                
+                <!-- Welcome Panel (for returning players) -->
+                <div id="welcome-panel" class="welcome-panel" style="display: none;">
+                    <div id="welcome-greeting" class="welcome-greeting"></div>
+                    <div id="welcome-stats" class="welcome-stats"></div>
+                    <button id="welcome-play" class="welcome-btn welcome-yes"></button>
                 </div>
+                
+                <!-- Name Panel (first time players) -->
+                <div id="name-panel" class="name-panel" style="display: none;">
+                    <div id="name-prompt" class="welcome-text"></div>
+                    <input type="text" id="username-input" class="welcome-input" maxlength="20" autocomplete="off">
+                    <button id="name-continue" class="welcome-btn welcome-yes"></button>
+                </div>
+                
+                <!-- Tutorial Prompt Panel -->
+                <div id="tutorial-panel" class="tutorial-panel" style="display: none;">
+                    <div id="tutorial-question" class="welcome-text"></div>
+                    <div class="welcome-buttons">
+                        <button id="welcome-yes" class="welcome-btn welcome-yes"></button>
+                        <button id="welcome-no" class="welcome-btn welcome-no"></button>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

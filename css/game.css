@@ -515,18 +515,18 @@ canvas {
 }
 
 /* Individual Button Styles */
-.continue-btn, .retry-btn, .home-btn {
+.continue-btn, .retry-btn, .home-btn, .random-btn {
     width: 14cqi;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
-.continue-btn:hover, .retry-btn:hover, .home-btn:hover {
+.continue-btn:hover, .retry-btn:hover, .home-btn:hover, .random-btn:hover {
     transform: scale(1.05);
     filter: brightness(1.2);
 }
 
-.continue-btn:active, .retry-btn:active, .home-btn:active {
+.continue-btn:active, .retry-btn:active, .home-btn:active, .random-btn:active {
     transform: scale(0.95);
 }
 
