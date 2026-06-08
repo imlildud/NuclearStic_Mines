@@ -592,6 +592,27 @@ body {
 }
 
 /* ========================================================= */
+/* ==================== SEED LABEL TOP ===================== */
+/* ========================================================= */
+
+.pc-seed-label-top {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shampoos';
+    font-size: 5vmin;
+    color: #ffffffba;
+    text-shadow: 1px 1px 0 rgba(255,255,200,0.5);
+    padding: 0.3vmin 2vmin;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 12;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+/* ========================================================= */
 /* ==================== LEGACY BADGE ======================= */
 /* ========================================================= */
 
@@ -670,4 +691,65 @@ body {
     height: 100%;
     object-fit: contain;
     z-index: 1;
+}
+
+/* ========================================================= */
+/* ==================== SEED BUTTON ======================== */
+/* ========================================================= */
+
+.pc-seed-button-container {
+    position: absolute;
+    bottom: 15px;
+    right: -20px;
+    z-index: 7;
+}
+
+.pc-seed-btn {
+    width: 15vmin;
+    height: 15vmin;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
+}
+
+.pc-seed-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.pc-seed-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
+}
+
+/* ========================================================= */
+/* ==================== CUSTOM DICE BADGE ================== */
+/* ========================================================= */
+
+.custom-dice-container {
+    position: absolute;
+    top: 28%;
+    left: -5%;
+    transform: rotate(20deg);
+    display: flex;
+    z-index: 6;
+}
+
+.custom-dice-btn {
+    width: 12vmin;
+    height: 12vmin;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+.custom-dice-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.custom-dice-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
 }

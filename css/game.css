@@ -679,6 +679,13 @@ canvas {
     font-weight: bold;
 }
 
+.level-start-seed {
+    font-family: 'Shampoos';
+    font-size: min(3vmin, 24px);
+    color: #000000;
+    margin-bottom: 2vmin;
+}
+
 .level-start-info {
     font-family: 'Shampoos';
     font-size: min(4vmin, 30px);
