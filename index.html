@@ -218,6 +218,23 @@
                 </select>
             </div>
 
+            <!-- ================= LEGACY BADGE SECTION ================= -->
+            <div class="legacy-badge-container">
+                <div class="badge-item">
+                    <div class="badge-label" id="legacy-record-label">Record: 0</div>
+                    <img id="legacy-record-badge" class="badge-img" src="assets/hud/badges/paper.png" alt="Record Badge">
+                </div>
+            </div>
+
+            <!-- ================= DAILY STREAK BADGE SECTION ================= -->
+            <div class="daily-badge-container" id="daily-badge-container" style="display: none;">
+                <div class="daily-streak-wrapper">
+                    <img id="daily-streak-frame" class="badge-img" src="assets/hud/badges/calendar.png" alt="Frame">
+                    <div id="daily-streak-number" class="daily-streak-number">0</div>
+                    <img id="daily-streak-fire" class="daily-fire-img" src="assets/hud/badges/fire0.png" alt="Fire">
+                </div>
+            </div>
+            
             <!-- ================= ACTIONS ================= -->
 
             <!-- Start Game Button -->
@@ -233,6 +250,21 @@
 
     </div>
 
-</body>
+    <!-- ====================================================== -->
+    <!-- =================== MODAL DIALOG ====================== -->
+    <!-- ====================================================== -->
 
+    <div id="modal-dialog" class="welcome-screen" style="display: none; z-index: 60000;">
+        <div class="welcome-card">
+            <img src="assets/hud/menu/welcome.png" class="welcome-bg" alt="Dialog">
+            <div class="welcome-content">
+                <div id="modal-text" class="welcome-text"></div>
+                <div class="welcome-buttons">
+                    <button id="modal-ok" class="welcome-btn welcome-yes">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
 </html>
