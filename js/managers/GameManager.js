@@ -230,8 +230,9 @@ export class GameManager {
         this.gameInputLocked = true;
         this.audio.playDeathSFX();
     
-        // Save daily result if in daily mode
-        if (this.config.mode === "daily") {
+        if (this.config.mode === "legacy") {
+            this.handleLegacyLose();
+        } else if (this.config.mode === "daily") {
             const scores = this.scoreboard.calculateScores();
             this.handleDailyLose(scores.total);
         }
@@ -264,8 +265,8 @@ export class GameManager {
     
     handleLegacyLose() {
         console.log(`Game over: Record ${this.currentLevel}`);
-        this.save.clearLegacyProgress();
         this.currentLevel = 1;
+        this.save.clearLegacyProgress();
     }
 
     // ======================= DAILY MODE HANDLERS =======================
@@ -385,5 +386,15 @@ export class GameManager {
             console.log(`Saving level on Home: ${this.currentLevel}`);
         }
         window.location.href = '../../index.html';
+    }
+
+    // ======================= MODAL MESSAGE =======================
+
+    showMessage(message, onClose = null) {
+        // Dispatch a custom event that the UI can listen to
+        const event = new CustomEvent('game:showMessage', { 
+            detail: { message, onClose } 
+        });
+        window.dispatchEvent(event);
     }
 }

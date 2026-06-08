@@ -533,9 +533,12 @@ export class TutorialManager {
     
     completeTutorial() {
         this.gameManager.save.setTutorialCompleted(true);
-        alert(this.getText('menu.tutorialCompleted'));
-        setTimeout(() => {
-            window.location.href = '../../index.html';
-        }, 500);
+        
+        const message = this.getText('menu.tutorialCompleted');
+        this.gameManager.showMessage(message, () => {
+            setTimeout(() => {
+                window.location.href = '../../index.html';
+            }, 500);
+        });
     }
 }
