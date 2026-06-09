@@ -221,6 +221,58 @@
     z-index: 2;
 }
 
+/* ==================== ID CARD BUTTONS ==================== */
+
+/* ID Card specific buttons container */
+.id-card-buttons {
+    display: flex;
+    justify-content: center;
+    gap: clamp(12px, 3vmin, 32px);
+    margin-top: clamp(15px, 4vmin, 45px);
+    width: 100%;
+}
+
+/* ID Card buttons styling */
+.id-card-buttons .welcome-btn {
+    font-family: 'Shampoos';
+    font-size: clamp(14px, 2.5vmin, 24px);
+    padding: clamp(8px, 1.5vmin, 16px) clamp(20px, 4vmin, 45px);
+    border: none;
+    border-radius: clamp(6px, 1vmin, 12px);
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+    min-width: clamp(100px, 18vmin, 180px);
+}
+
+.id-card-buttons .welcome-yes {
+    background-color: #4a7c59;
+    color: white;
+    box-shadow: 0 clamp(3px, 0.6vmin, 6px) 0 #2a4a35;
+}
+
+.id-card-buttons .welcome-delete {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 clamp(3px, 0.6vmin, 6px) 0 #4a2a2a;
+}
+
+.id-card-buttons .welcome-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.id-card-buttons .welcome-btn:active {
+    transform: translateY(2px);
+}
+
+.id-card-buttons .welcome-yes:active {
+    box-shadow: 0 2px 0 #2a4a35;
+}
+
+.id-card-buttons .welcome-delete:active {
+    box-shadow: 0 2px 0 #4a2a2a;
+}
+
 /* ========== AVATAR SECTION ========== */
 .id-card-avatar {
     position: absolute;
@@ -856,13 +908,13 @@ body {
 
 .pc-seed-label-top {
     position: absolute;
-    top: -15px;
+    top: -20px;
     left: 50%;
+    transform: rotate(-50deg);
     transform: translateX(-50%);
     font-family: 'Shampoos';
-    font-size: 5vmin;
+    font-size: 5cqi;
     color: #ffffffba;
-    text-shadow: 1px 1px 0 rgba(255,255,200,0.5);
     padding: 0.3vmin 2vmin;
     border-radius: 20px;
     white-space: nowrap;

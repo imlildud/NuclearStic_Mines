@@ -130,15 +130,12 @@ function initVolumeControls() {
 function initLanguageControls() {
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
-    const mxBtn = document.getElementById('lang-mx');
     
     const currentLang = localeManager ? localeManager.currentLocale : saveManager.getLanguage();
     
     // Set active button
     if (currentLang === 'es') {
         esBtn.classList.add('active');
-    } else if (currentLang === 'mx') {
-        mxBtn.classList.add('active');
     } else {
         enBtn.classList.add('active');
     }
@@ -166,20 +163,6 @@ function initLanguageControls() {
         }
         updateActiveLanguageButton('es');
     });
-    
-    if (mxBtn) {
-        mxBtn.addEventListener('click', async () => {
-            if (localeManager && localeManager.currentLocale === 'mx') return;
-            if (localeManager) {
-                await localeManager.setLocale('mx');
-                applyLanguage();
-            } else {
-                saveManager.setLanguage('mx');
-                applyLanguage();
-            }
-            updateActiveLanguageButton('mx');
-        });
-    }
 }
 
 // Update the active state of language buttons

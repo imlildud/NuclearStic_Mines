@@ -84,14 +84,17 @@ canvas {
 
 /* Character Group Container */
 .hud-character-group {
-    top: 2vmin;
-    left: 2vmin;
-    width: 20vmin;
-    height: 20vmin;
+    position: fixed;
+    top: clamp(10px, 2vmin, 25px);
+    left: clamp(10px, 2vmin, 25px);
+    width: clamp(65px, 22vmin, 170px);
 }
 
 /* Character Icon Image */
-.hud-icon-character { width: 100%; height: 100%; }
+.hud-icon-character { 
+    width: 100%; 
+    height: 100%; 
+}
 
 /* Alert Icons Container */
 .hud-geohaz-alert, .hud-geoobs-alert, .hud-tired-icon {
@@ -99,37 +102,71 @@ canvas {
 }
 
 /* Geohazard Alert Position */
-.hud-geohaz-alert { top: 0; right: 0; width: 6vmin; }
+.hud-geohaz-alert { 
+    top: 0; 
+    right: 2%; 
+    width: clamp(20px, 8vmin, 40px); 
+}
 
 /* Geoobstacle Alert Position */
-.hud-geoobs-alert { bottom: 0; right: 0; width: 6vmin; }
+.hud-geoobs-alert { 
+    top: 70%; 
+    right: 2%; 
+    width: clamp(20px, 8vmin, 40px); 
+}
 
 /* Tired Status Icon Position */
-.hud-tired-icon   { top: 5%; left: 5%; width: 10vmin; }
+.hud-tired-icon { 
+    top: 0%; 
+    left: -2%; 
+    width: clamp(35px, 14vmin, 75px); 
+}
 
 /* ==================== HEALTH GROUP ==================== */
 
 /* Health Group Container */
 .hud-health-group {
-    top: 22vmin;
-    left: 1vmin;
-    width: 42vmin;
-    height: 42vmin;
+    position: fixed;
+    top: clamp(105px, 26vmin, 180px);
+    left: clamp(10px, -1vmin, 25px);
+    width: clamp(100px, 25vmin, 200px);
+    height: clamp(40px, 14vmin, 90px);
+    z-index: 3;
 }
 
-/* Health Icon Position */
-.hud-health-icon { position: absolute; left: 0; top: 0; width: 14vmin; z-index: 2; }
+/* Health Icon */
+.hud-health-icon { 
+    position: absolute; 
+    left: 0; 
+    top: 0%;
+    transform: translateY(-50%);
+    width: clamp(45px, 16vmin, 100px);
+    height: clamp(45px, 16vmin, 100px); 
+    z-index: 2; 
+}
 
-/* Health Bar Position */
-.hud-health-bar  { position: absolute; left: 9vmin; top: 2.5vmin; width: 13vmin; }
+/* Health Bar */
+.hud-health-bar { 
+    position: absolute; 
+    left: clamp(30px, 8vmin, 50px); 
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(55px, 13vmin, 100px);
+    height: clamp(30px, 9vmin, 65px);
+    z-index: 1;
+}
 
-/* Health Text Position */
+/* Health Text */
 .hud-health-text { 
     position: absolute; 
-    left: 15vmin; 
-    top: 2.6vmin; 
-    font-size: 6vmin; 
+    left: clamp(30px, 15vmin, 50px); 
+    width: clamp(55px, 13vmin, 100px);
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
     color: white; 
+    font-size: clamp(18px, 6vmin, 42px); 
+    line-height: 1;
     z-index: 3; 
 }
 
@@ -138,42 +175,49 @@ canvas {
 /* Stats Row Container */
 .hud-stats-row {
     position: fixed;
-    top: 34vmin;
-    left: 1vmin;
+    top: clamp(145px, 40vmin, 275px);
+    left: clamp(10px, 0vmin, 20px);
     display: flex;
-    gap: 1vmin;
+    gap: clamp(10px, 0.5vmin, 10px);
     z-index: 3;
 }
 
 /* Flags and Rescued Group Containers */
 .hud-flags-group, .hud-rescued-group {
     position: relative;
-    width: 12vmin;
-    height: 9vmin;
+    width: clamp(70px, 18vmin, 140px);
+    height: clamp(40px, 15vmin, 80px);
 }
 
 /* Flags and Rescued Icons */
-.hud-flags-icon, .hud-rescued-icon { width: 120%; height: auto; }
+.hud-flags-icon, .hud-rescued-icon { 
+    width: 100%;
+    height: 100%; 
+    object-fit: contain;
+}
 
 /* Flags and Rescued Text Values */
 .hud-flags-text, .hud-rescued-text {
     position: absolute;
-    right: 2%;
-    bottom: 18%;
+    right: 17%;
+    top: 50%;
+    transform: translateY(-50%);
     color: white;
-    font-size: 4vmin;
+    font-size: clamp(16px, 6vmin, 34px); 
+    line-height: 1;
+    text-align: center;
 }
 
-/* ==================== TOP CENTER GROUP ==================== */
+/* ==================== TOP CENTER / RIGHT GROUP ==================== */
 
 .hud-top-center-group {
     position: fixed;
-    top: 2vmin;
-    right: 2vmin;
+    top: clamp(10px, 2vmin, 25px);
+    right: clamp(10px, 2vmin, 25px);
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4 vmin;
+    gap: clamp(10px, 2vmin, 20px);
     z-index: 10001;
 }
 
@@ -181,9 +225,8 @@ canvas {
 
 .hud-heightometer-group {
     position: relative;
-    width: 12vmin;
-    height: 12vmin;
-    right: 25%;
+    width: clamp(35px, 14vmin, 75px);
+    height: clamp(35px, 14vmin, 75px);
 }
 
 .hud-icon-heightometer {
@@ -197,10 +240,10 @@ canvas {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Shampoos';
-    font-size: 6vmin;
+    font-family: 'Shampoos', sans-serif;
+    font-size: clamp(14px, 6vmin, 30px);
     color: white;
-    text-shadow: 2px 2px 0 #000;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
     z-index: 2;
     text-align: center;
     width: 100%;
@@ -210,8 +253,8 @@ canvas {
 
 .hud-tile-group {
     position: relative;
-    width: 14vmin;
-    height: 14vmin;
+    width: clamp(65px, 26vmin, 130px);
+    height: clamp(65px, 26vmin, 130px);
 }
 
 .hud-icon-tilemargin {
@@ -228,23 +271,6 @@ canvas {
     left: 5%;
 }
 
-/* ==================== CURRENT TILE GROUP ==================== */
-
-/* Current Tile Group Container */
-.hud-tile-group {
-    top: 2vmin;
-    right: 0%;
-    transform: translateX(-50%);
-    width: 18vmin;
-    height: 18vmin;
-}
-
-/* Tile Margin / Border Icon */
-.hud-icon-tilemargin { position: absolute; width: 100%; height: 100%; }
-
-/* Current Tile Icon */
-.hud-icon-tile       { position: absolute; width: 90%; height: 90%; top: 5%; left: 5%; }
-
 /* ========================================================= */
 /* ======================= CONTROLS ======================== */
 /* ========================================================= */
@@ -252,35 +278,33 @@ canvas {
 /* Movement and Flag Controls Containers */
 .touch-movement, .touch-flags {
     position: fixed;
-    bottom: 8vh;
+    bottom: clamp(15px, 4vh, 45px);
     display: grid;
-    grid-template-columns: repeat(3, 9vmin);
-    grid-template-rows: repeat(2, 9vmin);
-    gap: 2.5vmin;
+    grid-template-columns: repeat(3, clamp(45px, 25vmin, 70px));
+    grid-template-rows: repeat(2, clamp(45px, 25vmin, 70px));
     z-index: 10005;
 }
 
 /* Control Positions */
-.touch-movement { left: 3vw; }
-.touch-flags    { right: 3vw; }
+.touch-movement { left: clamp(15px, 3vw, 40px); }
+.touch-flags    { right: clamp(15px, 3vw, 40px); }
 
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
-    width: 130%;
-    height: 130%;
+    width: 100%;
+    height: 100%;
     z-index: 10001;
     cursor: pointer;
     user-select: none;
     transition: transform 0.1s ease;
 }
 
-/* Control Buttons Hover Effect */
-.touch-btn:hover, .flag-btn:hover{
+/* Control Buttons Hover & Active Effects */
+.touch-btn:hover, .flag-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-/* Control Buttons Active Effect */
 .touch-btn:active, .flag-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
@@ -292,19 +316,27 @@ canvas {
 .touch-s, .flag-down  { grid-column: 2; grid-row: 2; }
 .touch-d, .flag-right { grid-column: 3; grid-row: 2; }
 
+
 /* ========================================================= */
-/* ==================== ADAPTIVE ADJUSTMENTS =============== */
+/* ========== MOBILE VERTICAL VIEW RESOLUTION ============= */
 /* ========================================================= */
 
-/* Responsive Adjustments for Short Screens */
-@media screen and (max-height: 450px) {
-    /* Scale down HUD elements */
-    .hud-character-group { scale: 0.8; transform-origin: top left; }
-    .hud-health-group    { scale: 0.8; top: 18vmin; transform-origin: top left; }
-    .hud-stats-row       { scale: 0.8; top: 30vmin; transform-origin: top left; }
+@media (orientation: portrait) {
+    .touch-movement, .touch-flags {
+        bottom: 3vh;
+        grid-template-columns: repeat(3, clamp(42px, 38vw, 50px));
+        grid-template-rows: repeat(2, clamp(42px, 38vw, 50px));
+    }
     
-    /* Adjust controls position */
-    .touch-movement, .touch-flags { bottom: 2vh; scale: 1.1; }
+    .touch-movement { left: 3vw; }
+    .touch-flags    { right: 3vw; }
+
+    .hud-health-text {
+        font-size: clamp(22px, 8vw, 45px);
+    }
+    .hud-flags-text, .hud-rescued-text {
+        font-size: clamp(16px, 6vw, 32px);
+    }
 }
 
 /* ========================================================= */
