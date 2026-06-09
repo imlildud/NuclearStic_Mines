@@ -7,6 +7,7 @@
 import { SaveManager } from "../managers/SaveManager.js";
 import { AudioManager } from "../managers/AudioManager.js";
 import { LocaleManager } from "../managers/LocaleManager.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 // ==============================================================
 // ====================== GLOBAL STATE ==========================
@@ -23,6 +24,7 @@ let fallDamageEnabled = true;
 // ====================== MODAL DIALOG ==========================
 // ==============================================================
 
+// Display a modal dialog with a message and optional callback
 function showModal(message, onOk = null, onCancel = null) {
     const modal = document.getElementById("modal-dialog");
     const modalText = document.getElementById("modal-text");
@@ -61,6 +63,7 @@ function showModal(message, onOk = null, onCancel = null) {
 // ====================== VOLUME UTILITIES ======================
 // ==============================================================
 
+// Update the visual gradient of a volume slider
 function updateSliderVisual(slider) {
     const percent = slider.value;
     slider.style.setProperty('--value', percent + '%');
@@ -70,6 +73,7 @@ function updateSliderVisual(slider) {
 // ====================== VOLUME CONTROLS =======================
 // ==============================================================
 
+// Initialize volume sliders and their event handlers
 function initVolumeControls() {
     const musicSlider = document.getElementById('music-volume');
     const sfxSlider = document.getElementById('sfx-volume');
@@ -122,6 +126,7 @@ function initVolumeControls() {
 // ====================== LANGUAGE CONTROLS =====================
 // ==============================================================
 
+// Initialize language selection buttons
 function initLanguageControls() {
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
@@ -132,6 +137,8 @@ function initLanguageControls() {
     // Set active button
     if (currentLang === 'es') {
         esBtn.classList.add('active');
+    } else if (currentLang === 'mx') {
+        mxBtn.classList.add('active');
     } else {
         enBtn.classList.add('active');
     }
@@ -175,6 +182,7 @@ function initLanguageControls() {
     }
 }
 
+// Update the active state of language buttons
 function updateActiveLanguageButton(activeLang) {
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
@@ -232,6 +240,7 @@ function applyLanguage() {
 // ====================== TOGGLE CONTROLS =======================
 // ==============================================================
 
+// Initialize toggle switches for gameplay options
 function initToggleControls() {
     const toggleTouch = document.getElementById('toggle-touch');
     const toggleFall = document.getElementById('toggle-falldamage');
@@ -282,17 +291,18 @@ function initToggleControls() {
 }
 
 // ==============================================================
-// ========================= TEST ===============================
+// ====================== SECRET CODES ==========================
 // ==============================================================
 
 let secretClickCount = 0;
 let secretClickTimer = null;
 
+// Initialize the secret code system on the options title
 function initSecretCodeSystem() {
     const configTitle = document.querySelector('.config-title');
     if (!configTitle) return;
     
-    // Remove pointer cursor (keep default)
+    // Remove pointer cursor (keep default for secrecy)
     configTitle.style.cursor = 'default';
     
     // Add click counter (5 clicks within 3 seconds)
@@ -313,6 +323,7 @@ function initSecretCodeSystem() {
     });
 }
 
+// Display the secret code input modal
 function showSecretCodeModal() {
     const modal = document.getElementById("secret-code-modal");
     const input = document.getElementById("secret-code-input");
@@ -350,6 +361,7 @@ function showSecretCodeModal() {
     };
 }
 
+// Process the entered secret code
 function processSecretCode(code) {
     if (!code) return;
     
@@ -377,25 +389,27 @@ function processSecretCode(code) {
             break;
             
         case 'debugthis':
-                const config = {
-                    mode: "test",
-                    seed: null,
-                    level: 1,
-                    character: "chef",
-                    size: 24,
-                    hazards: 1,
-                    obstacles: 1,
-                    goals: 1,
-                    zone: "backyard"
-                };
-                saveManager.saveConfig(config);
-                window.location.href = '../../pages/game.html';
+            const config = {
+                mode: "test",
+                seed: null,
+                level: 1,
+                character: "chef",
+                size: 24,
+                hazards: 1,
+                obstacles: 1,
+                goals: 1,
+                zone: "backyard"
+            };
+            saveManager.saveConfig(config);
+            PathResolver.goToGame();
             break;
+            
         default:
             showModal("Invalid code!");
     }
 }
 
+// Add Backyard to the zone select dropdown (unlocked by secret code)
 function addBackyardToZoneSelect() {
     const zoneSelect = document.getElementById("custom-zone-select");
     if (!zoneSelect) return;
@@ -424,6 +438,7 @@ function addBackyardToZoneSelect() {
 // ====================== OTHER BUTTONS =========================
 // ==============================================================
 
+// Initialize other action buttons (tutorial replay, manual)
 function initOtherButtons() {
     const replayBtn = document.getElementById('replay-tutorial');
     const manualBtn = document.getElementById('open-manual');
@@ -444,7 +459,7 @@ function initOtherButtons() {
         };
         
         saveManager.saveConfig(config);
-        window.location.href = '../../pages/game.html';
+        PathResolver.goToGame();
     });
     
     manualBtn.addEventListener('click', () => {
@@ -462,6 +477,7 @@ function initOtherButtons() {
 // ====================== IMPORT/EXPORT =========================
 // ==============================================================
 
+// Initialize import/export functionality
 function initImportExport() {
     const exportBtn = document.getElementById('export-config');
     const importBtn = document.getElementById('import-config');
@@ -522,7 +538,7 @@ function initImportExport() {
     });
 }
 
-// Cordova file save function
+// Cordova file save function for Android
 function saveFileInCordova(dataStr) {
     // Request permission for storage (Android 11+)
     if (window.cordova && cordova.platformId === 'android') {
@@ -626,19 +642,21 @@ function showManualSaveDialog(dataStr) {
 // ====================== NAVIGATION ============================
 // ==============================================================
 
+// Initialize close button to return to main menu
 function initCloseButton() {
     const closeBtn = document.getElementById('close-config');
     closeBtn.addEventListener('click', () => {
-        window.location.href = '../../index.html';
+        PathResolver.goToIndex();
     });
 }
 
+// Initialize save button to save settings and return to main menu
 function initSaveButton() {
     const saveImg = document.getElementById('save-config');
     saveImg.addEventListener('click', () => {
         audioManager.playSFX('grade.mp3', false, 0.5);
         setTimeout(() => {
-            window.location.href = '../../index.html';
+            PathResolver.goToIndex();
         }, 200);
     });
 }
@@ -647,6 +665,7 @@ function initSaveButton() {
 // ====================== INITIALIZATION ========================
 // ==============================================================
 
+// Main initialization function
 async function init() {
     // Initialize LocaleManager
     localeManager = new LocaleManager();
@@ -668,4 +687,5 @@ async function init() {
     }
 }
 
+// Start everything when DOM is ready
 document.addEventListener('DOMContentLoaded', init);

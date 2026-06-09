@@ -5,6 +5,7 @@
 // and all score-related UI logic.
 
 import { DifficultyScaler } from "./DifficultyScaler.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class ScoreboardManager {
     
@@ -56,7 +57,7 @@ export class ScoreboardManager {
         const gradeFile = this.getGradeFile(scores.total, scores.maxTotal);
         const gradeImg = document.getElementById("score-grade");
         gradeImg.style.opacity = "0";
-        gradeImg.src = `../assets/hud/game/gameover/${gradeFile}`;
+        gradeImg.src = PathResolver.resolveAsset('gameGameover', gradeFile);
         
         // Setup buttons based on game mode
         this.setupButtons(isVictory);
