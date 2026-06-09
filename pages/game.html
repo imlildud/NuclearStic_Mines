@@ -50,6 +50,9 @@
 
             <!-- Tired Status Icon -->
             <img id="hud-tired-icon" class="hud-tired-icon" style="display: none;" src="../assets/hud/game/stats/tired.png">
+
+            <!-- Pause button -->
+            <img id="pause-btn" class="pause-btn" src="../assets/hud/game/control/pause.png" alt="Pause" style="display: block;">
         </div>
 
         <!-- ================= GROUP 2: Health (Below Character) ================= -->
@@ -197,6 +200,25 @@
                 <div id="level-start-seed" class="level-start-seed"></div>
                 <div id="level-start-info" class="level-start-info"></div>
                 <div id="level-start-children" class="level-start-children"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- =================== PAUSE MODAL ======================= -->
+    <!-- ====================================================== -->
+
+    <div id="pause-modal" class="pause-overlay" style="display: none;">
+        <div class="pause-card">
+            <img src="../assets/hud/menu/welcome.png" class="pause-bg" alt="Pause Menu">
+            <div class="pause-content">
+                <div id="pause-title" class="pause-title">PAUSED</div>
+                <div id="pause-stats" class="pause-stats"></div>
+                <div id="pause-children" class="pause-children"></div>
+                <div class="pause-buttons">
+                    <img id="pause-continue" class="pause-btn-img" src="../assets/hud/game/control/continuegame.png" alt="Continue">
+                    <img id="pause-exit" class="pause-btn-img" src="../assets/hud/game/control/exit.png" alt="Exit">
+                </div>
             </div>
         </div>
     </div>

@@ -9,14 +9,20 @@
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
         
         "welcomeBack": "¡Qué pedo, {name}!\n¿Listo para chambear?",
-        "currentLevel": "Nivel Actual: ",
+        "currentLevel": "Nivel Actual",
         "recordLevel": "Récord",
         "dailyStreak": "Racha Diaria",
         "play": "Jalar",
         "enterName": "Pon tu nombre, rescatador:",
         "namePlaceholder": "Tu nombre, wey",
         "continue": "Seguir",
+        "selectAvatar": "¿Quien eres?:",
+        "confirm": "Confirmar",
+        "clickToEdit": "Picale para cambiar nombre",
+        "editName": "Bautizate cawn:",
         "tutorialQuestion": "¿Quieres echarte el tutorial?",
+        "deleteData": "Borrar Partida",
+        "confirmDelete": "¡AGUAS! Esto va a borrar TODA tu información del juego (progreso, configuraciones, todo).\n\n¡No se puede deshacer, wey!\n\n¿Seguro?",
 
         "punchcard": {
             "character": "Chambeador",
@@ -54,6 +60,8 @@
         "level": "NIVEL",
         "wanted": "MORROS",
         "customMission": "JALE AL GUSTO",
+        "paused": "PAUSA",
+        "remaining": "Faltan",
         "children": {
             "charlie": "Charlie",
             "joni": "Joni",

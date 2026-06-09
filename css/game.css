@@ -709,8 +709,8 @@ canvas {
 }
 
 .level-start-child-img {
-    width: 17vmin;
-    height: 15vmin;
+    width: 12vmin;
+    height: 12vmin;
     object-fit: contain;
 }
 
@@ -718,4 +718,134 @@ canvas {
     font-family: 'Shampoos';
     font-size: min(3vmin, 20px);
     color: #000000;
+}
+
+/* ========================================================= */
+/* ===================== PAUSE BUTTON ====================== */
+/* ========================================================= */
+
+.pause-btn {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 10vmin;
+    height: 10vmin;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 10002;
+}
+
+.pause-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+.pause-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========================================================= */
+/* ===================== PAUSE MODAL ======================= */
+/* ========================================================= */
+
+.pause-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 80000;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause-card {
+    position: relative;
+    width: min(80vw, 600px);
+    height: min(80vh, 500px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause-bg {
+    position: absolute;
+    top: 0;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.pause-content {
+    position: relative;
+    z-index: 2;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.pause-title {
+    font-family: 'Shampoos';
+    font-size: min(5vmin, 40px);
+    color: #000000;
+    font-weight: bold;
+}
+
+.pause-stats {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 30px);
+    color: #000000;
+    margin-bottom: 3vmin;
+}
+
+.pause-children {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pause-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pause-child-img {
+    width: 12vmin;
+    height: 12vmin;
+    object-fit: contain;
+}
+
+.pause-child-name {
+    font-family: 'Shampoos';
+    font-size: min(2.5vmin, 20px);
+    color: #000000;
+}
+
+.pause-buttons {
+    display: flex;
+    gap: 4vmin;
+    justify-content: center;
+    margin-top: 2vmin;
+}
+
+.pause-btn-img {
+    width: 13vmin;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pause-btn-img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.pause-btn-img:active {
+    transform: scale(0.95);
 }

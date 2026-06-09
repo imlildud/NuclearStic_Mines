@@ -30,34 +30,45 @@ audioManager.setSFXEnabled(saveManagerVolumes.isSFXEnabled());
 // ==================== WELCOME SCREEN LOGIC ====================
 // ==============================================================
 
+let selectedAvatar = 1;
+let isEditingAvatar = false;
+
 // Initialize welcome screen with multi-panel flow
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const mainMenu = document.querySelector(".overlay");
+    const idCardToggle = document.getElementById("id-card-toggle-btn");
     
     const welcomePanel = document.getElementById("welcome-panel");
     const namePanel = document.getElementById("name-panel");
+    const avatarPanel = document.getElementById("avatar-panel");
     const tutorialPanel = document.getElementById("tutorial-panel");
     
     // Hide all panels first
     if (welcomePanel) welcomePanel.style.display = "none";
     if (namePanel) namePanel.style.display = "none";
+    if (avatarPanel) avatarPanel.style.display = "none";
     if (tutorialPanel) tutorialPanel.style.display = "none";
     
     const tutorialCompleted = saveManager.isTutorialCompleted();
     const username = saveManager.getUsername();
+    const avatarId = saveManager.getAvatar();
     
-    // Existing player - show welcome panel with stats
+    // Update avatar selection in UI
+    selectedAvatar = avatarId;
+    
+    // Existing player - show welcome panel with ID card
     if (tutorialCompleted && username) {
-        showWelcomePanel(username);
+        showWelcomePanel(username, avatarId);
         if (welcomePanel) welcomePanel.style.display = "flex";
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
+        if (idCardToggle) idCardToggle.style.display = "block";
     }
-    // Has name but not completed tutorial - ask to play tutorial
+    // Has name but not completed tutorial - go to avatar selection
     else if (username && username !== "") {
-        showTutorialPrompt();
-        if (tutorialPanel) tutorialPanel.style.display = "flex";
+        showAvatarSelector(true); // true = from name flow
+        if (avatarPanel) avatarPanel.style.display = "flex";
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
     }
@@ -70,57 +81,102 @@ function initWelcomeScreen() {
     }
 }
 
-// Show welcome panel with user stats (returning player)
-function showWelcomePanel(username) {
+// Show ID Card panel with user stats
+function showWelcomePanel(username, avatarId) {
     const greetingEl = document.getElementById("welcome-greeting");
-    const statsEl = document.getElementById("welcome-stats");
     const playBtn = document.getElementById("welcome-play");
-    
-    if (!greetingEl || !statsEl) return;
+    const deleteBtn = document.getElementById("welcome-delete");
+    const avatarImg = document.getElementById("id-card-avatar-img");
+    const nameEl = document.getElementById("id-card-name");
+    const levelEl = document.getElementById("id-card-level");
+    const legacyBadgeImg = document.getElementById("id-card-legacy-badge");
+    const streakNumber = document.getElementById("id-card-streak-number");
+    const streakFire = document.getElementById("id-card-streak-fire");
+    const editBtn = document.getElementById("id-card-edit-btn");
     
     const legacyLevel = saveManager.getLegacyLevel();
     const legacyHighScore = saveManager.getLegacyHighScore();
     const dailyStreak = saveManager.getDailyStreak();
     
-    // Get badge image for legacy record
-    const badgeFile = getLegacyBadge(legacyHighScore);
-    const badgeImgPath = `assets/hud/badges/${badgeFile}`;
+    // Set avatar image
+    if (avatarImg) {
+        avatarImg.src = `assets/hud/menu/icons/icon${avatarId}.png`;
+    }
     
-    // Get fire image for daily streak
-    const fireFile = getDailyFireImage(dailyStreak);
-    const fireImgPath = `assets/hud/badges/${fireFile}`;
+    // Set name with edit capability
+    if (nameEl) {
+        nameEl.textContent = username;
+        nameEl.style.cursor = "pointer";
+        nameEl.title = localeManager ? localeManager.get('menu.clickToEdit') : "Click to edit name";
+        
+        // Remove previous listener to avoid duplicates
+        const newNameEl = nameEl.cloneNode(true);
+        nameEl.parentNode.replaceChild(newNameEl, nameEl);
+        
+        newNameEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showNameEditor(newNameEl.textContent);
+        });
+    }
     
-    // Build greeting text
-    const greetingText = localeManager 
-        ? localeManager.get('menu.welcomeBack').replace('{name}', username)
-        : `Welcome back, ${username}!\nReady to play?`;
+    // Set level text
+    if (levelEl) {
+        const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
+        levelEl.textContent = `${currentLevelText}: ${legacyLevel}`;
+    }
     
-    // Build stats
-    const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
+    // Set legacy badge
+    if (legacyBadgeImg) {
+        const badgeFile = getLegacyBadge(legacyHighScore);
+        legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
+    }
     
-    const statsHTML = `
-        <div class="welcome-stat-row">
-            <span class="welcome-stat-label">${currentLevelText}</span>
-            <span class="welcome-stat-value">${legacyLevel}</span>
-        </div>
-        <div class="welcome-stat-item">
-            <div class="welcome-record-wrapper">
-                <span class="welcome-record-number">${legacyHighScore}</span>
-                <img src="${badgeImgPath}" class="welcome-badge-img" alt="badge">
-            </div>
-        </div>
-        <div class="welcome-stat-item">
-            <div class="welcome-streak-wrapper">
-                <img src="assets/hud/badges/calendar.png" class="welcome-streak-frame" alt="frame">
-                <span class="welcome-streak-number">${dailyStreak}</span>
-                <img src="${fireImgPath}" class="welcome-streak-fire" alt="fire">
-            </div>
-        </div>
-    `;
+    // Set streak
+    if (streakNumber) {
+        streakNumber.textContent = dailyStreak;
+    }
+    if (streakFire) {
+        const fireFile = getDailyFireImage(dailyStreak);
+        streakFire.src = `assets/hud/badges/${fireFile}`;
+    }
+
+    const welcomeBg = document.querySelector('.welcome-bg');
+    if (welcomeBg) {
+        welcomeBg.style.opacity = '0';
+        welcomeBg.style.visibility = 'hidden';
+    }
     
-    greetingEl.innerHTML = greetingText.replace(/\n/g, '<br>');
-    statsEl.innerHTML = statsHTML;
+    // Hide greeting text (no longer needed)
+    if (greetingEl) {
+        greetingEl.style.display = "none";
+    }
     
+    // Edit button handler
+    if (editBtn) {
+        editBtn.onclick = () => {
+            // Hide welcome panel
+            const welcomePanel = document.getElementById("welcome-panel");
+            const avatarPanel = document.getElementById("avatar-panel");
+            const welcomeBg = document.querySelector('.welcome-bg');
+            
+            if (welcomePanel) welcomePanel.style.display = "none";
+            if (avatarPanel) avatarPanel.style.display = "flex";
+            
+            // Restore background
+            if (welcomeBg) {
+                welcomeBg.style.opacity = '1';
+                welcomeBg.style.visibility = 'visible';
+            }
+            
+            // Reset selected avatar to current one
+            selectedAvatar = saveManager.getAvatar();
+            
+            // Refresh avatar selector UI
+            showAvatarSelector(false);
+        };
+    }
+    
+    // Play button handler
     if (playBtn) {
         playBtn.textContent = localeManager ? localeManager.get('menu.play') : "Play";
         playBtn.onclick = () => {
@@ -130,6 +186,165 @@ function showWelcomePanel(username) {
             if (mainMenu) mainMenu.style.display = "flex";
         };
     }
+
+    // Delete button handler
+    if (deleteBtn) {
+        deleteBtn.textContent = localeManager ? localeManager.get('menu.deleteData') : "Delete Save";
+        
+        deleteBtn.onclick = () => {
+            const confirmMsg = localeManager 
+                ? localeManager.get('menu.confirmDelete')
+                : "WARNING: This will delete ALL your game data (progress, settings, everything).\n\nThis cannot be undone!\n\nAre you sure?";
+            
+            if (confirm(confirmMsg)) {
+                saveManager.clearAllGameData(true);
+                // Reload the page to reset everything
+                window.location.reload();
+            }
+        };
+    }
+}
+
+// Show name editor modal
+function showNameEditor(currentName) {
+    // Create modal overlay for name editing
+    const overlay = document.createElement('div');
+    overlay.id = 'name-edit-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 100000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Shampoos';
+    `;
+    
+    const modalBox = document.createElement('div');
+    modalBox.style.cssText = `
+        background: #2a2a2a;
+        border: 3px solid #6a4a2a;
+        border-radius: 20px;
+        padding: 4vmin 6vmin;
+        text-align: center;
+        min-width: 250px;
+    `;
+    
+    const promptText = localeManager ? localeManager.get('menu.editName') : "Enter your new name:";
+    
+    modalBox.innerHTML = `
+        <div style="margin-bottom: 3vmin; font-size: 4vmin; color: #ffd78c;">${promptText}</div>
+        <input type="text" id="name-edit-input" value="${currentName}" maxlength="20" style="font-family: 'Shampoos'; font-size: 4vmin; padding: 1.5vmin; text-align: center; width: 80%; border-radius: 12px; border: 2px solid #6a4a2a; outline: none;">
+        <div style="display: flex; gap: 3vmin; justify-content: center; margin-top: 3vmin;">
+            <button id="name-edit-save" style="padding: 1vmin 3vmin; font-family: 'Shampoos'; font-size: 3vmin; background: #4a7c59; color: white; border: none; border-radius: 8px; cursor: pointer;">Save</button>
+            <button id="name-edit-cancel" style="padding: 1vmin 3vmin; font-family: 'Shampoos'; font-size: 3vmin; background: #7c4a4a; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modalBox);
+    document.body.appendChild(overlay);
+    
+    const input = document.getElementById('name-edit-input');
+    const saveBtn = document.getElementById('name-edit-save');
+    const cancelBtn = document.getElementById('name-edit-cancel');
+    
+    // Focus and select input
+    input.focus();
+    input.select();
+    
+    // Save handler
+    saveBtn.onclick = () => {
+        const newName = input.value.trim();
+        if (newName) {
+            saveManager.setUsername(newName);
+            // Refresh ID card
+            const avatarId = saveManager.getAvatar();
+            showWelcomePanel(newName, avatarId);
+        }
+        overlay.remove();
+    };
+    
+    // Cancel handler
+    cancelBtn.onclick = () => {
+        overlay.remove();
+    };
+    
+    // Enter key handler
+    input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            const newName = input.value.trim();
+            if (newName) {
+                saveManager.setUsername(newName);
+                const avatarId = saveManager.getAvatar();
+                showWelcomePanel(newName, avatarId);
+            }
+            overlay.remove();
+        }
+    };
+    
+    // Close when clicking outside
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
+// Show avatar selection grid
+function showAvatarSelector(fromNameFlow = true) {
+    const promptEl = document.getElementById("avatar-prompt");
+    const confirmBtn = document.getElementById("avatar-confirm");
+    const avatarGrid = document.getElementById("avatar-grid");
+    
+    // Set prompt text
+    if (promptEl) {
+        promptEl.textContent = localeManager ? localeManager.get('menu.selectAvatar') : "Choose your profile picture:";
+    }
+    
+    // Set confirm button text
+    if (confirmBtn) {
+        confirmBtn.textContent = localeManager ? localeManager.get('menu.confirm') : "Confirm";
+    }
+    
+    // Highlight selected avatar
+    const options = document.querySelectorAll('.avatar-option');
+    options.forEach((opt, index) => {
+        const avatarNum = parseInt(opt.dataset.avatar);
+        if (avatarNum === selectedAvatar) {
+            opt.classList.add('selected');
+        } else {
+            opt.classList.remove('selected');
+        }
+        
+        // Click handler
+        opt.onclick = () => {
+            options.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedAvatar = parseInt(opt.dataset.avatar);
+        };
+    });
+    
+    // Confirm button handler
+    confirmBtn.onclick = () => {
+        saveManager.setAvatar(selectedAvatar);
+        
+        if (fromNameFlow) {
+            // After avatar selection, show tutorial prompt
+            showTutorialPrompt();
+            document.getElementById("avatar-panel").style.display = "none";
+            document.getElementById("tutorial-panel").style.display = "flex";
+        } else {
+            // From edit button - just update the ID card and close avatar selector
+            const username = saveManager.getUsername();
+            showWelcomePanel(username, selectedAvatar);
+            document.getElementById("avatar-panel").style.display = "none";
+            document.getElementById("welcome-panel").style.display = "flex";
+        }
+    };
 }
 
 // Show name input panel (first time player)
@@ -144,15 +359,14 @@ function showNamePrompt() {
     if (inputEl) {
         inputEl.placeholder = localeManager ? localeManager.get('menu.namePlaceholder') : "Your name";
         inputEl.value = "";
-        // Allow enter key to submit
         inputEl.onkeypress = (e) => {
             if (e.key === 'Enter') {
                 const name = inputEl.value.trim();
                 if (name) {
                     saveManager.setUsername(name);
-                    showTutorialPrompt();
+                    showAvatarSelector(true);
                     document.getElementById("name-panel").style.display = "none";
-                    document.getElementById("tutorial-panel").style.display = "flex";
+                    document.getElementById("avatar-panel").style.display = "flex";
                 }
             }
         };
@@ -163,9 +377,9 @@ function showNamePrompt() {
             const name = inputEl.value.trim();
             if (name) {
                 saveManager.setUsername(name);
-                showTutorialPrompt();
+                showAvatarSelector(true);
                 document.getElementById("name-panel").style.display = "none";
-                document.getElementById("tutorial-panel").style.display = "flex";
+                document.getElementById("avatar-panel").style.display = "flex";
             }
         };
     }
@@ -197,7 +411,7 @@ function showTutorialPrompt() {
                 zone: "backyard"
             };
             saveManager.saveConfig(config);
-            window.location.href = "../../pages/game.html";
+            window.location.href = 'pages/game.html';
         };
     }
     
@@ -205,9 +419,42 @@ function showTutorialPrompt() {
         noBtn.textContent = localeManager ? localeManager.get('menu.no') : "No ty";
         noBtn.onclick = () => {
             saveManager.setTutorialCompleted(true);
-            // Reload to show welcome panel
-            window.location.reload();
+            // After tutorial skip, show ID card panel
+            const username = saveManager.getUsername();
+            const avatarId = saveManager.getAvatar();
+            showWelcomePanel(username, avatarId);
+            document.getElementById("tutorial-panel").style.display = "none";
+            document.getElementById("welcome-panel").style.display = "flex";
+            
+            // Show ID card toggle button
+            const idCardToggle = document.getElementById("id-card-toggle-btn");
+            if (idCardToggle) idCardToggle.style.display = "block";
         };
+    }
+}
+
+// ==============================================================
+// ==================== ID CARD TOGGLE =========================
+// ==============================================================
+
+function initIdCardToggle() {
+    const toggleBtn = document.getElementById("id-card-toggle-btn");
+    const welcomeScreen = document.getElementById("welcome-screen");
+    
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            if (welcomeScreen) {
+                if (welcomeScreen.style.display === "flex") {
+                    welcomeScreen.style.display = "none";
+                } else {
+                    welcomeScreen.style.display = "flex";
+                    // Refresh ID card content
+                    const username = saveManager.getUsername();
+                    const avatarId = saveManager.getAvatar();
+                    showWelcomePanel(username, avatarId);
+                }
+            }
+        });
     }
 }
 
@@ -351,6 +598,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updatePunchcardTextures(currentConfig);
     });
 
+    initIdCardToggle();
     const legacyButton = document.querySelector('.legacy-button');
     const dailyButton = document.querySelector('.daily-button');
     const customButton = document.querySelector('.custom-button');
