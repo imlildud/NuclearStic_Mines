@@ -152,6 +152,19 @@ export class SaveManager {
         }
     }
 
+    // ======================= AVATAR =======================
+
+    // Get saved avatar ID (1-6)
+    getAvatar() {
+        const avatar = localStorage.getItem("avatar");
+        return avatar ? parseInt(avatar) : 1;
+    }
+
+    // Set avatar ID
+    setAvatar(id) {
+        localStorage.setItem("avatar", id);
+    }
+
     // ======================= TEST =======================
 
     // Check if secret code is activated
@@ -340,10 +353,19 @@ export class SaveManager {
         } : null;
         
         // Clear all keys related to game data
+        localStorage.removeItem("daily_streak");
+        localStorage.removeItem("fallDamageEnable");
         localStorage.removeItem("gameConfig");
-        localStorage.removeItem("legacy_level");
+        localStorage.removeItem("language");
         localStorage.removeItem("legacy_highscore");
-        localStorage.removeItem("tutorialCompleted");
+        localStorage.removeItem("legacy_level");
+        localStorage.removeItem("musicVolume");
+        localStorage.removeItem("secret_back2school");
+        localStorage.removeItem("sfxEnabled");
+        localStorage.removeItem("sfxVolume");
+        localStorage.removeItem("touchEnabled");
+        localStorage.removeItem("tutorialComplete");
+        localStorage.removeItem("username");
         
         // Clean up all daily entries
         const keys = Object.keys(localStorage);

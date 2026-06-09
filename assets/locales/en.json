@@ -9,14 +9,20 @@
         "tutorialCompleted": "Tutorial completed! Returning to main menu.",
         
         "welcomeBack": "Welcome back, {name}!\nReady to play?",
-        "currentLevel": "Current Level: ",
+        "currentLevel": "Current Level",
         "recordLevel": "Record Level",
         "dailyStreak": "Daily Streak",
         "play": "Play",
         "enterName": "Enter your name, rescuer:",
         "namePlaceholder": "Your name",
         "continue": "Continue",
+        "selectAvatar": "Choose your profile picture:",
+        "confirm": "Confirm",
+        "clickToEdit": "Click to edit name",
+        "editName": "Enter your new name:",
         "tutorialQuestion": "Would you like to play the tutorial?",
+        "deleteData": "Delete Save",
+        "confirmDelete": "WARNING: This will delete ALL your game data (progress, settings, everything).\n\nThis cannot be undone!\n\nAre you sure?",
         
         "punchcard": {
             "character": "Character",
@@ -54,6 +60,8 @@
         "level": "LEVEL",
         "wanted": "WANTED",
         "customMission": "CUSTOM MISSION",
+        "paused": "PAUSED",
+        "remaining": "Remaining",
         "children": {
             "charlie": "Charlie",
             "joni": "Joni",

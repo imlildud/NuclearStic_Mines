@@ -22,7 +22,6 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    
     background: url('../assets/hud/filter.png') no-repeat center center;
     background-size: cover;
     pointer-events: none;
@@ -32,6 +31,7 @@
 /* ========================================================= */
 /* ==================== WELCOME SCREEN ===================== */
 /* ========================================================= */
+
 .welcome-screen {
     position: fixed;
     inset: 0;
@@ -59,6 +59,11 @@
     height: 100%;
     object-fit: contain;
     z-index: 1;
+}
+
+/* Hide welcome background when showing ID Card */
+.welcome-panel .welcome-bg {
+    display: none;
 }
 
 .welcome-content {
@@ -121,6 +126,23 @@
     box-shadow: 0 2px 0 #2a4a35;
 }
 
+.welcome-delete {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 4px 0 #4a2a2a;
+}
+
+.welcome-delete:hover {
+    background-color: #9a5a5a;
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.welcome-delete:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #4a2a2a;
+}
+
 /* Welcome Panel (returning player) */
 .welcome-panel {
     display: flex;
@@ -129,15 +151,6 @@
     justify-content: center;
     gap: 3vmin;
     width: 100%;
-}
-
-.welcome-greeting {
-    font-family: 'Shampoos';
-    font-size: min(4vmin, 32px);
-    color: #000000;
-    text-align: center;
-    line-height: 1.4;
-    margin-bottom: 1vmin;
 }
 
 /* Name Panel (first time) */
@@ -178,87 +191,119 @@
 }
 
 /* ========================================================= */
-/* ==================== WELCOME STATS ====================== */
+/* ======================= ID CARD ========================= */
 /* ========================================================= */
 
-.welcome-stats {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Shampoos';
-    border-radius: 16px;
-    margin-bottom: 2vmin;
-    min-width: 200px;
-}
-
-/* Row for current level (horizontal) */
-.welcome-stat-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-stat-label {
-    font-weight: bold;
-    color: #2b1608;
-    font-size: min(3vmin, 24px);
-}
-
-.welcome-stat-value {
-    color: #000000;
-    font-weight: bold;
-    font-size: min(4vmin, 28px);
-}
-
-/* Items for record and streak (vertical centering) */
-.welcome-stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.welcome-badge-img {
-    width: 10vmin;
-    height: 12vmin;
-    object-fit: contain;
-    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
-}
-
-/* Welcome Record Wrapper */
-.welcome-record-wrapper {
+.id-card-container {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: min(100cqi, 500px);
+    aspect-ratio: 16 / 11;
+    container-type: inline-size;
+    margin-bottom: 3vmin;
 }
 
-.welcome-record-number {
+.id-card-bg {
     position: absolute;
-    font-family: 'Shampoos';
-    font-size: 3vmin;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.id-card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+}
+
+/* ========== AVATAR SECTION ========== */
+.id-card-avatar {
+    position: absolute;
+    top: 13cqi;
+    left: 7cqi;
+    width: 25cqi;
+    height: 25cqi;
+}
+
+.id-card-avatar-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.id-card-edit-btn {
+    position: absolute;
+    bottom: 2cqi;
+    right: -5cqi;
+    width: 6cqi;
+    height: 6cqi;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 3;
+}
+
+.id-card-edit-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ========== NAME SECTION ========== */
+.id-card-name {
+    position: absolute;
+    top: 38cqi;
+    left: 15cqi;
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-weight: bold;
     white-space: nowrap;
 }
 
-/* Welcome Streak Wrapper */
-.welcome-streak-wrapper {
+/* ========== LEVEL SECTION ========== */
+.id-card-level {
+    position: absolute;
+    top: 15cqi;
+    left: 40cqi;
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    color: #000000;
+    white-space: nowrap;
+}
+
+/* ========== BADGES SECTION ========== */
+.id-card-badges {
+    position: absolute;
+    top: 25cqi;
+    left: 43cqi;
+    display: flex;
+    align-items: center;
+    gap: 3cqi;
+}
+
+.id-card-legacy-badge {
+    width: 18cqi;
+    height: auto;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+}
+
+.id-card-streak-wrapper {
     position: relative;
-    width: 12vmin;
-    height: 12vmin;
+    width: 18cqi;
+    height: 18cqi;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.welcome-streak-frame {
+.id-card-streak-frame {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -266,10 +311,10 @@
     z-index: 1;
 }
 
-.welcome-streak-number {
+.id-card-streak-number {
     position: absolute;
     font-family: 'Shampoos';
-    font-size: 4vmin;
+    font-size: 5cqi;
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
@@ -280,7 +325,7 @@
     transform: translate(-50%, -50%);
 }
 
-.welcome-streak-fire {
+.id-card-streak-fire {
     position: absolute;
     width: 70%;
     height: 70%;
@@ -292,18 +337,56 @@
 }
 
 /* ========================================================= */
-/* ==================== BODY STYLES ===================== */
+/* ==================== AVATAR SELECTOR ==================== */
 /* ========================================================= */
+
+.avatar-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3vmin;
+    justify-items: center;
+    align-items: center;
+}
+
+.avatar-option {
+    width: 15vmin;
+    height: 15vmin;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.avatar-option:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.avatar-option.selected {
+    border-color: #ffd78c;
+    box-shadow: 0 0 12px rgba(255,215,140,0.8);
+    background: rgba(0,0,0,0.5);
+}
+
+/* ========================================================= */
+/* ==================== BODY STYLES ======================== */
+/* ========================================================= */
+
 body {
     margin: 0;
     height: 100vh;
-
     background: url('../assets/hud/NuclearSticMines.png') no-repeat center center fixed;
     background-size: cover;
-
     font-family: "Shampoos";
     color: black;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -313,7 +396,6 @@ body {
 /* ===================== MAIN MENU UI ====================== */
 /* ========================================================= */
 
-/* Main Menu Overlay Container */
 .overlay {
     display: flex;
     flex-direction: column;
@@ -327,20 +409,39 @@ body {
 
 /* ==================== CORNER LOGO / Version ==================== */
 
-/* CloudToons Corner Logo */
 .cloud {
     position: fixed;
     bottom: 3vmin;
     left: 3vmin;
-    width: 15vmin; /* Scales with screen */
+    width: 15vmin;
     z-index: 2;
+}
+
+.id-card-toggle-btn {
+    position: fixed;
+    top: 3vmin;
+    left: 3vmin;
+    width: 15vmin;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.id-card-toggle-btn:hover {
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+    transform: scale(1.05);
+}
+
+.id-card-toggle-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
 }
 
 .version {
     position: fixed;
     bottom: 3vmin;
     right: 3vmin;
-    width: 15vmin; /* Scales with screen */
+    width: 15vmin;
     z-index: 2;
     font-size: 6vmin;
     color: white;
@@ -349,7 +450,6 @@ body {
 
 /* ==================== HEADER SECTION ==================== */
 
-/* Top Bar Container */
 .top-bar {
     position: relative;
     display: flex;
@@ -358,14 +458,12 @@ body {
     margin-bottom: 2vh;
 }
 
-/* Main Game Logo */
 .logo {
     width: 45vmin;
     max-width: 400px;
     height: auto;
 }
 
-/* Legacy Mode Toggle Button */
 .legacy-button {
     position: absolute;
     top: 50%;
@@ -380,39 +478,31 @@ body {
 
 /* ==================== MODE BUTTONS ==================== */
 
-/* Daily and Custom Mission Buttons */
 .daily-button,
 .custom-button {
     width: 75vmin;
     max-width: 400px;
     height: 18vmin;
     max-height: 140px;
-    
     margin: 1vmin auto;
     display: flex;
     align-items: center;
     justify-content: center;
     white-space: pre-line;
     padding-left: 12vmin;
-    
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    
     font-size: 3.5vmin;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
-/* Daily Mission Button Background */
 .daily-button { background-image: url('../assets/hud/menu/daily.png'); }
-
-/* Custom Mission Button Background */
 .custom-button { background-image: url('../assets/hud/menu/custom.png'); }
 
 /* ==================== BOTTOM ACTION BUTTONS ==================== */
 
-/* Bottom Row Container */
 .bottom-row {
     margin-top: 2vh;
     display: flex;
@@ -420,7 +510,6 @@ body {
     gap: 2vmin;
 }
 
-/* Diary and Options Buttons */
 .diary-button,
 .option-button {
     width: 25vmin;
@@ -433,13 +522,11 @@ body {
     cursor: pointer;
 }
 
-/* Diary Button Background */
 .diary-button { 
     background-image: url('../assets/hud/menu/diary.png'); 
     display: none;
 }
 
-/* Options Button Background */
 .option-button { 
     background-image: url('../assets/hud/menu/options.png');
     display: block; 
@@ -447,22 +534,22 @@ body {
 
 /* ==================== GLOBAL BUTTON EFFECTS ==================== */
 
-/* Hover Effect for All Buttons */
 .legacy-button:hover,
 .daily-button:hover,
 .custom-button:hover,
 .diary-button:hover,
-.option-button:hover {
+.option-button:hover,
+.id-card-toggle-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-/* Active/Click Effect for All Buttons */
 .legacy-button:active,
 .daily-button:active,
 .custom-button:active,
 .diary-button:active,
-.option-button:active {
+.option-button:active,
+.id-card-toggle-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
 }

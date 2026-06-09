@@ -9,14 +9,20 @@
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
         
         "welcomeBack": "¡Bienvenido de vuelta, {name}!\n¿Listo para jugar?",
-        "currentLevel": "Nivel Actual: ",
+        "currentLevel": "Nivel Actual",
         "recordLevel": "Nivel Récord",
         "dailyStreak": "Racha Diaria",
         "play": "Jugar",
         "enterName": "Ingresa tu nombre, rescatista:",
         "namePlaceholder": "Tu nombre",
         "continue": "Continuar",
+        "selectAvatar": "Elige tu foto de perfil:",
+        "confirm": "Confirmar",
+        "clickToEdit": "Clic para editar nombre",
+        "editName": "Ingresa tu nuevo nombre:",
         "tutorialQuestion": "¿Quieres jugar el tutorial?",
+        "deleteData": "Borrar Partida",
+        "confirmDelete": "ADVERTENCIA: Esto borrará TODOS los datos del juego (progreso, configuraciones, todo).\n\n¡Esto no se puede deshacer!\n\n¿Estás seguro?",
         
         "punchcard": {
             "character": "Personaje",
@@ -54,6 +60,8 @@
         "level": "NIVEL",
         "wanted": "SE BUSCA",
         "customMission": "MISIÓN PERSONALIZADA",
+        "paused": "PAUSA",
+        "remaining": "Restantes",
         "children": {
             "charlie": "Charlie",
             "joni": "Joni",

@@ -125,31 +125,6 @@ const renderer = new Renderer(canvas, game);
 game.setRenderer(renderer);
 
 // ==============================================================
-// ==================== STARTUP SEQUENCE ========================
-// ==============================================================
-
-// Main startup function - ensures correct order of async operations
-async function start() {
-    await initLocale();      // Load language FIRST
-    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
-    
-    // Start the game ONLY after localeManager is set
-    game.startGame();
-    
-    await initTutorial();    // Then initialize tutorial (needs localeManager)
-    updateHUD();             // Finally update HUD
-    applyTouchButtonsVisibility();
-    
-    // Force resize after game is ready
-    setTimeout(() => {
-        renderer.resize();
-        console.log("[Game] Forced resize after game ready");
-    }, 200);
-}
-
-start();
-
-// ==============================================================
 // ====================== TOUCH BUTTONS VISIBILITY ==============
 // ==============================================================
 
@@ -168,6 +143,20 @@ function applyTouchButtonsVisibility() {
     } else {
         touchMovement.style.display = 'none';
         touchFlags.style.display = 'none';
+    }
+}
+
+// ==============================================================
+// ====================== PAUSE BUTTON ==========================
+// ==============================================================
+
+// Initialize pause button functionality
+function initPauseButton() {
+    const pauseBtn = document.getElementById("pause-btn");
+    if (pauseBtn) {
+        pauseBtn.addEventListener("click", () => {
+            game.pauseGame();
+        });
     }
 }
 
@@ -579,3 +568,30 @@ function initModal() {
 }
 
 initModal();
+
+// ==============================================================
+// ==================== STARTUP SEQUENCE ========================
+// ==============================================================
+
+// Main startup function - ensures correct order of async operations
+async function start() {
+    await initLocale();      // Load language FIRST
+    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
+    
+    // Start the game ONLY after localeManager is set
+    game.startGame();
+    
+    await initTutorial();    // Then initialize tutorial (needs localeManager)
+    updateHUD();             // Finally update HUD
+    applyTouchButtonsVisibility();
+    initPauseButton();       // Initialize pause button
+    
+    // Force resize after game is ready
+    setTimeout(() => {
+        renderer.resize();
+        console.log("[Game] Forced resize after game ready");
+    }, 200);
+}
+
+// Start the game
+start();

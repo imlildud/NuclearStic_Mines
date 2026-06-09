@@ -484,6 +484,95 @@ export class GameManager {
         window.dispatchEvent(event);
     }
 
+    // ======================= PAUSE MODAL =======================
+
+    async showPauseModal() {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("pause-modal");
+            const titleEl = document.getElementById("pause-title");
+            const statsEl = document.getElementById("pause-stats");
+            const childrenContainer = document.getElementById("pause-children");
+            const continueBtn = document.getElementById("pause-continue");
+            const exitBtn = document.getElementById("pause-exit");
+            
+            if (!modal) {
+                resolve();
+                return;
+            }
+            
+            // Clear previous children
+            childrenContainer.innerHTML = "";
+            
+            // Set title and stats
+            titleEl.textContent = this.getText('game.paused');
+            
+            const totalGoals = this.charCtrl.getTotalGoals();
+            const rescuedCount = this.player.getRescued();
+            const remainingGoals = this.charCtrl.getRemainingGoals();
+            
+            const statsText = `${this.getText('game.wanted')}: ${totalGoals} | ${this.getText('game.remaining')}: ${remainingGoals}`;
+            statsEl.textContent = statsText;
+            
+            // Get unique child types from board
+            const childTypes = this.getChildTypesFromBoard();
+            
+            // Display each child type
+            childTypes.forEach(childType => {
+                const childDiv = document.createElement("div");
+                childDiv.className = "pause-child";
+                
+                const img = document.createElement("img");
+                img.className = "pause-child-img";
+                img.src = PathResolver.resolveAsset('characters', `${childType}.png`);
+                img.alt = childType;
+                
+                const name = document.createElement("span");
+                name.className = "pause-child-name";
+                name.textContent = this.getText(`game.children.${childType}`) || childType;
+                
+                childDiv.appendChild(img);
+                childDiv.appendChild(name);
+                childrenContainer.appendChild(childDiv);
+            });
+            
+            // Show modal
+            modal.style.display = "flex";
+            
+            // Setup continue button
+            const newContinueBtn = continueBtn.cloneNode(true);
+            continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
+            
+            newContinueBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+                this.gameInputLocked = false;
+                resolve();
+            });
+            
+            // Setup exit button
+            const newExitBtn = exitBtn.cloneNode(true);
+            exitBtn.parentNode.replaceChild(newExitBtn, exitBtn);
+            
+            newExitBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+                PathResolver.goToIndex();
+            });
+        });
+    }
+
+    // ======================= PAUSE GAME =======================
+
+    async pauseGame() {
+        if (this.gameInputLocked) return;
+        
+        // Lock input while paused
+        this.gameInputLocked = true;
+        
+        // Show pause modal
+        await this.showPauseModal();
+        
+        // Input will be unlocked when continue is clicked
+    }
+
     // ======================= LEVEL START MODAL =======================
 
     async showLevelStartModal() {
