@@ -12,6 +12,7 @@ import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
 import { DifficultyScaler } from "./DifficultyScaler.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class GameManager {
     
@@ -470,7 +471,7 @@ export class GameManager {
             this.save.setLegacyLevel(this.currentLevel);
             console.log(`Saving level on Home: ${this.currentLevel}`);
         }
-        window.location.href = '../../index.html';
+        PathResolver.goToIndex();
     }
 
     // ======================= MODAL MESSAGE =======================
@@ -535,7 +536,7 @@ export class GameManager {
                 
                 const img = document.createElement("img");
                 img.className = "level-start-child-img";
-                img.src = `../../assets/sprites/characters/${childType}.png`;
+                img.src = PathResolver.resolveAsset('characters', `${childType}.png`);
                 img.alt = childType;
                 
                 const name = document.createElement("span");

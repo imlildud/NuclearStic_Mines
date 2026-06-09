@@ -4,6 +4,8 @@
 // Handles all sound effects and music playback.
 // Provides volume control, looping, and prevents audio spam.
 
+import { PathResolver } from "../utils/PathResolver.js";
+
 export class AudioManager {
     
     // ======================= CONSTRUCTOR =======================
@@ -91,7 +93,8 @@ export class AudioManager {
         if (!this.sfxEnabled) return null;
         
         const vol = volume !== null ? volume : this.sfxVolume;
-        const audio = new Audio(`../../assets/audio/sfx/${soundFile}`);
+        const path = PathResolver.resolveAsset('sfx', soundFile);
+        const audio = new Audio(path);
         audio.loop = loop;
         audio.volume = vol;
         
@@ -202,16 +205,16 @@ export class AudioManager {
         let musicFile = "";
         switch (zone) {
             case "desert":
-                musicFile = "../../assets/audio/music/desert.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'desert.mp3');
                 break;
             case "snow":
-                musicFile = "../../assets/audio/music/snow.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'snow.mp3');
                 break;
             case "ash":
-                musicFile = "../../assets/audio/music/ash.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'ash.mp3');
                 break;
             case "backyard":
-                musicFile = "../../assets/audio/music/backyard.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'backyard.mp3');
                 break;
             default:
                 return;
@@ -272,7 +275,8 @@ export class AudioManager {
             if (index > -1) this.activeAudio.splice(index, 1);
         }
         
-        this.currentMusic = new Audio("../../assets/audio/music/menu.mp3");
+        const path = PathResolver.resolveAsset('music', 'menu.mp3');
+        this.currentMusic = new Audio(path);
         this.currentMusic.loop = true;
         this.currentMusic.volume = this.musicVolume;
         
