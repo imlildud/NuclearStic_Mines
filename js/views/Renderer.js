@@ -92,9 +92,9 @@ export class Renderer {
     
     // Load all game sprites (biome, global, and character textures)
     loadImages() {
-        const biomePath = PathResolver.resolveAsset('tiles', this.zone);
-        const globalPath = PathResolver.resolveAsset('tiles', '');
-        const charPath = PathResolver.resolveAsset('characters', '');
+        const biomePath = `../assets/sprites/tiles/${this.zone}`;
+        const globalPath = `../assets/sprites/tiles`;
+        const charPath = `../assets/sprites/characters`;
         
         // Biome-specific textures (desert/snow/ash)
         const biomeTextures = [

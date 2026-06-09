@@ -91,6 +91,7 @@ export class AudioManager {
     // Play a sound effect (optional loop)
     playSFX(soundFile, loop = false, volume = null) {
         if (!this.sfxEnabled) return null;
+        if (this.sfxVolume <= 0) return null;
         
         const vol = volume !== null ? volume : this.sfxVolume;
         const path = PathResolver.resolveAsset('sfx', soundFile);
@@ -144,17 +145,23 @@ export class AudioManager {
     
     // Play death sound
     playDeathSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.playSFX("death.mp3", false, 0.5);
     }
     
     // Play grade reveal sound
     playGradeSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.playSFX("grade.mp3", false, 0.5);
     }
     
     // Start looping score animation sound
     startScoreAnimationSFX() {
         if (this.isScoreAnimating) return;
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.isScoreAnimating = true;
         this.scoreAudio = this.playSFX("score.mp3", true, 0.3);
     }

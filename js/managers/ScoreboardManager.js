@@ -41,8 +41,15 @@ export class ScoreboardManager {
             maxTotal: scores.maxTotal
         };
         
-        // Start score animation
-        this.animateScoreNumbers();
+        // Start score animation (with or without sound based on SFX settings)
+        const sfxEnabled = this.gameManager.save.isSFXEnabled();
+        const sfxVolume = this.gameManager.save.getSFXVolume();
+
+        if (sfxEnabled && sfxVolume > 0) {
+            this.animateScoreNumbers();  // Con sonido
+        } else {
+            this.animateScoreNumbersSilent();  // Sin sonido
+        }
         
         // Set initial score displays
         document.getElementById("rescued-score").textContent = scores.rescuedDisplay;
@@ -147,6 +154,45 @@ export class ScoreboardManager {
             const gradeImg = document.getElementById("score-grade");
             if (gradeImg) {
                 this.gameManager.audio.playGradeSFX();
+                gradeImg.style.transition = "opacity 0.5s ease, transform 0.3s ease";
+                gradeImg.style.opacity = "1";
+                gradeImg.style.transform = "scale(2.5)";
+                setTimeout(() => {
+                    gradeImg.style.transform = "scale(1)";
+                }, 300);
+            }
+        }, totalDuration);
+    }
+
+    // Animate score numbers without sound (for when SFX is disabled)
+    animateScoreNumbersSilent() {
+        const elements = [
+            { id: "rescued-score", finalValue: `${this.finalScores.rescued}/${this.finalScores.maxRescued}`, type: "fraction", animateTransform: true },
+            { id: "marked-score", finalValue: `${this.finalScores.marked}/${this.finalScores.maxMarked}`, type: "fraction", animateTransform: true },
+            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "number", animateTransform: true },
+            { id: "deaths-score", finalValue: this.finalScores.deaths.toString(), type: "number", animateTransform: true },
+            { id: "failed-score", finalValue: this.finalScores.failed.toString(), type: "number", animateTransform: true },
+            { id: "hurt-score", finalValue: this.finalScores.hurt.toString(), type: "number", animateTransform: true },
+            { id: "total-score", finalValue: `${this.finalScores.total}/${this.finalScores.maxTotal}`, type: "fraction", animateTransform: false }
+        ];
+        
+        let delay = 0;
+        const stepDelay = 200;
+        
+        elements.forEach((element) => {
+            setTimeout(() => {
+                this.animateSingleNumber(element.id, element.finalValue, element.type);
+                this.animateTransform(element.id, element.animateTransform);
+            }, delay);
+            delay += stepDelay;
+        });
+        
+        const totalDuration = delay + 1500;
+        
+        // Grade fade in after all numbers are animated (sin sonido)
+        setTimeout(() => {
+            const gradeImg = document.getElementById("score-grade");
+            if (gradeImg) {
                 gradeImg.style.transition = "opacity 0.5s ease, transform 0.3s ease";
                 gradeImg.style.opacity = "1";
                 gradeImg.style.transform = "scale(2.5)";
