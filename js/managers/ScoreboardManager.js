@@ -74,6 +74,17 @@ export class ScoreboardManager {
         
         // Update scale for responsive design
         this.updateScale();
+
+        // Save total points to SaveManager (after score is calculated)
+        const totalPointsEarned = scores.total;
+        this.gameManager.save.addPoints(totalPointsEarned);
+        this.gameManager.save.setLastScore(totalPointsEarned);
+
+        // Also update rank display in ID card if it's visible
+        if (window.updateRankDisplay) {
+            const newTotal = this.gameManager.save.getTotalPoints();
+            window.updateRankDisplay(newTotal);
+        }
     }
 
     // ======================= TRANSLATION METHOD =======================
