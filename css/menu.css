@@ -319,21 +319,38 @@
     white-space: nowrap;
 }
 
-/* ========== LEVEL SECTION ========== */
-.id-card-level {
+/* ========== BADGES SECTION ========== */
+.id-card-rank-container {
     position: absolute;
-    top: 15cqi;
-    left: 40cqi;
-    font-family: 'Shampoos';
-    font-size: 5cqi;
-    color: #000000;
-    white-space: nowrap;
+    top: 18cqi;
+    left: 36cqi;
+    width: 54cqi;
 }
 
-/* ========== BADGES SECTION ========== */
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px;
+}
+
+.rank-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rank-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(-90deg, #00ff48, #45ff80);
+    transition: width 0.5s ease;
+}
+
 .id-card-badges {
     position: absolute;
-    top: 25cqi;
+    top: 27cqi;
     left: 43cqi;
     display: flex;
     align-items: center;
@@ -404,7 +421,7 @@
 
 .id-card-hardcore-wrapper{
     position: relative;
-    top: 44cqi;
+    top: 42cqi;
     left: 5cqi;
     width: 18cqi;
     height: 18cqi;
