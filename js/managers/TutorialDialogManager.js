@@ -2,6 +2,7 @@
 // =================== TUTORIAL DIALOG MANAGER ==================
 // ==============================================================
 // Handles radio dialog display, typewriter animation, and input waiting.
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class TutorialDialogManager {
     
@@ -34,6 +35,11 @@ export class TutorialDialogManager {
         this.radio = document.getElementById("tutorial-radio");
         this.bubble = document.getElementById("tutorial-bubble");
         this.textElement = document.getElementById("tutorial-text");
+        
+        // Set correct paths using PathResolver
+        if (this.radio) {
+            this.radio.src = PathResolver.resolveAsset('gameRadio', 'walkie.png');
+        }
         
         // Hide by default
         this.hide();

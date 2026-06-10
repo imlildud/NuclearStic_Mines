@@ -453,6 +453,66 @@ body {
 }
 
 /* ========================================================= */
+/* ====================== MODAL TEST ======================= */
+/* ========================================================= */
+
+.secret-input {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 28px);
+    padding: 1.5vmin 2vmin;
+    width: 80%;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #6a4a2a;
+    border-radius: 12px;
+    outline: none;
+    margin-bottom: 2vmin;
+}
+
+.secret-input:focus {
+    border-color: #4a7c59;
+    box-shadow: 0 0 8px rgba(74, 124, 89, 0.5);
+}
+
+.secret-message {
+    font-family: 'Shampoos';
+    font-size: min(2.5vmin, 20px);
+    color: #4a7c59;
+    margin-bottom: 2vmin;
+    text-align: center;
+    min-height: 5vmin;
+}
+
+.modal-title {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 30px);
+    color: #2b1608;
+    margin-bottom: 3vmin;
+    font-weight: bold;
+}
+
+.modal-btn {
+    font-family: 'Shampoos';
+    font-size: min(3.5vmin, 28px);
+    padding: 1vmin 3vmin;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.modal-no {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 4px 0 #4a2a2a;
+}
+
+.modal-no:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* ========================================================= */
 /* ====================== MODAL DIALOG ===================== */
 /* ========================================================= */
 
