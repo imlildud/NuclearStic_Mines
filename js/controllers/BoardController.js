@@ -202,28 +202,26 @@ export class BoardController extends BaseBoardController {
                 if (tile.getTileheight() > 1) {
                     const heightFounded = tile.getTileheight();
                     
-                    // Generate random pattern type
                     const patternType = this.randInt(0, 5);
-                    
                     let directions = [];
                     
                     switch (patternType) {
-                        case 0: // Full 3x3
+                        case 0:
                             directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
                             break;
-                        case 1: // Cross only
+                        case 1:
                             directions = [[-1,0],[1,0],[0,-1],[0,1]];
                             break;
-                        case 2: // X shape only
+                        case 2:
                             directions = [[-1,-1],[-1,1],[1,-1],[1,1]];
                             break;
-                        case 3: // Extended cross (2 steps)
+                        case 3:
                             directions = [[-2,0],[2,0],[0,-2],[0,2],[-1,0],[1,0],[0,-1],[0,1]];
                             break;
-                        case 4: // Extended X (2 steps)
+                        case 4:
                             directions = [[-2,-2],[-2,2],[2,-2],[2,2],[-1,-1],[-1,1],[1,-1],[1,1]];
                             break;
-                        case 5: // Random single direction (for variety)
+                        case 5:
                             const dx = this.randInt(-4, 4);
                             const dy = this.randInt(-4, 4);
                             directions = [[dx, dy]];
@@ -234,9 +232,18 @@ export class BoardController extends BaseBoardController {
                         const x = i + dx;
                         const y = j + dy;
                         if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
-                            // Don't reduce below 1
-                            const newHeight = Math.max(1, heightFounded - 1);
-                            board[x][y].setTileheight(newHeight);
+                            const targetTile = board[x][y];
+                            
+                            if (!targetTile.isStart() && 
+                                targetTile.getGoaltype() === "none" && 
+                                !targetTile.isSecure() &&
+                                !targetTile.isMarked() && 
+                                targetTile.getHazardtype() === "none" && 
+                                targetTile.getObstacletype() === "none") {
+                                
+                                const newHeight = Math.max(1, heightFounded - 1);
+                                targetTile.setTileheight(newHeight);
+                            }
                         }
                     }
                 }
@@ -296,14 +303,14 @@ export class BoardController extends BaseBoardController {
         const hazardTypes = [
             { type: "mine", weight: 0.3, minLevel: 0 },
             { type: "cactus", weight: 0.3, minLevel: 0 },
-            { type: "deadbush", weight: 0.3, minLevel: 9999 },
+            { type: "deadbush", weight: 0.3, minLevel: 9999 }, // 3
             { type: "pipe", weight: 0.15, minLevel: 5 },
             { type: "radioactive", weight: 0.1, minLevel: 8 },
-            { type: "spiderMine", weight: 0.2, minLevel: 9999 },
-            { type: "bandit", weight: 0.1, minLevel: 9999 },
-            { type: "liberal", weight: 0.0, minLevel: 9999 },
-            { type: "sandsnake", weight: 0.1, minLevel: 9999 },
-            { type: "dunecrawler", weight: 0.01, minLevel: 9999 }
+            { type: "spiderMine", weight: 0.2, minLevel: 9999 }, // 10
+            { type: "bandit", weight: 0.1, minLevel: 9999 }, // 13
+            { type: "liberal", weight: 0.0, minLevel: 9999 }, // 0
+            { type: "sandsnake", weight: 0.1, minLevel: 9999 }, // 15
+            { type: "dunecrawler", weight: 0.01, minLevel: 9999 } // 20
         ];
     
         const validHazards = hazardTypes.filter(ht => level >= ht.minLevel);

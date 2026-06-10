@@ -6,6 +6,7 @@
 // Auto-detects browser language on first load.
 
 import { SaveManager } from "./SaveManager.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class LocaleManager {
     
@@ -14,7 +15,7 @@ export class LocaleManager {
         this.currentLocale = null;
         this.strings = null;
         this.listeners = [];
-        this.supportedLocales = ['en', 'es'];
+        this.supportedLocales = ['en', 'es', 'mx'];
         this.defaultLocale = 'en';
     }
     
@@ -57,7 +58,14 @@ export class LocaleManager {
     
     async loadLocale(locale) {
         try {
-            const response = await fetch(`../../assets/locales/${locale}.json`);
+            const path = PathResolver.resolveAsset('locales', `${locale}.json`);
+            console.log(`[LocaleManager] Loading locale from: ${path}`);
+            const response = await fetch(path);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
             this.strings = await response.json();
             this.currentLocale = locale;
             this.notifyListeners();

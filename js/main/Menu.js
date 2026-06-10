@@ -30,33 +30,389 @@ audioManager.setSFXEnabled(saveManagerVolumes.isSFXEnabled());
 // ==================== WELCOME SCREEN LOGIC ====================
 // ==============================================================
 
+let selectedAvatar = 1;
+let isEditingAvatar = false;
+
+// Initialize welcome screen with multi-panel flow
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const mainMenu = document.querySelector(".overlay");
+    const idCardToggle = document.getElementById("id-card-toggle-btn");
+    
+    const welcomePanel = document.getElementById("welcome-panel");
+    const namePanel = document.getElementById("name-panel");
+    const avatarPanel = document.getElementById("avatar-panel");
+    const tutorialPanel = document.getElementById("tutorial-panel");
+    
+    // Hide all panels first
+    if (welcomePanel) welcomePanel.style.display = "none";
+    if (namePanel) namePanel.style.display = "none";
+    if (avatarPanel) avatarPanel.style.display = "none";
+    if (tutorialPanel) tutorialPanel.style.display = "none";
+    
+    const tutorialCompleted = saveManager.isTutorialCompleted();
+    const username = saveManager.getUsername();
+    const avatarId = saveManager.getAvatar();
+    
+    // Update avatar selection in UI
+    selectedAvatar = avatarId;
+    
+    // Existing player - show welcome panel with ID card
+    if (tutorialCompleted && username) {
+        showWelcomePanel(username, avatarId);
+        if (welcomePanel) welcomePanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+        if (idCardToggle) idCardToggle.style.display = "block";
+    }
+    // Has name but not completed tutorial - go to avatar selection
+    else if (username && username !== "") {
+        showAvatarSelector(true); // true = from name flow
+        if (avatarPanel) avatarPanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+    }
+    // First time - ask for name
+    else {
+        showNamePrompt();
+        if (namePanel) namePanel.style.display = "flex";
+        if (welcomeScreen) welcomeScreen.style.display = "flex";
+        if (mainMenu) mainMenu.style.display = "none";
+    }
+}
+
+// Show ID Card panel with user stats
+function showWelcomePanel(username, avatarId) {
+    const greetingEl = document.getElementById("welcome-greeting");
+    const playBtn = document.getElementById("welcome-play");
+    const deleteBtn = document.getElementById("welcome-delete");
+    const avatarImg = document.getElementById("id-card-avatar-img");
+    const nameEl = document.getElementById("id-card-name");
+    const levelEl = document.getElementById("id-card-level");
+    const legacyBadgeImg = document.getElementById("id-card-legacy-badge");
+    const recordNumberEl = document.getElementById("id-card-record-number");
+    const hardcoreNumberEl = document.getElementById("id-card-hardcore-number");
+    const streakNumber = document.getElementById("id-card-streak-number");
+    const streakFire = document.getElementById("id-card-streak-fire");
+    const editBtn = document.getElementById("id-card-edit-btn");
+    
+    const legacyLevel = saveManager.getLegacyLevel();
+    const legacyHighScore = saveManager.getLegacyHighScore();
+    const dailyStreak = saveManager.getDailyStreak();
+    const hardcoreHighScore = saveManager.getHardcoreHighScore();
+    
+    // Set avatar image
+    if (avatarImg) {
+        avatarImg.src = `assets/hud/menu/icons/icon${avatarId}.png`;
+    }
+    
+    // Set name with edit capability
+    if (nameEl) {
+        nameEl.textContent = username;
+        nameEl.style.cursor = "pointer";
+        nameEl.title = localeManager ? localeManager.get('menu.clickToEdit') : "Click to edit name";
+        
+        // Remove previous listener to avoid duplicates
+        const newNameEl = nameEl.cloneNode(true);
+        nameEl.parentNode.replaceChild(newNameEl, nameEl);
+        
+        newNameEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            showNameEditor(newNameEl.textContent);
+        });
+    }
+    
+    // Set level text
+    if (levelEl) {
+        const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
+        levelEl.textContent = `${currentLevelText}: ${legacyLevel}`;
+    }
+    
+    // Set legacy badge
+    if (legacyBadgeImg) {
+        const badgeFile = getLegacyBadge(legacyHighScore);
+        legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
+    }
+
+    // Set legacy record
+    if (recordNumberEl) {
+        const recordText = localeManager ? localeManager.get('menu.record') : "Record";
+        recordNumberEl.textContent = `${legacyHighScore}`;
+    }
+
+    // Set hardcore record
+    if (hardcoreNumberEl) {
+        hardcoreNumberEl.textContent = hardcoreHighScore;
+    }
+    
+    // Set streak
+    if (streakNumber) {
+        streakNumber.textContent = dailyStreak;
+    }
+    if (streakFire) {
+        const fireFile = getDailyFireImage(dailyStreak);
+        streakFire.src = `assets/hud/badges/${fireFile}`;
+    }
+
+    const welcomeBg = document.querySelector('.welcome-bg');
+    if (welcomeBg) {
+        welcomeBg.style.opacity = '0';
+        welcomeBg.style.visibility = 'hidden';
+    }
+    
+    // Hide greeting text (no longer needed)
+    if (greetingEl) {
+        greetingEl.style.display = "none";
+    }
+    
+    // Edit button handler
+    if (editBtn) {
+        editBtn.onclick = () => {
+            // Hide welcome panel
+            const welcomePanel = document.getElementById("welcome-panel");
+            const avatarPanel = document.getElementById("avatar-panel");
+            const welcomeBg = document.querySelector('.welcome-bg');
+            
+            if (welcomePanel) welcomePanel.style.display = "none";
+            if (avatarPanel) avatarPanel.style.display = "flex";
+            
+            // Restore background
+            if (welcomeBg) {
+                welcomeBg.style.opacity = '1';
+                welcomeBg.style.visibility = 'visible';
+            }
+            
+            // Reset selected avatar to current one
+            selectedAvatar = saveManager.getAvatar();
+            
+            // Refresh avatar selector UI
+            showAvatarSelector(false);
+        };
+    }
+    
+    // Play button handler
+    if (playBtn) {
+        playBtn.textContent = localeManager ? localeManager.get('menu.play') : "Play";
+        playBtn.onclick = () => {
+            const welcomeScreen = document.getElementById("welcome-screen");
+            const mainMenu = document.querySelector(".overlay");
+            if (welcomeScreen) welcomeScreen.style.display = "none";
+            if (mainMenu) mainMenu.style.display = "flex";
+        };
+    }
+
+    // Delete button handler
+    if (deleteBtn) {
+        deleteBtn.textContent = localeManager ? localeManager.get('menu.deleteData') : "Delete Save";
+        
+        deleteBtn.onclick = () => {
+            const confirmMsg = localeManager 
+                ? localeManager.get('menu.confirmDelete')
+                : "WARNING: This will delete ALL your game data (progress, settings, everything).\n\nThis cannot be undone!\n\nAre you sure?";
+            
+            if (confirm(confirmMsg)) {
+                saveManager.clearAllGameData(true);
+                // Reload the page to reset everything
+                window.location.reload();
+            }
+        };
+    }
+}
+
+// Show name editor modal
+function showNameEditor(currentName) {
+    // Create modal overlay for name editing
+    const overlay = document.createElement('div');
+    overlay.id = 'name-edit-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 100000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Shampoos';
+    `;
+    
+    const modalBox = document.createElement('div');
+    modalBox.style.cssText = `
+        background: #2a2a2a;
+        border: 3px solid #6a4a2a;
+        border-radius: 20px;
+        padding: 4vmin 6vmin;
+        text-align: center;
+        min-width: 250px;
+    `;
+    
+    const promptText = localeManager ? localeManager.get('menu.editName') : "Enter your new name:";
+    
+    modalBox.innerHTML = `
+        <div style="margin-bottom: 3vmin; font-size: 4vmin; color: #ffd78c;">${promptText}</div>
+        <input type="text" id="name-edit-input" value="${currentName}" maxlength="20" style="font-family: 'Shampoos'; font-size: 4vmin; padding: 1.5vmin; text-align: center; width: 80%; border-radius: 12px; border: 2px solid #6a4a2a; outline: none;">
+        <div style="display: flex; gap: 3vmin; justify-content: center; margin-top: 3vmin;">
+            <button id="name-edit-save" style="padding: 1vmin 3vmin; font-family: 'Shampoos'; font-size: 3vmin; background: #4a7c59; color: white; border: none; border-radius: 8px; cursor: pointer;">Save</button>
+            <button id="name-edit-cancel" style="padding: 1vmin 3vmin; font-family: 'Shampoos'; font-size: 3vmin; background: #7c4a4a; color: white; border: none; border-radius: 8px; cursor: pointer;">Cancel</button>
+        </div>
+    `;
+    
+    overlay.appendChild(modalBox);
+    document.body.appendChild(overlay);
+    
+    const input = document.getElementById('name-edit-input');
+    const saveBtn = document.getElementById('name-edit-save');
+    const cancelBtn = document.getElementById('name-edit-cancel');
+    
+    // Focus and select input
+    input.focus();
+    input.select();
+    
+    // Save handler
+    saveBtn.onclick = () => {
+        const newName = input.value.trim();
+        if (newName) {
+            saveManager.setUsername(newName);
+            // Refresh ID card
+            const avatarId = saveManager.getAvatar();
+            showWelcomePanel(newName, avatarId);
+        }
+        overlay.remove();
+    };
+    
+    // Cancel handler
+    cancelBtn.onclick = () => {
+        overlay.remove();
+    };
+    
+    // Enter key handler
+    input.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            const newName = input.value.trim();
+            if (newName) {
+                saveManager.setUsername(newName);
+                const avatarId = saveManager.getAvatar();
+                showWelcomePanel(newName, avatarId);
+            }
+            overlay.remove();
+        }
+    };
+    
+    // Close when clicking outside
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
+// Show avatar selection grid
+function showAvatarSelector(fromNameFlow = true) {
+    const promptEl = document.getElementById("avatar-prompt");
+    const confirmBtn = document.getElementById("avatar-confirm");
+    const avatarGrid = document.getElementById("avatar-grid");
+    
+    // Set prompt text
+    if (promptEl) {
+        promptEl.textContent = localeManager ? localeManager.get('menu.selectAvatar') : "Choose your profile picture:";
+    }
+    
+    // Set confirm button text
+    if (confirmBtn) {
+        confirmBtn.textContent = localeManager ? localeManager.get('menu.confirm') : "Confirm";
+    }
+    
+    // Highlight selected avatar
+    const options = document.querySelectorAll('.avatar-option');
+    options.forEach((opt, index) => {
+        const avatarNum = parseInt(opt.dataset.avatar);
+        if (avatarNum === selectedAvatar) {
+            opt.classList.add('selected');
+        } else {
+            opt.classList.remove('selected');
+        }
+        
+        // Click handler
+        opt.onclick = () => {
+            options.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedAvatar = parseInt(opt.dataset.avatar);
+        };
+    });
+    
+    // Confirm button handler
+    confirmBtn.onclick = () => {
+        saveManager.setAvatar(selectedAvatar);
+        
+        if (fromNameFlow) {
+            // After avatar selection, show tutorial prompt
+            showTutorialPrompt();
+            document.getElementById("avatar-panel").style.display = "none";
+            document.getElementById("tutorial-panel").style.display = "flex";
+        } else {
+            // From edit button - just update the ID card and close avatar selector
+            const username = saveManager.getUsername();
+            showWelcomePanel(username, selectedAvatar);
+            document.getElementById("avatar-panel").style.display = "none";
+            document.getElementById("welcome-panel").style.display = "flex";
+        }
+    };
+}
+
+// Show name input panel (first time player)
+function showNamePrompt() {
+    const promptEl = document.getElementById("name-prompt");
+    const inputEl = document.getElementById("username-input");
+    const continueBtn = document.getElementById("name-continue");
+    
+    if (promptEl) {
+        promptEl.textContent = localeManager ? localeManager.get('menu.enterName') : "Enter your name, rescuer:";
+    }
+    if (inputEl) {
+        inputEl.placeholder = localeManager ? localeManager.get('menu.namePlaceholder') : "Your name";
+        inputEl.value = "";
+        inputEl.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                const name = inputEl.value.trim();
+                if (name) {
+                    saveManager.setUsername(name);
+                    showAvatarSelector(true);
+                    document.getElementById("name-panel").style.display = "none";
+                    document.getElementById("avatar-panel").style.display = "flex";
+                }
+            }
+        };
+    }
+    if (continueBtn) {
+        continueBtn.textContent = localeManager ? localeManager.get('menu.continue') : "Continue";
+        continueBtn.onclick = () => {
+            const name = inputEl.value.trim();
+            if (name) {
+                saveManager.setUsername(name);
+                showAvatarSelector(true);
+                document.getElementById("name-panel").style.display = "none";
+                document.getElementById("avatar-panel").style.display = "flex";
+            }
+        };
+    }
+}
+
+// Show tutorial prompt panel
+function showTutorialPrompt() {
+    const questionEl = document.getElementById("tutorial-question");
     const yesBtn = document.getElementById("welcome-yes");
     const noBtn = document.getElementById("welcome-no");
     
-    // Check if tutorial was already completed
-    const tutorialCompleted = saveManager.isTutorialCompleted();
-    
-    if (tutorialCompleted) {
-        // Already completed, show main menu directly
-        if (welcomeScreen) welcomeScreen.style.display = "none";
-        if (mainMenu) mainMenu.style.display = "flex";
-        return;
+    if (questionEl) {
+        questionEl.innerHTML = (localeManager ? localeManager.get('menu.tutorialQuestion') : "Would you like to play the tutorial?").replace(/\n/g, '<br><br>');
     }
     
-    // First time, show welcome screen
-    if (welcomeScreen) welcomeScreen.style.display = "flex";
-    if (mainMenu) mainMenu.style.display = "none";
-    
-    // Yep button - start tutorial
     if (yesBtn) {
-        yesBtn.addEventListener("click", () => {
-            // Save that tutorial was started (not completed yet)
+        yesBtn.textContent = localeManager ? localeManager.get('menu.yes') : "Yep";
+        yesBtn.onclick = () => {
             saveManager.setTutorialCompleted(false);
-            
-            // Create tutorial config
             const config = {
                 mode: "tutorial",
                 seed: null,
@@ -68,22 +424,50 @@ function initWelcomeScreen() {
                 goals: 1,
                 zone: "backyard"
             };
-            
-            // Save config and go to game
             saveManager.saveConfig(config);
-            window.location.href = "../../pages/game.html";
-        });
+            window.location.href = 'pages/game.html';
+        };
     }
     
-    // No ty button - skip tutorial
     if (noBtn) {
-        noBtn.addEventListener("click", () => {
-            // Mark tutorial as completed (skipped)
+        noBtn.textContent = localeManager ? localeManager.get('menu.no') : "No ty";
+        noBtn.onclick = () => {
             saveManager.setTutorialCompleted(true);
+            // After tutorial skip, show ID card panel
+            const username = saveManager.getUsername();
+            const avatarId = saveManager.getAvatar();
+            showWelcomePanel(username, avatarId);
+            document.getElementById("tutorial-panel").style.display = "none";
+            document.getElementById("welcome-panel").style.display = "flex";
             
-            // Hide welcome, show main menu
-            if (welcomeScreen) welcomeScreen.style.display = "none";
-            if (mainMenu) mainMenu.style.display = "flex";
+            // Show ID card toggle button
+            const idCardToggle = document.getElementById("id-card-toggle-btn");
+            if (idCardToggle) idCardToggle.style.display = "block";
+        };
+    }
+}
+
+// ==============================================================
+// ==================== ID CARD TOGGLE =========================
+// ==============================================================
+
+function initIdCardToggle() {
+    const toggleBtn = document.getElementById("id-card-toggle-btn");
+    const welcomeScreen = document.getElementById("welcome-screen");
+    
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            if (welcomeScreen) {
+                if (welcomeScreen.style.display === "flex") {
+                    welcomeScreen.style.display = "none";
+                } else {
+                    welcomeScreen.style.display = "flex";
+                    // Refresh ID card content
+                    const username = saveManager.getUsername();
+                    const avatarId = saveManager.getAvatar();
+                    showWelcomePanel(username, avatarId);
+                }
+            }
         });
     }
 }
@@ -166,9 +550,32 @@ function updateSelectOptions() {
     const zoneSelect = document.getElementById("custom-zone-select");
     if (zoneSelect) {
         const zoneOptions = zoneSelect.options;
-        const zoneTexts = ['backyard', 'desert', 'snow', 'ash'];
-        for (let i = 0; i < zoneOptions.length && i < zoneTexts.length; i++) {
-            zoneOptions[i].text = localeManager.get(`menu.punchcard.${zoneTexts[i]}`);
+        
+        // Clear existing options except default
+        while (zoneOptions.length > 0) {
+            zoneOptions[0].remove();
+        }
+        
+        // Define available zones
+        const allZones = ['backyard', 'desert', 'snow', 'ash'];
+        const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+        
+        // Add zones based on unlock status
+        for (const zone of allZones) {
+            if (zone === 'backyard' && !backyardUnlocked) continue;
+            
+            const option = document.createElement('option');
+            option.value = zone;
+            option.textContent = localeManager.get(`menu.punchcard.${zone}`);
+            zoneSelect.appendChild(option);
+        }
+        
+        // Set default value if current zone is not available
+        const currentZone = document.getElementById("custom-zone-select").getAttribute('data-current') || 'desert';
+        if (zoneSelect.querySelector(`option[value="${currentZone}"]`)) {
+            zoneSelect.value = currentZone;
+        } else {
+            zoneSelect.value = 'desert';
         }
     }
     
@@ -187,6 +594,26 @@ function updateSelectOptions() {
 }
 
 // ==============================================================
+// ====================== BUTTON SOUND EFECT ===================
+// ==============================================================
+
+function addButtonSounds() {
+    const buttons = document.querySelectorAll('button, .daily-button, .custom-button, .legacy-button, .option-button, .diary-button, .pc-start, .pc-close, .welcome-btn, .avatar-option, .config-button, .save-btn-prop, .action-btn-side, .lang-btn-prop, .toggle-switch');
+    
+    buttons.forEach(btn => {
+        // Hover sound
+        btn.addEventListener('mouseenter', () => {
+            audioManager.playHoverSFX();
+        });
+        
+        // Click sound
+        btn.addEventListener('click', () => {
+            audioManager.playClickSFX();
+        });
+    });
+}
+
+// ==============================================================
 // ====================== DOM EVENT LISTENERS ===================
 // ==============================================================
 
@@ -198,6 +625,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     await initWelcomeScreen();
     applyMenuLanguage();
+
+    updateDailyButtonVisibility();
+    updatePunchcardBackground();
     
     localeManager.onChange(async () => {
         await initWelcomeScreen();
@@ -205,12 +635,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         updatePunchcardTextures(currentConfig);
     });
 
+    initIdCardToggle();
     const legacyButton = document.querySelector('.legacy-button');
     const dailyButton = document.querySelector('.daily-button');
     const customButton = document.querySelector('.custom-button');
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
     const startButton = document.querySelector('.pc-start');
+    addButtonSounds();
 
     // ----- Legacy Mode Button -----
     legacyButton.addEventListener('click', () => {
@@ -219,6 +651,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateLegacyConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
+        updateDailyButtonVisibility();
 
         const startButton = document.querySelector('.pc-start');
         if (startButton) startButton.style.display = "block";
@@ -238,6 +672,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateDailyConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
         
     });
 
@@ -248,6 +683,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateCustomConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
 
         const startButton = document.querySelector('.pc-start');
         if (startButton) startButton.style.display = "block";
@@ -424,6 +860,20 @@ function createBaseConfig() {
     };
 }
 
+function updatePunchcardBackground() {
+    const pcBase = document.querySelector('.pc-base');
+    if (!pcBase) return;
+    
+    const isHardcore = isHardcoreEnabled();
+    const isLegacyMode = (punchcardMode === "legacy");
+    
+    if (isHardcore) {
+        pcBase.src = "assets/hud/punchcard/hardcard.png";
+    } else {
+        pcBase.src = "assets/hud/punchcard/punchcard.png";
+    }
+}
+
 // Updates all punchcard images and UI elements based on config
 function updatePunchcardTextures(config) {
 
@@ -493,35 +943,68 @@ function generateLegacyConfig() {
     document.querySelector(".pct-title").style.display = "none";
     document.querySelector(".pc-title").style.display = "block";
 
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (!backyardUnlocked && zoneSelect.value === 'backyard') {
+        zoneSelect.value = 'desert';
+    }
+
     const config = createBaseConfig();
     config.mode = "legacy";
     
     config.seed = generateRandomSeed();
     updateSeedDisplay(config.seed);
 
-    const savedLevel = localStorage.getItem("legacy_level");
+    const isHardcore = isHardcoreEnabled();
+    let savedLevel;
+    if (isHardcore) {
+        savedLevel = saveManager.getHardcoreLevel();
+    } else {
+        savedLevel = saveManager.getLegacyLevel();
+    }
     const level = savedLevel ? parseInt(savedLevel) : 1;
     config.level = level;
 
-    let goals = 1;
-    if (level >= 5) goals = 2;
-    if (level >= 10) goals = 3;
-    if (level >= 15) goals = 4;
-    if (level >= 20) goals = 5;
-    
-    config.goals = goals;
-    config.character = "chef";
-
-    config.size = config.level;
-    config.hazards = config.level;
-    config.obstacles = config.level;
+    // ===== HARDCORE MODE =====
+    if (isHardcore) {
+        config.goals = 5;
+        config.size = 12 + level;
+        config.hazards = 5 + level;
+        config.obstacles = 10 + level;
+        config.zone = "ash";
+        
+        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Goals: ${config.goals}`);
+        
+    } else {
+        // SOFTCORE
+        let goals = 1;
+        if (level >= 5) goals = 2;
+        if (level >= 10) goals = 3;
+        if (level >= 15) goals = 4;
+        if (level >= 20) goals = 5;
+        
+        config.goals = goals;
+        config.size = level;
+        config.hazards = level;
+        config.obstacles = level;
+        config.zone = getZoneByLevel(level);
+    }
 
     dailyConfig = config;
     currentConfig = config;
     updatePunchcardTextures(config);
+    updatePunchcardBackground();
+    updatePunchcardLabelsColor();
     
     // Hide custom-only elements
     updateCustomElementsVisibility(false);
+}
+
+function getZoneByLevel(level) {
+    const lvl = Math.floor(Number(level));
+    if (lvl <= 9) return "desert";
+    if (lvl <= 19) return "snow";
+    return "ash";
 }
 
 // ==============================================================
@@ -634,12 +1117,19 @@ function generateCustomConfig() {
     document.getElementById("custom-obstacles-select").style.display = "block";
     document.getElementById("custom-wanted-select").style.display = "block";
     document.getElementById("custom-zone-select").style.display = "block";
+
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const zoneSelect = document.getElementById("custom-zone-select");
+    if (!backyardUnlocked && zoneSelect.value === 'backyard') {
+        zoneSelect.value = 'desert';
+    }
     
     // Hide legacy and daily badges
     const legacyContainer = document.getElementById("legacy-badge-container");
     const dailyContainer = document.getElementById("daily-badge-container");
     if (legacyContainer) legacyContainer.style.display = "none";
     if (dailyContainer) dailyContainer.style.display = "none";
+    updatePunchcardLabelsColor();
     
     // Show custom-only elements
     updateCustomElementsVisibility(true);
@@ -824,8 +1314,10 @@ function randomizeCustomSelectors() {
     const wanted = getRandomInRange(random, 1, 5).toString();
     document.getElementById("custom-wanted-select").value = wanted;
     
-    const zones = ["backyard", "desert", "snow", "ash"];
-    const zone = zones[getRandomInRange(random, 0, 3)];
+    const allZones = ["backyard", "desert", "snow", "ash"];
+    const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
+    const availableZones = backyardUnlocked ? allZones : allZones.filter(z => z !== 'backyard');
+    const zone = availableZones[getRandomInRange(random, 0, availableZones.length - 1)];
     document.getElementById("custom-zone-select").value = zone;
     
     updateCustomTextures();
@@ -898,19 +1390,33 @@ function updateBadges() {
     const legacyContainer = document.querySelector('.legacy-badge-container');
     const dailyContainer = document.getElementById('daily-badge-container');
     const legacyHighScore = saveManager.getLegacyHighScore();
+    const hardcoreHighScore = saveManager.getHardcoreHighScore();
     const badgeImg = document.getElementById("legacy-record-badge");
     const badgeLabel = document.getElementById("legacy-record-label");
+    const isHardcore = isHardcoreEnabled();
     
     if (punchcardMode === "legacy") {
         if (legacyContainer) legacyContainer.style.display = "flex";
         if (dailyContainer) dailyContainer.style.display = "none";
         
         if (badgeImg) {
-            const badgeFile = getLegacyBadge(legacyHighScore);
-            badgeImg.src = `assets/hud/badges/${badgeFile}`;
+            if (isHardcore) {
+                badgeImg.src = `assets/hud/menu/hardcore.png`;
+                badgeImg.style.display = "block";
+            } else {
+                const badgeFile = getLegacyBadge(legacyHighScore);
+                badgeImg.src = `assets/hud/badges/${badgeFile}`;
+                badgeImg.style.display = "block";
+            }
         }
         if (badgeLabel) {
-            badgeLabel.textContent = `Record: ${legacyHighScore}`;
+            if (isHardcore) {
+                badgeLabel.textContent = `Record: ${hardcoreHighScore}`;
+                badgeLabel.style.display = "block";
+            } else {
+                badgeLabel.textContent = `Record: ${legacyHighScore}`;
+                badgeLabel.style.display = "block";
+            }
         }
     } 
     else if (punchcardMode === "daily") {
@@ -921,6 +1427,24 @@ function updateBadges() {
     else {
         if (legacyContainer) legacyContainer.style.display = "none";
         if (dailyContainer) dailyContainer.style.display = "none";
+    }
+    updatePunchcardLabelsColor();
+}
+
+function updatePunchcardLabelsColor() {
+    const labels = document.querySelectorAll('.pc-label');
+    const isHardcore = isHardcoreEnabled();
+    
+    if (isHardcore) {
+        labels.forEach(label => {
+            label.style.color = "#ffffff";
+            label.style.textShadow = "2px 2px 0 #000000";
+        });
+    } else {
+        labels.forEach(label => {
+            label.style.color = "";
+            label.style.textShadow = "";
+        });
     }
 }
 
@@ -952,6 +1476,26 @@ function updateDailyBadge() {
 }
 
 // ==============================================================
+// ====================== DAILY BUTTON VISIBILITY ===============
+// ==============================================================
+
+function updateDailyButtonVisibility() {
+    const dailyButton = document.getElementById('daily-button');
+    const customButton = document.getElementById('custom-button');
+    if (!dailyButton) return;
+    
+    const isHardcore = isHardcoreEnabled();
+    
+    if (isHardcore) {
+        dailyButton.style.display = "none";
+        customButton.style.display = "none";
+    } else {
+        dailyButton.style.display = "flex";
+        customButton.style.display = "flex";
+    }
+}
+
+// ==============================================================
 // ======================== UI HELPERS ==========================
 // ==============================================================
 
@@ -975,6 +1519,11 @@ function triggerIconFade(imgId) {
         void img.offsetWidth; // Reflow trick to restart the animation
         img.classList.add('icon-react');
     }
+}
+
+// Hardcore verifier
+function isHardcoreEnabled() {
+    return saveManager.isHardcoreEnabled();
 }
 
 // Update scale when window is resized

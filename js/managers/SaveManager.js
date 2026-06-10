@@ -29,6 +29,18 @@ export class SaveManager {
         localStorage.setItem('gameConfig', JSON.stringify(config));
         this.config = config;
     }
+
+    // ======================= USERNAME =======================
+
+    // Get saved username
+    getUsername() {
+        return localStorage.getItem("username") || "";
+    }
+
+    // Set username
+    setUsername(name) {
+        localStorage.setItem("username", name);
+    }
     
     // ======================= LEGACY MODE PROGRESS =======================
     
@@ -69,6 +81,47 @@ export class SaveManager {
     resetLegacyHighScore() {
         localStorage.removeItem("legacy_highscore");
         console.log("[SaveManager] Legacy high score reset");
+    }
+
+    // ======================= HARDCORE MODE PROGRESS =======================
+    
+    // Get current hardcore level
+    getHardcoreLevel() {
+        const level = localStorage.getItem("hardcore_level");
+        return level ? parseInt(level) : 1;
+    }
+    
+    // Set hardcore level
+    setHardcoreLevel(level) {
+        localStorage.setItem("hardcore_level", level);
+        this.updateHardcoreHighScore(level);
+    }
+    
+    // Get hardcore high score (highest level ever reached)
+    getHardcoreHighScore() {
+        const highScore = localStorage.getItem("hardcore_highscore");
+        return highScore ? parseInt(highScore) : 1;
+    }
+    
+    // Update hardcore high score if new level is higher
+    updateHardcoreHighScore(level) {
+        const currentHigh = this.getHardcoreHighScore();
+        if (level > currentHigh) {
+            localStorage.setItem("hardcore_highscore", level);
+            console.log(`[SaveManager] New hardcore high score: ${level}`);
+        }
+    }
+    
+    // Clear hardcore progress (when losing)
+    clearHardcoreProgress() {
+        localStorage.removeItem("hardcore_level");
+        localStorage.setItem("hardcore_level", 1);
+    }
+    
+    // Reset legacy high score (if needed for debugging)
+    resetHardcoreHighScore() {
+        localStorage.removeItem("hardcore_highscore");
+        console.log("[SaveManager] Hardcore high score reset");
     }
     
     // ======================= DAILY MODE =======================
@@ -138,6 +191,57 @@ export class SaveManager {
             this.setDailyStreak(0);
             console.log(`[SaveManager] Streak reset to 0 due to loss`);
         }
+    }
+
+    // ======================= AVATAR =======================
+
+    // Get saved avatar ID (1-6)
+    getAvatar() {
+        const avatar = localStorage.getItem("avatar");
+        return avatar ? parseInt(avatar) : 1;
+    }
+
+    // Set avatar ID
+    setAvatar(id) {
+        localStorage.setItem("avatar", id);
+    }
+
+    // ======================= TEST =======================
+
+    // Check if secret code is activated
+    isSecretCodeActivated(code) {
+        const value = localStorage.getItem(`secret_${code}`);
+        return value === "true";
+    }
+
+    // Activate secret code
+    activateSecretCode(code) {
+        localStorage.setItem(`secret_${code}`, "true");
+        console.log(`[SaveManager] Secret code activated: ${code}`);
+    }
+
+    // Deactivate secret code
+    deactivateSecretCode(code) {
+        localStorage.removeItem(`secret_${code}`);
+    }
+
+    // Get all activated codes
+    getActivatedCodes() {
+        const codes = [];
+        if (this.isSecretCodeActivated('back2school')) codes.push('back2school');
+        if (this.isSecretCodeActivated('masiosare')) codes.push('masiosare');
+        if (this.isSecretCodeActivated('debugthis')) codes.push('debugthis');
+        return codes;
+    }
+
+    // ======================= DEBUG MODE =======================
+
+    isDebugModeEnabled() {
+        return localStorage.getItem("debug_mode") === "true";
+    }
+
+    setDebugMode(enabled) {
+        localStorage.setItem("debug_mode", enabled);
     }
     
     // ======================= DAILY CLEANUP =======================
@@ -277,6 +381,17 @@ export class SaveManager {
     setFallDamageEnabled(enabled) {
         localStorage.setItem("fallDamageEnabled", enabled);
     }
+
+    // ======================= HARDCORE =======================
+
+    isHardcoreEnabled() {
+        const value = localStorage.getItem("hardcoreEnabled");
+        return value !== null ? value === "true" : false;
+    }
+
+    setHardcoreEnabled(enabled) {
+        localStorage.setItem("hardcoreEnabled", enabled);
+    }
         
     // ======================= UTILITY =======================
     
@@ -290,10 +405,19 @@ export class SaveManager {
         } : null;
         
         // Clear all keys related to game data
+        localStorage.removeItem("daily_streak");
+        localStorage.removeItem("fallDamageEnable");
         localStorage.removeItem("gameConfig");
-        localStorage.removeItem("legacy_level");
+        localStorage.removeItem("language");
         localStorage.removeItem("legacy_highscore");
-        localStorage.removeItem("tutorialCompleted");
+        localStorage.removeItem("legacy_level");
+        localStorage.removeItem("musicVolume");
+        localStorage.removeItem("secret_back2school");
+        localStorage.removeItem("sfxEnabled");
+        localStorage.removeItem("sfxVolume");
+        localStorage.removeItem("touchEnabled");
+        localStorage.removeItem("tutorialComplete");
+        localStorage.removeItem("username");
         
         // Clean up all daily entries
         const keys = Object.keys(localStorage);
