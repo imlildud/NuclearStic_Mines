@@ -259,6 +259,11 @@ export class CharacterController {
                 tile.setGoaltype("none");    // Remove goal
                 tile.setGoallive(false);     // Mark as rescued
                 this.character.setRegen(true); // Trigger regeneration
+
+                // Play rescue sound
+                if (this.gameManager && this.gameManager.audio) {
+                    this.gameManager.audio.playRescueSFX();
+                }
             }
         }
         
@@ -278,6 +283,11 @@ export class CharacterController {
         
         if (tile.isStart() && this.character.getRescued() > 0) {
             const rescued = this.character.getRescued();
+
+            // Play deliver sound
+            if (this.gameManager && this.gameManager.audio) {
+                this.gameManager.audio.playDeliverSFX();
+            }
             
             // ===== MOMMY ABILITY (Ability 3) =====
             // Each rescued child grants armor, health, force, and flags

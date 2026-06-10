@@ -5,6 +5,8 @@
 // flags, characters, and animations. Manages camera following,
 // sprite loading, and visual effects.
 
+import { PathResolver } from "../utils/PathResolver.js";
+
 export class Renderer {
     
     // ======================= CONSTRUCTOR =======================
@@ -25,7 +27,6 @@ export class Renderer {
         this.loadImages();
         
         // Initialize resize handler
-        this.resize();
         window.addEventListener("resize", () => this.resize());
         
         // Cache for height offset calculations (performance)
@@ -73,9 +74,11 @@ export class Renderer {
     // Handle canvas resize and recalculate tile size
     resize() {
         const board = this.game.getBoard();
-        if (!board) return;
+        if (!board || board.length === 0) {
+            setTimeout(() => this.resize(), 100);
+            return;
+        }
         
-        const boardSize = board.length;
         const rect = this.canvas.getBoundingClientRect();
         const canvasSize = Math.min(rect.width, rect.height);
         
@@ -89,9 +92,9 @@ export class Renderer {
     
     // Load all game sprites (biome, global, and character textures)
     loadImages() {
-        const biomePath = `../../assets/sprites/tiles/${this.zone}`;
-        const globalPath = `../../assets/sprites/tiles`;
-        const charPath = `../../assets/sprites/characters`;
+        const biomePath = `../assets/sprites/tiles/${this.zone}`;
+        const globalPath = `../assets/sprites/tiles`;
+        const charPath = `../assets/sprites/characters`;
         
         // Biome-specific textures (desert/snow/ash)
         const biomeTextures = [
@@ -139,7 +142,8 @@ export class Renderer {
         // Helper function to load an image
         const load = (name, path) => {
             const img = new Image();
-            img.src = `${path}/${name}.png`;
+            const fullPath = path ? `${path}/${name}.png` : `${globalPath}/${name}.png`;
+            img.src = fullPath;
             this.images[name] = img;
         };
         

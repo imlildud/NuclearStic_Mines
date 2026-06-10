@@ -12,6 +12,7 @@ import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
 import { DifficultyScaler } from "./DifficultyScaler.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class GameManager {
     
@@ -44,13 +45,24 @@ export class GameManager {
     // Start or restart the game
     async startGame() {
         this.gameInputLocked = false;
+
+        const isHardcore = this.isHardcoreEnabled() && this.config.mode === "legacy";
+    
+        if (isHardcore) {
+            this.currentLevel = this.save.getHardcoreLevel();
+        } else {
+            this.currentLevel = this.save.getLegacyLevel();
+        }
         
-        this.currentLevel = this.save.getLegacyLevel();
         this.player = CharacterFactory.createCharacter(this.config.character);
         
         // Select board controller based on mode
         if (this.config.mode === "tutorial") {
             this.boardCtrl = new TutorialController(this.player);
+        } else if (this.config.mode === "test") {
+            const { TestController } = await import("../controllers/TestController.js");
+            this.boardCtrl = new TestController(this.player);
+            console.log("[GameManager] Test mode activated with TestController");
         } else {
             this.boardCtrl = new BoardController(this.player);
         }
@@ -91,16 +103,39 @@ export class GameManager {
             this.boardCtrl.updateVision(this.board, this.player);
             return;
         }
+
+        // ===== TEST MODE =====
+        if (this.config.mode === "test") {
+            this.board = this.boardCtrl.generateBoard(24);
+            this.charCtrl.getStartCoords(this.board);
+            this.boardCtrl.updateVision(this.board, this.player);
+            return;
+        }
         
         // ===== LEGACY MODE =====
         if (this.config.mode === "legacy") {
-            size = DifficultyScaler.getBoardSize(this.currentLevel);
-            hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
-            goals = DifficultyScaler.getGoalCount(this.currentLevel);
-            heightIntensity = this.currentLevel;
-            obstacleIntensity = this.currentLevel;
-            zone = DifficultyScaler.getZoneByLevel(this.currentLevel);
-            childLevel = this.currentLevel;
+            const isHardcore = this.save.isHardcoreEnabled();
+            
+            if (isHardcore) {
+                // HARDCORE:
+                size = 12 + this.currentLevel;
+                goals = this.config.goals;
+                hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+                hazardIntensity = this.config.hazards;
+                heightIntensity = this.config.obstacles;
+                obstacleIntensity = this.config.obstacles;
+                zone = this.config.zone;
+                childLevel = this.currentLevel;
+            } else {
+                // SOFTCORE:
+                size = DifficultyScaler.getBoardSize(this.currentLevel);
+                hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
+                goals = DifficultyScaler.getGoalCount(this.currentLevel);
+                heightIntensity = this.currentLevel;
+                obstacleIntensity = this.currentLevel;
+                zone = DifficultyScaler.getZoneByLevel(this.currentLevel);
+                childLevel = this.currentLevel;
+            }
         }
         // ===== CUSTOM / DAILY MODE =====
         else {
@@ -147,7 +182,7 @@ export class GameManager {
         console.log(`Character: ${this.config.character}`);
         console.log("========================================");
     }
-    
+
     // ======================= INPUT HANDLING =======================
     
     // Handle movement input (WASD)
@@ -167,13 +202,24 @@ export class GameManager {
         
         // ===== HAZARD REGENERATION =====
         if (this.player.isRegen() === true) {
-            console.log("Goals:" + this.player.getRescued());
+            console.log("Regenerating hazards - Rescued:" + this.player.getRescued());
             let hazardAmount, hazardIntensity, size;
             
             if (this.config.mode === "legacy") {
-                size = DifficultyScaler.getBoardSize(this.currentLevel);
-                hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
-                hazardIntensity = this.currentLevel;
+                const isHardcore = this.save.isHardcoreEnabled();
+                
+                if (isHardcore) {
+                    // HARDCORE:
+                    size = this.config.size;
+                    hazardIntensity = this.config.hazards;
+                    hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+                    console.log(`[Hardcore Regen] Size: ${size}, Amount: ${hazardAmount}, Intensity: ${hazardIntensity}`);
+                } else {
+                    // Softcore
+                    size = DifficultyScaler.getBoardSize(this.currentLevel);
+                    hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
+                    hazardIntensity = this.currentLevel;
+                }
             } else {
                 size = this.config.size;
                 hazardAmount = DifficultyScaler.getHazardCountBySize(size);
@@ -184,7 +230,6 @@ export class GameManager {
             this.boardCtrl.trackHazardCount(this.board);
             this.boardCtrl.updateVision(this.board, this.player);
             this.player.setRegen(false);
-            
         }
 
         // ===== TUTORIAL PHASE COMPLETION (flaggoal) =====
@@ -258,32 +303,93 @@ export class GameManager {
     handleLegacyVictory() {
         console.log(`Legacy: Next level ${this.currentLevel + 1}`);
         this.currentLevel++;
-        this.save.setLegacyLevel(this.currentLevel);
+        
+        if (this.isHardcoreEnabled()) {
+            this.save.setHardcoreLevel(this.currentLevel);
+
+            this.config.level = this.currentLevel;
+            this.config.goals = 5;
+            this.config.size = 12 + this.currentLevel;
+            this.config.hazards = 5 + this.currentLevel;
+            this.config.obstacles = 10 + this.currentLevel;
+            this.config.zone = "ash";
+            
+            // === HARDCORE RULES ===
+            // No HP regenertion
+            const currentHp = this.player.getHp();
+            const currentFlags = this.player.getFlags();
+            const maxFlags = this.getMaxFlagsForHardcore();
+            
+            const currentPoints = this.player.getPoints();
+            const currentType = this.player.getType();
+            
+            this.player = CharacterFactory.createCharacter(currentType);
+            this.player.setPoints(currentPoints);
+            
+            this.player.setHp(currentHp);
+            
+            // Only 1 flag regen
+            if (currentFlags < maxFlags) {
+                this.player.setFlags(currentFlags + 1);
+            } else {
+                this.player.setFlags(currentFlags);
+            }
+        } else {
+            // LEGACY SOFTCORE
+            this.save.setLegacyLevel(this.currentLevel);
+            
+            const currentPoints = this.player.getPoints();
+            const currentType = this.player.getType();
+            
+            this.player = CharacterFactory.createCharacter(currentType);
+            this.player.setPoints(currentPoints);
+        }
 
         if (this.config.seed) {
             this.config.seed = Math.floor(Math.random() * 999999999) + 1;
             console.log(`[GameManager] New seed for level ${this.currentLevel}: ${this.config.seed}`);
         }
         
-        const currentPoints = this.player.getPoints();
-        const currentType = this.player.getType();
-        
-        this.player = CharacterFactory.createCharacter(currentType);
-        this.player.setPoints(currentPoints);
-        
         this.boardCtrl = new BoardController(this.player);
-        this.charCtrl = new CharacterController(this.player, this.boardCtrl);
+        this.charCtrl = new CharacterController(this.player, this.boardCtrl, this);
         
         this.configLevel();
         this.gameInputLocked = false;
         
-        console.log(`Level ${this.currentLevel} started`);
+        console.log(`Level ${this.currentLevel} started (Hardcore: ${this.isHardcoreEnabled()})`);
+    }
+
+    getMaxFlagsForHardcore() {
+        const characterType = this.player.getType();
+        const totalGoals = this.charCtrl ? this.charCtrl.getTotalGoals() : 1;
+        
+        switch (characterType) {
+            case "chef": return 5;
+            case "mosquito": return 7;
+            case "mommy": return totalGoals + 1;
+            case "scout": return 0;
+            default: return 5;
+        }
     }
     
     handleLegacyLose() {
         console.log(`Game over: Record ${this.currentLevel}`);
-        this.currentLevel = 1;
-        this.save.clearLegacyProgress();
+        
+        if (this.isHardcoreEnabled()) {
+            // HARDCORE
+            this.save.clearHardcoreProgress();
+            this.currentLevel = 1;
+        } else {
+            // SOFTCORE
+            this.save.clearLegacyProgress();
+            this.currentLevel = 1;
+        }
+    }
+
+    // ======================= HARDCORE MODE =======================
+
+    isHardcoreEnabled() {
+        return this.save.isHardcoreEnabled();
     }
 
     // ======================= DAILY MODE HANDLERS =======================
@@ -407,14 +513,63 @@ export class GameManager {
         }
         this.gameInputLocked = false;
     }
+
+    randomizeNewGame() {
+        if (this.config.mode !== "custom") return;
+        
+        // Generate new random seed
+        const newSeed = Math.floor(Math.random() * 999999999) + 1;
+        
+        // Generate random configuration
+        const random = this.createSeededRandom(newSeed);
+        
+        const chars = ["chef", "mosquito", "mommy", "scout"];
+        const character = chars[Math.floor(random() * chars.length)];
+        
+        const sizes = [8, 12, 16, 20, 24];
+        const size = sizes[Math.floor(random() * sizes.length)];
+        
+        const hazardsList = [1, 5, 8, 12, 20, 30];
+        const hazards = hazardsList[Math.floor(random() * hazardsList.length)];
+        
+        const obstaclesList = [1, 3, 5, 10, 15, 30];
+        const obstacles = obstaclesList[Math.floor(random() * obstaclesList.length)];
+        
+        const goals = Math.floor(random() * 5) + 1;
+
+        // Update config
+        this.config.seed = newSeed;
+        this.config.character = character;
+        this.config.size = size;
+        this.config.hazards = hazards;
+        this.config.obstacles = obstacles;
+        this.config.goals = goals;
+        
+        // Hide scoreboard and restart game
+        document.getElementById("scoreboard-overlay").classList.remove("active");
+        this.startGame();
+    }
+
+    // Helper to create seeded random (copy from Menu.js or import)
+    createSeededRandom(seed) {
+        return function() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+    }
     
     returnToMenu() {
         if (this.config.mode === "legacy" && this.lastResult === "victory") {
             this.currentLevel++;
-            this.save.setLegacyLevel(this.currentLevel);
-            console.log(`Saving level on Home: ${this.currentLevel}`);
+            if (this.isHardcoreEnabled()) {
+                this.save.setHardcoreLevel(this.currentLevel);
+                console.log(`Saving Hardcore level on Home: ${this.currentLevel}`);
+            } else {
+                this.save.setLegacyLevel(this.currentLevel);
+                console.log(`Saving Legacy level on Home: ${this.currentLevel}`);
+            }
         }
-        window.location.href = '../../index.html';
+        PathResolver.goToIndex();
     }
 
     // ======================= MODAL MESSAGE =======================
@@ -425,6 +580,95 @@ export class GameManager {
             detail: { message, onClose } 
         });
         window.dispatchEvent(event);
+    }
+
+    // ======================= PAUSE MODAL =======================
+
+    async showPauseModal() {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("pause-modal");
+            const titleEl = document.getElementById("pause-title");
+            const statsEl = document.getElementById("pause-stats");
+            const childrenContainer = document.getElementById("pause-children");
+            const continueBtn = document.getElementById("pause-continue");
+            const exitBtn = document.getElementById("pause-exit");
+            
+            if (!modal) {
+                resolve();
+                return;
+            }
+            
+            // Clear previous children
+            childrenContainer.innerHTML = "";
+            
+            // Set title and stats
+            titleEl.textContent = this.getText('game.paused');
+            
+            const totalGoals = this.charCtrl.getTotalGoals();
+            const rescuedCount = this.player.getRescued();
+            const remainingGoals = this.charCtrl.getRemainingGoals();
+            
+            const statsText = `${this.getText('game.wanted')}: ${totalGoals} | ${this.getText('game.remaining')}: ${remainingGoals}`;
+            statsEl.textContent = statsText;
+            
+            // Get unique child types from board
+            const childTypes = this.getChildTypesFromBoard();
+            
+            // Display each child type
+            childTypes.forEach(childType => {
+                const childDiv = document.createElement("div");
+                childDiv.className = "pause-child";
+                
+                const img = document.createElement("img");
+                img.className = "pause-child-img";
+                img.src = PathResolver.resolveAsset('characters', `${childType}.png`);
+                img.alt = childType;
+                
+                const name = document.createElement("span");
+                name.className = "pause-child-name";
+                name.textContent = this.getText(`game.children.${childType}`) || childType;
+                
+                childDiv.appendChild(img);
+                childDiv.appendChild(name);
+                childrenContainer.appendChild(childDiv);
+            });
+            
+            // Show modal
+            modal.style.display = "flex";
+            
+            // Setup continue button
+            const newContinueBtn = continueBtn.cloneNode(true);
+            continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
+            
+            newContinueBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+                this.gameInputLocked = false;
+                resolve();
+            });
+            
+            // Setup exit button
+            const newExitBtn = exitBtn.cloneNode(true);
+            exitBtn.parentNode.replaceChild(newExitBtn, exitBtn);
+            
+            newExitBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+                PathResolver.goToIndex();
+            });
+        });
+    }
+
+    // ======================= PAUSE GAME =======================
+
+    async pauseGame() {
+        if (this.gameInputLocked) return;
+        
+        // Lock input while paused
+        this.gameInputLocked = true;
+        
+        // Show pause modal
+        await this.showPauseModal();
+        
+        // Input will be unlocked when continue is clicked
     }
 
     // ======================= LEVEL START MODAL =======================
@@ -479,7 +723,7 @@ export class GameManager {
                 
                 const img = document.createElement("img");
                 img.className = "level-start-child-img";
-                img.src = `../../assets/sprites/characters/${childType}.png`;
+                img.src = PathResolver.resolveAsset('characters', `${childType}.png`);
                 img.alt = childType;
                 
                 const name = document.createElement("span");
@@ -491,21 +735,23 @@ export class GameManager {
                 childrenContainer.appendChild(childDiv);
             });
             
+            const cleanModal = () => {
+                modal.classList.remove("show");
+                document.removeEventListener("click", onUserInput);
+                document.removeEventListener("keydown", onUserInput);
+                document.removeEventListener("touchstart", onUserInput);
+            };
+            
             // Show modal with fade in
             modal.style.display = "flex";
             setTimeout(() => {
                 modal.classList.add("show");
             }, 10);
             
-            // WAIT FOR USER INPUT (click, tap, or key) instead of timeout
             const closeModal = () => {
-                modal.classList.remove("show");
+                cleanModal();
                 setTimeout(() => {
                     modal.style.display = "none";
-                    // Remove event listeners
-                    document.removeEventListener("click", onUserInput);
-                    document.removeEventListener("keydown", onUserInput);
-                    document.removeEventListener("touchstart", onUserInput);
                     resolve();
                 }, 500);
             };
@@ -514,10 +760,11 @@ export class GameManager {
                 closeModal();
             };
             
-            // Listen for any user interaction
-            document.addEventListener("click", onUserInput, { once: true });
-            document.addEventListener("keydown", onUserInput, { once: true });
-            document.addEventListener("touchstart", onUserInput, { once: true });
+            setTimeout(() => {
+                document.addEventListener("click", onUserInput, { once: true });
+                document.addEventListener("keydown", onUserInput, { once: true });
+                document.addEventListener("touchstart", onUserInput, { once: true });
+            }, 100);
         });
     }
 

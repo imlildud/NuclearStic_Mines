@@ -50,18 +50,21 @@
 
             <!-- Tired Status Icon -->
             <img id="hud-tired-icon" class="hud-tired-icon" style="display: none;" src="../assets/hud/game/stats/tired.png">
+
+            <!-- Pause button -->
+            <img id="pause-btn" class="pause-btn" src="../assets/hud/game/control/pause.png" alt="Pause" style="display: block;">
         </div>
 
         <!-- ================= GROUP 2: Health (Below Character) ================= -->
         <div class="hud-container hud-health-group">
             <!-- Health Bar Image -->
-            <img id="hud-health-bar" class="hud-health-bar" src="../assets/hud/game/stats/barlife.png" alt="Health Bar">
-
+            <div id="hud-health-bar" class="hud-health-bar" alt="Health Bar">
+                <img id="hud-health-bar" class="hud-health-bar" src="../assets/hud/game/stats/barlife.png" alt="Health Bar">
+                <!-- Health Numeric Text -->
+                <div id="hud-health-text" class="hud-health-text">5</div>
+            </div>
             <!-- Health Icon -->
             <img id="hud-health-icon" class="hud-health-icon" src="../assets/hud/game/stats/fulllife.png" alt="Health">
-
-            <!-- Health Numeric Text -->
-            <div id="hud-health-text" class="hud-health-text">5</div>
         </div>
 
         <!-- ================= ROW 3: Flags and Rescued Stats (Below Health) ================= -->
@@ -123,7 +126,7 @@
     <!-- ====================================================== -->
 
     <div class="tutorial-radio-container">
-        <img id="tutorial-radio" class="tutorial-radio" src="../../assets/hud/game/radio/walkie.png" alt="Radio" style="display: none;">
+        <img id="tutorial-radio" class="tutorial-radio" src="../assets/hud/game/radio/walkie.png" alt="Radio" style="display: none;">
         <div id="tutorial-bubble" class="tutorial-bubble" style="display: none;">
             <div id="tutorial-text" class="tutorial-text"></div>
         </div>
@@ -161,6 +164,7 @@
 
             <!-- Action Buttons Row -->
             <div class="scoreboard-button-row">
+                <img id="score-random" class="random-btn" src="../assets/hud/game/gameover/random.png" alt="random" style="display: none;">
                 <img id="score-continue" class="continue-btn" src="../assets/hud/game/gameover/continue.png" alt="continue">
                 <img id="score-retry" class="retry-btn" src="../assets/hud/game/gameover/retry.png" alt="retry">
                 <img id="score-home" class="home-btn" src="../assets/hud/game/gameover/home.png" alt="home">
@@ -196,6 +200,25 @@
                 <div id="level-start-seed" class="level-start-seed"></div>
                 <div id="level-start-info" class="level-start-info"></div>
                 <div id="level-start-children" class="level-start-children"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- =================== PAUSE MODAL ======================= -->
+    <!-- ====================================================== -->
+
+    <div id="pause-modal" class="pause-overlay" style="display: none;">
+        <div class="pause-card">
+            <img src="../assets/hud/menu/welcome.png" class="pause-bg" alt="Pause Menu">
+            <div class="pause-content">
+                <div id="pause-title" class="pause-title">PAUSED</div>
+                <div id="pause-stats" class="pause-stats"></div>
+                <div id="pause-children" class="pause-children"></div>
+                <div class="pause-buttons">
+                    <img id="pause-continue" class="pause-btn-img" src="../assets/hud/game/control/continuegame.png" alt="Continue">
+                    <img id="pause-exit" class="pause-btn-img" src="../assets/hud/game/control/exit.png" alt="Exit">
+                </div>
             </div>
         </div>
     </div>

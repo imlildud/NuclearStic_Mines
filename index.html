@@ -9,7 +9,7 @@
     <link rel="icon" href="assets/hud/nuclearlogo.png">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/menu.css">
 
     <!-- Scripts -->
     <script type="module" src="js/main/Menu.js"></script>
@@ -24,11 +24,70 @@
         <div class="welcome-card">
             <img src="assets/hud/menu/welcome.png" class="welcome-bg" alt="Welcome">
             <div class="welcome-content">
-                <div id="welcome-text" class="welcome-text"></div>
-                <div class="welcome-buttons">
-                    <button id="welcome-yes" class="welcome-btn welcome-yes"></button>
-                    <button id="welcome-no" class="welcome-btn welcome-no"></button>
+                
+                <!-- Welcome Panel (ID Card for returning players) -->
+                <div id="welcome-panel" class="welcome-panel" style="display: none;">
+                    <div class="id-card-container">
+                        <img src="assets/hud/menu/idcard.png" class="id-card-bg" alt="ID Card">
+                        <div class="id-card-content">
+                            <div class="id-card-avatar">
+                                <img id="id-card-avatar-img" class="id-card-avatar-img" src="assets/hud/menu/icons/icon1.png" alt="Avatar">
+                                <img id="id-card-edit-btn" class="id-card-edit-btn" src="assets/hud/menu/edit.png" alt="Edit">
+                            </div>
+                            <div id="id-card-name" class="id-card-name"></div>
+                            <div id="id-card-level" class="id-card-level"></div>
+                            <div class="id-card-badges">
+                                <div id="id-card-record-number" class="id-card-record-number"></div>
+                                <img id="id-card-legacy-badge" class="id-card-legacy-badge" src="assets/hud/badges/paper.png" alt="Legacy">
+                                <div class="id-card-streak-wrapper">
+                                    <img src="assets/hud/badges/calendar.png" class="id-card-streak-frame" alt="Frame">
+                                    <span id="id-card-streak-number" class="id-card-streak-number">0</span>
+                                    <img id="id-card-streak-fire" class="id-card-streak-fire" src="assets/hud/badges/fire0.png" alt="Fire">
+                                </div>
+                            </div>
+                            <div class="id-card-hardcore-wrapper">
+                                    <img src="assets/hud/menu/hardcore.png" class="id-card-hardcore-badge" alt="Frame">
+                                    <span id="id-card-hardcore-number" class="id-card-hardcore-number">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ID Card specific buttons -->
+                    <div class="id-card-buttons">
+                        <button id="welcome-play" class="welcome-btn welcome-yes"></button>
+                        <button id="welcome-delete" class="welcome-btn welcome-delete"></button>
+                    </div>
                 </div>
+                
+                <!-- Avatar Selection Panel (first time or edit) -->
+                <div id="avatar-panel" class="avatar-panel" style="display: none;">
+                    <div id="avatar-prompt" class="welcome-text"></div>
+                    <div class="avatar-grid" id="avatar-grid">
+                        <img src="assets/hud/menu/icons/icon1.png" class="avatar-option" data-avatar="1">
+                        <img src="assets/hud/menu/icons/icon2.png" class="avatar-option" data-avatar="2">
+                        <img src="assets/hud/menu/icons/icon3.png" class="avatar-option" data-avatar="3">
+                        <img src="assets/hud/menu/icons/icon4.png" class="avatar-option" data-avatar="4">
+                        <img src="assets/hud/menu/icons/icon5.png" class="avatar-option" data-avatar="5">
+                        <img src="assets/hud/menu/icons/icon6.png" class="avatar-option" data-avatar="6">
+                    </div>
+                    <button id="avatar-confirm" class="welcome-btn welcome-yes"></button>
+                </div>
+                
+                <!-- Name Panel (first time players) -->
+                <div id="name-panel" class="name-panel" style="display: none;">
+                    <div id="name-prompt" class="welcome-text"></div>
+                    <input type="text" id="username-input" class="welcome-input" maxlength="20" autocomplete="off">
+                    <button id="name-continue" class="welcome-btn welcome-yes"></button>
+                </div>
+                
+                <!-- Tutorial Prompt Panel -->
+                <div id="tutorial-panel" class="tutorial-panel" style="display: none;">
+                    <div id="tutorial-question" class="welcome-text"></div>
+                    <div class="welcome-buttons">
+                        <button id="welcome-yes" class="welcome-btn welcome-yes"></button>
+                        <button id="welcome-no" class="welcome-btn welcome-no"></button>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -42,6 +101,9 @@
 
     <!-- Main Menu Overlay Container -->
     <div class="overlay">
+
+        <!-- Top Left Corner - ID Card Button -->
+        <img src="assets/hud/menu/lilidcard.png" class="id-card-toggle-btn" id="id-card-toggle-btn" alt="ID Card" style="display: none;">
 
         <!-- Bottom Left Corner Logo -->
         <img src="assets/hud/cloudcon.png" class="cloud" alt="CloudToons">

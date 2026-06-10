@@ -10,6 +10,7 @@ import { Renderer } from "../views/Renderer.js";
 import { AudioManager } from "../managers/AudioManager.js";
 import { SaveManager } from "../managers/SaveManager.js";
 import { LocaleManager } from "../managers/LocaleManager.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 // ==============================================================
 // ====================== INITIALIZATION ========================
@@ -87,7 +88,8 @@ const zoneMap = {
 };
 
 // Set body background based on selected zone
-document.body.style.backgroundImage = `url("../../assets/hud/game/wallpaper/${zoneMap[config.zone]}")`;
+const bgPath = PathResolver.resolveAsset('gameWallpaper', zoneMap[config.zone]);
+document.body.style.backgroundImage = `url("${bgPath}")`;
 
 // Initialize game engine and audio
 const game = new GameManager(config);
@@ -117,31 +119,10 @@ window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
 
-// Start the game
-game.startGame();
-
 // Initialize renderer
 const canvas = document.getElementById("gameCanvas");
 const renderer = new Renderer(canvas, game);
-
-// ==============================================================
-// ==================== STARTUP SEQUENCE ========================
-// ==============================================================
-
-// Main startup function - ensures correct order of async operations
-async function start() {
-    await initLocale();      // Load language FIRST
-    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
-    
-    // Start the game ONLY after localeManager is set
-    game.startGame();
-    
-    await initTutorial();    // Then initialize tutorial (needs localeManager)
-    updateHUD();             // Finally update HUD
-    applyTouchButtonsVisibility();
-}
-
-start();
+game.setRenderer(renderer);
 
 // ==============================================================
 // ====================== TOUCH BUTTONS VISIBILITY ==============
@@ -166,6 +147,20 @@ function applyTouchButtonsVisibility() {
 }
 
 // ==============================================================
+// ====================== PAUSE BUTTON ==========================
+// ==============================================================
+
+// Initialize pause button functionality
+function initPauseButton() {
+    const pauseBtn = document.getElementById("pause-btn");
+    if (pauseBtn) {
+        pauseBtn.addEventListener("click", () => {
+            game.pauseGame();
+        });
+    }
+}
+
+// ==============================================================
 // ======================== HUD SYSTEM ==========================
 // ==============================================================
 
@@ -177,7 +172,7 @@ function updateHUD() {
     // Character Icon
     const characterIcon = document.getElementById("hud-character-icon");
     if (characterIcon) {
-        characterIcon.src = `../../assets/hud/game/charactericon/${player.getType()}.png`;
+        characterIcon.src = PathResolver.resolveAsset('gameCharacterIcon', `${player.getType()}.png`);
     }
 
     // Health Display
@@ -190,13 +185,13 @@ function updateHUD() {
 
     if (healthIcon) {
         if (hp === maxHp) {
-            healthIcon.src = "../../assets/hud/game/stats/fulllife.png";
+            healthIcon.src = PathResolver.resolveAsset('gameStats', 'fulllife.png');
         } else if (hp >= maxHp / 2) {
-            healthIcon.src = "../../assets/hud/game/stats/halflife.png";
+            healthIcon.src = PathResolver.resolveAsset('gameStats', 'halflife.png');
         } else if (hp > 0) {
-            healthIcon.src = "../../assets/hud/game/stats/quarterlife.png";
+            healthIcon.src = PathResolver.resolveAsset('gameStats', 'quarterlife.png');
         } else {
-            healthIcon.src = "../../assets/hud/game/stats/emptylife.png";
+            healthIcon.src = PathResolver.resolveAsset('gameStats', 'emptylife.png');
         }
     }
 
@@ -303,14 +298,14 @@ function updateGeologicalAlert() {
     }
     
     if (alertType) {
-        alertIcon.src = `../../assets/hud/game/stats/${alertType}`;
+        alertIcon.src = PathResolver.resolveAsset('gameStats', alertType);
         alertIcon.style.display = "block";
     } else {
         alertIcon.style.display = "none";
     }
 
     if (alertType2) {
-        alertIcon2.src = `../../assets/hud/game/stats/${alertType2}`;
+        alertIcon2.src = PathResolver.resolveAsset('gameStats', alertType2);
         alertIcon2.style.display = "block";
     } else {
         alertIcon2.style.display = "none";
@@ -356,10 +351,10 @@ function updateCurrentTile() {
     }
 
     if (textureName && obstacleType !== "none") {
-        tileIcon.src = `../../assets/sprites/tiles/${zone}/${textureName}.png`;
+        tileIcon.src = PathResolver.resolveAsset('tiles', zone, `${textureName}.png`);
         tileIcon.style.display = "block";
     } else if (textureName) {
-        tileIcon.src = `../../assets/sprites/tiles/${textureName}.png`;
+        tileIcon.src = PathResolver.resolveAsset('tiles', `${textureName}.png`);
         tileIcon.style.display = "block";
     } else {
         tileIcon.style.display = "none";
@@ -396,6 +391,36 @@ function getMaxHpByCharacter(characterType) {
 }
 
 // ==============================================================
+// ====================== PAUSE ON ESC KEY ======================
+// ==============================================================
+
+// Pause game when ESC key is pressed
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        e.preventDefault();
+        game.pauseGame();
+    }
+});
+
+// ==============================================================
+// ====================== BUTTON SOUND EFECT ===================
+// ==============================================================
+
+function addGameButtonSounds() {
+    const buttons = document.querySelectorAll('.continue-btn, .retry-btn, .home-btn, .random-btn, .pause-btn, .pause-btn-img');
+    
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            audio.playHoverSFX();
+        });
+        
+        btn.addEventListener('click', () => {
+            audio.playClickSFX();
+        });
+    });
+}
+
+// ==============================================================
 // ==================== RENDERER EXTENSIONS =====================
 // ==============================================================
 
@@ -427,6 +452,14 @@ window.addEventListener("keydown", (e) => {
         case "s": game.handleInput("Down"); break;
         case "a": game.handleInput("Left"); break;
         case "d": game.handleInput("Right"); break;
+    }
+});
+
+// ===== PAUSE ON ESC KEY =====
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        e.preventDefault();
+        game.pauseGame();
     }
 });
 
@@ -573,3 +606,31 @@ function initModal() {
 }
 
 initModal();
+
+// ==============================================================
+// ==================== STARTUP SEQUENCE ========================
+// ==============================================================
+
+// Main startup function - ensures correct order of async operations
+async function start() {
+    await initLocale();      // Load language FIRST
+    game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
+    
+    // Start the game ONLY after localeManager is set
+    game.startGame();
+    
+    await initTutorial();    // Then initialize tutorial (needs localeManager)
+    updateHUD();             // Finally update HUD
+    applyTouchButtonsVisibility();
+    initPauseButton();       // Initialize pause button
+    addGameButtonSounds();
+    
+    // Force resize after game is ready
+    setTimeout(() => {
+        renderer.resize();
+        console.log("[Game] Forced resize after game ready");
+    }, 200);
+}
+
+// Start the game
+start();

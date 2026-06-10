@@ -5,6 +5,7 @@
 // and all score-related UI logic.
 
 import { DifficultyScaler } from "./DifficultyScaler.js";
+import { PathResolver } from "../utils/PathResolver.js";
 
 export class ScoreboardManager {
     
@@ -40,8 +41,15 @@ export class ScoreboardManager {
             maxTotal: scores.maxTotal
         };
         
-        // Start score animation
-        this.animateScoreNumbers();
+        // Start score animation (with or without sound based on SFX settings)
+        const sfxEnabled = this.gameManager.save.isSFXEnabled();
+        const sfxVolume = this.gameManager.save.getSFXVolume();
+
+        if (sfxEnabled && sfxVolume > 0) {
+            this.animateScoreNumbers();  // Con sonido
+        } else {
+            this.animateScoreNumbersSilent();  // Sin sonido
+        }
         
         // Set initial score displays
         document.getElementById("rescued-score").textContent = scores.rescuedDisplay;
@@ -56,7 +64,7 @@ export class ScoreboardManager {
         const gradeFile = this.getGradeFile(scores.total, scores.maxTotal);
         const gradeImg = document.getElementById("score-grade");
         gradeImg.style.opacity = "0";
-        gradeImg.src = `../assets/hud/game/gameover/${gradeFile}`;
+        gradeImg.src = PathResolver.resolveAsset('gameGameover', gradeFile);
         
         // Setup buttons based on game mode
         this.setupButtons(isVictory);
@@ -155,6 +163,45 @@ export class ScoreboardManager {
             }
         }, totalDuration);
     }
+
+    // Animate score numbers without sound (for when SFX is disabled)
+    animateScoreNumbersSilent() {
+        const elements = [
+            { id: "rescued-score", finalValue: `${this.finalScores.rescued}/${this.finalScores.maxRescued}`, type: "fraction", animateTransform: true },
+            { id: "marked-score", finalValue: `${this.finalScores.marked}/${this.finalScores.maxMarked}`, type: "fraction", animateTransform: true },
+            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "number", animateTransform: true },
+            { id: "deaths-score", finalValue: this.finalScores.deaths.toString(), type: "number", animateTransform: true },
+            { id: "failed-score", finalValue: this.finalScores.failed.toString(), type: "number", animateTransform: true },
+            { id: "hurt-score", finalValue: this.finalScores.hurt.toString(), type: "number", animateTransform: true },
+            { id: "total-score", finalValue: `${this.finalScores.total}/${this.finalScores.maxTotal}`, type: "fraction", animateTransform: false }
+        ];
+        
+        let delay = 0;
+        const stepDelay = 200;
+        
+        elements.forEach((element) => {
+            setTimeout(() => {
+                this.animateSingleNumber(element.id, element.finalValue, element.type);
+                this.animateTransform(element.id, element.animateTransform);
+            }, delay);
+            delay += stepDelay;
+        });
+        
+        const totalDuration = delay + 1500;
+        
+        // Grade fade in after all numbers are animated (sin sonido)
+        setTimeout(() => {
+            const gradeImg = document.getElementById("score-grade");
+            if (gradeImg) {
+                gradeImg.style.transition = "opacity 0.5s ease, transform 0.3s ease";
+                gradeImg.style.opacity = "1";
+                gradeImg.style.transform = "scale(2.5)";
+                setTimeout(() => {
+                    gradeImg.style.transform = "scale(1)";
+                }, 300);
+            }
+        }, totalDuration);
+    }
     
     // Animate transform for a single element
     animateTransform(elementId, shouldAnimate) {
@@ -241,11 +288,11 @@ export class ScoreboardManager {
         const player = this.gameManager.getPlayer();
         const board = this.gameManager.getBoard();
         const charCtrl = this.gameManager.charCtrl;
-        const maxFlags = this.getMaxFlagsByCharacter(player.getType());
+        const totalGoals = charCtrl.getTotalGoals();
+        const maxFlags = this.getMaxFlagsByCharacter(player.getType(), totalGoals);
         const size = board.length;
         
         // ===== RESCUED SCORE =====
-        const totalGoals = charCtrl.getTotalGoals();
         const rescuedCount = player.getTotalRescued();
         const rescuedPoints = rescuedCount * 500;
         const maxRescuedPoints = totalGoals * 500;
@@ -366,11 +413,11 @@ export class ScoreboardManager {
         }
     }
     
-    getMaxFlagsByCharacter(characterType) {
+    getMaxFlagsByCharacter(characterType, totalGoals) {
         switch (characterType) {
             case "chef": return 5;
             case "mosquito": return 7;
-            case "mommy": return 1;
+            case "mommy": return totalGoals;
             case "scout": return 0;
             default: return 5;
         }
@@ -383,33 +430,47 @@ export class ScoreboardManager {
         const continueBtn = document.getElementById("score-continue");
         const retryBtn = document.getElementById("score-retry");
         const homeBtn = document.getElementById("score-home");
+        const randomBtn = document.getElementById("score-random");
         
         continueBtn.style.display = "none";
         retryBtn.style.display = "none";
         homeBtn.style.display = "block";
+        if (randomBtn) randomBtn.style.display = "none";
         
         if (mode === "legacy" && isVictory) {
             continueBtn.style.display = "block";
         } else if (mode === "custom") {
             retryBtn.style.display = "block";
-        } else if (mode === "tutorial"){
+            if (randomBtn) {
+                randomBtn.style.display = "block";
+            }
+        } else if (mode === "tutorial") {
             continueBtn.style.display = "none";
             retryBtn.style.display = "none";
             homeBtn.style.display = "none";
+            if (randomBtn) randomBtn.style.display = "none";
         }
         
         // Clone buttons to remove existing event listeners
         const newContinue = continueBtn.cloneNode(true);
         const newRetry = retryBtn.cloneNode(true);
         const newHome = homeBtn.cloneNode(true);
+        const newRandom = randomBtn ? randomBtn.cloneNode(true) : null;
+        
         continueBtn.parentNode.replaceChild(newContinue, continueBtn);
         retryBtn.parentNode.replaceChild(newRetry, retryBtn);
         homeBtn.parentNode.replaceChild(newHome, homeBtn);
+        if (newRandom && randomBtn) {
+            randomBtn.parentNode.replaceChild(newRandom, randomBtn);
+        }
         
-        // Bind callbacks to GameManager methods
+        // Bind callbacks
         newContinue.addEventListener("click", () => this.gameManager.nextLevel());
         newRetry.addEventListener("click", () => this.gameManager.retryLevel());
         newHome.addEventListener("click", () => this.gameManager.returnToMenu());
+        if (newRandom) {
+            newRandom.addEventListener("click", () => this.gameManager.randomizeNewGame());
+        }
     }
     
     // ======================= RESPONSIVE SCALING =======================

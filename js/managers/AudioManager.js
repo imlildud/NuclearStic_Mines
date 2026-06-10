@@ -4,6 +4,8 @@
 // Handles all sound effects and music playback.
 // Provides volume control, looping, and prevents audio spam.
 
+import { PathResolver } from "../utils/PathResolver.js";
+
 export class AudioManager {
     
     // ======================= CONSTRUCTOR =======================
@@ -89,9 +91,11 @@ export class AudioManager {
     // Play a sound effect (optional loop)
     playSFX(soundFile, loop = false, volume = null) {
         if (!this.sfxEnabled) return null;
+        if (this.sfxVolume <= 0) return null;
         
         const vol = volume !== null ? volume : this.sfxVolume;
-        const audio = new Audio(`../../assets/audio/sfx/${soundFile}`);
+        const path = PathResolver.resolveAsset('sfx', soundFile);
+        const audio = new Audio(path);
         audio.loop = loop;
         audio.volume = vol;
         
@@ -141,17 +145,51 @@ export class AudioManager {
     
     // Play death sound
     playDeathSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.playSFX("death.mp3", false, 0.5);
+    }
+
+    // Play rescue sound (when picking up a child)
+    playRescueSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("rescued.mp3", false, 0.4);
+    }
+
+    // Play deliver sound (when delivering children to start)
+    playDeliverSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("deliver.mp3", false, 0.4);
+    }
+
+    // Play hover sound for UI buttons
+    playHoverSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("hover.mp3", false, 0.2);
+    }
+
+    // Play click sound for UI buttons
+    playClickSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("active.mp3", false, 0.3);
     }
     
     // Play grade reveal sound
     playGradeSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.playSFX("grade.mp3", false, 0.5);
     }
     
     // Start looping score animation sound
     startScoreAnimationSFX() {
         if (this.isScoreAnimating) return;
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return; 
         this.isScoreAnimating = true;
         this.scoreAudio = this.playSFX("score.mp3", true, 0.3);
     }
@@ -202,16 +240,16 @@ export class AudioManager {
         let musicFile = "";
         switch (zone) {
             case "desert":
-                musicFile = "../../assets/audio/music/desert.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'desert.mp3');
                 break;
             case "snow":
-                musicFile = "../../assets/audio/music/snow.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'snow.mp3');
                 break;
             case "ash":
-                musicFile = "../../assets/audio/music/ash.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'ash.mp3');
                 break;
             case "backyard":
-                musicFile = "../../assets/audio/music/backyard.mp3";
+                musicFile = PathResolver.resolveAsset('music', 'backyard.mp3');
                 break;
             default:
                 return;
@@ -272,7 +310,8 @@ export class AudioManager {
             if (index > -1) this.activeAudio.splice(index, 1);
         }
         
-        this.currentMusic = new Audio("../../assets/audio/music/menu.mp3");
+        const path = PathResolver.resolveAsset('music', 'menu.mp3');
+        this.currentMusic = new Audio(path);
         this.currentMusic.loop = true;
         this.currentMusic.volume = this.musicVolume;
         
