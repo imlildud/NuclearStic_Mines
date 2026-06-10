@@ -391,6 +391,36 @@ function getMaxHpByCharacter(characterType) {
 }
 
 // ==============================================================
+// ====================== PAUSE ON ESC KEY ======================
+// ==============================================================
+
+// Pause game when ESC key is pressed
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        e.preventDefault();
+        game.pauseGame();
+    }
+});
+
+// ==============================================================
+// ====================== BUTTON SOUND EFECT ===================
+// ==============================================================
+
+function addGameButtonSounds() {
+    const buttons = document.querySelectorAll('.continue-btn, .retry-btn, .home-btn, .random-btn, .pause-btn, .pause-btn-img');
+    
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            audio.playHoverSFX();
+        });
+        
+        btn.addEventListener('click', () => {
+            audio.playClickSFX();
+        });
+    });
+}
+
+// ==============================================================
 // ==================== RENDERER EXTENSIONS =====================
 // ==============================================================
 
@@ -422,6 +452,14 @@ window.addEventListener("keydown", (e) => {
         case "s": game.handleInput("Down"); break;
         case "a": game.handleInput("Left"); break;
         case "d": game.handleInput("Right"); break;
+    }
+});
+
+// ===== PAUSE ON ESC KEY =====
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        e.preventDefault();
+        game.pauseGame();
     }
 });
 
@@ -585,6 +623,7 @@ async function start() {
     updateHUD();             // Finally update HUD
     applyTouchButtonsVisibility();
     initPauseButton();       // Initialize pause button
+    addGameButtonSounds();
     
     // Force resize after game is ready
     setTimeout(() => {

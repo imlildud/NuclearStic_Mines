@@ -26,24 +26,20 @@ export class PathResolver {
         
         // Cordova: everything is relative to the root of the APK
         if (isCordova) {
-            console.log('[PathResolver] Running in Cordova/Android');
             return '';
         }
         
         // itch.io or GameJolt: root directory serving
         if (isItch || isGameJolt) {
-            console.log('[PathResolver] Running on itch.io or GameJolt');
             return '';
         }
         
         // Local development from /pages/ subdirectory
         if (isInPages) {
-            console.log('[PathResolver] Running in pages/ subdirectory');
             return '../';
         }
         
         // Local development from root
-        console.log('[PathResolver] Running in local root');
         return '';
     }
     

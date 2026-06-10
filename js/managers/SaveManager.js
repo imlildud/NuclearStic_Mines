@@ -82,6 +82,47 @@ export class SaveManager {
         localStorage.removeItem("legacy_highscore");
         console.log("[SaveManager] Legacy high score reset");
     }
+
+    // ======================= HARDCORE MODE PROGRESS =======================
+    
+    // Get current hardcore level
+    getHardcoreLevel() {
+        const level = localStorage.getItem("hardcore_level");
+        return level ? parseInt(level) : 1;
+    }
+    
+    // Set hardcore level
+    setHardcoreLevel(level) {
+        localStorage.setItem("hardcore_level", level);
+        this.updateHardcoreHighScore(level);
+    }
+    
+    // Get hardcore high score (highest level ever reached)
+    getHardcoreHighScore() {
+        const highScore = localStorage.getItem("hardcore_highscore");
+        return highScore ? parseInt(highScore) : 1;
+    }
+    
+    // Update hardcore high score if new level is higher
+    updateHardcoreHighScore(level) {
+        const currentHigh = this.getHardcoreHighScore();
+        if (level > currentHigh) {
+            localStorage.setItem("hardcore_highscore", level);
+            console.log(`[SaveManager] New hardcore high score: ${level}`);
+        }
+    }
+    
+    // Clear hardcore progress (when losing)
+    clearHardcoreProgress() {
+        localStorage.removeItem("hardcore_level");
+        localStorage.setItem("hardcore_level", 1);
+    }
+    
+    // Reset legacy high score (if needed for debugging)
+    resetHardcoreHighScore() {
+        localStorage.removeItem("hardcore_highscore");
+        console.log("[SaveManager] Hardcore high score reset");
+    }
     
     // ======================= DAILY MODE =======================
 
@@ -339,6 +380,17 @@ export class SaveManager {
 
     setFallDamageEnabled(enabled) {
         localStorage.setItem("fallDamageEnabled", enabled);
+    }
+
+    // ======================= HARDCORE =======================
+
+    isHardcoreEnabled() {
+        const value = localStorage.getItem("hardcoreEnabled");
+        return value !== null ? value === "true" : false;
+    }
+
+    setHardcoreEnabled(enabled) {
+        localStorage.setItem("hardcoreEnabled", enabled);
     }
         
     // ======================= UTILITY =======================

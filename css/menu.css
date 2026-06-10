@@ -228,14 +228,14 @@
     display: flex;
     justify-content: center;
     gap: clamp(12px, 3vmin, 32px);
-    margin-top: clamp(15px, 4vmin, 45px);
+    margin-top: clamp(-50px, -10vmin, -30px);
     width: 100%;
 }
 
 /* ID Card buttons styling */
 .id-card-buttons .welcome-btn {
     font-family: 'Shampoos';
-    font-size: clamp(14px, 2.5vmin, 24px);
+    font-size: clamp(14px, 6vmin, 24px);
     padding: clamp(8px, 1.5vmin, 16px) clamp(20px, 4vmin, 45px);
     border: none;
     border-radius: clamp(6px, 1vmin, 12px);
@@ -346,6 +346,20 @@
     filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
 }
 
+.id-card-record-number {
+    position: absolute;
+    top: 12cqi;
+    left: 9cqi;
+    transform: translateX(-50%);
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 5;
+}
+
 .id-card-streak-wrapper {
     position: relative;
     width: 18cqi;
@@ -386,6 +400,36 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.id-card-hardcore-wrapper{
+    position: relative;
+    top: 44cqi;
+    left: 5cqi;
+    width: 18cqi;
+    height: 18cqi;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.id-card-hardcore-badge{
+    width: 12cqi;
+    height: auto;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+}
+
+.id-card-hardcore-number{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 5;
 }
 
 /* ========================================================= */

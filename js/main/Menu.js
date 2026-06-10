@@ -90,6 +90,8 @@ function showWelcomePanel(username, avatarId) {
     const nameEl = document.getElementById("id-card-name");
     const levelEl = document.getElementById("id-card-level");
     const legacyBadgeImg = document.getElementById("id-card-legacy-badge");
+    const recordNumberEl = document.getElementById("id-card-record-number");
+    const hardcoreNumberEl = document.getElementById("id-card-hardcore-number");
     const streakNumber = document.getElementById("id-card-streak-number");
     const streakFire = document.getElementById("id-card-streak-fire");
     const editBtn = document.getElementById("id-card-edit-btn");
@@ -97,6 +99,7 @@ function showWelcomePanel(username, avatarId) {
     const legacyLevel = saveManager.getLegacyLevel();
     const legacyHighScore = saveManager.getLegacyHighScore();
     const dailyStreak = saveManager.getDailyStreak();
+    const hardcoreHighScore = saveManager.getHardcoreHighScore();
     
     // Set avatar image
     if (avatarImg) {
@@ -129,6 +132,17 @@ function showWelcomePanel(username, avatarId) {
     if (legacyBadgeImg) {
         const badgeFile = getLegacyBadge(legacyHighScore);
         legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
+    }
+
+    // Set legacy record
+    if (recordNumberEl) {
+        const recordText = localeManager ? localeManager.get('menu.record') : "Record";
+        recordNumberEl.textContent = `${legacyHighScore}`;
+    }
+
+    // Set hardcore record
+    if (hardcoreNumberEl) {
+        hardcoreNumberEl.textContent = hardcoreHighScore;
     }
     
     // Set streak
@@ -580,6 +594,26 @@ function updateSelectOptions() {
 }
 
 // ==============================================================
+// ====================== BUTTON SOUND EFECT ===================
+// ==============================================================
+
+function addButtonSounds() {
+    const buttons = document.querySelectorAll('button, .daily-button, .custom-button, .legacy-button, .option-button, .diary-button, .pc-start, .pc-close, .welcome-btn, .avatar-option, .config-button, .save-btn-prop, .action-btn-side, .lang-btn-prop, .toggle-switch');
+    
+    buttons.forEach(btn => {
+        // Hover sound
+        btn.addEventListener('mouseenter', () => {
+            audioManager.playHoverSFX();
+        });
+        
+        // Click sound
+        btn.addEventListener('click', () => {
+            audioManager.playClickSFX();
+        });
+    });
+}
+
+// ==============================================================
 // ====================== DOM EVENT LISTENERS ===================
 // ==============================================================
 
@@ -591,6 +625,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     await initWelcomeScreen();
     applyMenuLanguage();
+
+    updateDailyButtonVisibility();
+    updatePunchcardBackground();
     
     localeManager.onChange(async () => {
         await initWelcomeScreen();
@@ -605,6 +642,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const punchcardScreen = document.getElementById('punchcard-screen');
     const closeButton = document.querySelector('.pc-close');
     const startButton = document.querySelector('.pc-start');
+    addButtonSounds();
 
     // ----- Legacy Mode Button -----
     legacyButton.addEventListener('click', () => {
@@ -613,6 +651,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateLegacyConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
+        updateDailyButtonVisibility();
 
         const startButton = document.querySelector('.pc-start');
         if (startButton) startButton.style.display = "block";
@@ -632,6 +672,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateDailyConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
         
     });
 
@@ -642,6 +683,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         generateCustomConfig();
         updatePunchcardScale();
         updateBadges();
+        updatePunchcardBackground();
 
         const startButton = document.querySelector('.pc-start');
         if (startButton) startButton.style.display = "block";
@@ -818,6 +860,20 @@ function createBaseConfig() {
     };
 }
 
+function updatePunchcardBackground() {
+    const pcBase = document.querySelector('.pc-base');
+    if (!pcBase) return;
+    
+    const isHardcore = isHardcoreEnabled();
+    const isLegacyMode = (punchcardMode === "legacy");
+    
+    if (isHardcore) {
+        pcBase.src = "assets/hud/punchcard/hardcard.png";
+    } else {
+        pcBase.src = "assets/hud/punchcard/punchcard.png";
+    }
+}
+
 // Updates all punchcard images and UI elements based on config
 function updatePunchcardTextures(config) {
 
@@ -886,7 +942,6 @@ function generateLegacyConfig() {
 
     document.querySelector(".pct-title").style.display = "none";
     document.querySelector(".pc-title").style.display = "block";
-    document.getElementById("custom-zone-select").style.display = "block";
 
     const backyardUnlocked = saveManager.isSecretCodeActivated('back2school');
     const zoneSelect = document.getElementById("custom-zone-select");
@@ -900,29 +955,56 @@ function generateLegacyConfig() {
     config.seed = generateRandomSeed();
     updateSeedDisplay(config.seed);
 
-    const savedLevel = localStorage.getItem("legacy_level");
+    const isHardcore = isHardcoreEnabled();
+    let savedLevel;
+    if (isHardcore) {
+        savedLevel = saveManager.getHardcoreLevel();
+    } else {
+        savedLevel = saveManager.getLegacyLevel();
+    }
     const level = savedLevel ? parseInt(savedLevel) : 1;
     config.level = level;
 
-    let goals = 1;
-    if (level >= 5) goals = 2;
-    if (level >= 10) goals = 3;
-    if (level >= 15) goals = 4;
-    if (level >= 20) goals = 5;
-    
-    config.goals = goals;
-    config.character = "chef";
-
-    config.size = config.level;
-    config.hazards = config.level;
-    config.obstacles = config.level;
+    // ===== HARDCORE MODE =====
+    if (isHardcore) {
+        config.goals = 5;
+        config.size = 12 + level;
+        config.hazards = 5 + level;
+        config.obstacles = 10 + level;
+        config.zone = "ash";
+        
+        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Goals: ${config.goals}`);
+        
+    } else {
+        // SOFTCORE
+        let goals = 1;
+        if (level >= 5) goals = 2;
+        if (level >= 10) goals = 3;
+        if (level >= 15) goals = 4;
+        if (level >= 20) goals = 5;
+        
+        config.goals = goals;
+        config.size = level;
+        config.hazards = level;
+        config.obstacles = level;
+        config.zone = getZoneByLevel(level);
+    }
 
     dailyConfig = config;
     currentConfig = config;
     updatePunchcardTextures(config);
+    updatePunchcardBackground();
+    updatePunchcardLabelsColor();
     
     // Hide custom-only elements
     updateCustomElementsVisibility(false);
+}
+
+function getZoneByLevel(level) {
+    const lvl = Math.floor(Number(level));
+    if (lvl <= 9) return "desert";
+    if (lvl <= 19) return "snow";
+    return "ash";
 }
 
 // ==============================================================
@@ -1047,6 +1129,7 @@ function generateCustomConfig() {
     const dailyContainer = document.getElementById("daily-badge-container");
     if (legacyContainer) legacyContainer.style.display = "none";
     if (dailyContainer) dailyContainer.style.display = "none";
+    updatePunchcardLabelsColor();
     
     // Show custom-only elements
     updateCustomElementsVisibility(true);
@@ -1307,19 +1390,33 @@ function updateBadges() {
     const legacyContainer = document.querySelector('.legacy-badge-container');
     const dailyContainer = document.getElementById('daily-badge-container');
     const legacyHighScore = saveManager.getLegacyHighScore();
+    const hardcoreHighScore = saveManager.getHardcoreHighScore();
     const badgeImg = document.getElementById("legacy-record-badge");
     const badgeLabel = document.getElementById("legacy-record-label");
+    const isHardcore = isHardcoreEnabled();
     
     if (punchcardMode === "legacy") {
         if (legacyContainer) legacyContainer.style.display = "flex";
         if (dailyContainer) dailyContainer.style.display = "none";
         
         if (badgeImg) {
-            const badgeFile = getLegacyBadge(legacyHighScore);
-            badgeImg.src = `assets/hud/badges/${badgeFile}`;
+            if (isHardcore) {
+                badgeImg.src = `assets/hud/menu/hardcore.png`;
+                badgeImg.style.display = "block";
+            } else {
+                const badgeFile = getLegacyBadge(legacyHighScore);
+                badgeImg.src = `assets/hud/badges/${badgeFile}`;
+                badgeImg.style.display = "block";
+            }
         }
         if (badgeLabel) {
-            badgeLabel.textContent = `Record: ${legacyHighScore}`;
+            if (isHardcore) {
+                badgeLabel.textContent = `Record: ${hardcoreHighScore}`;
+                badgeLabel.style.display = "block";
+            } else {
+                badgeLabel.textContent = `Record: ${legacyHighScore}`;
+                badgeLabel.style.display = "block";
+            }
         }
     } 
     else if (punchcardMode === "daily") {
@@ -1330,6 +1427,24 @@ function updateBadges() {
     else {
         if (legacyContainer) legacyContainer.style.display = "none";
         if (dailyContainer) dailyContainer.style.display = "none";
+    }
+    updatePunchcardLabelsColor();
+}
+
+function updatePunchcardLabelsColor() {
+    const labels = document.querySelectorAll('.pc-label');
+    const isHardcore = isHardcoreEnabled();
+    
+    if (isHardcore) {
+        labels.forEach(label => {
+            label.style.color = "#ffffff";
+            label.style.textShadow = "2px 2px 0 #000000";
+        });
+    } else {
+        labels.forEach(label => {
+            label.style.color = "";
+            label.style.textShadow = "";
+        });
     }
 }
 
@@ -1361,6 +1476,26 @@ function updateDailyBadge() {
 }
 
 // ==============================================================
+// ====================== DAILY BUTTON VISIBILITY ===============
+// ==============================================================
+
+function updateDailyButtonVisibility() {
+    const dailyButton = document.getElementById('daily-button');
+    const customButton = document.getElementById('custom-button');
+    if (!dailyButton) return;
+    
+    const isHardcore = isHardcoreEnabled();
+    
+    if (isHardcore) {
+        dailyButton.style.display = "none";
+        customButton.style.display = "none";
+    } else {
+        dailyButton.style.display = "flex";
+        customButton.style.display = "flex";
+    }
+}
+
+// ==============================================================
 // ======================== UI HELPERS ==========================
 // ==============================================================
 
@@ -1384,6 +1519,11 @@ function triggerIconFade(imgId) {
         void img.offsetWidth; // Reflow trick to restart the animation
         img.classList.add('icon-react');
     }
+}
+
+// Hardcore verifier
+function isHardcoreEnabled() {
+    return saveManager.isHardcoreEnabled();
 }
 
 // Update scale when window is resized
