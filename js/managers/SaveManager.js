@@ -41,6 +41,40 @@ export class SaveManager {
     setUsername(name) {
         localStorage.setItem("username", name);
     }
+
+    // ======================= TOTAL POINTS (RANKING) =======================
+
+    // Get total accumulated points across all games
+    getTotalPoints() {
+        const points = localStorage.getItem("totalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Add points to total (can be negative)
+    addPoints(points) {
+        const current = this.getTotalPoints();
+        const newTotal = current + points;
+        localStorage.setItem("totalPoints", newTotal);
+        console.log(`[SaveManager] Points added: ${points} | Total: ${newTotal}`);
+        return newTotal;
+    }
+
+    // Set total points directly (for debugging/reset)
+    setTotalPoints(points) {
+        localStorage.setItem("totalPoints", points);
+        console.log(`[SaveManager] Total points set to: ${points}`);
+    }
+
+    // Get last score from last game
+    getLastScore() {
+        const score = localStorage.getItem("lastScore");
+        return score ? parseInt(score) : 0;
+    }
+
+    // Set last score
+    setLastScore(score) {
+        localStorage.setItem("lastScore", score);
+    }
     
     // ======================= LEGACY MODE PROGRESS =======================
     
