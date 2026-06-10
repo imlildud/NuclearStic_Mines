@@ -45,8 +45,15 @@ export class GameManager {
     // Start or restart the game
     async startGame() {
         this.gameInputLocked = false;
+
+        const isHardcore = this.isHardcoreEnabled() && this.config.mode === "legacy";
+    
+        if (isHardcore) {
+            this.currentLevel = this.save.getHardcoreLevel();
+        } else {
+            this.currentLevel = this.save.getLegacyLevel();
+        }
         
-        this.currentLevel = this.save.getLegacyLevel();
         this.player = CharacterFactory.createCharacter(this.config.character);
         
         // Select board controller based on mode
@@ -107,13 +114,28 @@ export class GameManager {
         
         // ===== LEGACY MODE =====
         if (this.config.mode === "legacy") {
-            size = DifficultyScaler.getBoardSize(this.currentLevel);
-            hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
-            goals = DifficultyScaler.getGoalCount(this.currentLevel);
-            heightIntensity = this.currentLevel;
-            obstacleIntensity = this.currentLevel;
-            zone = DifficultyScaler.getZoneByLevel(this.currentLevel);
-            childLevel = this.currentLevel;
+            const isHardcore = this.save.isHardcoreEnabled();
+            
+            if (isHardcore) {
+                // HARDCORE:
+                size = 12 + this.currentLevel;
+                goals = this.config.goals;
+                hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+                hazardIntensity = this.config.hazards;
+                heightIntensity = this.config.obstacles;
+                obstacleIntensity = this.config.obstacles;
+                zone = this.config.zone;
+                childLevel = this.currentLevel;
+            } else {
+                // SOFTCORE:
+                size = DifficultyScaler.getBoardSize(this.currentLevel);
+                hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
+                goals = DifficultyScaler.getGoalCount(this.currentLevel);
+                heightIntensity = this.currentLevel;
+                obstacleIntensity = this.currentLevel;
+                zone = DifficultyScaler.getZoneByLevel(this.currentLevel);
+                childLevel = this.currentLevel;
+            }
         }
         // ===== CUSTOM / DAILY MODE =====
         else {
@@ -180,13 +202,24 @@ export class GameManager {
         
         // ===== HAZARD REGENERATION =====
         if (this.player.isRegen() === true) {
-            console.log("Goals:" + this.player.getRescued());
+            console.log("Regenerating hazards - Rescued:" + this.player.getRescued());
             let hazardAmount, hazardIntensity, size;
             
             if (this.config.mode === "legacy") {
-                size = DifficultyScaler.getBoardSize(this.currentLevel);
-                hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
-                hazardIntensity = this.currentLevel;
+                const isHardcore = this.save.isHardcoreEnabled();
+                
+                if (isHardcore) {
+                    // HARDCORE:
+                    size = this.config.size;
+                    hazardIntensity = this.config.hazards;
+                    hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+                    console.log(`[Hardcore Regen] Size: ${size}, Amount: ${hazardAmount}, Intensity: ${hazardIntensity}`);
+                } else {
+                    // Softcore
+                    size = DifficultyScaler.getBoardSize(this.currentLevel);
+                    hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
+                    hazardIntensity = this.currentLevel;
+                }
             } else {
                 size = this.config.size;
                 hazardAmount = DifficultyScaler.getHazardCountBySize(size);
@@ -197,7 +230,6 @@ export class GameManager {
             this.boardCtrl.trackHazardCount(this.board);
             this.boardCtrl.updateVision(this.board, this.player);
             this.player.setRegen(false);
-            
         }
 
         // ===== TUTORIAL PHASE COMPLETION (flaggoal) =====
@@ -271,32 +303,93 @@ export class GameManager {
     handleLegacyVictory() {
         console.log(`Legacy: Next level ${this.currentLevel + 1}`);
         this.currentLevel++;
-        this.save.setLegacyLevel(this.currentLevel);
+        
+        if (this.isHardcoreEnabled()) {
+            this.save.setHardcoreLevel(this.currentLevel);
+
+            this.config.level = this.currentLevel;
+            this.config.goals = 5;
+            this.config.size = 12 + this.currentLevel;
+            this.config.hazards = 5 + this.currentLevel;
+            this.config.obstacles = 10 + this.currentLevel;
+            this.config.zone = "ash";
+            
+            // === HARDCORE RULES ===
+            // No HP regenertion
+            const currentHp = this.player.getHp();
+            const currentFlags = this.player.getFlags();
+            const maxFlags = this.getMaxFlagsForHardcore();
+            
+            const currentPoints = this.player.getPoints();
+            const currentType = this.player.getType();
+            
+            this.player = CharacterFactory.createCharacter(currentType);
+            this.player.setPoints(currentPoints);
+            
+            this.player.setHp(currentHp);
+            
+            // Only 1 flag regen
+            if (currentFlags < maxFlags) {
+                this.player.setFlags(currentFlags + 1);
+            } else {
+                this.player.setFlags(currentFlags);
+            }
+        } else {
+            // LEGACY SOFTCORE
+            this.save.setLegacyLevel(this.currentLevel);
+            
+            const currentPoints = this.player.getPoints();
+            const currentType = this.player.getType();
+            
+            this.player = CharacterFactory.createCharacter(currentType);
+            this.player.setPoints(currentPoints);
+        }
 
         if (this.config.seed) {
             this.config.seed = Math.floor(Math.random() * 999999999) + 1;
             console.log(`[GameManager] New seed for level ${this.currentLevel}: ${this.config.seed}`);
         }
         
-        const currentPoints = this.player.getPoints();
-        const currentType = this.player.getType();
-        
-        this.player = CharacterFactory.createCharacter(currentType);
-        this.player.setPoints(currentPoints);
-        
         this.boardCtrl = new BoardController(this.player);
-        this.charCtrl = new CharacterController(this.player, this.boardCtrl);
+        this.charCtrl = new CharacterController(this.player, this.boardCtrl, this);
         
         this.configLevel();
         this.gameInputLocked = false;
         
-        console.log(`Level ${this.currentLevel} started`);
+        console.log(`Level ${this.currentLevel} started (Hardcore: ${this.isHardcoreEnabled()})`);
+    }
+
+    getMaxFlagsForHardcore() {
+        const characterType = this.player.getType();
+        const totalGoals = this.charCtrl ? this.charCtrl.getTotalGoals() : 1;
+        
+        switch (characterType) {
+            case "chef": return 5;
+            case "mosquito": return 7;
+            case "mommy": return totalGoals + 1;
+            case "scout": return 0;
+            default: return 5;
+        }
     }
     
     handleLegacyLose() {
         console.log(`Game over: Record ${this.currentLevel}`);
-        this.currentLevel = 1;
-        this.save.clearLegacyProgress();
+        
+        if (this.isHardcoreEnabled()) {
+            // HARDCORE
+            this.save.clearHardcoreProgress();
+            this.currentLevel = 1;
+        } else {
+            // SOFTCORE
+            this.save.clearLegacyProgress();
+            this.currentLevel = 1;
+        }
+    }
+
+    // ======================= HARDCORE MODE =======================
+
+    isHardcoreEnabled() {
+        return this.save.isHardcoreEnabled();
     }
 
     // ======================= DAILY MODE HANDLERS =======================
@@ -468,8 +561,13 @@ export class GameManager {
     returnToMenu() {
         if (this.config.mode === "legacy" && this.lastResult === "victory") {
             this.currentLevel++;
-            this.save.setLegacyLevel(this.currentLevel);
-            console.log(`Saving level on Home: ${this.currentLevel}`);
+            if (this.isHardcoreEnabled()) {
+                this.save.setHardcoreLevel(this.currentLevel);
+                console.log(`Saving Hardcore level on Home: ${this.currentLevel}`);
+            } else {
+                this.save.setLegacyLevel(this.currentLevel);
+                console.log(`Saving Legacy level on Home: ${this.currentLevel}`);
+            }
         }
         PathResolver.goToIndex();
     }

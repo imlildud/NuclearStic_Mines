@@ -149,6 +149,34 @@ export class AudioManager {
         if (this.sfxVolume <= 0) return; 
         this.playSFX("death.mp3", false, 0.5);
     }
+
+    // Play rescue sound (when picking up a child)
+    playRescueSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("rescued.mp3", false, 0.4);
+    }
+
+    // Play deliver sound (when delivering children to start)
+    playDeliverSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("deliver.mp3", false, 0.4);
+    }
+
+    // Play hover sound for UI buttons
+    playHoverSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("hover.mp3", false, 0.2);
+    }
+
+    // Play click sound for UI buttons
+    playClickSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("active.mp3", false, 0.3);
+    }
     
     // Play grade reveal sound
     playGradeSFX() {

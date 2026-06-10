@@ -288,11 +288,11 @@ export class ScoreboardManager {
         const player = this.gameManager.getPlayer();
         const board = this.gameManager.getBoard();
         const charCtrl = this.gameManager.charCtrl;
-        const maxFlags = this.getMaxFlagsByCharacter(player.getType());
+        const totalGoals = charCtrl.getTotalGoals();
+        const maxFlags = this.getMaxFlagsByCharacter(player.getType(), totalGoals);
         const size = board.length;
         
         // ===== RESCUED SCORE =====
-        const totalGoals = charCtrl.getTotalGoals();
         const rescuedCount = player.getTotalRescued();
         const rescuedPoints = rescuedCount * 500;
         const maxRescuedPoints = totalGoals * 500;
@@ -413,11 +413,11 @@ export class ScoreboardManager {
         }
     }
     
-    getMaxFlagsByCharacter(characterType) {
+    getMaxFlagsByCharacter(characterType, totalGoals) {
         switch (characterType) {
             case "chef": return 5;
             case "mosquito": return 7;
-            case "mommy": return 1;
+            case "mommy": return totalGoals;
             case "scout": return 0;
             default: return 5;
         }

@@ -128,9 +128,9 @@ canvas {
 .hud-health-group {
     position: fixed;
     top: clamp(105px, 26vmin, 180px);
-    left: clamp(10px, -1vmin, 25px);
-    width: clamp(100px, 25vmin, 200px);
-    height: clamp(40px, 14vmin, 90px);
+    left: clamp(-10px, -1vmin, 10px);
+    width: clamp(100px, 25vmin, 100px);
+    height: clamp(40px, 14vmin, 100px);
     z-index: 3;
 }
 
@@ -148,19 +148,17 @@ canvas {
 /* Health Bar */
 .hud-health-bar { 
     position: absolute; 
-    left: clamp(30px, 8vmin, 50px); 
+    left: 30%; 
     top: 50%;
     transform: translateY(-50%);
-    width: clamp(55px, 13vmin, 100px);
-    height: clamp(30px, 9vmin, 65px);
+    width: clamp(55px, 15vmin, 100px);
     z-index: 1;
 }
 
 /* Health Text */
 .hud-health-text { 
     position: absolute; 
-    left: clamp(30px, 15vmin, 50px); 
-    width: clamp(55px, 13vmin, 100px);
+    left: 70%; 
     text-align: center;
     top: 50%;
     transform: translateY(-50%);
@@ -176,9 +174,9 @@ canvas {
 .hud-stats-row {
     position: fixed;
     top: clamp(145px, 40vmin, 275px);
-    left: clamp(10px, 0vmin, 20px);
+    left: clamp(-10px, 0vmin, 10px);
     display: flex;
-    gap: clamp(10px, 0.5vmin, 10px);
+    gap: clamp(3px, 0.25vmin, 3px);
     z-index: 3;
 }
 

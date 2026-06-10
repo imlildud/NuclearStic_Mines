@@ -19,6 +19,7 @@ let localeManager = null;
 
 let touchButtonsEnabled = true;
 let fallDamageEnabled = true;
+let hardcoreEnabled = true;
 
 // ==============================================================
 // ====================== MODAL DIALOG ==========================
@@ -169,14 +170,11 @@ function initLanguageControls() {
 function updateActiveLanguageButton(activeLang) {
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
-    const mxBtn = document.getElementById('lang-mx');
     
     if (enBtn) enBtn.classList.remove('active');
     if (esBtn) esBtn.classList.remove('active');
-    if (mxBtn) mxBtn.classList.remove('active');
     
     if (activeLang === 'es' && esBtn) esBtn.classList.add('active');
-    else if (activeLang === 'mx' && mxBtn) mxBtn.classList.add('active');
     else if (enBtn) enBtn.classList.add('active');
 }
 
@@ -200,6 +198,7 @@ function applyLanguage() {
     const toggleLabels = document.querySelectorAll('.toggle-label');
     if (toggleLabels[0]) toggleLabels[0].textContent = localeManager.get('config.showTouch');
     if (toggleLabels[1]) toggleLabels[1].textContent = localeManager.get('config.fallDamage');
+    if (toggleLabels[2]) toggleLabels[2].textContent = localeManager.get('config.hardcore');
     
     // Config buttons
     const configButtons = document.querySelectorAll('.config-button');
@@ -209,10 +208,8 @@ function applyLanguage() {
     // Language buttons text
     const enBtn = document.getElementById('lang-en');
     const esBtn = document.getElementById('lang-es');
-    const mxBtn = document.getElementById('lang-mx');
     if (enBtn) enBtn.textContent = localeManager.get('config.langEn');
     if (esBtn) esBtn.textContent = localeManager.get('config.langEs');
-    if (mxBtn) mxBtn.textContent = localeManager.get('config.langMx');
     
     // Save button
     const saveBtn = document.getElementById('save-config');
@@ -227,12 +224,15 @@ function applyLanguage() {
 function initToggleControls() {
     const toggleTouch = document.getElementById('toggle-touch');
     const toggleFall = document.getElementById('toggle-falldamage');
+    const toggleHardcore = document.getElementById('toggle-hardcore');
     
     touchButtonsEnabled = saveManager.getTouchEnabled();
     fallDamageEnabled = saveManager.isFallDamageEnabled();
+    hardcoreEnabled = saveManager.isHardcoreEnabled();
     
     if (touchButtonsEnabled) toggleTouch.classList.add('active');
     if (fallDamageEnabled) toggleFall.classList.add('active');
+    if (hardcoreEnabled) toggleHardcore.classList.add('active');
     
     // Touch buttons toggle
     toggleTouch.addEventListener('click', () => {
@@ -270,6 +270,54 @@ function initToggleControls() {
             toggleFall.classList.remove('active');
             saveManager.setFallDamageEnabled(fallDamageEnabled);
         }
+    });
+
+    // Hardcore toggle with modal warning
+    toggleHardcore.addEventListener('click', () => {
+        const newState = !hardcoreEnabled;
+        
+        if (newState === true) {
+            const warningMessage = localeManager 
+                ? localeManager.get('config.hardcoreWarning')
+                : "WARNING: Enabling Hardcore Mode.\nWhen you complete a level, your health will no longer regenerate, and you will only recover one flag per level. (The current Legacy Normal progress is not affected. Dailies will be disabled.)\nAre you sure you want to enable Hardcore Mode?";
+
+            showModal(warningMessage, () => {
+                // User confirmed
+                hardcoreEnabled = newState;
+                if (hardcoreEnabled) {
+                    toggleHardcore.classList.add('active');
+                } else {
+                    toggleHardcore.classList.remove('active');
+                }
+                saveManager.setHardcoreEnabled(hardcoreEnabled);
+            });
+        } else {
+            // Turning OFF, no warning needed
+            hardcoreEnabled = newState;
+            toggleHardcore.classList.remove('active');
+            saveManager.setHardcoreEnabled(hardcoreEnabled);
+        }
+    });
+}
+
+// ==============================================================
+// ====================== BUTTON SOUNDS =========================
+// ==============================================================
+
+// Add hover and click sounds to all buttons
+function addButtonSounds() {
+    const buttons = document.querySelectorAll('button, .toggle-switch, .lang-btn-prop, .config-button, .save-btn-prop, .action-btn-side, .close-btn');
+    
+    buttons.forEach(btn => {
+        // Hover sound
+        btn.addEventListener('mouseenter', () => {
+            audioManager.playHoverSFX();
+        });
+        
+        // Click sound
+        btn.addEventListener('click', () => {
+            audioManager.playClickSFX();
+        });
     });
 }
 
@@ -663,6 +711,7 @@ async function init() {
     initImportExport();
     initSecretCodeSystem(); 
     applyLanguage();
+    addButtonSounds();
 
     // Apply any activated codes on load
     if (saveManager.isSecretCodeActivated('back2school')) {
