@@ -383,7 +383,7 @@ canvas {
 
 .tutorial-bubble {
     position: relative;
-    background: url('../../assets/hud/game/radio/bubble.png') no-repeat center center;
+    background: url('../assets/hud/game/radio/bubble.png') no-repeat center center;
     background-size: contain;
     width: 70vmin;
     min-height: 22vmin;
