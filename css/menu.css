@@ -22,7 +22,6 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    
     background: url('../assets/hud/filter.png') no-repeat center center;
     background-size: cover;
     pointer-events: none;
@@ -60,6 +59,11 @@
     height: 100%;
     object-fit: contain;
     z-index: 1;
+}
+
+/* Hide welcome background when showing ID Card */
+.welcome-panel .welcome-bg {
+    display: none;
 }
 
 .welcome-content {
@@ -122,17 +126,363 @@
     box-shadow: 0 2px 0 #2a4a35;
 }
 
-/* Body Base Styles */
+.welcome-delete {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 4px 0 #4a2a2a;
+}
+
+.welcome-delete:hover {
+    background-color: #9a5a5a;
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.welcome-delete:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #4a2a2a;
+}
+
+/* Welcome Panel (returning player) */
+.welcome-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+/* Name Panel (first time) */
+.name-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+.welcome-input {
+    font-family: 'Shampoos';
+    font-size: min(4vmin, 32px);
+    padding: 1.5vmin 2vmin;
+    width: 80%;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #6a4a2a;
+    border-radius: 12px;
+    outline: none;
+}
+
+.welcome-input:focus {
+    border-color: #4a7c59;
+    box-shadow: 0 0 8px rgba(74, 124, 89, 0.5);
+}
+
+/* Tutorial Prompt Panel */
+.tutorial-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+/* ========================================================= */
+/* ======================= ID CARD ========================= */
+/* ========================================================= */
+
+.id-card-container {
+    position: relative;
+    width: min(100cqi, 500px);
+    aspect-ratio: 16 / 11;
+    container-type: inline-size;
+    margin-bottom: 3vmin;
+}
+
+.id-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.id-card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* ==================== ID CARD BUTTONS ==================== */
+
+/* ID Card specific buttons container */
+.id-card-buttons {
+    display: flex;
+    justify-content: center;
+    gap: clamp(12px, 3vmin, 32px);
+    margin-top: clamp(-50px, -10vmin, -30px);
+    width: 100%;
+}
+
+/* ID Card buttons styling */
+.id-card-buttons .welcome-btn {
+    font-family: 'Shampoos';
+    font-size: clamp(14px, 6vmin, 24px);
+    padding: clamp(8px, 1.5vmin, 16px) clamp(20px, 4vmin, 45px);
+    border: none;
+    border-radius: clamp(6px, 1vmin, 12px);
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+    min-width: clamp(100px, 18vmin, 180px);
+}
+
+.id-card-buttons .welcome-yes {
+    background-color: #4a7c59;
+    color: white;
+    box-shadow: 0 clamp(3px, 0.6vmin, 6px) 0 #2a4a35;
+}
+
+.id-card-buttons .welcome-delete {
+    background-color: #7c4a4a;
+    color: white;
+    box-shadow: 0 clamp(3px, 0.6vmin, 6px) 0 #4a2a2a;
+}
+
+.id-card-buttons .welcome-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.id-card-buttons .welcome-btn:active {
+    transform: translateY(2px);
+}
+
+.id-card-buttons .welcome-yes:active {
+    box-shadow: 0 2px 0 #2a4a35;
+}
+
+.id-card-buttons .welcome-delete:active {
+    box-shadow: 0 2px 0 #4a2a2a;
+}
+
+/* ========== AVATAR SECTION ========== */
+.id-card-avatar {
+    position: absolute;
+    top: 13cqi;
+    left: 7cqi;
+    width: 25cqi;
+    height: 25cqi;
+}
+
+.id-card-avatar-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.id-card-edit-btn {
+    position: absolute;
+    bottom: 2cqi;
+    right: -5cqi;
+    width: 6cqi;
+    height: 6cqi;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 3;
+}
+
+.id-card-edit-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ========== NAME SECTION ========== */
+.id-card-name {
+    position: absolute;
+    top: 38cqi;
+    left: 15cqi;
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* ========== LEVEL SECTION ========== */
+.id-card-level {
+    position: absolute;
+    top: 15cqi;
+    left: 40cqi;
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    color: #000000;
+    white-space: nowrap;
+}
+
+/* ========== BADGES SECTION ========== */
+.id-card-badges {
+    position: absolute;
+    top: 25cqi;
+    left: 43cqi;
+    display: flex;
+    align-items: center;
+    gap: 3cqi;
+}
+
+.id-card-legacy-badge {
+    width: 18cqi;
+    height: auto;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+}
+
+.id-card-record-number {
+    position: absolute;
+    top: 12cqi;
+    left: 9cqi;
+    transform: translateX(-50%);
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+.id-card-streak-wrapper {
+    position: relative;
+    width: 18cqi;
+    height: 18cqi;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.id-card-streak-frame {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.id-card-streak-number {
+    position: absolute;
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    z-index: 2;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.id-card-streak-fire {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.id-card-hardcore-wrapper{
+    position: relative;
+    top: 44cqi;
+    left: 5cqi;
+    width: 18cqi;
+    height: 18cqi;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.id-card-hardcore-badge{
+    width: 12cqi;
+    height: auto;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));
+}
+
+.id-card-hardcore-number{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shampoos';
+    font-size: 5cqi;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+/* ========================================================= */
+/* ==================== AVATAR SELECTOR ==================== */
+/* ========================================================= */
+
+.avatar-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3vmin;
+    width: 100%;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3vmin;
+    justify-items: center;
+    align-items: center;
+}
+
+.avatar-option {
+    width: 15vmin;
+    height: 15vmin;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.avatar-option:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.avatar-option.selected {
+    border-color: #ffd78c;
+    box-shadow: 0 0 12px rgba(255,215,140,0.8);
+    background: rgba(0,0,0,0.5);
+}
+
+/* ========================================================= */
+/* ==================== BODY STYLES ======================== */
+/* ========================================================= */
+
 body {
     margin: 0;
     height: 100vh;
-
     background: url('../assets/hud/NuclearSticMines.png') no-repeat center center fixed;
     background-size: cover;
-
     font-family: "Shampoos";
     color: black;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -142,7 +492,6 @@ body {
 /* ===================== MAIN MENU UI ====================== */
 /* ========================================================= */
 
-/* Main Menu Overlay Container */
 .overlay {
     display: flex;
     flex-direction: column;
@@ -156,20 +505,39 @@ body {
 
 /* ==================== CORNER LOGO / Version ==================== */
 
-/* CloudToons Corner Logo */
 .cloud {
     position: fixed;
     bottom: 3vmin;
     left: 3vmin;
-    width: 15vmin; /* Scales with screen */
+    width: 15vmin;
     z-index: 2;
+}
+
+.id-card-toggle-btn {
+    position: fixed;
+    top: 3vmin;
+    left: 3vmin;
+    width: 15vmin;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.id-card-toggle-btn:hover {
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+    transform: scale(1.05);
+}
+
+.id-card-toggle-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
 }
 
 .version {
     position: fixed;
     bottom: 3vmin;
     right: 3vmin;
-    width: 15vmin; /* Scales with screen */
+    width: 15vmin;
     z-index: 2;
     font-size: 6vmin;
     color: white;
@@ -178,7 +546,6 @@ body {
 
 /* ==================== HEADER SECTION ==================== */
 
-/* Top Bar Container */
 .top-bar {
     position: relative;
     display: flex;
@@ -187,14 +554,12 @@ body {
     margin-bottom: 2vh;
 }
 
-/* Main Game Logo */
 .logo {
     width: 45vmin;
     max-width: 400px;
     height: auto;
 }
 
-/* Legacy Mode Toggle Button */
 .legacy-button {
     position: absolute;
     top: 50%;
@@ -209,39 +574,31 @@ body {
 
 /* ==================== MODE BUTTONS ==================== */
 
-/* Daily and Custom Mission Buttons */
 .daily-button,
 .custom-button {
     width: 75vmin;
     max-width: 400px;
     height: 18vmin;
     max-height: 140px;
-    
     margin: 1vmin auto;
     display: flex;
     align-items: center;
     justify-content: center;
     white-space: pre-line;
     padding-left: 12vmin;
-    
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    
     font-size: 3.5vmin;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
 
-/* Daily Mission Button Background */
 .daily-button { background-image: url('../assets/hud/menu/daily.png'); }
-
-/* Custom Mission Button Background */
 .custom-button { background-image: url('../assets/hud/menu/custom.png'); }
 
 /* ==================== BOTTOM ACTION BUTTONS ==================== */
 
-/* Bottom Row Container */
 .bottom-row {
     margin-top: 2vh;
     display: flex;
@@ -249,7 +606,6 @@ body {
     gap: 2vmin;
 }
 
-/* Diary and Options Buttons */
 .diary-button,
 .option-button {
     width: 25vmin;
@@ -262,13 +618,11 @@ body {
     cursor: pointer;
 }
 
-/* Diary Button Background */
 .diary-button { 
     background-image: url('../assets/hud/menu/diary.png'); 
     display: none;
 }
 
-/* Options Button Background */
 .option-button { 
     background-image: url('../assets/hud/menu/options.png');
     display: block; 
@@ -276,22 +630,22 @@ body {
 
 /* ==================== GLOBAL BUTTON EFFECTS ==================== */
 
-/* Hover Effect for All Buttons */
 .legacy-button:hover,
 .daily-button:hover,
 .custom-button:hover,
 .diary-button:hover,
-.option-button:hover {
+.option-button:hover,
+.id-card-toggle-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-/* Active/Click Effect for All Buttons */
 .legacy-button:active,
 .daily-button:active,
 .custom-button:active,
 .diary-button:active,
-.option-button:active {
+.option-button:active,
+.id-card-toggle-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
 }
@@ -358,6 +712,7 @@ body {
     transform: scale(var(--pc-scale, 1));
     transform-origin: center center;
     transition: transform 0.1s ease-out;
+    container-type: inline-size;
 }
 
 /* Punchcard Background Base Image */
@@ -597,13 +952,13 @@ body {
 
 .pc-seed-label-top {
     position: absolute;
-    top: -15px;
+    top: -20px;
     left: 50%;
+    transform: rotate(-50deg);
     transform: translateX(-50%);
     font-family: 'Shampoos';
-    font-size: 5vmin;
+    font-size: 5cqi;
     color: #ffffffba;
-    text-shadow: 1px 1px 0 rgba(255,255,200,0.5);
     padding: 0.3vmin 2vmin;
     border-radius: 20px;
     white-space: nowrap;
@@ -613,59 +968,59 @@ body {
 }
 
 /* ========================================================= */
-/* ==================== LEGACY BADGE ======================= */
+/* ================= LEGACY BADGE SECTION ================== */
 /* ========================================================= */
 
 .legacy-badge-container {
     position: absolute;
-    top: 28%;
+    top: 26%;
     left: -5%;
     transform: rotate(20deg);
-    display: flex;
     z-index: 6;
 }
 
 .badge-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 10px;
-    padding: 1vmin;
-}
-
-.badge-label {
-    font-family: 'Shampoos';
-    font-size: 3vmin;
-    color: #000000;
-    margin-bottom: 0.5vmin;
-    text-align: center;
-    white-space: nowrap;
 }
 
 .badge-img {
-    width: 9vmin;
-    height: 12vmin;
-    object-fit: contain;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+    width: 10cqi;
+    height: auto;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.6));
+}
+
+.badge-label {
+    position: absolute;
+    bottom: 10%; 
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Shampoos', sans-serif;
+    color: #fff;
+    font-size: 3cqi;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    white-space: nowrap;
+    z-index: 2;
 }
 
 /* ========================================================= */
-/* ==================== DAILY STREAK BADGE ================= */
+/* ================= DAILY STREAK BADGE ==================== */
 /* ========================================================= */
 
 .daily-badge-container {
     position: absolute;
-    top: 28%;
-    left: -3%;
+    top: 25%;
+    left: -6%;
     transform: rotate(20deg);
-    display: flex;
     z-index: 6;
 }
 
 .daily-streak-wrapper {
     position: relative;
-    width: 9vmin;
-    height: 12vmin;
+    width: 14cqi;
+    height: 14cqi;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -673,22 +1028,20 @@ body {
 
 .daily-streak-number {
     position: absolute;
-    font-family: 'Shampoos';
-    font-size: 3.5vmin;
-    font-weight: bold;
-    color: #000000;
-    text-shadow: 1px 1px 0 #ffffff;
-    z-index: 2;
-    text-align: center;
-    top: 50%;
+    top: 53%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-family: 'Shampoos', sans-serif;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    font-size: 5cqi;
+    z-index: 2;
 }
 
 .daily-fire-img {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 70%;
+    height: 70%;
     object-fit: contain;
     z-index: 1;
 }
@@ -699,14 +1052,14 @@ body {
 
 .pc-seed-button-container {
     position: absolute;
-    bottom: 15px;
-    right: -20px;
+    bottom: -1%;
+    right: -3%;
     z-index: 7;
 }
 
 .pc-seed-btn {
-    width: 15vmin;
-    height: 15vmin;
+    width: 12cqi;
+    height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
     filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
@@ -728,7 +1081,7 @@ body {
 
 .custom-dice-container {
     position: absolute;
-    top: 28%;
+    top: 25%;
     left: -5%;
     transform: rotate(20deg);
     display: flex;
@@ -736,12 +1089,10 @@ body {
 }
 
 .custom-dice-btn {
-    width: 12vmin;
-    height: 12vmin;
-    object-fit: contain;
+    width: 12cqi;
+    height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
 }
 
 .custom-dice-btn:hover {
