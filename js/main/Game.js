@@ -613,6 +613,12 @@ initModal();
 
 // Main startup function - ensures correct order of async operations
 async function start() {
+    const isHardcore = saveManager.isHardcoreEnabled();
+    if (isHardcore) {
+        saveManager.syncOldHardcoreTotalPoints();
+    } else {
+        saveManager.syncOldTotalPoints();
+    }
     await initLocale();      // Load language FIRST
     game.setLocaleManager(localeManager);  // Set locale manager BEFORE starting game
     
