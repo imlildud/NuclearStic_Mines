@@ -202,7 +202,6 @@ export class CharacterController {
             // Ability 3 (mommy) uses armor points
             if (ability === 3) {
                 if (this.character.getAp() <= 0) {
-                    this.character.decrementPoints(1000);
                     this.character.setHp(0);
                     this.killCharacter();
                 } else {
@@ -211,7 +210,6 @@ export class CharacterController {
                 return;
             }
             // Normal death
-            this.character.decrementPoints(1000);
             this.character.setHp(0);
             this.killCharacter();
             return;
@@ -226,7 +224,6 @@ export class CharacterController {
             // Mommy uses armor
             if (ability === 3) {
                 if (this.character.getAp() <= 0) {
-                    this.character.decrementPoints(100);
                     this.hurtCharacter();
                 } else {
                     this.character.decrementAp(1);
@@ -234,7 +231,6 @@ export class CharacterController {
                 return;
             }
             // Normal damage
-            this.character.decrementPoints(100);
             this.hurtCharacter();
             return;
         }
@@ -290,7 +286,7 @@ export class CharacterController {
             }
             
             // ===== MOMMY ABILITY (Ability 3) =====
-            // Each rescued child grants armor, health, force, and flags
+            // Each rescued child grants armor, health and force.
             if (this.character.getAbilityId() === 3) {
                 for (let i = 0; i < rescued; i++) {
                     if (this.character.getAp() < 3) {
@@ -299,7 +295,6 @@ export class CharacterController {
                         this.character.incrementHp(2);
                     }
                     this.character.incrementForce(1);
-                    this.character.incrementFlags();
                 }
             }
             
@@ -307,7 +302,6 @@ export class CharacterController {
             this.remainingGoals -= rescued;
             this.character.decrementRescue(rescued);
             this.character.incrementTotalRescued(rescued);
-            this.character.incrementPoints(500); // Delivery bonus
         }
     }
     

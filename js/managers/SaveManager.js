@@ -41,7 +41,102 @@ export class SaveManager {
     setUsername(name) {
         localStorage.setItem("username", name);
     }
-    
+
+    // ======================= TOTAL POINTS (RANKING) =======================
+
+    // Get total accumulated points across all games
+    getTotalPoints() {
+        const points = localStorage.getItem("totalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Add points to total (can be negative)
+    addPoints(points) {
+        const current = this.getTotalPoints();
+        const newTotal = current + points;
+        localStorage.setItem("totalPoints", newTotal);
+        console.log(`[SaveManager] Points added: ${points} | Total: ${newTotal}`);
+        return newTotal;
+    }
+
+    // Set total points directly (for debugging/reset)
+    setTotalPoints(points) {
+        localStorage.setItem("totalPoints", points);
+        console.log(`[SaveManager] Total points set to: ${points}`);
+    }
+
+    // Get last score from last game
+    getLastScore() {
+        const score = localStorage.getItem("lastScore");
+        return score ? parseInt(score) : 0;
+    }
+
+    // Set last score
+    setLastScore(score) {
+        localStorage.setItem("lastScore", score);
+    }
+
+    // Get old total points (saved before starting a game)
+    getOldTotalPoints() {
+        const points = localStorage.getItem("oldTotalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Set old total points (call this when starting a game)
+    setOldTotalPoints(points) {
+        localStorage.setItem("oldTotalPoints", points);
+        console.log(`[SaveManager] Old total points saved: ${points}`);
+    }
+
+    // Sync old total points with current total points (called when game starts)
+    syncOldTotalPoints() {
+        const current = this.getTotalPoints();
+        this.setOldTotalPoints(current);
+        return current;
+    }
+
+    // ======================= HARDCORE TOTAL POINTS =======================
+
+    // Get hardcore total accumulated points
+    getHardcoreTotalPoints() {
+        const points = localStorage.getItem("hardcoreTotalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Add points to hardcore total (can be negative)
+    addHardcorePoints(points) {
+        const current = this.getHardcoreTotalPoints();
+        const newTotal = current + points;
+        localStorage.setItem("hardcoreTotalPoints", newTotal);
+        console.log(`[SaveManager] Hardcore points added: ${points} | Total: ${newTotal}`);
+        return newTotal;
+    }
+
+    // Set hardcore total points directly (for debugging/reset)
+    setHardcoreTotalPoints(points) {
+        localStorage.setItem("hardcoreTotalPoints", points);
+        console.log(`[SaveManager] Hardcore total points set to: ${points}`);
+    }
+
+    // Get old hardcore total points (for animation)
+    getOldHardcoreTotalPoints() {
+        const points = localStorage.getItem("oldHardcoreTotalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Set old hardcore total points
+    setOldHardcoreTotalPoints(points) {
+        localStorage.setItem("oldHardcoreTotalPoints", points);
+        console.log(`[SaveManager] Old hardcore total points saved: ${points}`);
+    }
+
+    // Sync old hardcore total points with current
+    syncOldHardcoreTotalPoints() {
+        const current = this.getHardcoreTotalPoints();
+        this.setOldHardcoreTotalPoints(current);
+        return current;
+    }
+        
     // ======================= LEGACY MODE PROGRESS =======================
     
     // Get current legacy level
@@ -247,7 +342,7 @@ export class SaveManager {
     // ======================= DAILY CLEANUP =======================
     
     // Remove old daily entries
-    cleanupOldDailyEntries(maxDays = 1) {
+    cleanupOldDailyEntries(maxDays = 7) {
         const keys = Object.keys(localStorage);
         const now = new Date();
         let removedCount = 0;
@@ -395,47 +490,10 @@ export class SaveManager {
         
     // ======================= UTILITY =======================
     
-    // Clear all game data (but preserve settings if needed)
-    clearAllGameData(preserveSettings = true) {
-        const settings = preserveSettings ? {
-            language: this.getLanguage(),
-            sfxEnabled: this.isSFXEnabled(),
-            musicVolume: this.getMusicVolume(),
-            sfxVolume: this.getSFXVolume()
-        } : null;
-        
-        // Clear all keys related to game data
-        localStorage.removeItem("daily_streak");
-        localStorage.removeItem("fallDamageEnable");
-        localStorage.removeItem("gameConfig");
-        localStorage.removeItem("language");
-        localStorage.removeItem("legacy_highscore");
-        localStorage.removeItem("legacy_level");
-        localStorage.removeItem("musicVolume");
-        localStorage.removeItem("secret_back2school");
-        localStorage.removeItem("sfxEnabled");
-        localStorage.removeItem("sfxVolume");
-        localStorage.removeItem("touchEnabled");
-        localStorage.removeItem("tutorialComplete");
-        localStorage.removeItem("username");
-        
-        // Clean up all daily entries
-        const keys = Object.keys(localStorage);
-        for (const key of keys) {
-            if (key.startsWith("daily_completed_") || key.startsWith("daily_score_")) {
-                localStorage.removeItem(key);
-            }
-        }
-        
-        // Restore settings if needed
-        if (settings) {
-            this.setLanguage(settings.language);
-            this.setSFXEnabled(settings.sfxEnabled);
-            this.setMusicVolume(settings.musicVolume);
-            this.setSFXVolume(settings.sfxVolume);
-        }
-        
-        console.log("[SaveManager] All game data cleared");
+    // Clear EVERYTHING - nuclear option
+    clearAllGameData() {
+        localStorage.clear();
+        console.log("[SaveManager] Complete localStorage wipe executed");
     }
     
     // Get total size of localStorage (for debugging)

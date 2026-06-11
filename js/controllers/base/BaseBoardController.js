@@ -146,13 +146,11 @@ export class BaseBoardController {
                     if (tile.isFlagged()) {
                         tile.setMarked(true);
                         tile.setFlagged(false);
-                        this.player.incrementPoints(200);
                         markedHazards++;
                         continue;
                     }
                     
                     if (tile.isMarked()) {
-                        this.player.incrementPoints(200);
                         markedHazards++;
                         continue;
                     }
@@ -163,13 +161,11 @@ export class BaseBoardController {
 
                 if (tile.isFlagged() && tile.getHazardtype() === "none") {
                     tile.setFlagged(false);
-                    this.player.decrementPoints(200);
                     failedFlags++;
                 }
                 
                 if (tile.isJumpflagged() && tile.getHazardtype() === "none") {
                     failedJumpFlags++;
-                    this.player.decrementPoints(50);
                 }
             }
         }
