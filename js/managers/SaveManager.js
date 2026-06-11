@@ -75,6 +75,27 @@ export class SaveManager {
     setLastScore(score) {
         localStorage.setItem("lastScore", score);
     }
+
+    // ======================= OLD TOTAL POINTS (for animation) =======================
+
+    // Get old total points (saved before starting a game)
+    getOldTotalPoints() {
+        const points = localStorage.getItem("oldTotalPoints");
+        return points ? parseInt(points) : 0;
+    }
+
+    // Set old total points (call this when starting a game)
+    setOldTotalPoints(points) {
+        localStorage.setItem("oldTotalPoints", points);
+        console.log(`[SaveManager] Old total points saved: ${points}`);
+    }
+
+    // Sync old total points with current total points (called when game starts)
+    syncOldTotalPoints() {
+        const current = this.getTotalPoints();
+        this.setOldTotalPoints(current);
+        return current;
+    }
     
     // ======================= LEGACY MODE PROGRESS =======================
     

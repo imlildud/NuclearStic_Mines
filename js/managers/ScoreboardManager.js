@@ -12,9 +12,66 @@ export class ScoreboardManager {
     // ======================= CONSTRUCTOR =======================
     
     constructor(gameManager) {
-        this.gameManager = gameManager;  // Reference to parent GameManager
-        this.finalScores = null;         // Store final scores for animation
-        this.isScoreAnimating = false;    // Animation state flag
+        this.gameManager = gameManager;
+        this.finalScores = null;
+        this.isScoreAnimating = false;
+    }
+    
+    // ======================= SIZE MULTIPLIER =======================
+    
+    // Get rescue points per child based on board size
+    getRescueValue(size) {
+        if (size <= 8) return 100;      // Small
+        if (size <= 12) return 150;     // Medium
+        if (size <= 16) return 200;     // Large
+        if (size <= 20) return 300;     // Xtra-Large
+        return 500;                      // Ultra-Large
+    }
+    
+    // Get flag value (marked hazard) based on board size
+    getFlagValue(size) {
+        if (size <= 8) return 40;       // Small
+        if (size <= 12) return 70;      // Medium
+        if (size <= 16) return 100;     // Large
+        if (size <= 20) return 150;     // Xtra-Large
+        return 200;                      // Ultra-Large
+    }
+    
+    // Get maximum flags based on total hazards on board (Opción E)
+    getMaxFlagsByHazards(board) {
+        let totalHazards = 0;
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                if (board[i][j].getHazardtype() !== "none") {
+                    totalHazards++;
+                }
+            }
+        }
+        return totalHazards;
+    }
+    
+    // Get mode multiplier (Legacy level or Daily streak)
+    getModeMultiplier() {
+        const config = this.gameManager.config;
+        
+        if (config.mode === "legacy") {
+            // Legacy: 1 + (level / 100), max 2.0 at level 100
+            const level = this.gameManager.currentLevel;
+            let multiplier = 1 + (level / 100);
+            if (multiplier > 2.0) multiplier = 2.0;
+            return multiplier;
+        }
+        
+        if (config.mode === "daily") {
+            // Daily: 1 + (streak / 100), max 1.6 at streak 60
+            const streak = this.gameManager.save.getDailyStreak();
+            let multiplier = 1 + (streak / 100);
+            if (multiplier > 1.6) multiplier = 1.6;
+            return multiplier;
+        }
+        
+        // Custom: no multiplier
+        return 1.0;
     }
     
     // ======================= MAIN DISPLAY METHOD =======================
@@ -27,7 +84,6 @@ export class ScoreboardManager {
         this.updateScoreboardLabels();
         const scores = this.calculateScores();
         
-        // Store final scores for animation
         this.finalScores = {
             rescued: scores.rescued,
             maxRescued: scores.maxRescued,
@@ -41,17 +97,15 @@ export class ScoreboardManager {
             maxTotal: scores.maxTotal
         };
         
-        // Start score animation (with or without sound based on SFX settings)
         const sfxEnabled = this.gameManager.save.isSFXEnabled();
         const sfxVolume = this.gameManager.save.getSFXVolume();
 
         if (sfxEnabled && sfxVolume > 0) {
-            this.animateScoreNumbers();  // Con sonido
+            this.animateScoreNumbers();
         } else {
-            this.animateScoreNumbersSilent();  // Sin sonido
+            this.animateScoreNumbersSilent();
         }
         
-        // Set initial score displays
         document.getElementById("rescued-score").textContent = scores.rescuedDisplay;
         document.getElementById("marked-score").textContent = scores.markedDisplay;
         document.getElementById("size-score").textContent = scores.sizeDisplay;
@@ -60,35 +114,28 @@ export class ScoreboardManager {
         document.getElementById("hurt-score").textContent = scores.hurt;
         document.getElementById("total-score").textContent = scores.totalDisplay;
         
-        // Determine grade based on percentage
         const gradeFile = this.getGradeFile(scores.total, scores.maxTotal);
         const gradeImg = document.getElementById("score-grade");
         gradeImg.style.opacity = "0";
         gradeImg.src = PathResolver.resolveAsset('gameGameover', gradeFile);
         
-        // Setup buttons based on game mode
         this.setupButtons(isVictory);
-        
-        // Show overlay
         overlay.classList.add("active");
-        
-        // Update scale for responsive design
         this.updateScale();
 
-        // Save total points to SaveManager (after score is calculated)
+        // Save total points with mode multiplier applied
         const totalPointsEarned = scores.total;
         this.gameManager.save.addPoints(totalPointsEarned);
         this.gameManager.save.setLastScore(totalPointsEarned);
 
-        // Also update rank display in ID card if it's visible
-        if (window.updateRankDisplay) {
+        if (window.RankManager) {
             const newTotal = this.gameManager.save.getTotalPoints();
-            window.updateRankDisplay(newTotal);
+            window.RankManager.updateRankDisplay(newTotal, this.gameManager.save.isHardcoreEnabled());
         }
     }
 
     // ======================= TRANSLATION METHOD =======================
-
+    
     updateScoreboardLabels() {
         const lm = this.gameManager.localeManager;
         if (!lm) return;
@@ -108,7 +155,6 @@ export class ScoreboardManager {
         if (damageLabel) damageLabel.textContent = lm.get('game.scoreboard.damage');
     }
     
-    // Hide the scoreboard overlay
     hide() {
         const overlay = document.getElementById("scoreboard-overlay");
         if (overlay) {
@@ -118,7 +164,6 @@ export class ScoreboardManager {
     
     // ======================= GRADE CALCULATION =======================
     
-    // Get grade file based on percentage
     getGradeFile(total, maxTotal) {
         const percentage = (total / maxTotal) * 100;
         if (percentage >= 100) return "s.png";
@@ -139,7 +184,7 @@ export class ScoreboardManager {
         const elements = [
             { id: "rescued-score", finalValue: `${this.finalScores.rescued}/${this.finalScores.maxRescued}`, type: "fraction", animateTransform: true },
             { id: "marked-score", finalValue: `${this.finalScores.marked}/${this.finalScores.maxMarked}`, type: "fraction", animateTransform: true },
-            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "number", animateTransform: true },
+            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "string", animateTransform: true },
             { id: "deaths-score", finalValue: this.finalScores.deaths.toString(), type: "number", animateTransform: true },
             { id: "failed-score", finalValue: this.finalScores.failed.toString(), type: "number", animateTransform: true },
             { id: "hurt-score", finalValue: this.finalScores.hurt.toString(), type: "number", animateTransform: true },
@@ -159,7 +204,6 @@ export class ScoreboardManager {
         
         const totalDuration = delay + 1500;
         
-        // Grade fade in after all numbers are animated
         setTimeout(() => {
             this.gameManager.audio.stopScoreAnimationSFX();
             const gradeImg = document.getElementById("score-grade");
@@ -175,12 +219,11 @@ export class ScoreboardManager {
         }, totalDuration);
     }
 
-    // Animate score numbers without sound (for when SFX is disabled)
     animateScoreNumbersSilent() {
         const elements = [
             { id: "rescued-score", finalValue: `${this.finalScores.rescued}/${this.finalScores.maxRescued}`, type: "fraction", animateTransform: true },
             { id: "marked-score", finalValue: `${this.finalScores.marked}/${this.finalScores.maxMarked}`, type: "fraction", animateTransform: true },
-            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "number", animateTransform: true },
+            { id: "size-score", finalValue: this.finalScores.size.toString(), type: "string", animateTransform: true },
             { id: "deaths-score", finalValue: this.finalScores.deaths.toString(), type: "number", animateTransform: true },
             { id: "failed-score", finalValue: this.finalScores.failed.toString(), type: "number", animateTransform: true },
             { id: "hurt-score", finalValue: this.finalScores.hurt.toString(), type: "number", animateTransform: true },
@@ -200,7 +243,6 @@ export class ScoreboardManager {
         
         const totalDuration = delay + 1500;
         
-        // Grade fade in after all numbers are animated (sin sonido)
         setTimeout(() => {
             const gradeImg = document.getElementById("score-grade");
             if (gradeImg) {
@@ -214,7 +256,6 @@ export class ScoreboardManager {
         }, totalDuration);
     }
     
-    // Animate transform for a single element
     animateTransform(elementId, shouldAnimate) {
         const el = document.getElementById(elementId);
         if (!el || !shouldAnimate) {
@@ -235,7 +276,6 @@ export class ScoreboardManager {
         }, 50);
     }
     
-    // Animate a single number element (fraction or integer)
     animateSingleNumber(elementId, finalValue, type) {
         const element = document.getElementById(elementId);
         if (!element) return;
@@ -300,50 +340,65 @@ export class ScoreboardManager {
         const board = this.gameManager.getBoard();
         const charCtrl = this.gameManager.charCtrl;
         const totalGoals = charCtrl.getTotalGoals();
-        const maxFlags = this.getMaxFlagsByCharacter(player.getType(), totalGoals);
         const size = board.length;
+        
+        // Get values based on board size
+        const rescueValue = this.getRescueValue(size);
+        const flagValue = this.getFlagValue(size);
+        
+        // Max flags = total hazards on board (Opción E)
+        const maxFlags = this.getMaxFlagsByHazards(board);
         
         // ===== RESCUED SCORE =====
         const rescuedCount = player.getTotalRescued();
-        const rescuedPoints = rescuedCount * 500;
-        const maxRescuedPoints = totalGoals * 500;
+        const rescuedPoints = rescuedCount * rescueValue;
+        const maxRescuedPoints = totalGoals * rescueValue;
         
         // ===== MARKED HAZARDS SCORE =====
         let markedPoints = 0;
         let maxMarkedPoints = 0;
         let markedCount = 0;
-        
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board.length; j++) {
-                if (board[i][j].isMarked()) markedCount++;
+
+        // Scout cannot mark hazards (ability 4)
+        const isScout = player.getType() === "scout";
+
+        if (!isScout) {
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board.length; j++) {
+                    if (board[i][j].isMarked()) markedCount++;
+                }
             }
+            markedPoints = markedCount * flagValue;
+            maxMarkedPoints = maxFlags * flagValue;
+        } else {
+            markedPoints = 0;
+            maxMarkedPoints = 0;
         }
         
-        markedPoints = markedCount * 200;
-        maxMarkedPoints = maxFlags * 200;
+        // ===== DIFFICULTY BONUS (now a multiplier, not flat points) =====
+        const difficultyMultiplier = this.calculateDifficultyMultiplier();
         
-        // ===== DIFFICULTY BONUS =====
-        const difficultyBonus = this.calculateDifficultyBonus();
-        
-        // ===== DEATHS PENALTY =====
-        let deathsCount = 0;
-        const deathsPoints = -(deathsCount * 500);
-        const deathsDisplay = deathsPoints.toString();
-        
-        // ===== FAILED FLAGS PENALTY =====
+        // ===== PENALTIES =====
         const failedFlags = player.getFailedFlags ? player.getFailedFlags() : 0;
         const failedJumpFlags = player.getFailedJumpFlags ? player.getFailedJumpFlags() : 0;
-        const failedPoints = -((failedFlags * 200) + (failedJumpFlags * 100));
-        const failedDisplay = `- ${(failedFlags * 200) + (failedJumpFlags * 100)}`;
+        const failedPenalty = (failedFlags * flagValue) + (failedJumpFlags * (flagValue / 2));
         
         // ===== HURT PENALTY =====
         const hurtCount = player.getDamageTaken ? player.getDamageTaken() : 0;
-        const hurtPoints = -(hurtCount * 100);
-        const hurtDisplay = hurtPoints.toString();
+        const hurtPenalty = -(hurtCount * 100);
+        const hurtDisplay = hurtPenalty.toString();
+                
+        // ===== SUBTOTAL (before multiplier) =====
+        let subTotal = rescuedPoints + markedPoints - failedPenalty + hurtPenalty;
+        if (subTotal < 0) { subTotal = 0;}
         
-        // ===== TOTAL SCORE =====
-        const totalPoints = rescuedPoints + markedPoints + difficultyBonus + deathsPoints + failedPoints + hurtPoints;
-        const maxTotal = maxRescuedPoints + maxMarkedPoints + difficultyBonus;
+        // ===== APPLY MODE MULTIPLIER =====
+        const modeMultiplier = this.getModeMultiplier();
+        const totalPoints = Math.floor(subTotal * difficultyMultiplier * modeMultiplier);
+        
+        // Calculate max total for percentage display
+        const maxSubTotal = maxRescuedPoints + maxMarkedPoints;
+        const maxTotal = Math.floor(maxSubTotal * difficultyMultiplier * modeMultiplier);
         
         return {
             rescued: rescuedPoints,
@@ -352,86 +407,65 @@ export class ScoreboardManager {
             marked: markedPoints,
             maxMarked: maxMarkedPoints,
             markedDisplay: `${markedPoints}/${maxMarkedPoints}`,
-            size: difficultyBonus,
-            sizeDisplay: difficultyBonus.toString(),
-            deaths: deathsDisplay,
-            failed: failedDisplay,
-            hurt: hurtDisplay,
+            size: difficultyMultiplier,
+            sizeDisplay: `x${difficultyMultiplier.toFixed(1)}`,
+            deaths: "0",
+            failed: `- ${Math.floor(failedPenalty)}`,
+            hurt: hurtPenalty,
+            hurtDisplay: `- ${hurtPenalty}`,
             total: totalPoints,
             maxTotal: maxTotal,
             totalDisplay: `${totalPoints}/${maxTotal}`
         };
     }
     
-    // Calculate difficulty bonus (size + hazards + obstacles)
-    calculateDifficultyBonus() {
+    // Calculate difficulty multiplier based on hazards and obstacles intensity
+    calculateDifficultyMultiplier() {
         const config = this.gameManager.config;
         const currentLevel = this.gameManager.currentLevel;
-    
-        let size, hazards, obstacles;
-    
+
+        let hazards, obstacles;
+
         if (config.mode === "legacy") {
-            size = DifficultyScaler.getBoardSize(currentLevel);
-            hazards = currentLevel;
-            obstacles = currentLevel;
+            const isHardcore = this.gameManager.isHardcoreEnabled();
+            
+            if (isHardcore) {
+                // Hardcore: use config values (already set in GameManager)
+                hazards = config.hazards;
+                obstacles = config.obstacles;
+                console.log(`[Difficulty] Hardcore - hazards: ${hazards}, obstacles: ${obstacles}`);
+            } else {
+                // Normal Legacy: use current level as intensity
+                hazards = currentLevel;
+                obstacles = currentLevel;
+                console.log(`[Difficulty] Normal Legacy - level: ${currentLevel}`);
+            }
         } else {
-            size = config.size;
+            // Custom / Daily mode
             hazards = config.hazards;
             obstacles = config.obstacles;
+            console.log(`[Difficulty] ${config.mode} - hazards: ${hazards}, obstacles: ${obstacles}`);
         }
-    
-        const sizeBonus = DifficultyScaler.getSizeBonus(size);
-        const hazardsBonus = DifficultyScaler.getHazardsBonus(hazards);
-        const obstaclesBonus = DifficultyScaler.getObstaclesBonus(obstacles);
-    
-        return sizeBonus + hazardsBonus + obstaclesBonus;
-    }
-    
-    // ======================= BONUS CALCULATIONS =======================
-    
-    getSizeBonus(size) {
-        switch(size) {
-            case 8: return 10;
-            case 12: return 30;
-            case 16: return 50;
-            case 20: return 80;
-            case 24: return 100;
-            default: return 10;
-        }
-    }
-    
-    getHazardsBonus(hazards) {
-        switch(hazards) {
-            case 1: return 20;
-            case 5: return 50;
-            case 8: return 100;
-            case 12: return 150;
-            case 20: return 200;
-            case 30: return 300;
-            default: return 20;
-        }
-    }
-    
-    getObstaclesBonus(obstacles) {
-        switch(obstacles) {
-            case 1: return 0;
-            case 3: return 20;
-            case 5: return 40;
-            case 10: return 60;
-            case 15: return 80;
-            case 30: return 100;
-            default: return 0;
-        }
-    }
-    
-    getMaxFlagsByCharacter(characterType, totalGoals) {
-        switch (characterType) {
-            case "chef": return 5;
-            case "mosquito": return 7;
-            case "mommy": return totalGoals;
-            case "scout": return 0;
-            default: return 5;
-        }
+
+        // Base multiplier starts at 1.0
+        let multiplier = 1.0;
+        
+        // Hazard intensity bonus (max +0.5)
+        if (hazards >= 30) multiplier += 0.50;
+        else if (hazards >= 20) multiplier += 0.40;
+        else if (hazards >= 12) multiplier += 0.30;
+        else if (hazards >= 8) multiplier += 0.20;
+        else if (hazards >= 5) multiplier += 0.10;
+        
+        // Obstacle intensity bonus (max +0.3)
+        if (obstacles >= 30) multiplier += 0.30;
+        else if (obstacles >= 15) multiplier += 0.20;
+        else if (obstacles >= 10) multiplier += 0.15;
+        else if (obstacles >= 5) multiplier += 0.10;
+        else if (obstacles >= 3) multiplier += 0.05;
+        
+        console.log(`[Difficulty] Final multiplier: ${multiplier}`);
+        return multiplier;
     }
     
     // ======================= BUTTON SETUP =======================
@@ -462,7 +496,6 @@ export class ScoreboardManager {
             if (randomBtn) randomBtn.style.display = "none";
         }
         
-        // Clone buttons to remove existing event listeners
         const newContinue = continueBtn.cloneNode(true);
         const newRetry = retryBtn.cloneNode(true);
         const newHome = homeBtn.cloneNode(true);
@@ -475,7 +508,6 @@ export class ScoreboardManager {
             randomBtn.parentNode.replaceChild(newRandom, randomBtn);
         }
         
-        // Bind callbacks
         newContinue.addEventListener("click", () => this.gameManager.nextLevel());
         newRetry.addEventListener("click", () => this.gameManager.retryLevel());
         newHome.addEventListener("click", () => this.gameManager.returnToMenu());
