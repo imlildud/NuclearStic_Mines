@@ -1,3 +1,4 @@
+// js/main/modules/WelcomePanel.js
 // ==============================================================
 // ====================== WELCOME PANEL =========================
 // ==============================================================
@@ -273,16 +274,21 @@ function initIdCardToggle() {
                 } else {
                     welcomeScreen.style.display = "flex";
                     
-                    // Store old total points BEFORE refreshing the ID card
-                    const oldTotalPoints = RankManager.getTotalPoints();
+                    // Get old total points (saved before game started)
+                    const oldTotalPoints = saveManager.getOldTotalPoints();
                     
                     // Refresh ID card content (skip animation on load)
                     const username = saveManager.getUsername();
                     const avatarId = saveManager.getAvatar();
                     WelcomePanel.showWelcomePanel(username, avatarId, true);
                     
-                    // Animate points from old value to new value
-                    RankManager.animateTotalPoints(oldTotalPoints, RankManager.getTotalPoints(), isHardcoreEnabled());
+                    // Get current total points (after game)
+                    const newTotalPoints = saveManager.getTotalPoints();
+                    
+                    // Only animate if points changed
+                    if (oldTotalPoints !== newTotalPoints) {
+                        RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcoreEnabled());
+                    }
                 }
             }
         });
@@ -316,11 +322,30 @@ function initWelcomeScreen() {
     
     // Existing player - show welcome panel with ID card
     if (tutorialCompleted && username) {
-        WelcomePanel.showWelcomePanel(username, avatarId);
+        // Store old total points BEFORE showing the ID card
+        const oldTotalPoints = saveManager.getOldTotalPoints();
+        const newTotalPoints = saveManager.getTotalPoints();
+        
+        // Show ID card with skipAnimation = true (static display first)
+        WelcomePanel.showWelcomePanel(username, avatarId, true);
+        
         if (welcomePanel) welcomePanel.style.display = "flex";
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
         if (idCardToggle) idCardToggle.style.display = "block";
+        
+        // Animate if points changed (coming back from a game)
+        if (oldTotalPoints !== newTotalPoints && newTotalPoints > 0) {
+            // Animate: first the badge, then the bar, then sync
+            RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcoreEnabled(), () => {
+                // After animation completes, sync old total points to current
+                saveManager.syncOldTotalPoints();
+                console.log("[WelcomePanel] Animation complete, synced oldTotalPoints to:", newTotalPoints);
+            });
+        } else {
+            // No animation needed, just sync to be safe
+            saveManager.syncOldTotalPoints();
+        }
     }
     // Has name but not completed tutorial - go to avatar selection
     else if (username && username !== "") {
@@ -384,20 +409,10 @@ export const WelcomePanel = {
             });
         }
         
-        // Set level text
-        if (levelEl) {
-            const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
-            levelEl.textContent = `${currentLevelText}: ${legacyLevel}`;
-        }
-        
         // Set legacy badge
         if (legacyBadgeImg) {
-            if (isHardcore) {
-                legacyBadgeImg.src = `assets/hud/menu/hardcore.png`;
-            } else {
                 const badgeFile = getLegacyBadge(legacyHighScore);
                 legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
-            }
         }
 
         // Set legacy record
@@ -419,17 +434,32 @@ export const WelcomePanel = {
             streakFire.src = `assets/hud/badges/${fireFile}`;
         }
 
-        // Update rank display (static, no animation on initial load)
+        // Update rank display (always update, skipAnimation just means no counting animation)
         const rankBadge = document.getElementById("rank-badge");
         const rankBarFill = document.getElementById("rank-bar-fill");
         const rankText = document.getElementById("rank-text");
         
-        if (rankBadge && !skipAnimation) {
+        if (rankBadge) {
+            // Always update badge image based on current rank
             rankBadge.src = `assets/hud/badges/rank_${rankData.rank.toLowerCase()}.png`;
-            const percent = (totalPoints / rankData.nextThreshold) * 100;
-            rankBarFill.style.width = `${Math.min(percent, 100)}%`;
-            rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.nextThreshold.toLocaleString()}`;
             
+            // Calculate progress percentage within current rank (0% to 100%)
+            const progressInRank = totalPoints - rankData.min;
+            const rankRange = rankData.max - rankData.min;
+            let percent = 0;
+            
+            if (rankRange > 0) {
+                percent = (progressInRank / rankRange) * 100;
+            } else {
+                percent = 100; // Max rank (S+ has no upper bound)
+            }
+            
+            rankBarFill.style.width = `${Math.min(percent, 100)}%`;
+            
+            // Update rank text showing current points and max of current rank
+            rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.max.toLocaleString()}`;
+            
+            // Apply styling based on hardcore mode
             if (isHardcore) {
                 rankBarFill.style.background = "linear-gradient(90deg, #8b0000, #4a0000)";
             } else {

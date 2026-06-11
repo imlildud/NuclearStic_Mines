@@ -1,3 +1,4 @@
+// js/main/modules/RankManager.js
 // ==============================================================
 // ======================== RANK MANAGER ========================
 // ==============================================================
@@ -16,27 +17,33 @@ const audioManager = new AudioManager();
 
 // Rank thresholds with x1.5 progression
 const RANKS = [
-    { rank: "F-", min: 0, max: 50000, next: 50000 },
-    { rank: "F", min: 50001, max: 100000, next: 100000 },
-    { rank: "F+", min: 100001, max: 175000, next: 175000 },
-    { rank: "E-", min: 175001, max: 287500, next: 287500 },
-    { rank: "E", min: 287501, max: 431250, next: 431250 },
-    { rank: "E+", min: 431251, max: 646875, next: 646875 },
-    { rank: "D-", min: 646876, max: 970312, next: 970312 },
-    { rank: "D", min: 970313, max: 1455468, next: 1455468 },
-    { rank: "D+", min: 1455469, max: 2183202, next: 2183202 },
-    { rank: "C-", min: 2183203, max: 3274803, next: 3274803 },
-    { rank: "C", min: 3274804, max: 4912204, next: 4912204 },
-    { rank: "C+", min: 4912205, max: 7368306, next: 7368306 },
-    { rank: "B-", min: 7368307, max: 11052459, next: 11052459 },
-    { rank: "B", min: 11052460, max: 16578688, next: 16578688 },
-    { rank: "B+", min: 16578689, max: 24868032, next: 24868032 },
-    { rank: "A-", min: 24868033, max: 37302048, next: 37302048 },
-    { rank: "A", min: 37302049, max: 55953072, next: 55953072 },
-    { rank: "A+", min: 55953073, max: 83929608, next: 83929608 },
-    { rank: "S-", min: 83929609, max: 125894412, next: 125894412 },
-    { rank: "S", min: 125894413, max: 188841618, next: 188841618 },
-    { rank: "S+", min: 188841619, max: Infinity, next: 188841619 }
+    { rank: "F-", min: 0, max: 150000, next: 150000 },
+    { rank: "F", min: 150001, max: 350000, next: 350000 },
+    { rank: "F+", min: 350001, max: 650000, next: 650000 },
+
+    { rank: "E-", min: 650001, max: 1000000, next: 1000000 },
+    { rank: "E", min: 1000001, max: 1500000, next: 1500000 },
+    { rank: "E+", min: 1500001, max: 2200000, next: 2200000 },
+
+    { rank: "D-", min: 2200001, max: 3200000, next: 3200000 },
+    { rank: "D", min: 3200001, max: 4500000, next: 4500000 },
+    { rank: "D+", min: 4500001, max: 6200000, next: 6200000 },
+
+    { rank: "C-", min: 6200001, max: 8400000, next: 8400000 },
+    { rank: "C", min: 8400001, max: 11200000, next: 11200000 },
+    { rank: "C+", min: 11200001, max: 14600000, next: 14600000 },
+
+    { rank: "B-", min: 14600001, max: 18700000, next: 18700000 },
+    { rank: "B", min: 18700001, max: 23600000, next: 23600000 },
+    { rank: "B+", min: 23600001, max: 29400000, next: 29400000 },
+
+    { rank: "A-", min: 29400001, max: 36200000, next: 36200000 },
+    { rank: "A", min: 36200001, max: 44100000, next: 44100000 },
+    { rank: "A+", min: 44100001, max: 53200000, next: 53200000 },
+
+    { rank: "S-", min: 53200001, max: 63700000, next: 63700000 },
+    { rank: "S", min: 63700001, max: 75700000, next: 75700000 },
+    { rank: "S+", min: 75700001, max: Infinity, next: 75700001 }
 ];
 
 // ==================== PUBLIC METHODS ====================
@@ -49,14 +56,16 @@ export const RankManager = {
             if (points >= r.min && points <= r.max) {
                 return {
                     rank: r.rank,
+                    min: r.min,
+                    max: r.max,
                     progress: points,
                     nextThreshold: r.next,
                     percent: (points - r.min) / (r.max - r.min) * 100
                 };
             }
         }
-        // Fallback
-        return { rank: "F", progress: points, nextThreshold: 40000, percent: 0 };
+        // Fallback for points below minimum (should not happen)
+        return { rank: "F-", min: 0, max: 50000, progress: points, nextThreshold: 50000, percent: 0 };
     },
 
     // Update rank display in ID card (static, no animation)
@@ -68,23 +77,36 @@ export const RankManager = {
         if (!rankBadge) return;
         
         const rankData = this.getRankData(totalPoints);
+        
+        // Update badge image based on current rank
         rankBadge.src = `assets/hud/badges/rank_${rankData.rank.toLowerCase()}.png`;
         
-        const percent = (rankData.progress / rankData.nextThreshold) * 100;
+        // Calculate progress percentage within current rank (0% to 100%)
+        const progressInRank = totalPoints - rankData.min;
+        const rankRange = rankData.max - rankData.min;
+        let percent = 0;
+        
+        if (rankRange > 0) {
+            percent = (progressInRank / rankRange) * 100;
+        } else {
+            percent = 100; // Max rank (S+ has no upper bound)
+        }
+        
         rankBarFill.style.width = `${Math.min(percent, 100)}%`;
-        rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.nextThreshold.toLocaleString()}`;
+        rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.max.toLocaleString()}`;
         
         // Apply hardcore styling if enabled
         if (isHardcore) {
             rankBarFill.style.background = "linear-gradient(90deg, #8b0000, #4a0000)";
         } else {
-            rankBarFill.style.background = "linear-gradient(90deg, #4a7c59, #2a4a35)";
+            rankBarFill.style.background = "linear-gradient(90deg, #4a7c59, #2a4a35";
         }
     },
 
     // Animate total points counting up from old value to new value
     animateTotalPoints(oldPoints, newPoints, isHardcore, onComplete = null) {
-        if (oldPoints === newPoints) {
+        // Don't animate if no change or if oldPoints is invalid (initial load)
+        if (oldPoints === newPoints || oldPoints === null || oldPoints === undefined) {
             if (onComplete) onComplete();
             return;
         }
@@ -103,7 +125,25 @@ export const RankManager = {
         const newRank = this.getRankData(newPoints).rank;
         const rankChanged = (oldRank !== newRank);
         
-        // Start looping score sound
+        // Update badge image FIRST (before animation)
+        if (rankChanged) {
+            rankBadge.src = `assets/hud/badges/rank_${newRank.toLowerCase()}.png`;
+            // Animate badge scale
+            rankBadge.style.transition = "transform 0.2s ease, opacity 0.2s ease";
+            rankBadge.style.transform = "scale(2.5)";
+            rankBadge.style.opacity = "0.5";
+            audioManager.playGradeSFX();
+            
+            setTimeout(() => {
+                rankBadge.style.transform = "scale(1)";
+                rankBadge.style.opacity = "1";
+                setTimeout(() => {
+                    rankBadge.style.transition = "";
+                }, 300);
+            }, 200);
+        }
+        
+        // Start looping score sound for number animation
         audioManager.startScoreAnimationSFX();
         
         const duration = 1500;
@@ -118,10 +158,19 @@ export const RankManager = {
             
             // Update rank text with current value
             const rankDataCurrent = this.getRankData(currentValue);
-            rankText.textContent = `${currentValue.toLocaleString()} / ${rankDataCurrent.nextThreshold.toLocaleString()}`;
+            rankText.textContent = `${currentValue.toLocaleString()} / ${rankDataCurrent.max.toLocaleString()}`;
             
             // Update progress bar
-            const percent = (currentValue / rankDataCurrent.nextThreshold) * 100;
+            const progressInRank = currentValue - rankDataCurrent.min;
+            const rankRange = rankDataCurrent.max - rankDataCurrent.min;
+            let percent = 0;
+            
+            if (rankRange > 0) {
+                percent = (progressInRank / rankRange) * 100;
+            } else {
+                percent = 100;
+            }
+            
             rankBarFill.style.width = `${Math.min(percent, 100)}%`;
             
             if (progress < 1) {
@@ -129,11 +178,6 @@ export const RankManager = {
             } else {
                 // Animation complete - stop score sound
                 audioManager.stopScoreAnimationSFX();
-                
-                // If rank changed, animate the badge with grade sound
-                if (rankChanged) {
-                    this.animateRankChange(rankBadge, newRank);
-                }
                 
                 if (onComplete) onComplete();
             }
