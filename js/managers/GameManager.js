@@ -74,6 +74,9 @@ export class GameManager {
         
         this.configLevel();
         
+        // Set flags based on board hazards (Scout has fixed flags)
+        this.setPlayerFlagsFromBoard();
+        
         this.boardCtrl.updateVision(this.board, this.player);
         this.boardCtrl.setGameManager(this);
 
@@ -85,12 +88,30 @@ export class GameManager {
         this.gameInputLocked = false;
     }
 
+    // Set player flags based on total hazards on board
+    // Scout is excluded - he has fixed flags for jumping only
+    setPlayerFlagsFromBoard() {
+        const isScout = this.player.getType() === "scout";
+        
+        if (isScout) {
+            // Scout keeps fixed flags from CharacterFactory (for jumping)
+            console.log(`[Scout] Keeping fixed flags: ${this.player.getFlags()}`);
+            return;
+        }
+        
+        const totalHazards = this.getTotalHazardsOnBoard();
+        this.player.setFlags(totalHazards);
+        console.log(`[GameManager] Set flags to ${totalHazards} (total hazards on board)`);
+    }
+
     // ======================= FALL DAMAGE SETTING =======================
 
     // Check if fall damage is enabled in settings
     isFallDamageEnabled() {
         return this.save.isFallDamageEnabled();
     }
+    
+    // ======================= BOARD CONFIGURATION =======================
     
     // Configure level based on game mode
     configLevel() {
@@ -117,7 +138,7 @@ export class GameManager {
             const isHardcore = this.save.isHardcoreEnabled();
             
             if (isHardcore) {
-                // HARDCORE:
+                // HARDCORE: Extreme difficulty values
                 size = 12 + this.currentLevel;
                 goals = this.config.goals;
                 hazardAmount = DifficultyScaler.getHazardCountBySize(size);
@@ -127,7 +148,7 @@ export class GameManager {
                 zone = this.config.zone;
                 childLevel = this.currentLevel;
             } else {
-                // SOFTCORE:
+                // Normal Legacy: Progressive difficulty
                 size = DifficultyScaler.getBoardSize(this.currentLevel);
                 hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
                 goals = DifficultyScaler.getGoalCount(this.currentLevel);
@@ -151,7 +172,7 @@ export class GameManager {
         
         // Generate board step by step
         this.board = this.boardCtrl.generateBoard(size);
-            if (this.config.seed) {
+        if (this.config.seed) {
             this.boardCtrl.setSeed(this.config.seed);
             console.log(`[GameManager] Setting board seed: ${this.config.seed}`);
         }
@@ -183,6 +204,38 @@ export class GameManager {
         console.log("========================================");
     }
 
+    // ======================= HAZARD REGENERATION =======================
+    
+    // Regenerate hazards after player rescues a child
+    regenerateHazards() {
+        console.log("Regenerating hazards - Rescued:" + this.player.getRescued());
+        let hazardAmount, hazardIntensity, size;
+        
+        if (this.config.mode === "legacy") {
+            const isHardcore = this.save.isHardcoreEnabled();
+            
+            if (isHardcore) {
+                size = this.config.size;
+                hazardIntensity = this.config.hazards;
+                hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+                console.log(`[Hardcore Regen] Size: ${size}, Amount: ${hazardAmount}, Intensity: ${hazardIntensity}`);
+            } else {
+                size = DifficultyScaler.getBoardSize(this.currentLevel);
+                hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
+                hazardIntensity = this.currentLevel;
+            }
+        } else {
+            size = this.config.size;
+            hazardAmount = DifficultyScaler.getHazardCountBySize(size);
+            hazardIntensity = this.config.hazards;
+        }
+        
+        this.boardCtrl.regenerateHazards(this.board, hazardAmount, hazardIntensity, size);
+        this.boardCtrl.trackHazardCount(this.board);
+        this.boardCtrl.updateVision(this.board, this.player);
+        this.player.setRegen(false);
+    }
+
     // ======================= INPUT HANDLING =======================
     
     // Handle movement input (WASD)
@@ -200,36 +253,9 @@ export class GameManager {
         // Update vision around player
         this.boardCtrl.updateVisionAroundPlayer(this.board, this.player);
         
-        // ===== HAZARD REGENERATION =====
+        // Regenerate hazards if needed
         if (this.player.isRegen() === true) {
-            console.log("Regenerating hazards - Rescued:" + this.player.getRescued());
-            let hazardAmount, hazardIntensity, size;
-            
-            if (this.config.mode === "legacy") {
-                const isHardcore = this.save.isHardcoreEnabled();
-                
-                if (isHardcore) {
-                    // HARDCORE:
-                    size = this.config.size;
-                    hazardIntensity = this.config.hazards;
-                    hazardAmount = DifficultyScaler.getHazardCountBySize(size);
-                    console.log(`[Hardcore Regen] Size: ${size}, Amount: ${hazardAmount}, Intensity: ${hazardIntensity}`);
-                } else {
-                    // Softcore
-                    size = DifficultyScaler.getBoardSize(this.currentLevel);
-                    hazardAmount = DifficultyScaler.getHazardCount(this.currentLevel);
-                    hazardIntensity = this.currentLevel;
-                }
-            } else {
-                size = this.config.size;
-                hazardAmount = DifficultyScaler.getHazardCountBySize(size);
-                hazardIntensity = this.config.hazards;
-            }
-            
-            this.boardCtrl.regenerateHazards(this.board, hazardAmount, hazardIntensity, size);
-            this.boardCtrl.trackHazardCount(this.board);
-            this.boardCtrl.updateVision(this.board, this.player);
-            this.player.setRegen(false);
+            this.regenerateHazards();
         }
 
         // ===== TUTORIAL PHASE COMPLETION (flaggoal) =====
@@ -237,7 +263,6 @@ export class GameManager {
             const currentTile = this.board[this.player.getPosX()][this.player.getPosY()];
             
             if (currentTile && currentTile.isFlaggoal()) {
-                // Only advance if the player has flagged correctly in phase 2
                 if (this.boardCtrl.currentPhase >= 2 && this.boardCtrl.currentPhase <= 4) {
                     return;
                 } else {
@@ -250,7 +275,6 @@ export class GameManager {
         // ===== VICTORY CHECK =====
         if (this.config.mode === "tutorial") {
             if (this.boardCtrl.currentPhase === 5 && this.charCtrl.winCondition(this.board)) {
-                // No hacer nada aquí - TutorialManager manejará la entrega
                 return;
             }
         } else {
@@ -307,6 +331,7 @@ export class GameManager {
         if (this.isHardcoreEnabled()) {
             this.save.setHardcoreLevel(this.currentLevel);
 
+            // Update config for new level
             this.config.level = this.currentLevel;
             this.config.goals = 5;
             this.config.size = 12 + this.currentLevel;
@@ -314,28 +339,16 @@ export class GameManager {
             this.config.obstacles = 10 + this.currentLevel;
             this.config.zone = "ash";
             
-            // === HARDCORE RULES ===
-            // No HP regenertion
+            // Keep player stats (no health regen in hardcore)
             const currentHp = this.player.getHp();
-            const currentFlags = this.player.getFlags();
-            const maxFlags = this.getMaxFlagsForHardcore();
-            
             const currentPoints = this.player.getPoints();
             const currentType = this.player.getType();
             
             this.player = CharacterFactory.createCharacter(currentType);
             this.player.setPoints(currentPoints);
-            
             this.player.setHp(currentHp);
-            
-            // Only 1 flag regen
-            if (currentFlags < maxFlags) {
-                this.player.setFlags(currentFlags + 1);
-            } else {
-                this.player.setFlags(currentFlags);
-            }
         } else {
-            // LEGACY SOFTCORE
+            // Normal Legacy - full regen
             this.save.setLegacyLevel(this.currentLevel);
             
             const currentPoints = this.player.getPoints();
@@ -345,49 +358,53 @@ export class GameManager {
             this.player.setPoints(currentPoints);
         }
 
+        // New random seed for next level
         if (this.config.seed) {
             this.config.seed = Math.floor(Math.random() * 999999999) + 1;
             console.log(`[GameManager] New seed for level ${this.currentLevel}: ${this.config.seed}`);
         }
         
+        // Recreate controllers and board
         this.boardCtrl = new BoardController(this.player);
         this.charCtrl = new CharacterController(this.player, this.boardCtrl, this);
-        
         this.configLevel();
+        
+        // Set flags based on new board
+        this.setPlayerFlagsFromBoard();
         this.gameInputLocked = false;
         
         console.log(`Level ${this.currentLevel} started (Hardcore: ${this.isHardcoreEnabled()})`);
-    }
-
-    getMaxFlagsForHardcore() {
-        const characterType = this.player.getType();
-        const totalGoals = this.charCtrl ? this.charCtrl.getTotalGoals() : 1;
-        
-        switch (characterType) {
-            case "chef": return 5;
-            case "mosquito": return 7;
-            case "mommy": return totalGoals + 1;
-            case "scout": return 0;
-            default: return 5;
-        }
     }
     
     handleLegacyLose() {
         console.log(`Game over: Record ${this.currentLevel}`);
         
         if (this.isHardcoreEnabled()) {
-            // HARDCORE
             this.save.clearHardcoreProgress();
             this.currentLevel = 1;
         } else {
-            // SOFTCORE
             this.save.clearLegacyProgress();
             this.currentLevel = 1;
         }
     }
 
-    // ======================= HARDCORE MODE =======================
+    // ======================= HELPER METHODS =======================
 
+    // Get total hazards on board (for max flags limit)
+    getTotalHazardsOnBoard() {
+        if (!this.board) return 0;
+        let total = 0;
+        for (let i = 0; i < this.board.length; i++) {
+            for (let j = 0; j < this.board.length; j++) {
+                if (this.board[i][j].getHazardtype() !== "none") {
+                    total++;
+                }
+            }
+        }
+        return total;
+    }
+
+    // Check if Hardcore mode is enabled
     isHardcoreEnabled() {
         return this.save.isHardcoreEnabled();
     }
@@ -428,36 +445,50 @@ export class GameManager {
         
         const tile = this.board[targetX][targetY];
         
-        // Scout ability (jump)
+        // ===== SCOUT ABILITY (Ability 4) =====
+        // Scout uses flags ONLY for jumping, not for marking hazards
         if (abilityId === 4) {
+            // Check if jump target is within bounds
             if (jumpX < 0 || jumpX >= size || jumpY < 0 || jumpY >= size) return;
+            
+            // Place jump flag if available and not already placed
             if (this.player.getFlags() > 0 && !tile.isJumpflagged()) {
                 tile.setJumpflagged(true);
                 this.player.decrementFlags();
+                console.log(`[Scout] Jump flag placed at (${targetX},${targetY}), flags left: ${this.player.getFlags()}`);
             }
+            
+            // Execute jump if flag is present
             if (tile.isJumpflagged()) {
                 this.player.setPosX(jumpX);
                 this.player.setPosY(jumpY);
                 this.charCtrl.verifyTile(this.board);
                 this.boardCtrl.updateVisionAroundPlayer(this.board, this.player);
+                console.log(`[Scout] Jumped to (${jumpX},${jumpY})`);
             }
             return;
         }
         
-        // Chef ability
+        // ===== OTHER CHARACTERS =====
+        // Chef ability: can't flag if tile is already flagged
         if (abilityId === 1 && tile.isFlagged()) return;
+        
+        // Can't flag if tile is not hidden or already marked
         if (!tile.isHide() || tile.isMarked()) return;
         
+        // Remove flag if already placed
         if (tile.isFlagged()) {
             tile.setFlagged(false);
             this.player.incrementFlags();
             return;
         }
         
+        // Place new flag
         if (this.player.getFlags() > 0) {
             tile.setFlagged(true);
             this.player.decrementFlags();
             
+            // Chef ability: automatically mark hazard when flagged
             if (abilityId === 1 && tile.getHazardtype() !== "none") {
                 tile.setMarked(true);
                 tile.setFlagged(false);
@@ -493,7 +524,6 @@ export class GameManager {
             this.handleLegacyVictory();
             document.getElementById("scoreboard-overlay").classList.remove("active");
 
-            // Show level start modal again
             if (this.config.mode !== "tutorial") {
                 await this.showLevelStartModal();
             }
@@ -504,10 +534,13 @@ export class GameManager {
     async retryLevel() {
         if (this.config.mode === "custom") {
             this.startGame();
+        } else {
+            // For legacy/daily, just regenerate the same level
+            this.configLevel();
+            this.setPlayerFlagsFromBoard();
         }
         document.getElementById("scoreboard-overlay").classList.remove("active");
 
-        // Show level start modal again
         if (this.config.mode !== "tutorial") {
             await this.showLevelStartModal();
         }
@@ -517,10 +550,7 @@ export class GameManager {
     randomizeNewGame() {
         if (this.config.mode !== "custom") return;
         
-        // Generate new random seed
         const newSeed = Math.floor(Math.random() * 999999999) + 1;
-        
-        // Generate random configuration
         const random = this.createSeededRandom(newSeed);
         
         const chars = ["chef", "mosquito", "mommy", "scout"];
@@ -537,7 +567,6 @@ export class GameManager {
         
         const goals = Math.floor(random() * 5) + 1;
 
-        // Update config
         this.config.seed = newSeed;
         this.config.character = character;
         this.config.size = size;
@@ -545,12 +574,10 @@ export class GameManager {
         this.config.obstacles = obstacles;
         this.config.goals = goals;
         
-        // Hide scoreboard and restart game
         document.getElementById("scoreboard-overlay").classList.remove("active");
         this.startGame();
     }
 
-    // Helper to create seeded random (copy from Menu.js or import)
     createSeededRandom(seed) {
         return function() {
             seed = (seed * 9301 + 49297) % 233280;
@@ -575,7 +602,6 @@ export class GameManager {
     // ======================= MODAL MESSAGE =======================
 
     showMessage(message, onClose = null) {
-        // Dispatch a custom event that the UI can listen to
         const event = new CustomEvent('game:showMessage', { 
             detail: { message, onClose } 
         });
@@ -598,23 +624,15 @@ export class GameManager {
                 return;
             }
             
-            // Clear previous children
             childrenContainer.innerHTML = "";
-            
-            // Set title and stats
             titleEl.textContent = this.getText('game.paused');
             
             const totalGoals = this.charCtrl.getTotalGoals();
-            const rescuedCount = this.player.getRescued();
             const remainingGoals = this.charCtrl.getRemainingGoals();
-            
             const statsText = `${this.getText('game.wanted')}: ${totalGoals} | ${this.getText('game.remaining')}: ${remainingGoals}`;
             statsEl.textContent = statsText;
             
-            // Get unique child types from board
             const childTypes = this.getChildTypesFromBoard();
-            
-            // Display each child type
             childTypes.forEach(childType => {
                 const childDiv = document.createElement("div");
                 childDiv.className = "pause-child";
@@ -633,23 +651,18 @@ export class GameManager {
                 childrenContainer.appendChild(childDiv);
             });
             
-            // Show modal
             modal.style.display = "flex";
             
-            // Setup continue button
             const newContinueBtn = continueBtn.cloneNode(true);
             continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
-            
             newContinueBtn.addEventListener("click", () => {
                 modal.style.display = "none";
                 this.gameInputLocked = false;
                 resolve();
             });
             
-            // Setup exit button
             const newExitBtn = exitBtn.cloneNode(true);
             exitBtn.parentNode.replaceChild(newExitBtn, exitBtn);
-            
             newExitBtn.addEventListener("click", () => {
                 modal.style.display = "none";
                 PathResolver.goToIndex();
@@ -657,18 +670,11 @@ export class GameManager {
         });
     }
 
-    // ======================= PAUSE GAME =======================
-
     async pauseGame() {
         if (this.gameInputLocked) return;
         
-        // Lock input while paused
         this.gameInputLocked = true;
-        
-        // Show pause modal
         await this.showPauseModal();
-        
-        // Input will be unlocked when continue is clicked
     }
 
     // ======================= LEVEL START MODAL =======================
@@ -686,10 +692,8 @@ export class GameManager {
                 return;
             }
             
-            // Clear previous children
             childrenContainer.innerHTML = "";
             
-            // Set title based on mode
             let title = "";
             let seedText = "";
             let info = "";
@@ -713,10 +717,7 @@ export class GameManager {
             if (seedEl) seedEl.textContent = seedText;
             infoEl.textContent = info;
             
-            // Get unique child types from board
             const childTypes = this.getChildTypesFromBoard();
-            
-            // Display each child type
             childTypes.forEach(childType => {
                 const childDiv = document.createElement("div");
                 childDiv.className = "level-start-child";
@@ -742,7 +743,6 @@ export class GameManager {
                 document.removeEventListener("touchstart", onUserInput);
             };
             
-            // Show modal with fade in
             modal.style.display = "flex";
             setTimeout(() => {
                 modal.classList.add("show");
@@ -784,7 +784,6 @@ export class GameManager {
     }
 
     getText(key) {
-        // This will be set by Game.js
         if (this.localeManager) {
             return this.localeManager.get(key);
         }
