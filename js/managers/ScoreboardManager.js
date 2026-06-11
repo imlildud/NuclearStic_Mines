@@ -125,15 +125,21 @@ export class ScoreboardManager {
 
         // Save total points with mode multiplier applied
         const totalPointsEarned = scores.total;
-        this.gameManager.save.addPoints(totalPointsEarned);
+        const isHardcore = this.gameManager.isHardcoreEnabled() && this.gameManager.config.mode === "legacy";
+
+        if (isHardcore) {
+            this.gameManager.save.addHardcorePoints(totalPointsEarned);
+        } else {
+            this.gameManager.save.addPoints(totalPointsEarned);
+        }
         this.gameManager.save.setLastScore(totalPointsEarned);
 
         if (window.RankManager) {
-            const newTotal = this.gameManager.save.getTotalPoints();
-            window.RankManager.updateRankDisplay(newTotal, this.gameManager.save.isHardcoreEnabled());
+            const newTotal = isHardcore ? this.gameManager.save.getHardcoreTotalPoints() : this.gameManager.save.getTotalPoints();
+            window.RankManager.updateRankDisplay(newTotal, isHardcore);
         }
     }
-
+    
     // ======================= TRANSLATION METHOD =======================
     
     updateScoreboardLabels() {
@@ -341,6 +347,7 @@ export class ScoreboardManager {
         const charCtrl = this.gameManager.charCtrl;
         const totalGoals = charCtrl.getTotalGoals();
         const size = board.length;
+        const isHardcore = this.gameManager.isHardcoreEnabled() && this.gameManager.config.mode === "legacy";
         
         // Get values based on board size
         const rescueValue = this.getRescueValue(size);
@@ -376,7 +383,10 @@ export class ScoreboardManager {
         }
         
         // ===== DIFFICULTY BONUS (now a multiplier, not flat points) =====
-        const difficultyMultiplier = this.calculateDifficultyMultiplier();
+        let difficultyMultiplier = this.calculateDifficultyMultiplier();
+        if (isHardcore){
+            difficultyMultiplier += 0.5
+        }
         
         // ===== PENALTIES =====
         const failedFlags = player.getFailedFlags ? player.getFailedFlags() : 0;
@@ -390,8 +400,12 @@ export class ScoreboardManager {
                 
         // ===== SUBTOTAL (before multiplier) =====
         let subTotal = rescuedPoints + markedPoints - failedPenalty + hurtPenalty;
-        if (subTotal < 0) { subTotal = 0;}
-        
+
+        // Only clamp to 0 for non-hardcore modes
+        if (!isHardcore && subTotal < 0) {
+            subTotal = 0;
+        }
+            
         // ===== APPLY MODE MULTIPLIER =====
         const modeMultiplier = this.getModeMultiplier();
         const totalPoints = Math.floor(subTotal * difficultyMultiplier * modeMultiplier);
@@ -450,19 +464,19 @@ export class ScoreboardManager {
         // Base multiplier starts at 1.0
         let multiplier = 1.0;
         
-        // Hazard intensity bonus (max +0.5)
-        if (hazards >= 30) multiplier += 0.50;
-        else if (hazards >= 20) multiplier += 0.40;
-        else if (hazards >= 12) multiplier += 0.30;
-        else if (hazards >= 8) multiplier += 0.20;
-        else if (hazards >= 5) multiplier += 0.10;
+        // Hazard intensity bonus (max +0.05)
+        if (hazards >= 30) multiplier += 0.05;
+        else if (hazards >= 20) multiplier += 0.04;
+        else if (hazards >= 12) multiplier += 0.04;
+        else if (hazards >= 8) multiplier += 0.02;
+        else if (hazards >= 5) multiplier += 0.01;
         
-        // Obstacle intensity bonus (max +0.3)
-        if (obstacles >= 30) multiplier += 0.30;
-        else if (obstacles >= 15) multiplier += 0.20;
-        else if (obstacles >= 10) multiplier += 0.15;
-        else if (obstacles >= 5) multiplier += 0.10;
-        else if (obstacles >= 3) multiplier += 0.05;
+        // Obstacle intensity bonus (max +0.03)
+        if (obstacles >= 30) multiplier += 0.03;
+        else if (obstacles >= 15) multiplier += 0.02;
+        else if (obstacles >= 10) multiplier += 0.015;
+        else if (obstacles >= 5) multiplier += 0.01;
+        else if (obstacles >= 3) multiplier += 0.005;
         
         console.log(`[Difficulty] Final multiplier: ${multiplier}`);
         return multiplier;
