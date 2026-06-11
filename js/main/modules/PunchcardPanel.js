@@ -109,12 +109,12 @@ function getZoneTexture(value) {
 // ==================== LEGACY BADGES ====================
 
 function getLegacyBadge(level) {
-    if (level <= 3) return "paper.png";
-    if (level <= 7) return "cardboard.png";
-    if (level <= 11) return "telegram.png";
-    if (level <= 15) return "bronze.png";
-    if (level <= 19) return "silver.png";
-    if (level <= 23) return "gold.png";
+    if (level <= 5) return "paper.png";
+    if (level <= 10) return "cardboard.png";
+    if (level <= 20) return "telegram.png";
+    if (level <= 40) return "bronze.png";
+    if (level <= 60) return "silver.png";
+    if (level <= 80) return "gold.png";
     return "platinum.png";
 }
 
@@ -467,6 +467,7 @@ function generateDailySeed() {
 }
 
 function generateDailyConfig() {
+    saveManager.cleanupOldDailyEntries(7);
     hideAllSelects();
 
     document.querySelector(".pct-title").style.display = "none";
