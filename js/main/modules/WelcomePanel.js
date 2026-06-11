@@ -1,4 +1,3 @@
-// js/main/modules/WelcomePanel.js
 // ==============================================================
 // ====================== WELCOME PANEL =========================
 // ==============================================================
@@ -22,16 +21,18 @@ let localeManager = null;
 
 // ==================== PRIVATE HELPERS ====================
 
+// Get legacy badge image based on high score level
 function getLegacyBadge(level) {
-    if (level <= 3) return "paper.png";
-    if (level <= 7) return "cardboard.png";
-    if (level <= 11) return "telegram.png";
-    if (level <= 15) return "bronze.png";
-    if (level <= 19) return "silver.png";
-    if (level <= 23) return "gold.png";
+    if (level <= 5) return "paper.png";
+    if (level <= 10) return "cardboard.png";
+    if (level <= 20) return "telegram.png";
+    if (level <= 40) return "bronze.png";
+    if (level <= 60) return "silver.png";
+    if (level <= 80) return "gold.png";
     return "platinum.png";
 }
 
+// Get daily fire image based on streak count
 function getDailyFireImage(streak) {
     if (streak <= 0) return "fire0.png";
     if (streak <= 6) return "fire1.png";
@@ -41,12 +42,14 @@ function getDailyFireImage(streak) {
     return "fire5.png";
 }
 
+// Check if Hardcore mode is enabled in settings
 function isHardcoreEnabled() {
     return saveManager.isHardcoreEnabled();
 }
 
 // ==================== NAME EDITOR ====================
 
+// Show modal dialog for editing player name
 function showNameEditor(currentName) {
     const overlay = document.createElement('div');
     overlay.id = 'name-edit-overlay';
@@ -130,6 +133,7 @@ function showNameEditor(currentName) {
 
 // ==================== AVATAR SELECTOR ====================
 
+// Show avatar selection grid (6 profile pictures)
 function showAvatarSelector(fromNameFlow = true) {
     const promptEl = document.getElementById("avatar-prompt");
     const confirmBtn = document.getElementById("avatar-confirm");
@@ -176,6 +180,7 @@ function showAvatarSelector(fromNameFlow = true) {
 
 // ==================== NAME PROMPT ====================
 
+// Show name input panel for first-time players
 function showNamePrompt() {
     const promptEl = document.getElementById("name-prompt");
     const inputEl = document.getElementById("username-input");
@@ -215,6 +220,7 @@ function showNamePrompt() {
 
 // ==================== TUTORIAL PROMPT ====================
 
+// Show tutorial prompt asking if player wants to play tutorial
 function showTutorialPrompt() {
     const questionEl = document.getElementById("tutorial-question");
     const yesBtn = document.getElementById("welcome-yes");
@@ -262,6 +268,7 @@ function showTutorialPrompt() {
 
 // ==================== ID CARD TOGGLE ====================
 
+// Initialize the ID card toggle button (shows/hides the welcome screen)
 function initIdCardToggle() {
     const toggleBtn = document.getElementById("id-card-toggle-btn");
     const welcomeScreen = document.getElementById("welcome-screen");
@@ -274,20 +281,21 @@ function initIdCardToggle() {
                 } else {
                     welcomeScreen.style.display = "flex";
                     
-                    // Get old total points (saved before game started)
-                    const oldTotalPoints = saveManager.getOldTotalPoints();
+                    // Get old total points (saved before game started) based on mode
+                    const isHardcore = isHardcoreEnabled();
+                    const oldTotalPoints = isHardcore ? saveManager.getOldHardcoreTotalPoints() : saveManager.getOldTotalPoints();
                     
                     // Refresh ID card content (skip animation on load)
                     const username = saveManager.getUsername();
                     const avatarId = saveManager.getAvatar();
                     WelcomePanel.showWelcomePanel(username, avatarId, true);
                     
-                    // Get current total points (after game)
-                    const newTotalPoints = saveManager.getTotalPoints();
+                    // Get current total points (after game) based on mode
+                    const newTotalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : saveManager.getTotalPoints();
                     
                     // Only animate if points changed
                     if (oldTotalPoints !== newTotalPoints) {
-                        RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcoreEnabled());
+                        RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcore);
                     }
                 }
             }
@@ -297,6 +305,7 @@ function initIdCardToggle() {
 
 // ==================== WELCOME SCREEN INIT ====================
 
+// Initialize the welcome screen with appropriate panel based on player progress
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const mainMenu = document.querySelector(".overlay");
@@ -322,9 +331,11 @@ function initWelcomeScreen() {
     
     // Existing player - show welcome panel with ID card
     if (tutorialCompleted && username) {
-        // Store old total points BEFORE showing the ID card
-        const oldTotalPoints = saveManager.getOldTotalPoints();
-        const newTotalPoints = saveManager.getTotalPoints();
+        const isHardcore = isHardcoreEnabled();
+        
+        // Store old total points BEFORE showing the ID card (based on mode)
+        const oldTotalPoints = isHardcore ? saveManager.getOldHardcoreTotalPoints() : saveManager.getOldTotalPoints();
+        const newTotalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : saveManager.getTotalPoints();
         
         // Show ID card with skipAnimation = true (static display first)
         WelcomePanel.showWelcomePanel(username, avatarId, true);
@@ -335,16 +346,24 @@ function initWelcomeScreen() {
         if (idCardToggle) idCardToggle.style.display = "block";
         
         // Animate if points changed (coming back from a game)
-        if (oldTotalPoints !== newTotalPoints && newTotalPoints > 0) {
+        if (oldTotalPoints !== newTotalPoints && newTotalPoints !== 0) {
             // Animate: first the badge, then the bar, then sync
-            RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcoreEnabled(), () => {
-                // After animation completes, sync old total points to current
-                saveManager.syncOldTotalPoints();
+            RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcore, () => {
+                // After animation completes, sync old total points to current (based on mode)
+                if (isHardcore) {
+                    saveManager.syncOldHardcoreTotalPoints();
+                } else {
+                    saveManager.syncOldTotalPoints();
+                }
                 console.log("[WelcomePanel] Animation complete, synced oldTotalPoints to:", newTotalPoints);
             });
         } else {
             // No animation needed, just sync to be safe
-            saveManager.syncOldTotalPoints();
+            if (isHardcore) {
+                saveManager.syncOldHardcoreTotalPoints();
+            } else {
+                saveManager.syncOldTotalPoints();
+            }
         }
     }
     // Has name but not completed tutorial - go to avatar selection
@@ -366,7 +385,7 @@ function initWelcomeScreen() {
 // ==================== EXPORTED MODULE ====================
 
 export const WelcomePanel = {
-    // Methods
+    // Main method to display the ID card with player stats
     showWelcomePanel(username, avatarId, skipAnimation = false) {
         const greetingEl = document.getElementById("welcome-greeting");
         const playBtn = document.getElementById("welcome-play");
@@ -381,13 +400,16 @@ export const WelcomePanel = {
         const streakFire = document.getElementById("id-card-streak-fire");
         const editBtn = document.getElementById("id-card-edit-btn");
         
+        // Get saved data from SaveManager
         const legacyLevel = saveManager.getLegacyLevel();
         const legacyHighScore = saveManager.getLegacyHighScore();
         const dailyStreak = saveManager.getDailyStreak();
         const hardcoreHighScore = saveManager.getHardcoreHighScore();
-        const totalPoints = RankManager.getTotalPoints();
-        const rankData = RankManager.getRankData(totalPoints);
+        
+        // Determine mode for ranking display
         const isHardcore = isHardcoreEnabled();
+        const totalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : RankManager.getTotalPoints();
+        const rankData = RankManager.getRankData(totalPoints, isHardcore);
         
         // Set avatar image
         if (avatarImg) {
@@ -400,6 +422,7 @@ export const WelcomePanel = {
             nameEl.style.cursor = "pointer";
             nameEl.title = localeManager ? localeManager.get('menu.clickToEdit') : "Click to edit name";
             
+            // Clone to remove previous event listeners
             const newNameEl = nameEl.cloneNode(true);
             nameEl.parentNode.replaceChild(newNameEl, nameEl);
             
@@ -409,23 +432,29 @@ export const WelcomePanel = {
             });
         }
         
-        // Set legacy badge
+        // Set level text (current Legacy level)
+        if (levelEl) {
+            const currentLevelText = localeManager ? localeManager.get('menu.currentLevel') : "Current Level";
+            levelEl.textContent = `${currentLevelText}: ${legacyLevel}`;
+        }
+        
+        // Set legacy badge based on high score
         if (legacyBadgeImg) {
-                const badgeFile = getLegacyBadge(legacyHighScore);
-                legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
+            const badgeFile = getLegacyBadge(legacyHighScore);
+            legacyBadgeImg.src = `assets/hud/badges/${badgeFile}`;
         }
 
-        // Set legacy record
+        // Set legacy record (highest level reached)
         if (recordNumberEl) {
             recordNumberEl.textContent = `${legacyHighScore}`;
         }
 
-        // Set hardcore record
+        // Set hardcore record (highest level reached in Hardcore mode)
         if (hardcoreNumberEl) {
             hardcoreNumberEl.textContent = hardcoreHighScore;
         }
         
-        // Set streak
+        // Set daily streak display
         if (streakNumber) {
             streakNumber.textContent = dailyStreak;
         }
@@ -444,14 +473,19 @@ export const WelcomePanel = {
             rankBadge.src = `assets/hud/badges/rank_${rankData.rank.toLowerCase()}.png`;
             
             // Calculate progress percentage within current rank (0% to 100%)
-            const progressInRank = totalPoints - rankData.min;
-            const rankRange = rankData.max - rankData.min;
             let percent = 0;
             
-            if (rankRange > 0) {
-                percent = (progressInRank / rankRange) * 100;
+            if (isHardcore && rankData.rank === "ζ" && totalPoints < 0) {
+                // Negative points in Hardcore show 0% progress
+                percent = 0;
             } else {
-                percent = 100; // Max rank (S+ has no upper bound)
+                const progressInRank = totalPoints - rankData.min;
+                const rankRange = rankData.max - rankData.min;
+                if (rankRange > 0) {
+                    percent = (progressInRank / rankRange) * 100;
+                } else {
+                    percent = 100; // Max rank has no upper bound
+                }
             }
             
             rankBarFill.style.width = `${Math.min(percent, 100)}%`;
@@ -459,7 +493,7 @@ export const WelcomePanel = {
             // Update rank text showing current points and max of current rank
             rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.max.toLocaleString()}`;
             
-            // Apply styling based on hardcore mode
+            // Apply styling based on hardcore mode (red bar for hardcore, green for normal)
             if (isHardcore) {
                 rankBarFill.style.background = "linear-gradient(90deg, #8b0000, #4a0000)";
             } else {
@@ -467,6 +501,7 @@ export const WelcomePanel = {
             }
         }
 
+        // Hide welcome background image for cleaner look
         const welcomeBg = document.querySelector('.welcome-bg');
         if (welcomeBg) {
             welcomeBg.style.opacity = '0';
@@ -478,7 +513,7 @@ export const WelcomePanel = {
             greetingEl.style.display = "none";
         }
         
-        // Edit button handler
+        // Edit button handler - opens avatar selector
         if (editBtn) {
             editBtn.onclick = () => {
                 const welcomePanel = document.getElementById("welcome-panel");
@@ -498,7 +533,7 @@ export const WelcomePanel = {
             };
         }
         
-        // Play button handler
+        // Play button handler - closes welcome screen and shows main menu
         if (playBtn) {
             playBtn.textContent = localeManager ? localeManager.get('menu.play') : "Play";
             playBtn.onclick = () => {
@@ -509,7 +544,7 @@ export const WelcomePanel = {
             };
         }
 
-        // Delete button handler
+        // Delete button handler - clears all save data
         if (deleteBtn) {
             deleteBtn.textContent = localeManager ? localeManager.get('menu.deleteData') : "Delete Save";
             
@@ -526,18 +561,22 @@ export const WelcomePanel = {
         }
     },
 
+    // Show tutorial prompt panel
     showTutorialPrompt() {
         showTutorialPrompt();
     },
 
+    // Initialize welcome screen panels
     initWelcomeScreen() {
         initWelcomeScreen();
     },
 
+    // Initialize ID card toggle button
     initIdCardToggle() {
         initIdCardToggle();
     },
 
+    // Set locale manager for translations
     setLocaleManager(lm) {
         localeManager = lm;
     }

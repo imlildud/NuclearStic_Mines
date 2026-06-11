@@ -1,4 +1,3 @@
-// js/main/modules/RankManager.js
 // ==============================================================
 // ======================== RANK MANAGER ========================
 // ==============================================================
@@ -13,46 +12,52 @@ import { AudioManager } from "../../managers/AudioManager.js";
 const saveManager = new SaveManager();
 const audioManager = new AudioManager();
 
-// ==================== RANK DATA ====================
+// ==================== NORMAL RANKS (Letters F to S+) ====================
 
-// Rank thresholds with x1.5 progression
-const RANKS = [
-    { rank: "F-", min: 0, max: 150000, next: 150000 },
-    { rank: "F", min: 150001, max: 350000, next: 350000 },
-    { rank: "F+", min: 350001, max: 650000, next: 650000 },
+const NORMAL_RANKS = [
+    { rank: "F-", min: 0, max: 450000, next: 450000 },
+    { rank: "F", min: 450001, max: 1050000, next: 1050000 },
+    { rank: "F+", min: 1050001, max: 1950000, next: 1950000 },
+    { rank: "E-", min: 1950001, max: 3000000, next: 3000000 },
+    { rank: "E", min: 3000001, max: 4500000, next: 4500000 },
+    { rank: "E+", min: 4500001, max: 6600000, next: 6600000 },
+    { rank: "D-", min: 6600001, max: 9600000, next: 9600000 },
+    { rank: "D", min: 9600001, max: 13500000, next: 13500000 },
+    { rank: "D+", min: 13500001, max: 18600000, next: 18600000 },
+    { rank: "C-", min: 18600001, max: 25200000, next: 25200000 },
+    { rank: "C", min: 25200001, max: 33600000, next: 33600000 },
+    { rank: "C+", min: 33600001, max: 43800000, next: 43800000 },
+    { rank: "B-", min: 43800001, max: 56100000, next: 56100000 },
+    { rank: "B", min: 56100001, max: 70800000, next: 70800000 },
+    { rank: "B+", min: 70800001, max: 88200000, next: 88200000 },
+    { rank: "A-", min: 88200001, max: 108600000, next: 108600000 },
+    { rank: "A", min: 108600001, max: 132300000, next: 132300000 },
+    { rank: "A+", min: 132300001, max: 159600000, next: 159600000 },
+    { rank: "S-", min: 159600001, max: 191100000, next: 191100000 },
+    { rank: "S", min: 191100001, max: 227100000, next: 227100000 },
+    { rank: "S+", min: 227100001, max: Infinity, next: 227100001 }
+];
 
-    { rank: "E-", min: 650001, max: 1000000, next: 1000000 },
-    { rank: "E", min: 1000001, max: 1500000, next: 1500000 },
-    { rank: "E+", min: 1500001, max: 2200000, next: 2200000 },
+// ==================== HARDCORE RANKS (Greek letters) ====================
 
-    { rank: "D-", min: 2200001, max: 3200000, next: 3200000 },
-    { rank: "D", min: 3200001, max: 4500000, next: 4500000 },
-    { rank: "D+", min: 4500001, max: 6200000, next: 6200000 },
-
-    { rank: "C-", min: 6200001, max: 8400000, next: 8400000 },
-    { rank: "C", min: 8400001, max: 11200000, next: 11200000 },
-    { rank: "C+", min: 11200001, max: 14600000, next: 14600000 },
-
-    { rank: "B-", min: 14600001, max: 18700000, next: 18700000 },
-    { rank: "B", min: 18700001, max: 23600000, next: 23600000 },
-    { rank: "B+", min: 23600001, max: 29400000, next: 29400000 },
-
-    { rank: "A-", min: 29400001, max: 36200000, next: 36200000 },
-    { rank: "A", min: 36200001, max: 44100000, next: 44100000 },
-    { rank: "A+", min: 44100001, max: 53200000, next: 53200000 },
-
-    { rank: "S-", min: 53200001, max: 63700000, next: 63700000 },
-    { rank: "S", min: 63700001, max: 75700000, next: 75700000 },
-    { rank: "S+", min: 75700001, max: Infinity, next: 75700001 }
+const HARDCORE_RANKS = [
+    { rank: "ζ", min: 0, max: 2000000, next: 2000000 },      // Zeta
+    { rank: "ε", min: 2000001, max: 7000000, next: 7000000 },        // Epsilon
+    { rank: "δ", min: 7000001, max: 20000000, next: 20000000 },      // Delta
+    { rank: "γ", min: 20000001, max: 50000000, next: 50000000 },     // Gamma
+    { rank: "β", min: 50000001, max: 100000000, next: 100000000 },   // Beta
+    { rank: "Ω", min: 100000001, max: Infinity, next: 100000001 }    // Omega
 ];
 
 // ==================== PUBLIC METHODS ====================
 
 export const RankManager = {
     
-    // Get rank data based on total points
-    getRankData(points) {
-        for (const r of RANKS) {
+    // Get rank data based on points and mode
+    getRankData(points, isHardcore = false) {
+        const ranks = isHardcore ? HARDCORE_RANKS : NORMAL_RANKS;
+        
+        for (const r of ranks) {
             if (points >= r.min && points <= r.max) {
                 return {
                     rank: r.rank,
@@ -64,8 +69,12 @@ export const RankManager = {
                 };
             }
         }
-        // Fallback for points below minimum (should not happen)
-        return { rank: "F-", min: 0, max: 50000, progress: points, nextThreshold: 50000, percent: 0 };
+        
+        // Fallback
+        if (isHardcore) {
+            return { rank: "ζ", min: -Infinity, max: 2000000, progress: points, nextThreshold: 2000000, percent: 0 };
+        }
+        return { rank: "F-", min: 0, max: 450000, progress: points, nextThreshold: 450000, percent: 0 };
     },
 
     // Update rank display in ID card (static, no animation)
@@ -76,30 +85,46 @@ export const RankManager = {
         
         if (!rankBadge) return;
         
-        const rankData = this.getRankData(totalPoints);
+        const rankData = this.getRankData(totalPoints, isHardcore);
         
         // Update badge image based on current rank
         rankBadge.src = `assets/hud/badges/rank_${rankData.rank.toLowerCase()}.png`;
         
         // Calculate progress percentage within current rank (0% to 100%)
-        const progressInRank = totalPoints - rankData.min;
-        const rankRange = rankData.max - rankData.min;
         let percent = 0;
         
-        if (rankRange > 0) {
-            percent = (progressInRank / rankRange) * 100;
+        if (isHardcore) {
+            // For hardcore, handle infinite negative range
+            if (rankData.rank === "ζ" && totalPoints < 0) {
+                // Negative points show 0% progress
+                percent = 0;
+            } else {
+                const progressInRank = totalPoints - rankData.min;
+                const rankRange = rankData.max - rankData.min;
+                if (rankRange > 0) {
+                    percent = (progressInRank / rankRange) * 100;
+                } else {
+                    percent = 100;
+                }
+            }
         } else {
-            percent = 100; // Max rank (S+ has no upper bound)
+            const progressInRank = totalPoints - rankData.min;
+            const rankRange = rankData.max - rankData.min;
+            if (rankRange > 0) {
+                percent = (progressInRank / rankRange) * 100;
+            } else {
+                percent = 100;
+            }
         }
         
         rankBarFill.style.width = `${Math.min(percent, 100)}%`;
         rankText.textContent = `${totalPoints.toLocaleString()} / ${rankData.max.toLocaleString()}`;
         
-        // Apply hardcore styling if enabled
+        // Apply styling based on hardcore mode
         if (isHardcore) {
             rankBarFill.style.background = "linear-gradient(90deg, #8b0000, #4a0000)";
         } else {
-            rankBarFill.style.background = "linear-gradient(90deg, #4a7c59, #2a4a35";
+            rankBarFill.style.background = "linear-gradient(90deg, #4a7c59, #2a4a35)";
         }
     },
 
@@ -121,8 +146,8 @@ export const RankManager = {
         }
         
         // Check if rank changed during this session
-        const oldRank = this.getRankData(oldPoints).rank;
-        const newRank = this.getRankData(newPoints).rank;
+        const oldRank = this.getRankData(oldPoints, isHardcore).rank;
+        const newRank = this.getRankData(newPoints, isHardcore).rank;
         const rankChanged = (oldRank !== newRank);
         
         // Update badge image FIRST (before animation)
@@ -157,18 +182,22 @@ export const RankManager = {
             const currentValue = Math.floor(startValue + (endValue - startValue) * progress);
             
             // Update rank text with current value
-            const rankDataCurrent = this.getRankData(currentValue);
+            const rankDataCurrent = this.getRankData(currentValue, isHardcore);
             rankText.textContent = `${currentValue.toLocaleString()} / ${rankDataCurrent.max.toLocaleString()}`;
             
             // Update progress bar
-            const progressInRank = currentValue - rankDataCurrent.min;
-            const rankRange = rankDataCurrent.max - rankDataCurrent.min;
             let percent = 0;
             
-            if (rankRange > 0) {
-                percent = (progressInRank / rankRange) * 100;
+            if (isHardcore && rankDataCurrent.rank === "ζ" && currentValue < 0) {
+                percent = 0;
             } else {
-                percent = 100;
+                const progressInRank = currentValue - rankDataCurrent.min;
+                const rankRange = rankDataCurrent.max - rankDataCurrent.min;
+                if (rankRange > 0) {
+                    percent = (progressInRank / rankRange) * 100;
+                } else {
+                    percent = 100;
+                }
             }
             
             rankBarFill.style.width = `${Math.min(percent, 100)}%`;
@@ -186,51 +215,36 @@ export const RankManager = {
         requestAnimationFrame(animate);
     },
 
-    // Animate rank badge when player ranks up or down
-    animateRankChange(badgeElement, newRank) {
-        if (!badgeElement) return;
-        
-        // Update badge image to new rank
-        badgeElement.src = `assets/hud/badges/rank_${newRank.toLowerCase()}.png`;
-        
-        // Apply animation: scale up + slight fade
-        badgeElement.style.transition = "transform 0.2s ease, opacity 0.2s ease";
-        badgeElement.style.transform = "scale(2.5)";
-        badgeElement.style.opacity = "0.5";
-        
-        // Play grade sound for rank up/down
-        audioManager.playGradeSFX();
-        
-        // Scale back down
-        setTimeout(() => {
-            badgeElement.style.transform = "scale(1)";
-            badgeElement.style.opacity = "1";
-            
-            // Clean up transition after animation
-            setTimeout(() => {
-                badgeElement.style.transition = "";
-            }, 300);
-        }, 200);
-    },
-
-    // Get total points from SaveManager
-    getTotalPoints() {
+    // Get total points from SaveManager (depends on mode)
+    getTotalPoints(isHardcore = false) {
+        if (isHardcore) {
+            return saveManager.getHardcoreTotalPoints();
+        }
         return saveManager.getTotalPoints();
     },
 
-    // Add points to total (called after each game)
-    addPoints(points) {
+    // Add points to total (depends on mode)
+    addPoints(points, isHardcore = false) {
+        if (isHardcore) {
+            return saveManager.addHardcorePoints(points);
+        }
         return saveManager.addPoints(points);
     },
-
-    // Get last score from last game
-    getLastScore() {
-        return saveManager.getLastScore();
+    
+    // Get old total points for animation
+    getOldTotalPoints(isHardcore = false) {
+        if (isHardcore) {
+            return saveManager.getOldHardcoreTotalPoints();
+        }
+        return saveManager.getOldTotalPoints();
     },
-
-    // Set last score
-    setLastScore(score) {
-        saveManager.setLastScore(score);
+    
+    // Sync old total points
+    syncOldTotalPoints(isHardcore = false) {
+        if (isHardcore) {
+            return saveManager.syncOldHardcoreTotalPoints();
+        }
+        return saveManager.syncOldTotalPoints();
     }
 };
 
