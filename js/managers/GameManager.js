@@ -140,7 +140,7 @@ export class GameManager {
             if (isHardcore) {
                 // HARDCORE: Extreme difficulty values
                 size = 12 + this.currentLevel;
-                goals = this.config.goals;
+                goals = DifficultyScaler.getGoalCount(this.currentLevel) + 4;
                 hazardAmount = DifficultyScaler.getHazardCountBySize(size);
                 hazardIntensity = this.config.hazards;
                 heightIntensity = this.config.obstacles;
@@ -341,11 +341,9 @@ export class GameManager {
             
             // Keep player stats (no health regen in hardcore)
             const currentHp = this.player.getHp();
-            const currentPoints = this.player.getPoints();
             const currentType = this.player.getType();
             
             this.player = CharacterFactory.createCharacter(currentType);
-            this.player.setPoints(currentPoints);
             this.player.setHp(currentHp);
         } else {
             // Normal Legacy - full regen
@@ -355,7 +353,6 @@ export class GameManager {
             const currentType = this.player.getType();
             
             this.player = CharacterFactory.createCharacter(currentType);
-            this.player.setPoints(currentPoints);
         }
 
         // New random seed for next level
