@@ -23,7 +23,6 @@ export class CharacterModel {
         this.vision = 0;            // Vision range (tiles visible)
 
         // ========== STATUS TRACKING ==========
-        this.points = 0;            // Total score points
         this.alive = true;          // Alive status flag
         this.damageTaken = 0;       // Damage tracker
         this.regen = false;         // Health regeneration flag
@@ -112,13 +111,6 @@ export class CharacterModel {
     
     getVision() { return this.vision; }
     setVision(v) { this.vision = v; }
-    
-    // ======================= POINTS GETTERS & SETTERS =======================
-    
-    getPoints() { return this.points; }
-    setPoints(v) { this.points = v; }
-    incrementPoints(v) { this.points += v; }
-    decrementPoints(v) { this.points -= v; }
     
     // ======================= ALIVE STATUS GETTERS & SETTERS =======================
     
