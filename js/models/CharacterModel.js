@@ -21,9 +21,13 @@ export class CharacterModel {
         this.force = 0;             // Force/power stat
         this.abilityId = 0;         // Active ability identifier
         this.vision = 0;            // Vision range (tiles visible)
+        this.damageFlash = false;   // Damage flash property
 
         // ========== STATUS TRACKING ==========
         this.alive = true;          // Alive status flag
+        this.criticized = false;    // Nest effect
+        this.critickerGoal = 0;
+        this.critickerProgress = 0;
         this.damageTaken = 0;       // Damage tracker
         this.regen = false;         // Health regeneration flag
         this.rescued = 0;           // Currently rescued count (current mission)
@@ -116,6 +120,23 @@ export class CharacterModel {
     
     isAlive() { return this.alive; }
     setAlive(v) { this.alive = v; }
+
+    // ======================= DAMAGE FLASH GETTERS & SETTERS =======================
+
+    isDamageFlash() { return this.damageFlash; }
+    setDamageFlash(v) { this.damageFlash = v; }
+
+    // ======================= CRITICIZED STATUS GETTERS & SETTERS =======================
+
+    isCriticized() { return this.criticized; }
+    setCriticized(v) { this.criticized = v; }
+
+    getCritickerGoal() { return this.critickerGoal; }
+    setCritickerGoal(v) { this.critickerGoal = v; }
+
+    getCritickerProgress() { return this.critickerProgress; }
+    setCritickerProgress(v) { this.critickerProgress = v; }
+    incrementCritickerProgress() { this.critickerProgress++; }
 
     // ========================= DAMAGE TRACKER ============================
     
