@@ -134,6 +134,16 @@ export class TestController extends BaseBoardController {
         board[12][11].setTileheight(4);
         board[12][11].setHazardtype("radioactive");
 
+        board[14][3].setHazardtype("nest");
+        board[14][5].setTileheight(1);
+        board[14][5].setHazardtype("nest");
+        board[14][7].setTileheight(2);
+        board[14][7].setHazardtype("nest");
+        board[14][9].setTileheight(3);
+        board[14][9].setHazardtype("nest");
+        board[14][11].setTileheight(4);
+        board[14][11].setHazardtype("nest");
+
         // Test row 9 (Hazard count)
         board[5][16].setHazardcount(1);
         board[6][16].setHazardcount(2);
@@ -147,6 +157,8 @@ export class TestController extends BaseBoardController {
 
         // Test row 10 (Radius effects)
         this.applyRadiusEffect(board, 17, 4, "setHide", true);
+        board[17][4].setHazardtype("mine");
+        this.applyRadiusEffect(board, 17, 4, "setHazardcount", 1);
         this.applyRadiusEffect(board, 17, 8, "setSmoke", true);
         this.applyRadiusEffect(board, 17, 12, "setDamageratio", true);
         
@@ -201,19 +213,19 @@ export class TestController extends BaseBoardController {
     // ======================= HELPER METHODS =======================
 
     updateVision(board, character) {
-        this.revealAllTiles(board);
+        //this.revealAllTiles(board);
     }
 
     updateVisionAroundPlayer(board, character) {
-        this.revealAllTiles(board);
+        //this.revealAllTiles(board);
     }
 
     revealAllTiles(board) {
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board.length; j++) {
-                board[i][j].setHide(false);
-            }
-        }
+        //for (let i = 0; i < board.length; i++) {
+          //for (let j = 0; j < board.length; j++) {
+            //board[i][j].setHide(false);
+            //}
+        //}
     }
     
     loadDifficulty() { return 24; }

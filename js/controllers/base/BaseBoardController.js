@@ -154,6 +154,14 @@ export class BaseBoardController {
                         markedHazards++;
                         continue;
                     }
+
+                    if (tile.getHazardtype() === "nest" && tile.isFlagged()) {
+                        tile.setMarked(true);
+                        tile.setFlagged(false);
+                        tile.setHazardtype("nest_marked");
+                        markedHazards++;
+                        continue;
+                    }
                     
                     tile.setHazardtype("none");
                     remainingHazards++;
