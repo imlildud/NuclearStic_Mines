@@ -305,11 +305,12 @@ export class BoardController extends BaseBoardController {
             { type: "cactus", weight: 0.3, minLevel: 0 },
             { type: "deadbush", weight: 0.3, minLevel: 9999 }, // 3
             { type: "pipe", weight: 0.15, minLevel: 5 },
-            { type: "radioactive", weight: 0.1, minLevel: 8 },
-            { type: "spiderMine", weight: 0.2, minLevel: 9999 }, // 10
-            { type: "bandit", weight: 0.1, minLevel: 9999 }, // 13
+            { type: "nest", weight: 0.02, minLevel: 8 },
+            { type: "radioactive", weight: 0.1, minLevel: 10 },
+            { type: "spiderMine", weight: 0.2, minLevel: 9999 }, // 12
+            { type: "bandit", weight: 0.1, minLevel: 9999 }, // 15
             { type: "liberal", weight: 0.0, minLevel: 9999 }, // 0
-            { type: "sandsnake", weight: 0.1, minLevel: 9999 }, // 15
+            { type: "sandsnake", weight: 0.1, minLevel: 9999 }, // 18
             { type: "dunecrawler", weight: 0.01, minLevel: 9999 } // 20
         ];
     

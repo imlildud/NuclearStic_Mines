@@ -73,20 +73,6 @@ Navigate through hazardous zones, flag hidden dangers, rescue lost children, and
 
 ---
 
-## Scoring
-
-| Action | Points |
-|--------|--------|
-| Rescue a child | +500 |
-| Mark a hazard | +200 |
-| Complete a level | Difficulty bonus |
-| Failed flag | -200 |
-| Take damage | -100 |
-
-Grades range from **S** (100%+) to **F** (below 50%).
-
----
-
 ## Credits
 
 Made with ❤️ by **imlildud**

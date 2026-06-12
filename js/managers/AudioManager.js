@@ -164,6 +164,27 @@ export class AudioManager {
         this.playSFX("deliver.mp3", false, 0.4);
     }
 
+    // Play hurt sound (when taking damage)
+    playHurtSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("hurt.mp3", false, 0.4);
+    }
+
+    // Play armor hurt sound (when mommy taking damage)
+    playHurtMetalSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("hurtMetal.mp3", false, 0.4);
+    }
+
+    // Play crunch sound (when stepping on nest)
+    playCrunchSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("crunch.mp3", false, 0.35);
+    }
+
     // Play hover sound for UI buttons
     playHoverSFX() {
         if (!this.sfxEnabled) return;

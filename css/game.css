@@ -122,6 +122,14 @@ canvas {
     width: clamp(35px, 14vmin, 75px); 
 }
 
+/* Criticized Status Icon Position */
+.hud-criticized-icon {
+    position: absolute;
+    top: 70%;
+    left: -5%;
+    width: clamp(20px, 8vmin, 80px); 
+}
+
 /* ==================== HEALTH GROUP ==================== */
 
 /* Health Group Container */
