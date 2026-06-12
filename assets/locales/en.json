@@ -164,5 +164,25 @@
         },
         "pitFall": "HA! Watch where you're stepping. The ground out there is full of holes so deep that not even a vulture would bother going after your corpse. Try again.",
         "exhaustion": "Heavy, isn't it? See those sweat drops on your icon? That means you're exhausted and can't carry any more children. If there were others to rescue, you'd have to drop off the ones you're carrying and go back for the rest."
+    },
+    
+    "criticker": {
+        "infection": {
+            "step1": "Good day, esteemed sir. I regret to inform you that you have just devastated a property of considerable sentimental value to me. However, I am a reasonable individual and am willing to proceed through diplomatic channels.",
+            "step2": "Allow me to accompany you during your environmental sanitation labors. The presence of these deplorable 'Hazards' constitutes an aesthetic affront that disturbs my usual contemplative walks.",
+            "step3": "With your permission, I shall temporarily adhere to your anatomy. I assure you this action has strictly professional purposes. You must mark {goal} hazards correctly to satisfy me."
+        },
+        "success": {
+            "main": "Fascinating. Your performance has exceeded my statistical expectations. It is reassuring to verify that human incompetence is not a universal constant.",
+            "farewell": "It has been a privilege to witness your activities. I hope not to encounter you again under catastrophic circumstances. Goodbye."
+        },
+        "failure": {
+            "main": "Sir, I find myself deeply disappointed. The magnitude of this failure deserves a complete academic thesis. I shall express my discontent through slightly harmful means.",
+            "damage": "Consider this intervention a pedagogical correction and not a hostile act."
+        },
+        "damage": {
+            "main": "What improper conduct! Attempting to murder an impartial observer constitutes a serious breach of civilized protocol.",
+            "farewell": "I have concluded that the preservation of my biological integrity has a higher priority than continuing this exchange. I wish you a moderately acceptable day."
+        }
     }
 }

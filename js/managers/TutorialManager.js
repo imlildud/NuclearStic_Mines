@@ -51,6 +51,7 @@ export class TutorialManager {
     // Phase 2: Flag tutorial
     startPhase2() {
         this.gameManager.setGameInputLocked(true);
+        this.gameManager.player.setFlags(1);
         this.gameManager.boardCtrl.revealAllTiles(this.gameManager.board);
     
         const dialogues = [
