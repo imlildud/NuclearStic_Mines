@@ -8,6 +8,7 @@ import { CharacterFactory } from "../factory/CharacterFactory.js";
 import { BoardController } from "../controllers/BoardController.js";
 import { TutorialController } from "../controllers/TutorialController.js";
 import { CharacterController } from "../controllers/CharacterController.js";
+import { CritickerController } from "../controllers/foes/CritickerController.js";
 import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
@@ -33,6 +34,7 @@ export class GameManager {
         
         // Optional tutorial manager (only used in tutorial mode)
         this.tutorialManager = null;
+        this.criticker = null;
         
         // Managers
         this.audio = new AudioManager();
@@ -76,7 +78,13 @@ export class GameManager {
         
         // Set flags based on board hazards (Scout has fixed flags)
         this.setPlayerFlagsFromBoard();
-        
+
+        if (this.localeManager && !this.criticker) {
+            this.criticker = new CritickerController(this, this.localeManager, this.audio);
+            await this.criticker.init();
+            console.log("[GameManager] Criticker controller initialized");
+        }
+            
         this.boardCtrl.updateVision(this.board, this.player);
         this.boardCtrl.setGameManager(this);
 
@@ -349,7 +357,6 @@ export class GameManager {
             // Normal Legacy - full regen
             this.save.setLegacyLevel(this.currentLevel);
             
-            const currentPoints = this.player.getPoints();
             const currentType = this.player.getType();
             
             this.player = CharacterFactory.createCharacter(currentType);
@@ -485,11 +492,38 @@ export class GameManager {
             tile.setFlagged(true);
             this.player.decrementFlags();
             
-            // Chef ability: automatically mark hazard when flagged
-            if (abilityId === 1 && tile.getHazardtype() !== "none") {
+            // Chef ability OR Criticized ability: automatically mark hazard when flagged
+            const isChef = (abilityId === 1);
+            const isCriticized = this.player.isCriticized();
+            const hasHazard = (tile.getHazardtype() !== "none");
+            
+            // When marking a hazard correctly (Chef or Criticized)
+            if ((isChef || isCriticized) && hasHazard) {
                 tile.setMarked(true);
                 tile.setFlagged(false);
-                this.player.incrementPoints(200);
+                
+                // Update Criticker progress
+                if (isCriticized && this.criticker) {
+                    const currentProgress = this.player.getCritickerProgress();
+                    const goal = this.player.getCritickerGoal();
+                    const newProgress = this.criticker.markProgress(currentProgress, goal);
+                    this.player.setCritickerProgress(newProgress);
+                    
+                    if (newProgress >= goal) {
+                        this.player.setCriticized(false);
+                    }
+                }
+            }
+
+            // When wrong flag placed (no hazard)
+            if (isCriticized && !hasHazard) {
+                // Don't apply damage here - let Criticker handle it
+                this.player.setCriticized(false);
+                
+                // Notify criticker of failure (it will handle damage)
+                if (this.criticker) {
+                    this.criticker.fail();
+                }
             }
         }
     }
