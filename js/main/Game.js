@@ -209,6 +209,16 @@ function updateHUD() {
         goalsText.textContent = game.charCtrl.getRemainingGoals();
     }
 
+    // Update criticized icon (Criticker)
+    const criticizedIcon = document.getElementById("hud-criticized-icon");
+    if (criticizedIcon) {
+        if (player.isCriticized()) {
+            criticizedIcon.style.display = "block";
+        } else {
+            criticizedIcon.style.display = "none";
+        }
+    }
+
     // Update additional UI elements
     updateCurrentTile();
     updateHeightometer();
