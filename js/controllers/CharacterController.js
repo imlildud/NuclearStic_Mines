@@ -195,7 +195,8 @@ export class CharacterController {
         
         // ----- LETHAL HAZARDS (Mine) -----
         if (hazardType === "mine") {
-            // Ability 1 (scout) survives if mine is marked
+            
+            // Ability 1 (Chef) survives if mine is marked
             if (ability === 1 && (isMarked)) {
                 return;
             }
@@ -206,6 +207,16 @@ export class CharacterController {
                     this.killCharacter();
                 } else {
                     this.character.decrementAp(1);
+                    
+                    // Play death sound for dramatic effect
+                    if (this.gameManager && this.gameManager.audio) {
+                        this.gameManager.audio.playDeathSFX();
+                    }
+                    
+                    // Trigger screen blackout effect
+                    if (this.gameManager && this.gameManager.renderer) {
+                        this.gameManager.renderer.triggerMineFlash();
+                    }
                 }
                 return;
             }
@@ -227,12 +238,52 @@ export class CharacterController {
                     this.hurtCharacter();
                 } else {
                     this.character.decrementAp(1);
+                    
+                    // Play armor hurt sound
+                    if (this.gameManager && this.gameManager.audio) {
+                        this.gameManager.audio.playHurtMetalSFX();
+                    }
                 }
                 return;
             }
+
+            // Critiker damage
+            if (this.character.isCriticized()) {
+                this.character.setCriticized(false);
+                this.hurtCharacter();
+                
+                // Notify criticker of abandonment
+                if (this.gameManager && this.gameManager.criticker) {
+                    this.gameManager.criticker.abandon();
+                }
+            }
+
             // Normal damage
             this.hurtCharacter();
             return;
+        }
+
+        // ===== CRITICKER NEST HANDLING =====
+        if (hazardType === "nest") {
+            if (!this.character.isCriticized()) {
+                this.character.setCriticized(true);
+                
+                const goal = Math.floor(Math.random() * 5) + 1;
+                this.character.setCritickerGoal(goal);
+                this.character.setCritickerProgress(0);
+                
+                tile.setHazardtype("nest_open");
+                
+                // Activate Criticker controller via GameManager (NOT a local method)
+                if (this.gameManager && this.gameManager.criticker) {
+                    this.gameManager.criticker.activate(goal);
+                }
+                
+                return;
+            } else {
+                tile.setHazardtype("nest_open");
+                this.hurtCharacter();
+            }
         }
         
         // ----- DETECTION HAZARDS (SpiderMine, Bandit, Sandsnake) -----
@@ -319,6 +370,20 @@ export class CharacterController {
     hurtCharacter() {
         this.character.decrementHp(1);
         this.character.incrementDamageTaken(1); 
+
+        // Play hurt sound
+        if (this.gameManager && this.gameManager.audio) {
+            this.gameManager.audio.playHurtSFX();
+        }
+
+        // Trigger visual damage flash (set flag for renderer)
+        this.character.setDamageFlash(true);
+        setTimeout(() => {
+            if (this.character) {
+                this.character.setDamageFlash(false);
+            }
+        }, 150);
+        
         if (this.character.getHp() <= 0) this.killCharacter();
     }
     
