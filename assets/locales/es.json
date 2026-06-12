@@ -164,5 +164,25 @@
         },
         "pitFall": "¡JA! Mira por dónde pisas. El suelo allá afuera está lleno de agujeros tan profundos que ni un buitre se molestaría en ir tras tu cadáver. Inténtalo de nuevo.",
         "exhaustion": "Pesado, ¿eh? ¿Ves esas gotas de sudor en tu icono? Significa que estás exhausto y no puedes cargar más niños. Si hubiera más para rescatar, tendrías que dejar los que llevas y volver por el resto."
+    },
+    
+    "criticker": {
+        "infection": {
+            "step1": "Buenos días, estimado caballero. Lamento informarle que usted acaba de devastar una propiedad privada de considerable valor sentimental para mi persona. No obstante, soy un individuo razonable y estoy dispuesto a proceder mediante vías diplomáticas.",
+            "step2": "Permítame acompañarle durante sus labores de saneamiento ambiental. La presencia de estos deplorables 'Hazards' constituye una afrenta estética que perturba mis habituales paseos contemplativos.",
+            "step3": "Con su permiso, procederé a adherirme temporalmente a su anatomía. Le aseguro que esta acción posee fines estrictamente profesionales. Deberá marcar {goal} hazards correctamente para satisfacerme."
+        },
+        "success": {
+            "main": "Fascinante. Su desempeño ha excedido mis expectativas estadísticas. Resulta reconfortante comprobar que la incompetencia humana no es una constante universal.",
+            "farewell": "Ha sido un privilegio presenciar sus actividades. Espero no volver a encontrarme con usted bajo circunstancias catastróficas. Adiós."
+        },
+        "failure": {
+            "main": "Caballero, me encuentro profundamente decepcionado. La magnitud de este fracaso merece una tesis académica completa. Procederé a manifestar mi descontento mediante medios ligeramente perjudiciales.",
+            "damage": "Considere esta intervención una corrección pedagógica y no un acto hostil."
+        },
+        "damage": {
+            "main": "¡Qué conducta tan impropia! Intentar asesinar a un observador imparcial constituye una grave falta al protocolo civilizado.",
+            "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
+        }
     }
 }

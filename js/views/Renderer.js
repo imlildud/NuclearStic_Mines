@@ -115,6 +115,9 @@ export class Renderer {
             "start",         // Start tile
             "mine",          // Mine hazard
             "pipe",          // Pipe hazard
+            "nest",          // Nest hazard
+            "nest_marked",
+            "nest_open",
             "radioactive",   // Radioactive hazard
             "cactus",        // Cactus hazard
             "flagged",       // Flag marker
@@ -288,7 +291,16 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
-                if (tile.isMarked() && !tile.isSmoke()) {
+                if (tile.isMarked() && tile.getHazardtype() === "nest") {
+                    const flagHeight = objSize * 1.3;
+                    this.safeDraw(
+                        "nest_marked",
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
+                    );
+                }
+                else if (tile.isMarked() && !tile.isSmoke()) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "marked",
@@ -312,7 +324,7 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                }
+                } 
                 
                 // ===== LAYER 7: START TILE =====
                 if (tile.isStart()) {
@@ -402,6 +414,15 @@ export class Renderer {
                             // Apply transform and draw
                             ctx.translate(centerX, centerY + yOffset);
                             ctx.rotate(tilt);
+                            
+                            // ===== DAMAGE FLASH EFFECT (white flash) =====
+                            if (player.isDamageFlash && player.isDamageFlash()) {
+                                ctx.globalAlpha = 0.8;
+                                ctx.filter = "brightness(1.8) contrast(1.1)";
+                                ctx.shadowBlur = 8;
+                                ctx.shadowColor = "red";
+                            }
+                            
                             ctx.drawImage(img, -objSize / 2, -objSize / 2, objSize, objSize);
                             ctx.restore();
                             
@@ -413,7 +434,18 @@ export class Renderer {
                             }
                         } else {
                             // Static draw (no animation)
-                            ctx.drawImage(img, drawPlayerX, drawPlayerY, objSize, objSize);
+                            // ===== DAMAGE FLASH EFFECT (white flash) =====
+                            if (player.isDamageFlash && player.isDamageFlash()) {
+                                ctx.save();
+                                ctx.globalAlpha = 0.8;
+                                ctx.filter = "brightness(1.8) contrast(1.1)";
+                                ctx.shadowBlur = 8;
+                                ctx.shadowColor = "white";
+                                ctx.drawImage(img, drawPlayerX, drawPlayerY, objSize, objSize);
+                                ctx.restore();
+                            } else {
+                                ctx.drawImage(img, drawPlayerX, drawPlayerY, objSize, objSize);
+                            }
                         }
                     }
                 }
@@ -449,5 +481,57 @@ export class Renderer {
         if (!img.complete || img.naturalWidth === 0) return;
         
         this.ctx.drawImage(img, x, y, size, size);
+    }
+
+    // Trigger mine explosion effect (blackout + blur recovery)
+    triggerMineFlash() {
+        // Create overlay container
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'black';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '20000';
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.15s ease';
+        
+        document.body.appendChild(overlay);
+        
+        // Apply blur to canvas
+        const canvas = this.canvas;
+        const originalFilter = canvas.style.filter;
+        canvas.style.transition = 'filter 0.2s ease';
+        canvas.style.filter = 'blur(8px) brightness(0.3)';
+        
+        // Blackout
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+        }, 90);
+        
+        // Hold blackout + blur
+        setTimeout(() => {
+            // Start recovery - fade out black overlay
+            overlay.style.opacity = '0';
+            
+            // Gradually remove blur
+            canvas.style.filter = 'blur(4px) brightness(0.5)';
+            
+            setTimeout(() => {
+                canvas.style.filter = 'blur(2px) brightness(0.7)';
+                
+                setTimeout(() => {
+                    canvas.style.filter = 'blur(1px) brightness(0.9)';
+                    
+                    setTimeout(() => {
+                        canvas.style.filter = originalFilter || 'none';
+                        canvas.style.transition = '';
+                        overlay.remove();
+                    }, 6000);
+                }, 6000);
+            }, 3000);
+        }, 3000);
     }
 }
