@@ -26,9 +26,9 @@ function getLegacyBadge(level) {
     if (level <= 5) return "paper.png";
     if (level <= 10) return "cardboard.png";
     if (level <= 20) return "telegram.png";
-    if (level <= 40) return "bronze.png";
-    if (level <= 60) return "silver.png";
-    if (level <= 80) return "gold.png";
+    if (level <= 30) return "bronze.png";
+    if (level <= 40) return "silver.png";
+    if (level <= 50) return "gold.png";
     return "platinum.png";
 }
 
