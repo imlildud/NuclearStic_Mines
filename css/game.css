@@ -277,6 +277,32 @@ canvas {
     left: 5%;
 }
 
+/* ===================== COORDINATES ======================= */
+
+.hud-coordinates-container {
+    position: fixed;
+    top: clamp(30px, 30vmin, 155px);
+    right: clamp(15px, 15vmin, 30px);
+    height: 5vmin;
+    width: 15vmin;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 1vmin;
+    font-family: monospace;
+    font-size: 3vmin;
+    color: white;
+    text-shadow: 1px 1px 0 #000;
+    pointer-events: none;
+}
+
+.coords-text {
+    position: relative;
+    top: 15%;
+    left: 20%;
+    font-family: 'Shampoos', sans-serif;
+    font-size: clamp(14px, 4vmin, 30px);
+    font-weight: bold;
+}
+
 /* ========================================================= */
 /* ======================= CONTROLS ======================== */
 /* ========================================================= */
