@@ -9,9 +9,11 @@ import { BoardController } from "../controllers/BoardController.js";
 import { TutorialController } from "../controllers/TutorialController.js";
 import { CharacterController } from "../controllers/CharacterController.js";
 import { CritickerController } from "../controllers/foes/CritickerController.js";
+import { SpikeController } from "../controllers/obstacles/SpikeController.js";
 import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
+import { TurnManager } from "./TurnManager.js";
 import { DifficultyScaler } from "./DifficultyScaler.js";
 import { PathResolver } from "../utils/PathResolver.js";
 
@@ -34,11 +36,15 @@ export class GameManager {
         
         // Optional tutorial manager (only used in tutorial mode)
         this.tutorialManager = null;
+
+        // Foes and obstacles
         this.criticker = null;
+        this.spikeController = null;
         
         // Managers
         this.audio = new AudioManager();
         this.save = new SaveManager();
+        this.turnManager = new TurnManager();
         this.scoreboard = null;                     // Initialized after player/board are ready
     }
     
@@ -57,6 +63,7 @@ export class GameManager {
         }
         
         this.player = CharacterFactory.createCharacter(this.config.character);
+        this.turnManager.reset();
         
         // Select board controller based on mode
         if (this.config.mode === "tutorial") {
@@ -75,6 +82,14 @@ export class GameManager {
         this.scoreboard = new ScoreboardManager(this);
         
         this.configLevel();
+
+        // Spike obstacle reset count
+        if (this.spikeController) {
+            this.spikeController.destroy();
+        }
+        
+        this.spikeController = new SpikeController(this);
+        this.spikeController.registerSpikes(this.board);
         
         // Set flags based on board hazards (Scout has fixed flags)
         this.setPlayerFlagsFromBoard();
@@ -253,6 +268,9 @@ export class GameManager {
         const now = Date.now();
         if (now - this.lastMoveTime < this.MOVE_DELAY) return;
         this.lastMoveTime = now;
+
+        // Turn system increment
+        this.turnManager.incrementTurn();
         
         // Execute movement
         this.charCtrl.moveCharacter(direction, this.board);

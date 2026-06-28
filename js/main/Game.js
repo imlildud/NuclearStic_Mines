@@ -271,6 +271,7 @@ function updateGeologicalAlert() {
     let hasKill = false;
     let hasLive = false;
     let hasRiver = false;
+    let hasSpikes = false;
     let hasPit = false;
     
     const directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
@@ -292,6 +293,8 @@ function updateGeologicalAlert() {
             
             if (obstacleType === "river") {
                 hasRiver = true;
+            } else if (obstacleType === "spikes") {
+                hasSpikes = true;
             } else if (obstacleType === "pit") {
                 hasPit = true;
             }
@@ -313,11 +316,11 @@ function updateGeologicalAlert() {
         alertType = "damage.png";
     }
 
-    if (hasRiver) {
-        alertType2 = "obsriver.png";
-    } else if (hasPit && hasRiver) {
+    if (hasRiver && (hasPit || hasSpikes)) {
         alertType2 = "obsmixed.png";
-    } else if (hasPit) {
+    } else if (hasRiver) {
+        alertType2 = "obsriver.png";
+    } else if (hasPit || hasSpikes) {
         alertType2 = "obspit.png";
     }
     
@@ -362,7 +365,19 @@ function updateCurrentTile() {
         if (hazardType !== "none") {
             textureName = hazardType;
         } else if (obstacleType !== "none") {
-            textureName = obstacleType;
+            // ===== SPIKE SPECIAL HANDLING =====
+            if (obstacleType === "spikes") {
+                const spikeState = tile.getSpikeState();
+                if (spikeState === "prepared") {
+                    textureName = "spikes_prepared";
+                } else if (spikeState === "on") {
+                    textureName = "spikes_on";
+                } else {
+                    textureName = "spikes_off";
+                }
+            } else {
+                textureName = obstacleType;
+            }
         } else if (hazardCount > 0) {
             textureName = hazardCount.toString();
         } else if (goalType !== "none") {
@@ -374,10 +389,12 @@ function updateCurrentTile() {
         }
     }
 
-    if (textureName && obstacleType !== "none") {
+    if (textureName && obstacleType !== "none" && obstacleType !== "spikes") {
+        // Obstacles that are zone-specific (natural, river, pit, safepit)
         tileIcon.src = PathResolver.resolveAsset('tiles', zone, `${textureName}.png`);
         tileIcon.style.display = "block";
     } else if (textureName) {
+        // Global textures (spikes, hazards, goals, etc.)
         tileIcon.src = PathResolver.resolveAsset('tiles', `${textureName}.png`);
         tileIcon.style.display = "block";
     } else {

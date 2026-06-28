@@ -126,7 +126,10 @@ export class Renderer {
             "marked",        // Marked hazard (Chef ability)
             "toxic",         // Damage radius indicator
             "smoke",         // Smoke radius
-            "1","2","3","4","5","6","7","8","9"  // Hazard count numbers
+            "spikes_off",     // Spike obstacle
+            "spikes_prepared", 
+            "spikes_on",       
+            "1","2","3","4","5","6","7","8","9","?"  // Hazard count numbers
         ];
         
         // Character and goal sprites
@@ -247,12 +250,35 @@ export class Renderer {
                 // ===== LAYER 2: OBSTACLE =====
                 const obstacle = tile.getObstacletype();
                 if (obstacle !== "none" && !tile.isHide()) {
-                    this.safeDraw(
-                        obstacle,
-                        drawX - objOffsetX,
-                        drawY - objOffsetY,
-                        objSize
-                    );
+                    
+                    // ===== SPIKE SPECIAL RENDERING =====
+                    if (obstacle === "spikes") {
+                        const spikeState = tile.getSpikeState(); // "off" | "prepared" | "on"
+                        let spriteName = "spikes_off"; // fallback
+                        
+                        if (spikeState === "prepared") {
+                            spriteName = "spikes_prepared";
+                        } else if (spikeState === "on") {
+                            spriteName = "spikes_on";
+                        } else {
+                            spriteName = "spikes_off";
+                        }
+                        
+                        this.safeDraw(
+                            spriteName,
+                            drawX - objOffsetX,
+                            drawY - objOffsetY,
+                            objSize
+                        );
+                    } else {
+                        // Normal obstacle rendering (natural, river, pit, safepit)
+                        this.safeDraw(
+                            obstacle,
+                            drawX - objOffsetX,
+                            drawY - objOffsetY,
+                            objSize
+                        );
+                    }
                 }
                 
                 // ===== LAYER 3: HAZARD COUNT =====
