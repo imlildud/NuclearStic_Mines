@@ -224,6 +224,20 @@ function updateHUD() {
     updateHeightometer();
     updateGeologicalAlert();
     updateFatigue();
+    updateCoordinates();
+}
+
+// Update coordinates display
+function updateCoordinates() {
+    const player = game.getPlayer();
+    if (!player) return;
+    
+    const x = player.getPosX();
+    const y = player.getPosY();
+    const coordsText = document.getElementById("coords-text");
+    if (coordsText) {
+        coordsText.textContent = `[${x},${y}]`;
+    }
 }
 
 // Update fatigue/tired icon

@@ -72,20 +72,20 @@ function getSizeTexture(value) {
 }
 
 function getHazardTexture(value) {
-    if (value <= 4) return "assets/hud/punchcard/hazard/low.png";
+    if (value <= 2) return "assets/hud/punchcard/hazard/low.png";
     if (value <= 7) return "assets/hud/punchcard/hazard/medium.png";
     if (value <= 11) return "assets/hud/punchcard/hazard/high.png";
-    if (value <= 19) return "assets/hud/punchcard/hazard/xtrahigh.png";
-    if (value <= 29) return "assets/hud/punchcard/hazard/ultrahigh.png";
+    if (value <= 17) return "assets/hud/punchcard/hazard/xtrahigh.png";
+    if (value <= 20) return "assets/hud/punchcard/hazard/ultrahigh.png";
     return "assets/hud/punchcard/hazard/nsanlyhigh.png";
 }
 
 function getObstacleTexture(value) {
     if (value <= 2) return "assets/hud/punchcard/obstacles/low.png";
-    if (value <= 3) return "assets/hud/punchcard/obstacles/medium.png";
+    if (value <= 4) return "assets/hud/punchcard/obstacles/medium.png";
     if (value <= 9) return "assets/hud/punchcard/obstacles/high.png";
     if (value <= 14) return "assets/hud/punchcard/obstacles/xtrahigh.png";
-    if (value <= 29) return "assets/hud/punchcard/obstacles/ultrahigh.png";
+    if (value <= 19) return "assets/hud/punchcard/obstacles/ultrahigh.png";
     return "assets/hud/punchcard/obstacles/nsanlyhigh.png";
 }
 
@@ -112,9 +112,9 @@ function getLegacyBadge(level) {
     if (level <= 5) return "paper.png";
     if (level <= 10) return "cardboard.png";
     if (level <= 20) return "telegram.png";
-    if (level <= 40) return "bronze.png";
-    if (level <= 60) return "silver.png";
-    if (level <= 80) return "gold.png";
+    if (level <= 30) return "bronze.png";
+    if (level <= 40) return "silver.png";
+    if (level <= 50) return "gold.png";
     return "platinum.png";
 }
 

@@ -15,38 +15,38 @@ const audioManager = new AudioManager();
 // ==================== NORMAL RANKS (Letters F to S+) ====================
 
 const NORMAL_RANKS = [
-    { rank: "F-", min: 0, max: 450000, next: 450000 },
-    { rank: "F", min: 450001, max: 1050000, next: 1050000 },
-    { rank: "F+", min: 1050001, max: 1950000, next: 1950000 },
-    { rank: "E-", min: 1950001, max: 3000000, next: 3000000 },
-    { rank: "E", min: 3000001, max: 4500000, next: 4500000 },
-    { rank: "E+", min: 4500001, max: 6600000, next: 6600000 },
-    { rank: "D-", min: 6600001, max: 9600000, next: 9600000 },
-    { rank: "D", min: 9600001, max: 13500000, next: 13500000 },
-    { rank: "D+", min: 13500001, max: 18600000, next: 18600000 },
-    { rank: "C-", min: 18600001, max: 25200000, next: 25200000 },
-    { rank: "C", min: 25200001, max: 33600000, next: 33600000 },
-    { rank: "C+", min: 33600001, max: 43800000, next: 43800000 },
-    { rank: "B-", min: 43800001, max: 56100000, next: 56100000 },
-    { rank: "B", min: 56100001, max: 70800000, next: 70800000 },
-    { rank: "B+", min: 70800001, max: 88200000, next: 88200000 },
-    { rank: "A-", min: 88200001, max: 108600000, next: 108600000 },
-    { rank: "A", min: 108600001, max: 132300000, next: 132300000 },
-    { rank: "A+", min: 132300001, max: 159600000, next: 159600000 },
-    { rank: "S-", min: 159600001, max: 191100000, next: 191100000 },
-    { rank: "S", min: 191100001, max: 227100000, next: 227100000 },
-    { rank: "S+", min: 227100001, max: Infinity, next: 227100001 }
+    { rank: "F-", min: 0, max: 200000, next: 200000 },
+    { rank: "F", min: 200001, max: 500000, next: 500000 },
+    { rank: "F+", min: 500001, max: 900000, next: 900000 },
+    { rank: "E-", min: 900001, max: 1400000, next: 1400000 },
+    { rank: "E", min: 1400001, max: 2000000, next: 2000000 },
+    { rank: "E+", min: 2000001, max: 2700000, next: 2700000 },
+    { rank: "D-", min: 2700001, max: 3500000, next: 3500000 },
+    { rank: "D", min: 3500001, max: 4600000, next: 4600000 },
+    { rank: "D+", min: 4600001, max: 6000000, next: 6000000 },
+    { rank: "C-", min: 6000001, max: 7700000, next: 7700000 },
+    { rank: "C", min: 7700001, max: 9700000, next: 9700000 },
+    { rank: "C+", min: 9700001, max: 12000000, next: 12000000 },
+    { rank: "B-", min: 12000001, max: 14600000, next: 14600000 },
+    { rank: "B", min: 14600001, max: 17500000, next: 17500000 },
+    { rank: "B+", min: 17500001, max: 20700000, next: 20700000 },
+    { rank: "A-", min: 20700001, max: 24200000, next: 24200000 },
+    { rank: "A", min: 24200001, max: 28000000, next: 28000000 },
+    { rank: "A+", min: 28000001, max: 32100000, next: 32100000 },
+    { rank: "S-", min: 32100001, max: 36500000, next: 36500000 },
+    { rank: "S", min: 36500001, max: 50000000, next: 50000000 },
+    { rank: "S+", min: 50000001, max: Infinity, next: 50000001 }
 ];
 
 // ==================== HARDCORE RANKS (Greek letters) ====================
 
 const HARDCORE_RANKS = [
-    { rank: "ζ", min: 0, max: 2000000, next: 2000000 },      // Zeta
-    { rank: "ε", min: 2000001, max: 7000000, next: 7000000 },        // Epsilon
-    { rank: "δ", min: 7000001, max: 20000000, next: 20000000 },      // Delta
-    { rank: "γ", min: 20000001, max: 50000000, next: 50000000 },     // Gamma
-    { rank: "β", min: 50000001, max: 100000000, next: 100000000 },   // Beta
-    { rank: "Ω", min: 100000001, max: Infinity, next: 100000001 }    // Omega
+    { rank: "ζ", min: 0, max: 500000, next: 500000 },      // Zeta
+    { rank: "ε", min: 500001, max: 1000000, next: 1000000 },        // Epsilon
+    { rank: "δ", min: 1000001, max: 2000000, next: 2000000 },      // Delta
+    { rank: "γ", min: 2000001, max: 3500000, next: 3500000 },     // Gamma
+    { rank: "β", min: 3500001, max: 5000000, next: 5000000 },   // Beta
+    { rank: "Ω", min: 5000001, max: Infinity, next: 5000001 }    // Omega
 ];
 
 // ==================== PUBLIC METHODS ====================

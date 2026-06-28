@@ -291,7 +291,7 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
-                if (tile.isMarked() && tile.getHazardtype() === "nest") {
+                if (tile.isMarked() && tile.getHazardtype() === "nest" && !tile.isSmoke()) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "nest_marked",
