@@ -125,7 +125,7 @@
             "dialog1": "Great. Now that you know how to walk, you should learn how to use your flags wisely. Below your icon, you'll find a counter showing how many you have available.",
             "dialog2": "The wasteland out there is full of Hazards, and you'll want to avoid them. To identify them, you'll use the Hazard Count numbers, which indicate whether there are any Hazards in adjacent Tiles.",
             "dialog3": "Use the arrow controls to place flags. They only work on hidden Tiles, the ones you can't see yet.",
-            "dialog4": "Got it? Go mark that damn Hazard, then head for the goal.",
+            "dialog4": "Got it? Go mark that Hazard, then head for the goal.",
             "damageMessage": "Come on, it's not that hard, idiot. Running over to hug a cactus isn't exactly a good solution. Try again.",
             "wrongFlagMessage": "Do you have some kind of problem? Try again.",
             "goalWithoutMarkingMessage": "You haven't marked anything yet. Go place the flag...",
@@ -137,15 +137,15 @@
             "dialog3": "You'll need to sharpen your deductive skills if you want to mark them or avoid them.",
             "dialog4": "Use all your flags and mark every one of them.",
             "damageMessage": "Read the damn numbers. Out in the wasteland, you'd be scattered across a hundred pieces by now.",
-            "wrongFlagMessage": "Do you think flags grow on trees? Quit wasting them, damn it.",
-            "goalWithoutMarkingMessage": "You haven't marked all the hazards yet. Keep searching.",
+            "wrongFlagMessage": "Do you think flags grow on trees? Quit wasting them.",
+            "goalWithoutMarkingMessage": "You haven't marked all the hazards yet. keep searching.",
             "successMessage": "All hazards marked! Well done. Now head for the goal."
         },
         "phase4": {
             "dialog1": "Now that I can trust you to understand the numbers, you need to know that the terrain out there isn't flat. You'll face valleys, hills, and terrain challenging enough to make you regret getting out of bed.",
             "dialog2": "I've put this course together with different elevations so you can get used to how they look. Don't try to drop more than two levels at once, or you'll break your damn legs.",
             "dialog3": "Mark the Hazards I've left up there, then make your way to the goal.",
-            "dialog4": "Mark the Hazards I've left up there, then make your way to the goal.",
+            "dialog4": "By the way, I forgot to mention... there's an entity that keeps moving the hazards around. You'll always have to plan new routes.",
             "damageMessage": "I'm not sure whether I should be worried about your mental state at this point.",
             "wrongFlagMessage": "Keep practicing. You're going to need it...",
             "goalWithoutMarkingMessage": "You still haven't marked them all. Keep looking.",
@@ -169,7 +169,7 @@
     "criticker": {
         "infection": {
             "step1": "Good day, esteemed sir. I regret to inform you that you have just devastated a property of considerable sentimental value to me. However, I am a reasonable individual and am willing to proceed through diplomatic channels.",
-            "step2": "Allow me to accompany you during your environmental sanitation labors. The presence of these deplorable 'Hazards' constitutes an aesthetic affront that disturbs my usual contemplative walks.",
+            "step2": "Allow me to accompany you during your environmental sanitation labors. The presence of these deplorable Hazards constitutes an aesthetic affront that disturbs my usual contemplative walks.",
             "step3": "With your permission, I shall temporarily adhere to your anatomy. I assure you this action has strictly professional purposes. You must mark {goal} hazards correctly to satisfy me."
         },
         "success": {

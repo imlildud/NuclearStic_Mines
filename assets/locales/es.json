@@ -125,8 +125,8 @@
             "dialog1": "Genial. Ahora que sabes caminar, debes aprender a usar tus banderas sabiamente. Debajo de tu icono, encontrarás un contador que muestra cuántas tienes disponibles.",
             "dialog2": "El yermo está lleno de Peligros, y querrás evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
             "dialog3": "Usa los botones de flechas para colocar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes ver.",
-            "dialog4": "¿Entendido? Ve a marcar ese maldito Peligro, luego dirígete a la meta.",
-            "damageMessage": "Vamos, no es tan difícil, idiota. Correr a abrazar un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
+            "dialog4": "¿Entendido? Ve a marcar ese Peligro, luego dirígete a la meta.",
+            "damageMessage": "Vamos, no es tan difícil. Correr a abrazar un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
             "wrongFlagMessage": "¿Tienes algún problema? Inténtalo de nuevo.",
             "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a colocar la bandera...",
             "successMessage": "Bien hecho. Ahora dirígete a la meta."
@@ -137,7 +137,7 @@
             "dialog3": "Necesitarás agudizar tus habilidades deductivas si quieres marcarlos o evitarlos.",
             "dialog4": "Usa todas tus banderas y márcalos todos.",
             "damageMessage": "Lee los malditos números. Allá afuera en el yermo, ya estarías esparcido en cien pedazos.",
-            "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de desperdiciarlas, carajo.",
+            "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de desperdiciarlas.",
             "goalWithoutMarkingMessage": "Aún no has marcado todos los peligros. Sigue buscando.",
             "successMessage": "¡Todos los peligros fueron marcados! Bien hecho. Ahora dirígete a la meta."
         },
@@ -145,7 +145,7 @@
             "dialog1": "Ahora que puedo confiar en que entiendes los números, debes saber que el terreno allá afuera no es plano. Enfrentarás valles, colinas y terrenos suficientemente desafiantes como para hacerte arrepentir de haberte levantado de la cama.",
             "dialog2": "He preparado este curso con diferentes elevaciones para que te acostumbres a cómo se ven. No intentes caer más de dos niveles de una vez, o te romperás las malditas piernas.",
             "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta.",
-            "dialog4": "Marca los Peligros que dejé allá arriba, luego llega a la meta.",
+            "dialog4": "Por cierto, se me olvidó mencionarlo... hay una entidad que constantemente reorganiza los peligros. Siempre tendrás que planear rutas nuevas.",
             "damageMessage": "No estoy seguro de si debería preocuparme por tu estado mental en este punto.",
             "wrongFlagMessage": "Sigue practicando. Lo vas a necesitar...",
             "goalWithoutMarkingMessage": "Aún no los has marcado todos. Sigue buscando.",
@@ -169,8 +169,8 @@
     "criticker": {
         "infection": {
             "step1": "Buenos días, estimado caballero. Lamento informarle que usted acaba de devastar una propiedad privada de considerable valor sentimental para mi persona. No obstante, soy un individuo razonable y estoy dispuesto a proceder mediante vías diplomáticas.",
-            "step2": "Permítame acompañarle durante sus labores de saneamiento ambiental. La presencia de estos deplorables 'Hazards' constituye una afrenta estética que perturba mis habituales paseos contemplativos.",
-            "step3": "Con su permiso, procederé a adherirme temporalmente a su anatomía. Le aseguro que esta acción posee fines estrictamente profesionales. Deberá marcar {goal} hazards correctamente para satisfacerme."
+            "step2": "Permítame acompañarle durante sus labores de saneamiento ambiental. La presencia de estos deplorables Peligros constituye una afrenta estética que perturba mis habituales paseos contemplativos.",
+            "step3": "Con su permiso, procederé a adherirme temporalmente a su anatomía. Le aseguro que esta acción posee fines estrictamente profesionales. Deberá marcar {goal} peligros correctamente para satisfacerme."
         },
         "success": {
             "main": "Fascinante. Su desempeño ha excedido mis expectativas estadísticas. Resulta reconfortante comprobar que la incompetencia humana no es una constante universal.",
