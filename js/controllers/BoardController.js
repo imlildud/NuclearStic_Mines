@@ -261,7 +261,8 @@ export class BoardController extends BaseBoardController {
             const obstacleTypes = [
                 { type: "natural", weight: 0.45, minLevel: 3 },
                 { type: "river", weight: 0.35, minLevel: 5 },
-                { type: "pit", weight: 0.15, minLevel: 10 }
+                { type: "spikes", weight: 0.25, minLevel: 10},
+                { type: "pit", weight: 0.15, minLevel: 15 }
             ];
             
             const validObstacles = obstacleTypes.filter(ot => level >= ot.minLevel);
