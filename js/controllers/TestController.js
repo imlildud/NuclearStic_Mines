@@ -82,16 +82,28 @@ export class TestController extends BaseBoardController {
         board[3][11].setTileheight(3);
         board[4][11].setTileheight(4);
 
-        // Test row 6 (Flags)
-        board[0][13].setFlagged(true);
-        board[1][13].setMarked(true);
-        board[2][13].setJumpflagged(true);
-        board[3][13].setFlaggoal(true);
+        // Test row 6 (Spikes)
+        board[0][13].setObstacletype("spikes");
+        board[1][13].setObstacletype("spikes");
+        board[2][13].setObstacletype("spikes");
+        board[3][13].setObstacletype("spikes");
+        board[4][13].setObstacletype("spikes");
 
-        // Test row 7 (Goals)
-        board[1][16].setGoaltype("charlie");
-        board[3][16].setGoaltype("joni");
-        board[2][17].setGoaltype("ru");
+        board[1][13].setTileheight(1);
+        board[2][13].setTileheight(2);
+        board[3][13].setTileheight(3);
+        board[4][13].setTileheight(4);
+
+        // Test row 7 (Flags)
+        board[0][15].setFlagged(true);
+        board[1][15].setMarked(true);
+        board[2][15].setJumpflagged(true);
+        board[3][15].setFlaggoal(true);
+
+        // Test row 8 (Goals)
+        board[1][17].setGoaltype("charlie");
+        board[3][17].setGoaltype("joni");
+        board[2][18].setGoaltype("ru");
 
         // Test row 8 (Hazards)
         board[6][3].setHazardtype("mine");
@@ -213,19 +225,19 @@ export class TestController extends BaseBoardController {
     // ======================= HELPER METHODS =======================
 
     updateVision(board, character) {
-        //this.revealAllTiles(board);
+        this.revealAllTiles(board);
     }
 
     updateVisionAroundPlayer(board, character) {
-        //this.revealAllTiles(board);
+        this.revealAllTiles(board);
     }
 
     revealAllTiles(board) {
-        //for (let i = 0; i < board.length; i++) {
-          //for (let j = 0; j < board.length; j++) {
-            //board[i][j].setHide(false);
-            //}
-        //}
+        for (let i = 0; i < board.length; i++) {
+          for (let j = 0; j < board.length; j++) {
+            board[i][j].setHide(false);
+            }
+        }
     }
     
     loadDifficulty() { return 24; }
