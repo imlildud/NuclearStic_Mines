@@ -27,7 +27,8 @@ Navigate through hazardous zones, flag hidden dangers, rescue lost children, and
 | Action | Control |
 |--------|---------|
 | **Move** | `WASD` or Touch pad |
-| **Place / Remove Flag** | `Arrow Keys` (Direction) or Touch pad |
+| **Enteract** | `Arrow Keys` (Direction) or Touch pad |
+| **Change enteract mode** | `F` or Swamp button|
 | **Pause Game** | `ESC` |
 | **Rescue Mission** | Step on a pal, then safely return to the starting house |
 
