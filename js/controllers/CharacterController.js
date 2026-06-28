@@ -265,7 +265,7 @@ export class CharacterController {
 
         // ===== CRITICKER NEST HANDLING =====
         if (hazardType === "nest") {
-            if (!this.character.isCriticized()) {
+            if (!this.character.isCriticized() && this.character.getAbilityId() != 4) {
                 this.character.setCriticized(true);
                 
                 const goal = Math.floor(Math.random() * 5) + 1;
