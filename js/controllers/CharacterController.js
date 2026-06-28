@@ -108,7 +108,24 @@ export class CharacterController {
         // ===== OBSTACLE HANDLING =====
         const obst = targetTile.getObstacletype();
         const pipe = targetTile.getHazardtype() === "pipe";
-    
+
+        // ===== SPIKE CHECK =====
+        if (obst === "spikes") {
+            if (this.gameManager && this.gameManager.spikeController) {
+                const spikeState = this.gameManager.spikeController.getStateAt(newX, newY);
+                if (spikeState === "on") {
+                    this.character.setPosX(newX);
+                    this.character.setPosY(newY);
+                    this.hurtCharacter();
+                    return;
+                }
+            }
+            // OFF o PREPARED → movimiento normal
+            this.character.setPosX(newX);
+            this.character.setPosY(newY);
+            return;
+        }
+
         switch (obst) {
             case "natural":
                 if (this.character.getAbilityId() === 4) {
@@ -137,10 +154,8 @@ export class CharacterController {
                 }
             return;
             case "safepit":
-                // Safe pit for tutorial - shows message but doesn't kill
                 this.character.setPosX(newX);
                 this.character.setPosY(newY);
-
                 if (this.boardController && this.boardController.gameManager) {
                     this.boardController.gameManager.onTutorialPitFall();
                 }
