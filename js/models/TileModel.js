@@ -30,6 +30,7 @@ export class TileModel {
         
         // ========== OBSTACLE ==========
         this.obstacletype = "none";     // Define the type of obstacle on the tile
+        this.spikeState = "off";        // Define states of spike obstacle
         
         // ========== HAZARD PROPERTIES ==========
         this.hazardcount = 0;           // Number of hazards adjacent to the tile
@@ -94,6 +95,9 @@ export class TileModel {
     
     getObstacletype() { return this.obstacletype; }
     setObstacletype(v) { this.obstacletype = v; }
+
+    getSpikeState() { return this.spikeState; }
+    setSpikeState(v) { this.spikeState = v; }
     
     // ======================= HAZARD COUNT GETTERS & SETTERS =======================
     
