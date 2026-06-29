@@ -14,6 +14,8 @@ import { AudioManager } from "./AudioManager.js";
 import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
 import { TurnManager } from "./TurnManager.js";
+import { BundleManager } from "./BundleManager.js";
+import { BundleUIManager } from "./BundleUIManager.js";   
 import { DifficultyScaler } from "./DifficultyScaler.js";
 import { PathResolver } from "../utils/PathResolver.js";
 
@@ -42,6 +44,8 @@ export class GameManager {
         this.spikeController = null;
         
         // Managers
+        this.bundleManager = null;
+        this.bundleUIManager = null; 
         this.audio = new AudioManager();
         this.save = new SaveManager();
         this.turnManager = new TurnManager();
@@ -82,6 +86,11 @@ export class GameManager {
         this.scoreboard = new ScoreboardManager(this);
         
         this.configLevel();
+
+        this.bundleManager = new BundleManager(this, this.localeManager);
+        this.bundleUIManager = new BundleUIManager(this, this.bundleManager, this.audio);
+        this.bundleUIManager.setLocaleManager(this.localeManager);
+        console.log("[GameManager] Bundle system initialized");
 
         // Spike obstacle reset count
         if (this.spikeController) {
@@ -206,6 +215,11 @@ export class GameManager {
         this.board = this.boardCtrl.generateHazards(this.board, hazardAmount, hazardIntensity, size);
         this.board = this.boardCtrl.trackHazardCount(this.board, size);
         
+        // Generate treasures only in legacy mode
+        if (this.config.mode === "legacy") {
+            this.board = this.boardCtrl.generateTreasures(this.board, size);
+        }
+        
         // Set character goals and starting position
         this.charCtrl.setCharacterGoals(goals);
         this.charCtrl.getStartCoords(this.board);
@@ -282,6 +296,21 @@ export class GameManager {
         // Regenerate hazards if needed
         if (this.player.isRegen() === true) {
             this.regenerateHazards();
+        }
+
+        // Check treasure tile =====
+        const px = this.player.getPosX();
+        const py = this.player.getPosY();
+        const currentTile = this.board[px][py];
+        
+        if (currentTile.haveTreasure && currentTile.haveTreasure()) {
+            // Mark as used so it doesn't trigger again
+            currentTile.setTreasure(false);
+            
+            // Show bundle popup
+            if (this.bundleUIManager) {
+                this.bundleUIManager.showBundlePopup(px, py);
+            }
         }
 
         // ===== TUTORIAL PHASE COMPLETION (flaggoal) =====
