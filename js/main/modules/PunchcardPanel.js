@@ -7,6 +7,7 @@
 import { SaveManager } from "../../managers/SaveManager.js";
 import { AudioManager } from "../../managers/AudioManager.js";
 import { PathResolver } from "../../utils/PathResolver.js";
+import { KeychainSelector } from "./KeychainSelector.js";
 
 // ==================== INSTANCES ====================
 
@@ -19,6 +20,7 @@ let punchcardMode = null;
 let dailyConfig = null;
 let currentConfig = null;
 let localeManager = null;
+let customKeychains = [];
 
 // ==================== PRIVATE HELPERS ====================
 
@@ -311,13 +313,16 @@ function updateDailyButtonVisibility() {
 
 function updateCustomElementsVisibility(isCustom) {
     const seedButtonContainer = document.getElementById("pc-seed-button-container");
+    const keychainButtonContainer = document.getElementById("pc-keychain-button-container")
     const diceContainer = document.getElementById("custom-dice-container");
     
     if (isCustom) {
         if (seedButtonContainer) seedButtonContainer.style.display = "block";
+        if (keychainButtonContainer) keychainButtonContainer.style.display = "block";
         if (diceContainer) diceContainer.style.display = "flex";
     } else {
         if (seedButtonContainer) seedButtonContainer.style.display = "none";
+        if (keychainButtonContainer) keychainButtonContainer.style.display = "none";
         if (diceContainer) diceContainer.style.display = "none";
     }
 }
@@ -363,6 +368,28 @@ function showSeedInputModal(currentSeed, onConfirm) {
         modal.style.display = "none";
         if (onConfirm) onConfirm(newSeed);
     });
+}
+
+// ==================== KEYCHAIN MANAGEMENT ====================
+
+function getCustomKeychains() {
+    return customKeychains;
+}
+
+function setCustomKeychains(keychains) {
+    customKeychains = keychains;
+    saveManager.setCustomKeychains(keychains);
+    console.log('[PunchcardPanel] Custom keychains set:', keychains);
+}
+
+function loadCustomKeychains() {
+    const saved = saveManager.getCustomKeychains();
+    if (saved && Array.isArray(saved)) {
+        customKeychains = saved;
+    } else {
+        customKeychains = [];
+    }
+    return customKeychains;
 }
 
 // ==================== MODE GENERATORS ====================
@@ -550,6 +577,7 @@ function generateCustomConfig() {
     updatePunchcardLabelsColor();
     
     updateCustomElementsVisibility(true);
+    loadCustomKeychains();
 
     updateCustomTextures();
 }
@@ -732,5 +760,17 @@ export const PunchcardPanel = {
             const event = new Event('change');
             zoneSelect.dispatchEvent(event);
         }
-    }
+    },
+
+    getCustomKeychains() {
+        return getCustomKeychains();
+    },
+    
+    setCustomKeychains(keychains) {
+        setCustomKeychains(keychains);
+    },
+    
+    loadCustomKeychains() {
+        return loadCustomKeychains();
+    },
 };
