@@ -82,6 +82,8 @@ export class PathResolver {
             gameWallpaper: 'assets/hud/game/wallpaper/',
             gameGameover: 'assets/hud/game/gameover/',
             gameRadio: 'assets/hud/game/radio/',
+            keychains: 'assets/hud/game/keychains/',
+            bundles: 'assets/hud/game/bundles/',
             
             // HUD - Configuration panel elements
             configHud: 'assets/hud/options/'
