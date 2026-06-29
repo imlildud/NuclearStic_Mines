@@ -189,6 +189,11 @@
     "bundle": {
         "clickToOpen": "Click to open",
         "inventoryFull": "Inventory is full! You can't carry more keychains.",
+        "nothingFound": "Nothing found...",
+        "trashFound": "You found fire! Click to discard a keychain",
+        "trashTitle": "Select a keychain to discard:",
+        "trashSelect": "Choose which keychain to throw away",
+        "close": "Close",
         "rareza": {
             "typical": "Typical",
             "abnormal": "Abnormal",

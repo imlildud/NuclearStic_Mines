@@ -189,6 +189,11 @@
     "bundle": {
         "clickToOpen": "Picale pa'abrir",
         "inventoryFull": "¡Ya no caben más llaveros, wey!",
+        "nothingFound": "No encontraste nada...",
+        "trashFound": "¡Encontraste lumbre! Picale pa'tirar un llavero",
+        "trashTitle": "Elige un llavero pa'eliminar:",
+        "trashSelect": "Elige cuál llavero quieres tirar",
+        "close": "Cerrar",
         "rareza": {
             "typical": "Típico",
             "abnormal": "Anormal",
