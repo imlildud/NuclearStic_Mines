@@ -66,7 +66,7 @@ Locate every required **Wanted Pal**, rescue them, and safely return them to the
 
 # Keychains
 
-<img width="200" height="240" alt="keychains" src="assets/hud/game/keychains/keychain_reversion" />
+<img width="200" height="240" alt="keychains" src="assets/hud/game/keychains/keychain_reversion.png" />
 
 During a run you may discover **Keychains**, collectible relics that grant passive abilities, utility effects, or dangerous curses.
 
