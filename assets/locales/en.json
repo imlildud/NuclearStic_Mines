@@ -184,5 +184,41 @@
             "main": "What improper conduct! Attempting to murder an impartial observer constitutes a serious breach of civilized protocol.",
             "farewell": "I have concluded that the preservation of my biological integrity has a higher priority than continuing this exchange. I wish you a moderately acceptable day."
         }
+    },
+    
+    "bundle": {
+        "clickToOpen": "Click to open",
+        "inventoryFull": "Inventory is full! You can't carry more keychains.",
+        "rareza": {
+            "typical": "Typical",
+            "abnormal": "Abnormal",
+            "extravagant": "Extravagant",
+            "unheard": "Unheard",
+            "cursed": "Cursed"
+        }
+    },
+    "keychain": {
+        "vision": { "name": "Vision", "description": "What remains when you stop looking." },
+        "horizon": { "name": "Horizon", "description": "See through the earth." },
+        "revelation": { "name": "Revelation", "description": "Hands that see without touching." },
+        "memory": { "name": "Memory", "description": "Leave your mark." },
+        "destiny": { "name": "Destiny", "description": "Always points to who to save." },
+        "ascent": { "name": "Ascent", "description": "Where others stumble, you climb." },
+        "protection": { "name": "Protection", "description": "A scar that protects." },
+        "descent": { "name": "Descent", "description": "Even the abyss has a way out." },
+        "fortune": { "name": "Fortune", "description": "The fool's luck." },
+        "resistance": { "name": "Resistance", "description": "Extra protection." },
+        "salvation": { "name": "Salvation", "description": "The abyss doesn't want you." },
+        "stealth": { "name": "Stealth", "description": "A velvet step." },
+        "purity": { "name": "Purity", "description": "Cleanse what others avoid." },
+        "greed": { "name": "Greed", "description": "Gold calls." },
+        "concentration": { "name": "Concentration", "description": "The prey reveals the terrain." },
+        "continuity": { "name": "Continuity", "description": "The world has no end." },
+        "reversion": { "name": "Reversion", "description": "Undo what was done." },
+        "stuffed": { "name": "Stuffed", "description": "Fragments of a forgotten power." },
+        "judgment": { "name": "Judgment", "description": "The verdict is eternal." },
+        "link": { "name": "Link", "description": "Bound by fate." },
+        "oblivion": { "name": "Oblivion", "description": "Order unravels." },
+        "delirium": { "name": "Delirium", "description": "Reality blurs." }
     }
 }
