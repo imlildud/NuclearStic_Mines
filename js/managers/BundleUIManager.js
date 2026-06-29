@@ -30,6 +30,11 @@ export class BundleUIManager {
     showBundlePopup(tileX, tileY) {
         if (this.isOpen) return;
         
+        // Verificar si el inventario está lleno ANTES de generar el bundle
+        const player = this.gameManager.getPlayer();
+        const maxSize = player.maxInventorySize || 5;
+        const isInventoryFull = player.inventory.length >= maxSize;
+        
         const tierKey = this.bundleManager.getTier();
         const tier = this.bundleManager.bundleTiers[tierKey];
         const keychains = this.bundleManager.getBundleKeychains(tierKey);
@@ -41,7 +46,13 @@ export class BundleUIManager {
         this.totalKeychains = keychains.length;
         
         this.gameManager.setGameInputLocked(true);
-        this.createPopup(tierKey, keychains);
+        
+        // Si el inventario está lleno, mostrar popup de inventario lleno directamente
+        if (isInventoryFull) {
+            this.showInventoryFullPopup();
+        } else {
+            this.createPopup(tierKey, keychains);
+        }
     }
     
     createPopup(tierKey, keychains) {
@@ -361,29 +372,44 @@ export class BundleUIManager {
         }, 400);
     }
     
-    showInventoryFullPopup(keychains) {
-        // Remove the current popup content
-        const popup = document.getElementById('bundle-popup');
-        if (!popup) return;
+    // ==============================================================
+    // ==================== INVENTORY FULL POPUP ====================
+    // ==============================================================
+    
+    showInventoryFullPopup() {
+        // Remove current popup
+        this.removePopup();
         
-        // Clear popup content
-        popup.innerHTML = '';
+        const overlay = document.createElement('div');
+        overlay.id = 'bundle-popup-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            z-index: 90000;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            animation: keychainFadeIn 0.2s ease-out;
+            cursor: pointer;
+        `;
         
-        // Create inventory full options
+        // Click outside to close (solo si no es trash)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                // Solo cerrar si no estamos en modo trash
+                if (!this.isTrashMode) {
+                    this.closePopup();
+                }
+            }
+        });
+        
         const roll = Math.random();
         const isTrash = roll < 0.20; // 20% chance for trash
         
-        const iconSrc = isTrash 
-            ? PathResolver.resolveAsset('keychains', 'trash.png')
-            : PathResolver.resolveAsset('keychains', 'keychain_none.png');
-        
-        const title = isTrash 
-            ? this.getText('bundle.trashFound')
-            : this.getText('bundle.nothingFound');
-        
-        const desc = isTrash 
-            ? this.getText('bundle.trashDesc')
-            : this.getText('bundle.nothingDesc');
+        this.isTrashMode = isTrash;
         
         const container = document.createElement('div');
         container.style.cssText = `
@@ -391,99 +417,86 @@ export class BundleUIManager {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2vmin;
             padding: 2vmin;
-            text-align: center;
+            animation: keychainPopupAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: default;
+            user-select: none;
         `;
         
+        // Icono (keychain_none o trash)
         const icon = document.createElement('img');
+        const iconSrc = isTrash 
+            ? PathResolver.resolveAsset('keychains', 'trash.png')
+            : PathResolver.resolveAsset('keychains', 'keychain_none.png');
         icon.src = iconSrc;
         icon.style.cssText = `
-            width: 20vmin;
-            height: 20vmin;
+            width: 25vmin;
+            height: 25vmin;
             image-rendering: pixelated;
+            cursor: pointer;
+            transition: transform 0.15s ease, filter 0.15s ease;
+            margin-bottom: 2vmin;
         `;
         
-        const titleEl = document.createElement('div');
-        titleEl.textContent = title;
-        titleEl.style.cssText = `
-            font-size: 3vmin;
-            color: white;
-            font-weight: bold;
-        `;
+        // Hover effect
+        icon.addEventListener('mouseenter', () => {
+            icon.style.transform = 'scale(1.08)';
+            icon.style.filter = 'brightness(1.2) drop-shadow(0 0 20px rgba(255,255,200,0.4))';
+            if (this.audioManager) this.audioManager.playHoverSFX();
+        });
+        icon.addEventListener('mouseleave', () => {
+            icon.style.transform = 'scale(1)';
+            icon.style.filter = 'none';
+        });
+        icon.addEventListener('mousedown', () => {
+            icon.style.transform = 'scale(0.92)';
+            icon.style.filter = 'brightness(0.75)';
+        });
+        icon.addEventListener('mouseup', () => {
+            icon.style.transform = 'scale(1.08)';
+            icon.style.filter = 'brightness(1.2) drop-shadow(0 0 20px rgba(255,255,200,0.4))';
+        });
         
-        const descEl = document.createElement('div');
-        descEl.textContent = desc;
-        descEl.style.cssText = `
-            font-size: 2vmin;
-            color: #aaa;
-            font-style: italic;
-            max-width: 40vmin;
-        `;
+        // Click handler
+        icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isTrash) {
+                // Modo trash: mostrar selección de keychain para eliminar
+                this.showTrashSelection();
+            } else {
+                // Modo none: cerrar popup
+                if (this.audioManager) this.audioManager.playClickSFX();
+                this.closePopup();
+            }
+        });
         
         container.appendChild(icon);
-        container.appendChild(titleEl);
-        container.appendChild(descEl);
         
-        if (isTrash) {
-            // Show trash option to remove a keychain
-            const trashBtn = document.createElement('button');
-            trashBtn.textContent = this.getText('bundle.trashButton');
-            trashBtn.style.cssText = `
-                background: #8B0000;
-                border: none;
-                border-radius: 12px;
-                padding: 1.5vmin 4vmin;
-                color: white;
-                font-family: 'Shampoos';
-                font-size: 2.5vmin;
-                cursor: pointer;
-                transition: transform 0.15s ease, filter 0.15s ease;
-            `;
-            trashBtn.addEventListener('mouseenter', () => {
-                trashBtn.style.transform = 'scale(1.05)';
-                trashBtn.style.filter = 'brightness(1.2)';
-            });
-            trashBtn.addEventListener('mouseleave', () => {
-                trashBtn.style.transform = 'scale(1)';
-                trashBtn.style.filter = 'none';
-            });
-            trashBtn.addEventListener('click', () => {
-                this.showTrashSelection();
-            });
-            container.appendChild(trashBtn);
-        } else {
-            // Nothing found - just close after click
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = this.getText('bundle.close');
-            closeBtn.style.cssText = `
-                background: #4a7c59;
-                border: none;
-                border-radius: 12px;
-                padding: 1.5vmin 4vmin;
-                color: white;
-                font-family: 'Shampoos';
-                font-size: 2.5vmin;
-                cursor: pointer;
-                transition: transform 0.15s ease, filter 0.15s ease;
-            `;
-            closeBtn.addEventListener('mouseenter', () => {
-                closeBtn.style.transform = 'scale(1.05)';
-                closeBtn.style.filter = 'brightness(1.2)';
-            });
-            closeBtn.addEventListener('mouseleave', () => {
-                closeBtn.style.transform = 'scale(1)';
-                closeBtn.style.filter = 'none';
-            });
-            closeBtn.addEventListener('click', () => {
-                this.closePopup();
-            });
-            container.appendChild(closeBtn);
-        }
+        // Texto descriptivo
+        const text = document.createElement('div');
+        text.textContent = isTrash 
+            ? this.getText('bundle.trashFound') || '¡Encontraste basura! Click para tirar un keychain'
+            : this.getText('bundle.nothingFound') || 'No encontraste nada...';
+        text.style.cssText = `
+            font-family: 'Shampoos';
+            font-size: 3vmin;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+            text-align: center;
+            max-width: 40vmin;
+        `;
+        container.appendChild(text);
         
-        popup.appendChild(container);
+        overlay.appendChild(container);
+        document.body.appendChild(overlay);
+        
+        this.addStyles();
     }
-
+    
+    // ==============================================================
+    // ==================== TRASH SELECTION =========================
+    // ==============================================================
+    
     showTrashSelection() {
         const player = this.gameManager.getPlayer();
         const inventory = player.inventory || [];
@@ -493,92 +506,107 @@ export class BundleUIManager {
             return;
         }
         
-        const popup = document.getElementById('bundle-popup');
-        if (!popup) return;
+        // Limpiar el popup actual
+        const overlay = document.getElementById('bundle-popup-overlay');
+        if (!overlay) return;
         
-        popup.innerHTML = '';
+        overlay.innerHTML = '';
+        overlay.style.cursor = 'default';
         
+        // Contenedor flotante sin recuadro
         const container = document.createElement('div');
         container.style.cssText = `
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2vmin;
             padding: 2vmin;
-            text-align: center;
+            animation: keychainPopupAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: default;
+            user-select: none;
         `;
         
+        // Título
         const title = document.createElement('div');
-        title.textContent = this.getText('bundle.trashTitle');
+        title.textContent = this.getText('bundle.trashTitle') || 'Elige un keychain para eliminar:';
         title.style.cssText = `
-            font-size: 3vmin;
+            font-family: 'Shampoos';
+            font-size: 3.5vmin;
             color: white;
-            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+            margin-bottom: 2vmin;
+            text-align: center;
         `;
         container.appendChild(title);
         
-        const desc = document.createElement('div');
-        desc.textContent = this.getText('bundle.trashSelect');
-        desc.style.cssText = `
-            font-size: 2vmin;
-            color: #aaa;
-            margin-bottom: 1vmin;
-        `;
-        container.appendChild(desc);
-        
-        const slotsContainer = document.createElement('div');
-        slotsContainer.style.cssText = `
+        // Grid de keychains
+        const grid = document.createElement('div');
+        grid.style.cssText = `
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 2vmin;
+            gap: 2.5vmin;
             max-width: 50vmin;
+            padding: 1vmin;
         `;
         
-        inventory.forEach((keychainId, index) => {
+        inventory.forEach((keychainId) => {
             const slot = document.createElement('div');
             slot.style.cssText = `
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 cursor: pointer;
-                padding: 1vmin;
-                border-radius: 12px;
-                border: 2px solid #666;
-                transition: transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
-                background: rgba(0,0,0,0.3);
+                padding: 1.5vmin;
+                border-radius: 1.5vmin;
+                transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+                background: rgba(255,255,255,0.05);
             `;
+            
             slot.addEventListener('mouseenter', () => {
-                slot.style.transform = 'scale(1.05)';
-                slot.style.borderColor = '#ff4444';
+                slot.style.transform = 'scale(1.08)';
+                slot.style.filter = 'brightness(1.2) drop-shadow(0 0 15px rgba(255,100,100,0.3))';
+                slot.style.background = 'rgba(255,50,50,0.15)';
+                if (this.audioManager) this.audioManager.playHoverSFX();
             });
             slot.addEventListener('mouseleave', () => {
                 slot.style.transform = 'scale(1)';
-                slot.style.borderColor = '#666';
+                slot.style.filter = 'none';
+                slot.style.background = 'rgba(255,255,255,0.05)';
+            });
+            slot.addEventListener('mousedown', () => {
+                slot.style.transform = 'scale(0.92)';
+                slot.style.filter = 'brightness(0.75)';
+            });
+            slot.addEventListener('mouseup', () => {
+                slot.style.transform = 'scale(1.08)';
+                slot.style.filter = 'brightness(1.2) drop-shadow(0 0 15px rgba(255,100,100,0.3))';
             });
             
             const img = document.createElement('img');
             img.src = PathResolver.resolveAsset('keychains', `keychain_${keychainId}.png`);
             img.style.cssText = `
-                width: 8vmin;
-                height: 8vmin;
+                width: 10vmin;
+                height: 10vmin;
                 image-rendering: pixelated;
             `;
             
             const name = document.createElement('span');
             name.textContent = this.getText(`keychain.${keychainId}.name`) || keychainId;
             name.style.cssText = `
-                font-size: 1.5vmin;
+                font-family: 'Shampoos';
+                font-size: 2vmin;
                 color: white;
                 margin-top: 0.5vmin;
+                text-shadow: 1px 1px 0 #000;
+                text-align: center;
             `;
             
             slot.appendChild(img);
             slot.appendChild(name);
             
             slot.addEventListener('click', () => {
-                // Remove the keychain
+                // Eliminar el keychain
                 const idx = player.inventory.indexOf(keychainId);
                 if (idx > -1) {
                     player.inventory.splice(idx, 1);
@@ -587,15 +615,21 @@ export class BundleUIManager {
                 this.closePopup();
             });
             
-            slotsContainer.appendChild(slot);
+            grid.appendChild(slot);
         });
         
-        container.appendChild(slotsContainer);
-        popup.appendChild(container);
+        container.appendChild(grid);
+        overlay.appendChild(container);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                // No cerrar al hacer click fuera, obligar a elegir
+            }
+        });
     }
     
     closePopup() {
         this.isOpen = false;
+        this.isTrashMode = false;
         this.removePopup();
         this.gameManager.setGameInputLocked(false);
     }
@@ -614,6 +648,16 @@ export class BundleUIManager {
             @keyframes keychainItemAppear {
                 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
                 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            }
+            
+            @keyframes keychainPopupAppear {
+                0% { transform: scale(0.6) rotate(-5deg); opacity: 0; }
+                100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            }
+            
+            @keyframes keychainFadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
             }
         `;
         document.head.appendChild(style);

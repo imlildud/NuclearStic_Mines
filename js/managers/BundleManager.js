@@ -84,6 +84,8 @@ export class BundleManager {
             { id: 'oblivion', rareza: 'cursed' },
             { id: 'delirium', rareza: 'cursed' }
         ];
+
+        this.dailyExcludedIds = ['fortune', 'greed'];
     }
     
     getTier() {
@@ -227,8 +229,81 @@ export class BundleManager {
         if (filtered.length === 0) return null;
         return filtered[Math.floor(Math.random() * filtered.length)];
     }
+
+    createSeededRandom(seed) {
+        return function() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+    }
+
+    getDailyKeychains(seed) {
+        // Create seeded random generator
+        const seededRandom = this.createSeededRandom(seed);
+
+        const validKeychains = this.keychainList.filter(k => 
+            !this.dailyExcludedIds.includes(k.id)
+        );
+        
+        // Determine how many keychains (1-5)
+        const count = Math.floor(seededRandom() * 5) + 1;
+        
+        const keychains = [];
+        const usedIds = new Set();
+        const rarezaKeys = ['typical', 'abnormal', 'extravagant', 'unheard', 'cursed'];
+        
+        const rarezaGroups = {};
+        for (const rareza of rarezaKeys) {
+            rarezaGroups[rareza] = validKeychains.filter(k => k.rareza === rareza);
+        }
+        
+        const dailyWeights = {
+            typical: 0.35,
+            abnormal: 0.32,   
+            extravagant: 0.20,
+            unheard: 0.10,
+            cursed: 0.03
+        };
+        
+        // Roll for each keychain
+        for (let i = 0; i < count; i++) {
+            // Roll rareza
+            const roll = seededRandom();
+            let cumulative = 0;
+            let selectedRareza = 'typical';
+            
+            for (const rareza of rarezaKeys) {
+                cumulative += dailyWeights[rareza];
+                if (roll <= cumulative) {
+                    selectedRareza = rareza;
+                    break;
+                }
+            }
+            
+            // Get available keychain of that rareza
+            const available = rarezaGroups[selectedRareza]?.filter(k => !usedIds.has(k.id)) || [];
+            
+            if (available.length > 0) {
+                const selected = available[Math.floor(seededRandom() * available.length)];
+                usedIds.add(selected.id);
+                keychains.push(selected);
+            }
+        }
+        
+        // Ensure at least one keychain
+        if (keychains.length === 0) {
+            const fallback = validKeychains.find(k => k.rareza === 'typical' && !usedIds.has(k.id));
+            if (fallback) keychains.push(fallback);
+        }
+        
+        return keychains;
+    }
     
     getAllKeychains() {
         return this.keychainList;
+    }
+
+    getDailyValidKeychains() {
+        return this.keychainList.filter(k => !this.dailyExcludedIds.includes(k.id));
     }
 }
