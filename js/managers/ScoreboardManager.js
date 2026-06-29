@@ -422,7 +422,7 @@ export class ScoreboardManager {
             maxMarked: maxMarkedPoints,
             markedDisplay: `${markedPoints}/${maxMarkedPoints}`,
             size: difficultyMultiplier,
-            sizeDisplay: `x${difficultyMultiplier.toFixed(1)}`,
+            sizeDisplay: `x${difficultyMultiplier + (modeMultiplier - 1.0)}`,
             deaths: "0",
             failed: `- ${Math.floor(failedPenalty)}`,
             hurt: hurtPenalty,
@@ -464,19 +464,19 @@ export class ScoreboardManager {
         // Base multiplier starts at 1.0
         let multiplier = 1.0;
         
-        // Hazard intensity bonus (max +0.05)
+        // Hazard intensity bonus
         if (hazards >= 30) multiplier += 0.05;
         else if (hazards >= 20) multiplier += 0.04;
         else if (hazards >= 12) multiplier += 0.04;
         else if (hazards >= 8) multiplier += 0.02;
         else if (hazards >= 5) multiplier += 0.01;
         
-        // Obstacle intensity bonus (max +0.03)
-        if (obstacles >= 30) multiplier += 0.03;
-        else if (obstacles >= 15) multiplier += 0.02;
-        else if (obstacles >= 10) multiplier += 0.015;
+        // Obstacle intensity bonus
+        if (obstacles >= 30) multiplier += 0.06;
+        else if (obstacles >= 15) multiplier += 0.04;
+        else if (obstacles >= 10) multiplier += 0.2;
         else if (obstacles >= 5) multiplier += 0.01;
-        else if (obstacles >= 3) multiplier += 0.005;
+        else if (obstacles >= 3) multiplier += 0.0;
         
         console.log(`[Difficulty] Final multiplier: ${multiplier}`);
         return multiplier;
