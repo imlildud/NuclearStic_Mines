@@ -48,14 +48,14 @@ export class CharacterFactory {
         if (isHardcore) {
             character.setHp(5);
             character.setFlags(0);
-            character.setInventorySize(4);
+            character.maxInventorySize = 3;
             character.setAbilityId(1);
             character.setVision(2);
             character.setForce(1);
         } else {
             character.setHp(5);
             character.setFlags(0);
-            character.setInventorySize(4);
+            character.maxInventorySize = 5;
             character.setAbilityId(1);
             character.setVision(2);
             character.setForce(3);
@@ -70,14 +70,14 @@ export class CharacterFactory {
         if (isHardcore) {
             character.setHp(3);
             character.setFlags(0);
-            character.setInventorySize(5);
+            character.maxInventorySize = 3;
             character.setAbilityId(2);
             character.setVision(5);
             character.setForce(1);
         } else {
             character.setHp(3);
             character.setFlags(0);
-            character.setInventorySize(5);
+            character.maxInventorySize = 5;
             character.setAbilityId(2);
             character.setVision(5);
             character.setForce(2);
@@ -93,7 +93,7 @@ export class CharacterFactory {
             character.setHp(1);
             character.setAp(1);
             character.setFlags(0);
-            character.setInventorySize(1);
+            character.maxInventorySize = 3;
             character.setAbilityId(3);
             character.setVision(1);
             character.setForce(1);
@@ -101,7 +101,7 @@ export class CharacterFactory {
             character.setHp(10);
             character.setAp(3);
             character.setFlags(0);
-            character.setInventorySize(1);
+            character.maxInventorySize = 5;
             character.setAbilityId(3);
             character.setVision(1);
             character.setForce(1);
@@ -116,8 +116,8 @@ export class CharacterFactory {
         if (isHardcore) {
             character.setHp(1);
             character.setAp(0);
-            character.setFlags(5);
-            character.setInventorySize(2);
+            character.setFlags(3);
+            character.maxInventorySize = 3;
             character.setAbilityId(4);
             character.setVision(2);
             character.setForce(1);
@@ -125,7 +125,7 @@ export class CharacterFactory {
             character.setHp(1);
             character.setAp(0);
             character.setFlags(3);
-            character.setInventorySize(2);
+            character.maxInventorySize = 5;
             character.setAbilityId(4);
             character.setVision(2);
             character.setForce(5);
