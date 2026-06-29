@@ -124,6 +124,7 @@ export class Renderer {
             "flaggoal",      // Goal
             "jumpflag",      // Jump flag (Scout ability)
             "marked",        // Marked hazard (Chef ability)
+            "treasure",      // X
             "toxic",         // Damage radius indicator
             "smoke",         // Smoke radius
             "spikes_off",     // Spike obstacle
@@ -305,6 +306,17 @@ export class Renderer {
                         );
                     }
                 }
+
+                // ===== LAYER 4.5: COVER MARKERS =====
+                if (tile.haveTreasure()) {
+                    this.safeDraw(
+                        "treasure",
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
+                    );
+                }
+                
                 
                 // ===== LAYER 5: DAMAGE RATIO (Toxic radius) =====
                 if (tile.getDamageratio()) {
