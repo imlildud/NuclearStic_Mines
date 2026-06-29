@@ -409,6 +409,20 @@ export class SaveManager {
     resetTutorial() {
         localStorage.removeItem("tutorialCompleted");
     }
+
+    // ======================= CUSTOM KEYCHAINS =======================
+
+    // Get saved custom keychains
+    getCustomKeychains() {
+        const data = localStorage.getItem("customKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set custom keychains
+    setCustomKeychains(keychains) {
+        localStorage.setItem("customKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Custom keychains saved:", keychains);
+    }
     
     // ======================= SETTINGS =======================
     
