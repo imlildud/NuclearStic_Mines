@@ -18,6 +18,7 @@ export class CharacterModel {
         this.ap = 0;                // Armor points
         this.flags = 0;             // Available flag count
         this.inventory = [];        // Array of inventory items
+        this.maxInventorySize = 5;
         this.force = 0;             // Force/power stat
         this.abilityId = 0;         // Active ability identifier
         this.vision = 0;            // Vision range (tiles visible)
@@ -84,20 +85,17 @@ export class CharacterModel {
     
     // ======================= INVENTORY GETTERS & SETTERS =======================
     
-    getInventorySize() { return this.inventory.length; }
-    
     setInventorySize(size) {
-        if (size < this.inventory.length) {
-            this.inventory = this.inventory.slice(0, size);  // Truncate if smaller
-        } else {
-            while (this.inventory.length < size) this.inventory.push(0);  // Pad with zeros
-        }
+        this.maxInventorySize = size;
     }
-    
-    getItem(slot) { return this.inventory[slot] ?? 0; }
-    setItem(slot, id) { if (slot >= 0 && slot < this.inventory.length) this.inventory[slot] = id; }
-    addItem(id) { this.inventory.push(id); }
-    removeItem(slot) { if (slot >= 0 && slot < this.inventory.length) this.inventory.splice(slot, 1); }
+
+    getInventorySize() {
+        return this.inventory.length;
+    }
+
+    getMaxInventorySize() {
+        return this.maxInventorySize || 5;
+    }
     
     // ======================= FORCE GETTERS & SETTERS =======================
     
