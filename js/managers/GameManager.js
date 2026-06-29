@@ -103,6 +103,11 @@ export class GameManager {
             this.giveDailyKeychains();
         }
 
+        // ===== CUSTOM MODE: Load saved keychains =====
+        if (this.config.mode === "custom") {
+            this.loadCustomKeychains();
+        }
+
         // Spike obstacle reset count
         if (this.spikeController) {
             this.spikeController.destroy();
@@ -495,6 +500,34 @@ export class GameManager {
         
         console.log(`[Daily] Gave ${currentInventory.length - player.inventory.length} keychains from seed ${seed}`);
         console.log(`[Daily] Keychains: ${player.inventory.join(', ')}`);
+    }
+
+    loadCustomKeychains() {
+        const savedKeychains = this.save.getCustomKeychains();
+        
+        if (!savedKeychains || savedKeychains.length === 0) {
+            console.log('[Custom] No saved keychains found, using default empty inventory');
+            return;
+        }
+        
+        const player = this.player;
+        const maxSize = player.maxInventorySize || 5;
+        const currentInventory = player.inventory || [];
+        
+        // Clear existing inventory (custom mode starts fresh)
+        player.inventory = [];
+        
+        // Add saved keychains up to max size
+        let addedCount = 0;
+        for (const keychainId of savedKeychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (keychainId && !player.inventory.includes(keychainId)) {
+                player.inventory.push(keychainId);
+                addedCount++;
+            }
+        }
+        
+        console.log(`[Custom] Loaded ${addedCount} saved keychains: ${player.inventory.join(', ')}`);
     }
 
     // ======================= DAILY MODE HANDLERS =======================
