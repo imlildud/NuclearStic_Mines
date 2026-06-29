@@ -332,16 +332,21 @@ export class BundleUIManager {
     
     takeKeychain(keychain, item) {
         const player = this.gameManager.getPlayer();
-        const inventory = player.getInventory ? player.getInventory() : [];
         
-        if (inventory.length >= 5) {
+        // Check inventory limit using maxInventorySize
+        const maxSize = player.maxInventorySize || 5;
+        if (player.inventory.length >= maxSize) {
             this.showInventoryFullPopup();
             return;
         }
         
-        if (player.addKeychain) {
-            player.addKeychain(keychain.id);
+        // Check if already have this keychain
+        if (player.inventory.includes(keychain.id)) {
+            return;
         }
+        
+        // Add to inventory
+        player.inventory.push(keychain.id);
         
         if (this.audioManager) this.audioManager.playRescueSFX();
         
@@ -356,11 +361,237 @@ export class BundleUIManager {
         }, 400);
     }
     
-    showInventoryFullPopup() {
-        const message = this.getText('bundle.inventoryFull');
-        if (this.gameManager) {
-            this.gameManager.showMessage(message);
+    showInventoryFullPopup(keychains) {
+        // Remove the current popup content
+        const popup = document.getElementById('bundle-popup');
+        if (!popup) return;
+        
+        // Clear popup content
+        popup.innerHTML = '';
+        
+        // Create inventory full options
+        const roll = Math.random();
+        const isTrash = roll < 0.20; // 20% chance for trash
+        
+        const iconSrc = isTrash 
+            ? PathResolver.resolveAsset('keychains', 'trash.png')
+            : PathResolver.resolveAsset('keychains', 'keychain_none.png');
+        
+        const title = isTrash 
+            ? this.getText('bundle.trashFound')
+            : this.getText('bundle.nothingFound');
+        
+        const desc = isTrash 
+            ? this.getText('bundle.trashDesc')
+            : this.getText('bundle.nothingDesc');
+        
+        const container = document.createElement('div');
+        container.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2vmin;
+            padding: 2vmin;
+            text-align: center;
+        `;
+        
+        const icon = document.createElement('img');
+        icon.src = iconSrc;
+        icon.style.cssText = `
+            width: 20vmin;
+            height: 20vmin;
+            image-rendering: pixelated;
+        `;
+        
+        const titleEl = document.createElement('div');
+        titleEl.textContent = title;
+        titleEl.style.cssText = `
+            font-size: 3vmin;
+            color: white;
+            font-weight: bold;
+        `;
+        
+        const descEl = document.createElement('div');
+        descEl.textContent = desc;
+        descEl.style.cssText = `
+            font-size: 2vmin;
+            color: #aaa;
+            font-style: italic;
+            max-width: 40vmin;
+        `;
+        
+        container.appendChild(icon);
+        container.appendChild(titleEl);
+        container.appendChild(descEl);
+        
+        if (isTrash) {
+            // Show trash option to remove a keychain
+            const trashBtn = document.createElement('button');
+            trashBtn.textContent = this.getText('bundle.trashButton');
+            trashBtn.style.cssText = `
+                background: #8B0000;
+                border: none;
+                border-radius: 12px;
+                padding: 1.5vmin 4vmin;
+                color: white;
+                font-family: 'Shampoos';
+                font-size: 2.5vmin;
+                cursor: pointer;
+                transition: transform 0.15s ease, filter 0.15s ease;
+            `;
+            trashBtn.addEventListener('mouseenter', () => {
+                trashBtn.style.transform = 'scale(1.05)';
+                trashBtn.style.filter = 'brightness(1.2)';
+            });
+            trashBtn.addEventListener('mouseleave', () => {
+                trashBtn.style.transform = 'scale(1)';
+                trashBtn.style.filter = 'none';
+            });
+            trashBtn.addEventListener('click', () => {
+                this.showTrashSelection();
+            });
+            container.appendChild(trashBtn);
+        } else {
+            // Nothing found - just close after click
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = this.getText('bundle.close');
+            closeBtn.style.cssText = `
+                background: #4a7c59;
+                border: none;
+                border-radius: 12px;
+                padding: 1.5vmin 4vmin;
+                color: white;
+                font-family: 'Shampoos';
+                font-size: 2.5vmin;
+                cursor: pointer;
+                transition: transform 0.15s ease, filter 0.15s ease;
+            `;
+            closeBtn.addEventListener('mouseenter', () => {
+                closeBtn.style.transform = 'scale(1.05)';
+                closeBtn.style.filter = 'brightness(1.2)';
+            });
+            closeBtn.addEventListener('mouseleave', () => {
+                closeBtn.style.transform = 'scale(1)';
+                closeBtn.style.filter = 'none';
+            });
+            closeBtn.addEventListener('click', () => {
+                this.closePopup();
+            });
+            container.appendChild(closeBtn);
         }
+        
+        popup.appendChild(container);
+    }
+
+    showTrashSelection() {
+        const player = this.gameManager.getPlayer();
+        const inventory = player.inventory || [];
+        
+        if (inventory.length === 0) {
+            this.closePopup();
+            return;
+        }
+        
+        const popup = document.getElementById('bundle-popup');
+        if (!popup) return;
+        
+        popup.innerHTML = '';
+        
+        const container = document.createElement('div');
+        container.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2vmin;
+            padding: 2vmin;
+            text-align: center;
+        `;
+        
+        const title = document.createElement('div');
+        title.textContent = this.getText('bundle.trashTitle');
+        title.style.cssText = `
+            font-size: 3vmin;
+            color: white;
+            font-weight: bold;
+        `;
+        container.appendChild(title);
+        
+        const desc = document.createElement('div');
+        desc.textContent = this.getText('bundle.trashSelect');
+        desc.style.cssText = `
+            font-size: 2vmin;
+            color: #aaa;
+            margin-bottom: 1vmin;
+        `;
+        container.appendChild(desc);
+        
+        const slotsContainer = document.createElement('div');
+        slotsContainer.style.cssText = `
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2vmin;
+            max-width: 50vmin;
+        `;
+        
+        inventory.forEach((keychainId, index) => {
+            const slot = document.createElement('div');
+            slot.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                cursor: pointer;
+                padding: 1vmin;
+                border-radius: 12px;
+                border: 2px solid #666;
+                transition: transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
+                background: rgba(0,0,0,0.3);
+            `;
+            slot.addEventListener('mouseenter', () => {
+                slot.style.transform = 'scale(1.05)';
+                slot.style.borderColor = '#ff4444';
+            });
+            slot.addEventListener('mouseleave', () => {
+                slot.style.transform = 'scale(1)';
+                slot.style.borderColor = '#666';
+            });
+            
+            const img = document.createElement('img');
+            img.src = PathResolver.resolveAsset('keychains', `keychain_${keychainId}.png`);
+            img.style.cssText = `
+                width: 8vmin;
+                height: 8vmin;
+                image-rendering: pixelated;
+            `;
+            
+            const name = document.createElement('span');
+            name.textContent = this.getText(`keychain.${keychainId}.name`) || keychainId;
+            name.style.cssText = `
+                font-size: 1.5vmin;
+                color: white;
+                margin-top: 0.5vmin;
+            `;
+            
+            slot.appendChild(img);
+            slot.appendChild(name);
+            
+            slot.addEventListener('click', () => {
+                // Remove the keychain
+                const idx = player.inventory.indexOf(keychainId);
+                if (idx > -1) {
+                    player.inventory.splice(idx, 1);
+                }
+                if (this.audioManager) this.audioManager.playClickSFX();
+                this.closePopup();
+            });
+            
+            slotsContainer.appendChild(slot);
+        });
+        
+        container.appendChild(slotsContainer);
+        popup.appendChild(container);
     }
     
     closePopup() {
