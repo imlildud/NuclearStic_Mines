@@ -189,6 +189,11 @@
     "bundle": {
         "clickToOpen": "Haz clic para abrir",
         "inventoryFull": "¡Inventario lleno! No puedes llevar más llaveros.",
+        "nothingFound": "No encontraste nada...",
+        "trashFound": "¡Encontraste fuego! Click para tirar un keychain",
+        "trashTitle": "Selecciona un keychain para eliminar:",
+        "trashSelect": "Elige qué keychain quieres tirar",
+        "close": "Cerrar",
         "rareza": {
             "typical": "Típico",
             "abnormal": "Anormal",
