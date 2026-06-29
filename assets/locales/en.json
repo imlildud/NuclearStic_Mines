@@ -52,7 +52,11 @@
             "custom": "Custom",
             "seed": "Seed: ",
             "enterSeed": "Enter seed number:",
-            "copied": "Copied!"
+            "copied": "Copied!",
+            "selectKeychains": "Select up to 5 keychains",
+            "keychainSelected": "Selected: {count}/5",
+            "keychainConfirm": "Confirm Keychains",
+            "keychainReset": "Reset Selection"
         }
     },
     
@@ -220,7 +224,7 @@
         "concentration": { "name": "Concentration", "description": "The prey reveals the terrain." },
         "continuity": { "name": "Continuity", "description": "The world has no end." },
         "reversion": { "name": "Reversion", "description": "Undo what was done." },
-        "stuffed": { "name": "Stuffed", "description": "Fragments of a forgotten power." },
+        "stuffed": { "name": "Stuffed", "description": "Big stuff capacity." },
         "judgment": { "name": "Judgment", "description": "The verdict is eternal." },
         "link": { "name": "Link", "description": "Bound by fate." },
         "oblivion": { "name": "Oblivion", "description": "Order unravels." },

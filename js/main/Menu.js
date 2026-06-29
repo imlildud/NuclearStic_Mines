@@ -9,6 +9,7 @@ import { LocaleManager } from "../managers/LocaleManager.js";
 import { RankManager } from "./modules/RankManager.js";
 import { WelcomePanel } from "./modules/WelcomePanel.js";
 import { PunchcardPanel } from "./modules/PunchcardPanel.js";
+import { KeychainSelector } from "./modules/KeychainSelector.js";
 import { PathResolver } from "../utils/PathResolver.js";
 
 // ==================== INSTANCES ====================
@@ -207,6 +208,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                 PunchcardPanel.showSeedInputModal(config.seed, (newSeed) => {
                     config.seed = newSeed;
                     PunchcardPanel.updateSeedDisplay(newSeed);
+                });
+            }
+        });
+    }
+
+    // Keychain button (custom mode only)
+    const keychainBtn = document.getElementById("pc-keychain-btn");
+    if (keychainBtn) {
+        KeychainSelector.setLocaleManager(localeManager);
+        
+        keychainBtn.addEventListener("click", () => {
+            const config = PunchcardPanel.getCurrentConfig();
+            if (config && config.mode === "custom") {
+                // Obtener keychains actuales
+                const currentKeychains = PunchcardPanel.getCustomKeychains();
+                
+                KeychainSelector.show(currentKeychains, (selected) => {
+                    PunchcardPanel.setCustomKeychains(selected);
+                    console.log("[Menu] Keychains selected:", selected);
                 });
             }
         });
