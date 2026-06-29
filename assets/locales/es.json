@@ -184,5 +184,41 @@
             "main": "¡Qué conducta tan impropia! Intentar asesinar a un observador imparcial constituye una grave falta al protocolo civilizado.",
             "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
         }
+    },
+    
+    "bundle": {
+        "clickToOpen": "Haz clic para abrir",
+        "inventoryFull": "¡Inventario lleno! No puedes llevar más llaveros.",
+        "rareza": {
+            "typical": "Típico",
+            "abnormal": "Anormal",
+            "extravagant": "Extravagante",
+            "unheard": "Inaudito",
+            "cursed": "Maldito"
+        }
+    },
+    "keychain": {
+        "vision": { "name": "Visión", "description": "Lo que se queda cuando ya no miras." },
+        "horizon": { "name": "Horizonte", "description": "Ver a través de la tierra." },
+        "revelation": { "name": "Revelación", "description": "Manos que ven sin tocar." },
+        "memory": { "name": "Memoria", "description": "Deja tu huella." },
+        "destiny": { "name": "Destino", "description": "Siempre apunta a quien salvar." },
+        "ascent": { "name": "Ascenso", "description": "Donde otros tropiezan, tú escalas." },
+        "protection": { "name": "Protección", "description": "Cicatriz que protege." },
+        "descent": { "name": "Descenso", "description": "Hasta el abismo tiene salida." },
+        "fortune": { "name": "Fortuna", "description": "La suerte del necio." },
+        "resistance": { "name": "Resistencia", "description": "Protección extra." },
+        "salvation": { "name": "Salvación", "description": "El abismo no te quiere." },
+        "stealth": { "name": "Sigilo", "description": "Pisada de felpa." },
+        "purity": { "name": "Pureza", "description": "Limpia lo que otros evitan." },
+        "greed": { "name": "Codicia", "description": "El oro llama." },
+        "concentration": { "name": "Concentración", "description": "La presa revela el terreno." },
+        "continuity": { "name": "Continuidad", "description": "El mundo no tiene fin." },
+        "reversion": { "name": "Reversión", "description": "Deshaz lo hecho." },
+        "stuffed": { "name": "Fragmentado", "description": "Fragmentos de un poder olvidado." },
+        "judgment": { "name": "Juicio", "description": "El veredicto es eterno." },
+        "link": { "name": "Vínculo", "description": "Unidos por el destino." },
+        "oblivion": { "name": "Olvido", "description": "El orden se deshace." },
+        "delirium": { "name": "Delirio", "description": "La realidad se desdibuja." }
     }
 }
