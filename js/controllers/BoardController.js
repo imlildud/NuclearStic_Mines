@@ -431,4 +431,67 @@ export class BoardController extends BaseBoardController {
         }
         return board;
     }
+
+    generateTreasures(board, size) {
+        let probability = 0;
+        let maxTreasures = 0;
+        
+        if (size <= 8) {
+            probability = 0.30;
+            maxTreasures = 1;
+        } else if (size <= 12) {
+            probability = 0.40;
+            maxTreasures = 1;
+        } else if (size <= 16) {
+            probability = 0.50;
+            maxTreasures = 1;
+        } else if (size <= 20) {
+            probability = 0.65;
+            maxTreasures = 2;
+        } else {
+            probability = 0.75;
+            maxTreasures = 2;
+        }
+        
+        const random = this.random();
+        if (random > probability) {
+            console.log(`[Treasure] No treasures generated (${Math.round(probability * 100)}% chance)`);
+            return board;
+        }
+        
+        let count = 1;
+        if (maxTreasures > 1 && this.random() < 0.5) {
+            count = 2;
+        }
+        
+        console.log(`[Treasure] Generating ${count} treasure(s) on ${size}x${size} board`);
+        
+        const availableTiles = [];
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                const tile = board[i][j];
+                if (!tile.isStart() && 
+                    tile.getGoaltype() === "none" &&
+                    tile.getHazardtype() === "none" &&
+                    tile.getObstacletype() === "none" &&
+                    !tile.haveTreasure()) {
+                    availableTiles.push({ x: i, y: j });
+                }
+            }
+        }
+        
+        const selected = [];
+        for (let i = 0; i < count && availableTiles.length > 0; i++) {
+            const index = Math.floor(this.random() * availableTiles.length);
+            const pos = availableTiles.splice(index, 1)[0];
+            selected.push(pos);
+        }
+        
+        for (const pos of selected) {
+            board[pos.x][pos.y].setTreasure(true);
+            console.log(`[Treasure] Placed at (${pos.x}, ${pos.y})`);
+        }
+
+        return board;
+    }
 }
