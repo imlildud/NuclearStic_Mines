@@ -127,10 +127,16 @@ export class BundleManager {
         const usedIds = new Set();
         let hasCursed = false;
         
+        // Get player's current inventory to avoid duplicates
+        const player = this.gameManager.getPlayer();
+        const ownedKeychains = player ? player.inventory || [] : [];
+        
         // Cursed bundle: all keychains are cursed
         if (tierKey === 'cursedbundle') {
             const cursedAvailable = this.keychainList.filter(k => 
-                k.rareza === 'cursed' && !usedIds.has(k.id)
+                k.rareza === 'cursed' && 
+                !usedIds.has(k.id) &&
+                !ownedKeychains.includes(k.id)  // ← Evitar duplicados
             );
             
             // Shuffle and take up to count
@@ -142,23 +148,26 @@ export class BundleManager {
                 keychains.push(k);
             }
             
-            // Fallback if no cursed available
             if (keychains.length === 0) {
-                const fallback = this.keychainList.find(k => k.rareza === 'typical');
+                const fallback = this.keychainList.find(k => 
+                    k.rareza === 'typical' && !ownedKeychains.includes(k.id)
+                );
                 if (fallback) keychains.push(fallback);
             }
             
             return keychains;
         }
         
-        // Saturated bundle: 3 random keychains (cursed can appear via 20%)
+        // Saturated bundle: 3 random keychains
         if (tierKey === 'saturatedbundle') {
             const randomCount = count;
             for (let i = 0; i < randomCount; i++) {
                 let type = this.rollKeychainType(tierKey);
                 
                 const available = this.keychainList.filter(k => 
-                    k.rareza === type && !usedIds.has(k.id)
+                    k.rareza === type && 
+                    !usedIds.has(k.id) &&
+                    !ownedKeychains.includes(k.id)  // ← Evitar duplicados
                 );
                 
                 if (available.length > 0) {
@@ -168,9 +177,10 @@ export class BundleManager {
                 }
             }
             
-            // Ensure at least one keychain
             if (keychains.length === 0) {
-                const fallback = this.keychainList.find(k => k.rareza === 'abnormal');
+                const fallback = this.keychainList.find(k => 
+                    k.rareza === 'abnormal' && !ownedKeychains.includes(k.id)
+                );
                 if (fallback) keychains.push(fallback);
             }
             
@@ -181,7 +191,6 @@ export class BundleManager {
         for (let i = 0; i < count; i++) {
             let type = this.rollKeychainType(tierKey);
             
-            // Only one cursed per bundle
             if (type === 'cursed') {
                 if (hasCursed) {
                     type = 'typical';
@@ -191,7 +200,9 @@ export class BundleManager {
             }
             
             const available = this.keychainList.filter(k => 
-                k.rareza === type && !usedIds.has(k.id)
+                k.rareza === type && 
+                !usedIds.has(k.id) &&
+                !ownedKeychains.includes(k.id)  // ← Evitar duplicados
             );
             
             if (available.length > 0) {
@@ -201,9 +212,10 @@ export class BundleManager {
             }
         }
         
-        // Ensure at least one keychain
         if (keychains.length === 0) {
-            const fallback = this.keychainList.find(k => k.rareza === 'typical');
+            const fallback = this.keychainList.find(k => 
+                k.rareza === 'typical' && !ownedKeychains.includes(k.id)
+            );
             if (fallback) keychains.push(fallback);
         }
         

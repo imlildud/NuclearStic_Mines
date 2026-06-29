@@ -15,7 +15,8 @@ import { SaveManager } from "./SaveManager.js";
 import { ScoreboardManager } from "./ScoreboardManager.js";
 import { TurnManager } from "./TurnManager.js";
 import { BundleManager } from "./BundleManager.js";
-import { BundleUIManager } from "./BundleUIManager.js";   
+import { BundleUIManager } from "./BundleUIManager.js";
+import { KeychainUIManager } from "./KeychainUIManager.js";
 import { DifficultyScaler } from "./DifficultyScaler.js";
 import { PathResolver } from "../utils/PathResolver.js";
 
@@ -45,7 +46,8 @@ export class GameManager {
         
         // Managers
         this.bundleManager = null;
-        this.bundleUIManager = null; 
+        this.bundleUIManager = null;
+        this.keychainUIManager = null; 
         this.audio = new AudioManager();
         this.save = new SaveManager();
         this.turnManager = new TurnManager();
@@ -91,6 +93,10 @@ export class GameManager {
         this.bundleUIManager = new BundleUIManager(this, this.bundleManager, this.audio);
         this.bundleUIManager.setLocaleManager(this.localeManager);
         console.log("[GameManager] Bundle system initialized");
+
+        this.keychainUIManager = new KeychainUIManager(this, this.audio);
+        this.keychainUIManager.setLocaleManager(this.localeManager);
+        console.log("[GameManager] KeychainUI system initialized");
 
         // Spike obstacle reset count
         if (this.spikeController) {
