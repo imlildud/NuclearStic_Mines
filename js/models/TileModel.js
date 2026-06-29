@@ -24,6 +24,7 @@ export class TileModel {
         this.flagged = false;           // Define if the tile has a flag marker
         this.jumpflagged = false;       // Define if the tile has a jump flag marker
         this.marked = false;            // Define if the tile is marked as a hazard
+        this.treasure = false;          // Define if the tile have a treasure
         
         // ========== TILE HEIGHT ==========
         this.height = 0;                // 0 = default height (terrain elevation)
@@ -85,6 +86,11 @@ export class TileModel {
     
     isMarked() { return this.marked; }
     setMarked(v) { this.marked = v; }
+
+    // ======================= TREASURE GETTERS & SETTERS =======================
+    
+    haveTreasure() { return this.treasure; }
+    setTreasure(v) { this.treasure = v; }
     
     // ======================= HEIGHT GETTERS & SETTERS =======================
     
