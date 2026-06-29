@@ -98,6 +98,11 @@ export class GameManager {
         this.keychainUIManager.setLocaleManager(this.localeManager);
         console.log("[GameManager] KeychainUI system initialized");
 
+        // ===== DAILY MODE: Give starting keychains =====
+        if (this.config.mode === "daily") {
+            this.giveDailyKeychains();
+        }
+
         // Spike obstacle reset count
         if (this.spikeController) {
             this.spikeController.destroy();
@@ -464,6 +469,32 @@ export class GameManager {
     // Check if Hardcore mode is enabled
     isHardcoreEnabled() {
         return this.save.isHardcoreEnabled();
+    }
+
+    giveDailyKeychains() {
+        if (!this.bundleManager) {
+            console.warn('[Daily] BundleManager not available');
+            return;
+        }
+        
+        // Use the daily seed from config
+        const seed = this.config.seed || Date.now();
+        const keychains = this.bundleManager.getDailyKeychains(seed);
+        
+        // Add to player inventory (respecting max size)
+        const player = this.player;
+        const maxSize = player.maxInventorySize || 5;
+        const currentInventory = player.inventory || [];
+        
+        for (const keychain of keychains) {
+            if (currentInventory.length >= maxSize) break;
+            if (!currentInventory.includes(keychain.id)) {
+                currentInventory.push(keychain.id);
+            }
+        }
+        
+        console.log(`[Daily] Gave ${currentInventory.length - player.inventory.length} keychains from seed ${seed}`);
+        console.log(`[Daily] Keychains: ${player.inventory.join(', ')}`);
     }
 
     // ======================= DAILY MODE HANDLERS =======================
