@@ -52,7 +52,11 @@
             "custom": "Al gusto",
             "seed": "Semilla: ",
             "enterSeed": "Pon el número de semilla:",
-            "copied": "¡Copeado!"
+            "copied": "¡Copeado!",
+            "selectKeychains": "Castigate con hasta 5 llaveros",
+            "keychainSelected": "Trais: {count}/5",
+            "keychainConfirm": "Confirmar Llaveros",
+            "keychainReset": "Empezar de nuevo"
         }
     },
 
@@ -220,7 +224,7 @@
         "concentration": { "name": "Concentración", "description": "La presa revela el terreno." },
         "continuity": { "name": "Continuidad", "description": "El mundo no tiene fin." },
         "reversion": { "name": "Reversión", "description": "Deshaz lo hecho." },
-        "stuffed": { "name": "Fragmentado", "description": "Fragmentos de un poder olvidado." },
+        "stuffed": { "name": "Burro de carga", "description": "Arta fuerza." },
         "judgment": { "name": "Juicio", "description": "El veredicto es eterno." },
         "link": { "name": "Vínculo", "description": "Unidos por el destino." },
         "oblivion": { "name": "Olvido", "description": "El orden se deshace." },
