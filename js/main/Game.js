@@ -225,6 +225,7 @@ function updateHUD() {
     updateGeologicalAlert();
     updateFatigue();
     updateCoordinates();
+    updateSupport()
 }
 
 // Update coordinates display
@@ -428,6 +429,63 @@ function getMaxHpByCharacter(characterType) {
         case "scout": return 1;
         case "student": return 2;
         default: return 5;
+    }
+}
+
+// ==============================================================
+// ================ SUPPORT (Keychain) ==========================
+// ==============================================================
+
+function updateSupport() {
+    const player = game.getPlayer();
+    if (!player) return;
+    
+    const slotsContainer = document.getElementById('hud-keychain-slots');
+    if (!slotsContainer) return;
+    
+    const inventory = player.inventory || [];
+    const maxSize = player.maxInventorySize || 5;
+    
+    // Only show up to maxSize
+    const visibleItems = inventory.slice(0, maxSize);
+    
+    // Skip if no change
+    const currentIds = visibleItems.join(',');
+    const renderedIds = Array.from(slotsContainer.children)
+        .map(child => child.dataset.keychainId)
+        .filter(id => id)
+        .join(',');
+    
+    if (currentIds === renderedIds) return;
+    
+    slotsContainer.innerHTML = '';
+    
+    // Obtener el keychainUIManager del game
+    const keychainUI = game.keychainUIManager;
+    
+    for (const keychainId of visibleItems) {
+        if (!keychainId) continue;
+        
+        const slot = document.createElement('div');
+        slot.className = 'keychain-slot';
+        slot.dataset.keychainId = keychainId;
+        
+        const img = document.createElement('img');
+        img.src = PathResolver.resolveAsset('keychains', `keychain_${keychainId}.png`);
+        img.alt = keychainId;
+        img.draggable = false;
+        
+        slot.appendChild(img);
+        
+        // SOLO el click - nada de mouseenter/mouseleave/mousedown/mouseup
+        slot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (keychainUI) {
+                keychainUI.showKeychainInfo(keychainId);
+            }
+        });
+        
+        slotsContainer.appendChild(slot);
     }
 }
 
