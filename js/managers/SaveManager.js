@@ -410,6 +410,26 @@ export class SaveManager {
         localStorage.removeItem("tutorialCompleted");
     }
 
+    // ======================= LEGACY KEYCHAINS =======================
+
+    // Get saved legacy keychains
+    getLegacyKeychains() {
+        const data = localStorage.getItem("legacyKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set legacy keychains
+    setLegacyKeychains(keychains) {
+        localStorage.setItem("legacyKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Legacy keychains saved:", keychains);
+    }
+
+    // Clear legacy keychains (when dying)
+    clearLegacyKeychains() {
+        localStorage.removeItem("legacyKeychains");
+        console.log("[SaveManager] Legacy keychains cleared");
+    }
+
     // ======================= CUSTOM KEYCHAINS =======================
 
     // Get saved custom keychains

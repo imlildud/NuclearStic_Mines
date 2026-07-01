@@ -4,6 +4,7 @@
 // Handles bundle popup display, keychain selection, and animations.
 
 import { PathResolver } from "../utils/PathResolver.js";
+import { KeychainConfig } from "../utils/KeychainConfig.js";
 
 export class BundleUIManager {
     
@@ -356,10 +357,8 @@ export class BundleUIManager {
         
         player.inventory.push(keychain.id);
         
-        // Initialize uses for limited-use keychains
-        if (keychain.id === 'descent') {
-            player.initKeychainUses('descent', 5);
-        }
+        // Initialize uses if this keychain has them (single line)
+        KeychainConfig.initKeychainUsesForPlayer(player);
         
         if (this.audioManager) this.audioManager.playRescueSFX();
         
