@@ -176,6 +176,9 @@ export class Renderer {
         const player = this.game.getPlayer();
         if (!board || !player) return;
 
+        const currentPlayer = player;
+        this.player = currentPlayer;
+
         const ctx = this.ctx;
         const TILE_SIZE = this.TILE_SIZE;
         

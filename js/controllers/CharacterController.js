@@ -163,8 +163,19 @@ export class CharacterController {
                 this.character.setPosX(newX);
                 this.character.setPosY(newY);
                 if (this.character.getAbilityId() !== 4) {
-                    this.character.setHp(0);
-                    this.killCharacter();
+                    // Check for Salvation keychain
+                    if (this.character.hasKeychain('salvation') && this.character.isKeychainActive('salvation')) {
+                        this.character.useKeychain('salvation');
+                        
+                        if (this.gameManager && this.gameManager.audio) {
+                            this.gameManager.audio.playRescueSFX();
+                        }
+                        
+                        const remaining = this.character.getKeychainUses('salvation');
+                    } else {
+                        this.character.setHp(0);
+                        this.killCharacter();
+                    }
                 }
             return;
             case "safepit":
@@ -326,14 +337,17 @@ export class CharacterController {
         
         // Rescue children if conditions are met
         if (goalType !== "none") {
-            // Player needs enough force to rescue
             if (this.character.getForce() > this.character.getRescued()) {
                 this.character.incrementRescue();
-                tile.setGoaltype("none");    // Remove goal
-                tile.setGoallive(false);     // Mark as rescued
-                this.character.setRegen(true); // Trigger regeneration
-
-                // Play rescue sound
+                tile.setGoaltype("none");
+                tile.setGoallive(false);
+                this.character.setRegen(true);
+                
+                // Reset destiny target when a goal is rescued
+                if (this.gameManager) {
+                    this.gameManager.resetDestinyTarget();
+                }
+                
                 if (this.gameManager && this.gameManager.audio) {
                     this.gameManager.audio.playRescueSFX();
                 }

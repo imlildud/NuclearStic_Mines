@@ -282,9 +282,12 @@ canvas {
 .hud-coordinates-container {
     position: fixed;
     top: clamp(30px, 30vmin, 155px);
-    right: clamp(15px, 15vmin, 30px);
+    right: clamp(5px, 3vmin, 5px);
+    display: flex;
+    align-items: center;
+    gap: 0.8vmin;
     height: 5vmin;
-    width: 15vmin;
+    padding: 0 1.2vmin;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 1vmin;
     font-family: monospace;
@@ -292,15 +295,34 @@ canvas {
     color: white;
     text-shadow: 1px 1px 0 #000;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .coords-text {
-    position: relative;
-    top: 0%;
-    left: 20%;
     font-family: 'Shampoos', sans-serif;
     font-size: clamp(14px, 4vmin, 30px);
     font-weight: bold;
+}
+
+.coords-indicator-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.2vmin;
+}
+
+.coords-indicator-text {
+    font-family: 'Shampoos', sans-serif;
+    font-size: clamp(12px, 3.5vmin, 26px);
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+.coords-indicator-icon {
+    width: clamp(14px, 4vmin, 28px);
+    height: clamp(14px, 4vmin, 28px);
+    object-fit: contain;
+    image-rendering: pixelated;
+    opacity: 0.9;
 }
 
 /* ========================================================= */
@@ -970,6 +992,13 @@ canvas {
     font-size: min(5vmin, 40px);
     color: #000000;
     font-weight: bold;
+}
+
+.pause-seed {
+    font-family: 'Shampoos';
+    font-size: min(3vmin, 24px);
+    color: #000000;
+    margin-bottom: 1vmin;
 }
 
 .pause-stats {

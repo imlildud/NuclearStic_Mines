@@ -498,6 +498,16 @@ export class ScoreboardManager {
         
         if (mode === "legacy" && isVictory) {
             continueBtn.style.display = "block";
+
+            const currentLevel = this.gameManager.currentLevel;
+            const isBiomeTransition = currentLevel % 10 === 0;
+
+            if (isBiomeTransition) {
+                continueBtn.style.display = "none";
+                homeBtn.style.display = "block";
+            } else {
+                continueBtn.style.display = "block";
+            }
         } else if (mode === "custom") {
             retryBtn.style.display = "block";
             if (randomBtn) {
