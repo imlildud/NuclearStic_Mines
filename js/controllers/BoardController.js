@@ -186,7 +186,7 @@ export class BoardController extends BaseBoardController {
                 const y = this.randInt(0, boardSize - 1);
                 const tile = board[x][y];
                 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() &&
+                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isSecurehidden() &&
                     !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
                     tile.setTileheight(chosenType);
                     remaining--;
@@ -237,6 +237,7 @@ export class BoardController extends BaseBoardController {
                             if (!targetTile.isStart() && 
                                 targetTile.getGoaltype() === "none" && 
                                 !targetTile.isSecure() &&
+                                !targetTile.isSecurehidden() &&
                                 !targetTile.isMarked() && 
                                 targetTile.getHazardtype() === "none" && 
                                 targetTile.getObstacletype() === "none") {

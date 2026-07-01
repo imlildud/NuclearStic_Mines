@@ -76,31 +76,43 @@ export class CharacterController {
     
         // Ability 4 (Scout) ignores all height restrictions
         if (this.character.getAbilityId() !== 4) {
-            // Can't climb up 2 or more levels
-            if (heightDiff >= 2) return;
+            const hasAscent = this.character.hasKeychain('ascent');
+            const maxClimb = hasAscent ? 2 : 1;
+
+            // Can't climb up more than maxClimb levels
+            if (heightDiff > maxClimb) return;
 
             // Can fall down 2 or more levels
-            if (heightDiff <= -2) {
-                const fallDamageEnabled = this.isFallDamageEnabled();
+            if (heightDiff < - 1) { // Only trigger if falling 2 or more levels
                 const fallDistance = Math.abs(heightDiff);
+                const hasDescent = this.character.hasKeychain('descent');
+                const hasStealth = this.character.hasKeychain('stealth');
                 
-                if (fallDamageEnabled) {
-                    // FALL DAMAGE ENABLED: Allow fall but take damage
-                    const fallDamage = fallDistance - 1;
-                    if (fallDamage > 0) {
-                        this.character.decrementHp(fallDamage);
-                        this.character.incrementDamageTaken(1);
-                    
-                        if (this.character.getHp() <= 0) {
-                            this.killCharacter();
-                            return;
-                        }
+                if (hasDescent) {
+                    if (this.character.useKeychain('descent')) {
+                    } else {
+                        return;
                     }
-                    // Continue with movement after fall
                 } else {
-                    // FALL DAMAGE DISABLED: Block the fall (original behavior)
-                    // Cannot fall 2 or more levels
-                    return;
+                    const fallDamageEnabled = this.isFallDamageEnabled();
+                    
+                    if (fallDamageEnabled) {
+                        let fallDamage = fallDistance - 1;
+                        if (hasStealth) {
+                            fallDamage = Math.max(0, fallDamage - 1);
+                        }
+                        if (fallDamage > 0) {
+                            this.character.decrementHp(fallDamage);
+                            this.character.incrementDamageTaken(1);
+                        
+                            if (this.character.getHp() <= 0) {
+                                this.killCharacter();
+                                return;
+                            }
+                        }
+                    } else {
+                        return;
+                    }
                 }
             }
         }
@@ -113,14 +125,16 @@ export class CharacterController {
         if (obst === "spikes") {
             if (this.gameManager && this.gameManager.spikeController) {
                 const spikeState = this.gameManager.spikeController.getStateAt(newX, newY);
-                if (spikeState === "on") {
+                // STEALTH: Spikes are frozen (never activate)
+                const hasStealth = this.character.hasKeychain('stealth');
+                if (spikeState === "on" && !hasStealth) {
                     this.character.setPosX(newX);
                     this.character.setPosY(newY);
                     this.hurtCharacter();
                     return;
                 }
             }
-            // OFF o PREPARED → movimiento normal
+            // OFF, PREPARED, or STEALTH → movement normal
             this.character.setPosX(newX);
             this.character.setPosY(newY);
             return;
@@ -215,27 +229,24 @@ export class CharacterController {
             if (ability === 1 && (isMarked)) {
                 return;
             }
-            // Ability 3 (mommy) uses armor points
-            if (ability === 3) {
-                if (this.character.getAp() <= 0) {
-                    this.character.setHp(0);
-                    this.killCharacter();
-                } else {
-                    this.character.decrementAp(1);
-                    
-                    // Play death sound for dramatic effect
-                    if (this.gameManager && this.gameManager.audio) {
-                        this.gameManager.audio.playDeathSFX();
-                    }
-                    
-                    // Trigger screen blackout effect
-                    if (this.gameManager && this.gameManager.renderer) {
-                        this.gameManager.renderer.triggerMineFlash();
-                    }
+            
+            // Check if character has armor points
+            if (this.character.getAp() > 0) {
+                this.character.decrementAp(1);
+                
+                // Play armor hurt sound
+                if (this.gameManager && this.gameManager.audio) {
+                    this.gameManager.audio.playHurtMetalSFX();
+                }
+                
+                // Trigger screen blackout effect for dramatic mine explosion
+                if (this.gameManager && this.gameManager.renderer) {
+                    this.gameManager.renderer.triggerMineFlash();
                 }
                 return;
             }
-            // Normal death
+            
+            // No armor - die
             this.character.setHp(0);
             this.killCharacter();
             return;
@@ -243,34 +254,31 @@ export class CharacterController {
         
         // ----- DAMAGE HAZARDS (Cactus, Deadbush, Radioactive radius) -----
         if (hazardType === "cactus" || hazardType === "deadbush" || hasDamageRatio) {
-            // Scout survives if marked
+            // Chef survives if marked
             if (ability === 1 && (isMarked)) {
                 return;
             }
-            // Mommy uses armor
-            if (ability === 3) {
-                if (this.character.getAp() <= 0) {
-                    this.hurtCharacter();
-                } else {
-                    this.character.decrementAp(1);
-                    
-                    // Play armor hurt sound
-                    if (this.gameManager && this.gameManager.audio) {
-                        this.gameManager.audio.playHurtMetalSFX();
-                    }
+            
+            // Check if character has armor points
+            if (this.character.getAp() > 0) {
+                this.character.decrementAp(1);
+                
+                // Play armor hurt sound
+                if (this.gameManager && this.gameManager.audio) {
+                    this.gameManager.audio.playHurtMetalSFX();
                 }
                 return;
             }
 
-            // Critiker damage
+            // Criticker damage
             if (this.character.isCriticized()) {
                 this.character.setCriticized(false);
                 this.hurtCharacter();
                 
-                // Notify criticker of abandonment
                 if (this.gameManager && this.gameManager.criticker) {
                     this.gameManager.criticker.abandon();
                 }
+                return;
             }
 
             // Normal damage
@@ -280,7 +288,10 @@ export class CharacterController {
 
         // ===== CRITICKER NEST HANDLING =====
         if (hazardType === "nest") {
-            if (!this.character.isCriticized() && this.character.getAbilityId() != 4) {
+            // STEALTH: Nest doesn't break
+            const hasStealth = this.character.hasKeychain('stealth');
+            
+            if (!this.character.isCriticized() && this.character.getAbilityId() != 4 && !hasStealth) {
                 this.character.setCriticized(true);
                 
                 const goal = Math.floor(Math.random() * 5) + 1;
@@ -289,15 +300,15 @@ export class CharacterController {
                 
                 tile.setHazardtype("nest_open");
                 
-                // Activate Criticker controller via GameManager (NOT a local method)
                 if (this.gameManager && this.gameManager.criticker) {
                     this.gameManager.criticker.activate(goal);
                 }
-                
                 return;
             } else {
                 tile.setHazardtype("nest_open");
-                this.hurtCharacter();
+                if (!hasStealth) {
+                    this.hurtCharacter();
+                }
             }
         }
         

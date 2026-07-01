@@ -19,6 +19,19 @@
 
 Explore dangerous wastelands, reveal hidden hazards, rescue stranded pals, and return them safely to the shelter. Every map is procedurally generated, every decision matters, and one careless move can end an otherwise perfect run.
 
+- Procedurally generated maps
+- Replayable seeded boards
+- Four unique playable characters
+- Progressive Legacy mode
+- Separate Hardcore progression
+- Daily worldwide challenges
+- Fully customizable sandbox mode
+- Collectible Keychains
+- Cursed Keychains with risk/reward mechanics
+- Multiple terrain types and hazards
+- Local save system
+- Mobile and Desktop controls
+
 ---
 
 # How to Play
@@ -88,23 +101,6 @@ Keychains range from simple exploration tools to powerful artifacts that complet
 | **Hazards** | Hidden dangers include stationary and moving threats that must be identified before advancing. |
 | **Flags** | Correctly marking hazards provides score and, depending on your character, unique tactical advantages. |
 | **Treasure Tiles** | Rare hidden rewards containing valuable Keychain Bundles. |
-
----
-
-# Features
-
-- Procedurally generated maps
-- Replayable seeded boards
-- Four unique playable characters
-- Progressive Legacy mode
-- Separate Hardcore progression
-- Daily worldwide challenges
-- Fully customizable sandbox mode
-- Collectible Keychains
-- Cursed Keychains with risk/reward mechanics
-- Multiple terrain types and hazards
-- Local save system
-- Mobile and Desktop controls
 
 ---
 

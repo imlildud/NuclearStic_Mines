@@ -38,6 +38,10 @@ export class CharacterModel {
 
         // ========== CHARACTER IDENTITY ==========
         this.type = "none";         // Character type identifier
+
+        // ========== KEYCHAIN USAGE TRACKING ==========
+        this.keychainUses = {};
+        
     }
     
     // ======================= POSITION GETTERS & SETTERS =======================
@@ -95,6 +99,10 @@ export class CharacterModel {
 
     getMaxInventorySize() {
         return this.maxInventorySize || 5;
+    }
+
+    hasKeychain(id){
+      return this.inventory.includes(id);
     }
     
     // ======================= FORCE GETTERS & SETTERS =======================
@@ -161,4 +169,56 @@ export class CharacterModel {
     
     getType() { return this.type; }
     setType(v) { this.type = v; }
+
+    // ======================= KEYCHAIN USAGE METHODS =======================
+
+    // Initialize a keychain with max uses
+    initKeychainUses(id, maxUses) {
+        // Only initialize if the keychain exists in inventory
+        if (this.inventory.includes(id)) {
+            this.keychainUses[id] = maxUses;
+            return true;
+        }
+        return false;
+    }
+    // Get remaining uses for a keychain
+    getKeychainUses(id) {
+        return this.keychainUses[id] || 0;
+    }
+
+    // Check if keychain has uses left
+    hasKeychainUses(id) {
+        return this.keychainUses[id] > 0;
+    }
+
+    // Use one charge of a keychain, returns true if used
+    useKeychain(id) {
+        if (this.keychainUses[id] > 0) {
+            this.keychainUses[id]--;
+            if (this.keychainUses[id] === 0) {
+                // Remove from inventory when depleted
+                const index = this.inventory.indexOf(id);
+                if (index > -1) {
+                    this.inventory.splice(index, 1);
+                }
+                delete this.keychainUses[id];
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // Check if keychain is active (has uses left)
+        isKeychainActive(id) {
+        // If it's not in inventory, it's not active
+        if (!this.inventory.includes(id)) return false;
+        
+        // If it has uses tracked, check if > 0
+        if (this.keychainUses[id] !== undefined) {
+            return this.keychainUses[id] > 0;
+        }
+        
+        // No uses tracked = always active (passive keychain)
+        return true;
+    }
 }
