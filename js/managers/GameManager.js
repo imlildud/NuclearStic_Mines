@@ -108,6 +108,17 @@ export class GameManager {
             this.loadCustomKeychains();
         }
 
+        // ===== Resistance Keychain: Set AP to 1 =====
+        if (this.player.hasKeychain('resistance')) {
+            if (this.player.getAbilityId() === 3) {
+                this.player.incrementAp(1);
+                console.log('[Resistance] Mommy +1 AP (total: ' + this.player.getAp() + ')');
+            } else {
+                this.player.setAp(1);
+                console.log('[Resistance] AP set to 1');
+            }
+        }
+
         // Spike obstacle reset count
         if (this.spikeController) {
             this.spikeController.destroy();
@@ -416,6 +427,17 @@ export class GameManager {
             
             this.player = CharacterFactory.createCharacter(currentType);
             this.player.setHp(currentHp);
+
+            // ===== Resistance Keychain: Set AP to 1 =====
+            if (this.player.hasKeychain('resistance')) {
+                if (this.player.getAbilityId() === 3) {
+                    this.player.incrementAp(1);
+                    console.log('[Resistance] Mommy +1 AP (total: ' + this.player.getAp() + ')');
+                } else {
+                    this.player.setAp(1);
+                    console.log('[Resistance] AP set to 1');
+                }
+            }
         } else {
             // Normal Legacy - full regen
             this.save.setLegacyLevel(this.currentLevel);
@@ -423,6 +445,11 @@ export class GameManager {
             const currentType = this.player.getType();
             
             this.player = CharacterFactory.createCharacter(currentType);
+            
+            // ===== Resistance Keychain: Set AP to 1 =====
+            if (this.player.hasKeychain('resistance')) {
+                this.player.setAp(1);
+            }
         }
 
         // New random seed for next level
@@ -435,6 +462,16 @@ export class GameManager {
         this.boardCtrl = new BoardController(this.player);
         this.charCtrl = new CharacterController(this.player, this.boardCtrl, this);
         this.configLevel();
+        
+        // Restart the spike state and controllers
+        if (this.spikeController){
+            this.spikeController.destroy();
+        }
+
+        this.spikeController = new SpikeController(this);
+        this.spikeController.registerSpikes(this.board);
+        
+        this.turnManager.reset();
         
         // Set flags based on new board
         this.setPlayerFlagsFromBoard();
@@ -482,24 +519,29 @@ export class GameManager {
             return;
         }
         
-        // Use the daily seed from config
         const seed = this.config.seed || Date.now();
         const keychains = this.bundleManager.getDailyKeychains(seed);
         
-        // Add to player inventory (respecting max size)
         const player = this.player;
         const maxSize = player.maxInventorySize || 5;
-        const currentInventory = player.inventory || [];
         
+        let addedCount = 0;
         for (const keychain of keychains) {
-            if (currentInventory.length >= maxSize) break;
-            if (!currentInventory.includes(keychain.id)) {
-                currentInventory.push(keychain.id);
+            if (player.inventory.length >= maxSize) break;
+            if (!player.inventory.includes(keychain.id)) {
+                player.inventory.push(keychain.id);
+                addedCount++;
             }
         }
+
+        // Initialize keychain uses for limited-use keychains
+        if (player.inventory.includes('descent')) {
+            player.initKeychainUses('descent', 5);
+        }
         
-        console.log(`[Daily] Gave ${currentInventory.length - player.inventory.length} keychains from seed ${seed}`);
+        console.log(`[Daily] Gave ${addedCount} keychains from seed ${seed}`);
         console.log(`[Daily] Keychains: ${player.inventory.join(', ')}`);
+        console.log('[Daily] Keychain uses:', player.keychainUses);
     }
 
     loadCustomKeychains() {
@@ -512,7 +554,6 @@ export class GameManager {
         
         const player = this.player;
         const maxSize = player.maxInventorySize || 5;
-        const currentInventory = player.inventory || [];
         
         // Clear existing inventory (custom mode starts fresh)
         player.inventory = [];
@@ -526,8 +567,14 @@ export class GameManager {
                 addedCount++;
             }
         }
+
+        // Initialize keychain uses for limited-use keychains
+        if (player.inventory.includes('descent')) {
+            player.initKeychainUses('descent', 5);
+        }
         
         console.log(`[Custom] Loaded ${addedCount} saved keychains: ${player.inventory.join(', ')}`);
+        console.log('[Custom] Keychain uses:', player.keychainUses);
     }
 
     // ======================= DAILY MODE HANDLERS =======================
@@ -686,6 +733,27 @@ export class GameManager {
             // For legacy/daily, just regenerate the same level
             this.configLevel();
             this.setPlayerFlagsFromBoard();
+
+            // ===== Resistance Keychain: Set AP to 1 =====
+            if (this.player.hasKeychain('resistance')) {
+                if (this.player.getAbilityId() === 3) {
+                    this.player.incrementAp(1);
+                    console.log('[Resistance] Mommy +1 AP (total: ' + this.player.getAp() + ')');
+                } else {
+                    this.player.setAp(1);
+                    console.log('[Resistance] AP set to 1');
+                }
+            }
+
+            // Restart the spike state and controllers
+            if (this.spikeController){
+              this.spikeController.destroy();
+            }
+
+            this.spikeController = new SpikeController(this);
+            this.spikeController.registerSpikes(this.board);
+        
+            this.turnManager.reset();
         }
         document.getElementById("scoreboard-overlay").classList.remove("active");
 
@@ -703,6 +771,17 @@ export class GameManager {
         
         const chars = ["chef", "mosquito", "mommy", "scout"];
         const character = chars[Math.floor(random() * chars.length)];
+
+        // ===== Resistance Keychain: Set AP to 1 =====
+        if (this.player.hasKeychain('resistance')) {
+            if (this.player.getAbilityId() === 3) {
+                this.player.incrementAp(1);
+                console.log('[Resistance] Mommy +1 AP (total: ' + this.player.getAp() + ')');
+            } else {
+                this.player.setAp(1);
+                console.log('[Resistance] AP set to 1');
+            }
+        }
         
         const sizes = [8, 12, 16, 20, 24];
         const size = sizes[Math.floor(random() * sizes.length)];
@@ -721,6 +800,16 @@ export class GameManager {
         this.config.hazards = hazards;
         this.config.obstacles = obstacles;
         this.config.goals = goals;
+        
+        // Restart the spike state and controllers
+        if (this.spikeController){
+            this.spikeController.destroy();
+        }
+
+        this.spikeController = new SpikeController(this);
+        this.spikeController.registerSpikes(this.board);
+        
+        this.turnManager.reset();
         
         document.getElementById("scoreboard-overlay").classList.remove("active");
         this.startGame();

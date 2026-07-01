@@ -15,6 +15,7 @@ export class Renderer {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.game = game;
+        this.player = null;
         
         // Camera position for following the player
         this.camera = { x: 0, y: 0 };
@@ -87,6 +88,10 @@ export class Renderer {
         this.TILE_SIZE = Math.floor(this.canvas.width / 7);
         this.TILE_SIZE = Math.max(12, Math.min(100, this.TILE_SIZE));
     }
+
+    setPlayer(player){
+        this.player = player;
+    }
     
     // ======================= SPRITE LOADING =======================
     
@@ -106,8 +111,10 @@ export class Renderer {
             "hide",          // Hidden tile cover
             "natural",       // Natural obstacle
             "pit",           // Pit obstacle
+            "pit_hide",
             "safepit",       // Pit without death
-            "river"          // River obstacle
+            "river",          // River obstacle
+            "river_hide"
         ];
         
         // Global textures (shared across all biomes)
@@ -129,7 +136,8 @@ export class Renderer {
             "smoke",         // Smoke radius
             "spikes_off",     // Spike obstacle
             "spikes_prepared", 
-            "spikes_on",       
+            "spikes_on",
+            "spikes_hide",       
             "1","2","3","4","5","6","7","8","9","?"  // Hazard count numbers
         ];
         
@@ -167,7 +175,7 @@ export class Renderer {
         const board = this.game.getBoard();
         const player = this.game.getPlayer();
         if (!board || !player) return;
-        
+
         const ctx = this.ctx;
         const TILE_SIZE = this.TILE_SIZE;
         
@@ -250,6 +258,7 @@ export class Renderer {
                 
                 // ===== LAYER 2: OBSTACLE =====
                 const obstacle = tile.getObstacletype();
+                const hasHorizon = this.player.inventory.includes('horizon');
                 if (obstacle !== "none" && !tile.isHide()) {
                     
                     // ===== SPIKE SPECIAL RENDERING =====
@@ -315,6 +324,36 @@ export class Renderer {
                         drawY - objOffsetY,
                         objSize
                     );
+                }
+                
+                if (tile.isHide()){
+                    const hasHorizon = this.player.inventory.includes('horizon');
+                    if (hasHorizon){
+                        if(obstacle === "river"){
+                            this.safeDraw(
+                                "river_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                        if(obstacle === "spikes"){
+                            this.safeDraw(
+                                "spikes_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                        if(obstacle === "pit"){
+                            this.safeDraw(
+                                "pit_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                    }
                 }
                 
                 

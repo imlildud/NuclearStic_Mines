@@ -168,6 +168,8 @@ function initPauseButton() {
 function updateHUD() {
     const player = game.getPlayer();
     if (!player) return;
+
+    renderer.setPlayer(player);
     
     // Character Icon
     const characterIcon = document.getElementById("hud-character-icon");
@@ -446,8 +448,12 @@ function updateSupport() {
     const inventory = player.inventory || [];
     const maxSize = player.maxInventorySize || 5;
     
-    // Only show up to maxSize
-    const visibleItems = inventory.slice(0, maxSize);
+    // Filter: remove keychains that are not active (depleted limited-use)
+    const filteredInventory = inventory.filter(id => {
+        return player.isKeychainActive(id);
+    });
+    
+    const visibleItems = filteredInventory.slice(0, maxSize);
     
     // Skip if no change
     const currentIds = visibleItems.join(',');
@@ -460,7 +466,6 @@ function updateSupport() {
     
     slotsContainer.innerHTML = '';
     
-    // Obtener el keychainUIManager del game
     const keychainUI = game.keychainUIManager;
     
     for (const keychainId of visibleItems) {
@@ -477,7 +482,6 @@ function updateSupport() {
         
         slot.appendChild(img);
         
-        // SOLO el click - nada de mouseenter/mouseleave/mousedown/mouseup
         slot.addEventListener('click', (e) => {
             e.stopPropagation();
             if (keychainUI) {

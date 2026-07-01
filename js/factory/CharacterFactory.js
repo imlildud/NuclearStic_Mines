@@ -47,6 +47,7 @@ export class CharacterFactory {
     static createChef(character, isHardcore) {
         if (isHardcore) {
             character.setHp(5);
+            character.setAp(0);
             character.setFlags(0);
             character.maxInventorySize = 3;
             character.setAbilityId(1);
@@ -54,6 +55,7 @@ export class CharacterFactory {
             character.setForce(1);
         } else {
             character.setHp(5);
+            character.setAp(0);
             character.setFlags(0);
             character.maxInventorySize = 5;
             character.setAbilityId(1);
@@ -69,6 +71,7 @@ export class CharacterFactory {
     static createMosquito(character, isHardcore) {
         if (isHardcore) {
             character.setHp(3);
+            character.setAp(0);
             character.setFlags(0);
             character.maxInventorySize = 3;
             character.setAbilityId(2);
@@ -76,6 +79,7 @@ export class CharacterFactory {
             character.setForce(1);
         } else {
             character.setHp(3);
+            character.setAp(0);
             character.setFlags(0);
             character.maxInventorySize = 5;
             character.setAbilityId(2);
