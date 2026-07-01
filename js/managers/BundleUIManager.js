@@ -344,20 +344,22 @@ export class BundleUIManager {
     takeKeychain(keychain, item) {
         const player = this.gameManager.getPlayer();
         
-        // Check inventory limit using maxInventorySize
         const maxSize = player.maxInventorySize || 5;
         if (player.inventory.length >= maxSize) {
             this.showInventoryFullPopup();
             return;
         }
         
-        // Check if already have this keychain
         if (player.inventory.includes(keychain.id)) {
             return;
         }
         
-        // Add to inventory
         player.inventory.push(keychain.id);
+        
+        // Initialize uses for limited-use keychains
+        if (keychain.id === 'descent') {
+            player.initKeychainUses('descent', 5);
+        }
         
         if (this.audioManager) this.audioManager.playRescueSFX();
         
