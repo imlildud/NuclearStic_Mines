@@ -105,6 +105,14 @@
         <!-- Coords -->
         <div class="hud-coordinates-container">
             <div id="coords-text" class="coords-text">[0,0]</div>
+            <div id="coords-home" class="coords-indicator-wrapper" style="display: none;">
+                <span class="coords-indicator-text" id="coords-home-text">[0,0]</span>
+                <img class="coords-indicator-icon" src="../assets/hud/game/stats/homeind.png" alt="Home">
+            </div>
+            <div id="coords-destiny" class="coords-indicator-wrapper" style="display: none;">
+                <span class="coords-indicator-text" id="coords-destiny-text">[0,0]</span>
+                <img class="coords-indicator-icon" src="../assets/hud/game/stats/palind.png" alt="Destiny">
+            </div>
         </div>
 
         <!-- ================= SUPPORT (Keychains) ================= -->
@@ -228,6 +236,7 @@
             <img src="../assets/hud/menu/welcome.png" class="pause-bg" alt="Pause Menu">
             <div class="pause-content">
                 <div id="pause-title" class="pause-title">PAUSED</div>
+                <div id="pause-seed" class="pause-seed"></div>
                 <div id="pause-stats" class="pause-stats"></div>
                 <div id="pause-children" class="pause-children"></div>
                 <div class="pause-buttons">
