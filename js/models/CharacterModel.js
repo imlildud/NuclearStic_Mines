@@ -181,6 +181,7 @@ export class CharacterModel {
         }
         return false;
     }
+    
     // Get remaining uses for a keychain
     getKeychainUses(id) {
         return this.keychainUses[id] || 0;
@@ -191,25 +192,8 @@ export class CharacterModel {
         return this.keychainUses[id] > 0;
     }
 
-    // Use one charge of a keychain, returns true if used
-    useKeychain(id) {
-        if (this.keychainUses[id] > 0) {
-            this.keychainUses[id]--;
-            if (this.keychainUses[id] === 0) {
-                // Remove from inventory when depleted
-                const index = this.inventory.indexOf(id);
-                if (index > -1) {
-                    this.inventory.splice(index, 1);
-                }
-                delete this.keychainUses[id];
-            }
-            return true;
-        }
-        return false;
-    }
-
     // Check if keychain is active (has uses left)
-        isKeychainActive(id) {
+    isKeychainActive(id) {
         // If it's not in inventory, it's not active
         if (!this.inventory.includes(id)) return false;
         
@@ -220,5 +204,57 @@ export class CharacterModel {
         
         // No uses tracked = always active (passive keychain)
         return true;
+    }
+
+    // Use one charge of a keychain, returns true if used
+    useKeychain(id) {
+        if (this.keychainUses[id] > 0) {
+            // Safekeeping: Chance to not consume use =====
+            const hasSafekeeping = this.hasKeychain('safekeeping');
+            const hasFortune = this.hasKeychain('fortune');
+            
+            let saveChance = 0;
+            if (hasSafekeeping) {
+                saveChance = hasFortune ? 0.40 : 0.20;
+            }
+            
+            const shouldConsume = Math.random() > saveChance;
+            
+            if (shouldConsume) {
+                this.keychainUses[id]--;
+                if (this.keychainUses[id] === 0) {
+                    // Remove from inventory when depleted
+                    const index = this.inventory.indexOf(id);
+                    if (index > -1) {
+                        this.inventory.splice(index, 1);
+                    }
+                    delete this.keychainUses[id];
+                }
+                
+                this.saveKeychainUses();
+            } else {
+                console.log(`[Safekeeping] Saved a use of ${id}!`);
+            }
+            
+            return true;
+        }
+        return false;
+    }
+
+    // ===== SAVE KEYCHAIN USES (for Legacy mode) =====
+    saveKeychainUses() {
+        // Only save if in Legacy mode
+        const gameManager = this._gameManager;
+        if (!gameManager) return;
+        
+        const config = gameManager.config;
+        if (!config || config.mode !== 'legacy') return;
+        
+        const saveManager = gameManager.save;
+        if (!saveManager) return;
+        
+        // Save current uses
+        saveManager.setLegacyKeychainUses(this.keychainUses || {});
+        console.log('[SaveManager] Keychain uses saved after use:', this.keychainUses);
     }
 }

@@ -18,10 +18,12 @@ import { BundleUIManager } from "./BundleUIManager.js";
 import { KeychainUIManager } from "./KeychainUIManager.js";
 import { KeychainManager } from "./KeychainManager.js";
 import { FlagManager } from "./FlagManager.js";
+import { FlagModeManager } from "./FlagModeManager.js"; 
 import { UIManager } from "./UIManager.js";
 import { LevelConfigurator } from "./LevelConfigurator.js";
 import { GameModeManager } from "./GameModeManager.js";
 import { HazardManager } from "./HazardManager.js";
+import { KeychainConfig } from "../utils/KeychainConfig.js";
 import { PathResolver } from "../utils/PathResolver.js";
 
 export class GameManager {
@@ -59,6 +61,7 @@ export class GameManager {
         this.levelConfigurator = new LevelConfigurator(this);
         this.gameModeManager = new GameModeManager(this);
         this.hazardManager = new HazardManager(this);
+        this.flagModeManager = new FlagModeManager(this);
     }
     
     // ======================= GAME INITIALIZATION =======================
@@ -100,19 +103,29 @@ export class GameManager {
         this.keychainUIManager = new KeychainUIManager(this, this.audio);
         this.keychainUIManager.setLocaleManager(this.localeManager);
         
-        // Load keychains
+       // Load keychains
         if (this.config.mode === "legacy") {
             this.keychainManager.loadLegacyKeychains(this.player);
         }
         if (this.config.mode === "daily") {
             this.keychainManager.giveDailyKeychains(this.bundleManager, this.player, this.config.seed || Date.now());
+            KeychainConfig.initKeychainUsesForPlayer(this.player);
         }
         if (this.config.mode === "custom") {
             this.keychainManager.loadCustomKeychains(this.save, this.player);
+            KeychainConfig.initKeychainUsesForPlayer(this.player);
         }
         
-        // Apply resistance
+        // Apply keychains functions
         this.keychainManager.applyResistance(this.player);
+        if (this.player.hasKeychain('revelation')) {
+            this.player.initKeychainUses('revelation', 10);
+        }
+        if (this.player.hasKeychain('purity')) {
+            this.player.initKeychainUses('purity', 9);
+        }
+        // Memory markers
+        this.memoryMarkers = 3;
         
         // Spike controller
         if (this.spikeController) this.spikeController.destroy();
@@ -222,6 +235,17 @@ export class GameManager {
             this.boardCtrl.updateVisionAroundPlayer(this.board, this.player);
         }
     }
+
+    // ======================= FLAG MODE SYSTEM =======================
+
+    getFlagModeManager() { return this.flagModeManager; }
+    getFlagMode() { return this.flagModeManager.getFlagMode(); }
+    setFlagMode(mode) { this.flagModeManager.setFlagMode(mode); }
+    cycleFlagMode() { this.flagModeManager.cycleMode(); }
+    getAvailableFlagModes() { return this.flagModeManager.getAvailableModes(); }
+    hasFlagModeKeychain() { return this.flagModeManager.hasAnyMode(); }
+    updateFlagUI() { this.flagModeManager.updateUI(); }
+    resetMemoryMarkers() { this.flagModeManager.resetMemoryMarkers(); }
 
     // ======================= GETTERS =======================
     

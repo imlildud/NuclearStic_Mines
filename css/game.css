@@ -130,6 +130,14 @@ canvas {
     width: clamp(20px, 8vmin, 80px); 
 }
 
+/* Treasure founded Icon Position */
+.hud-treasure-icon {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: clamp(10px, 6vmin, 70px); 
+}
+
 /* ==================== HEALTH GROUP ==================== */
 
 /* Health Group Container */
@@ -454,6 +462,19 @@ canvas {
 .touch-movement { left: clamp(15px, 3vw, 40px); }
 .touch-flags    { right: clamp(15px, 3vw, 40px); }
 
+.swamp-btn {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: clamp(45px, 25vmin, 70px);
+    height: clamp(45px, 25vmin, 70px);
+    cursor: pointer;
+    z-index: 10001;
+    user-select: none;
+    transition: transform 0.1s ease, filter 0.1s ease;
+    margin-bottom: 0.5vmin;
+}
+
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
     width: 100%;
@@ -465,12 +486,12 @@ canvas {
 }
 
 /* Control Buttons Hover & Active Effects */
-.touch-btn:hover, .flag-btn:hover {
+.touch-btn:hover, .flag-btn:hover, .swamp-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-.touch-btn:active, .flag-btn:active {
+.touch-btn:active, .flag-btn:active, .swamp-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
 }

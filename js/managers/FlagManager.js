@@ -12,6 +12,136 @@ export class FlagManager {
     handleFlagDirection(direction, board, player, criticker) {
         if (!board) return;
         
+        const flagMode = this.gameManager.getFlagModeManager().getFlagMode();
+        
+        // ===== REVELATION MODE =====
+        if (flagMode === 1) {
+            return this.handleRevelation(direction, board, player);
+        }
+        
+        // ===== MEMORY MODE =====
+        if (flagMode === 2) {
+            return this.handleMemory(direction, board, player);
+        }
+        
+        // ===== PURITY MODE =====
+        if (flagMode === 3) {
+            return this.handlePurity(direction, board, player);
+        }
+        
+        // ===== NORMAL MODE =====
+        return this.handleNormalFlag(direction, board, player, criticker);
+    }
+
+    // ===== REVELATION: Reveal tile (10 uses) =====
+    handleRevelation(direction, board, player) {
+        const px = player.getPosX();
+        const py = player.getPosY();
+        let targetX = px, targetY = py;
+        
+        switch(direction) {
+            case "Up":    targetY--; break;
+            case "Down":  targetY++; break;
+            case "Left":  targetX--; break;
+            case "Right": targetX++; break;
+        }
+        
+        const size = board.length;
+        if (targetX < 0 || targetX >= size || targetY < 0 || targetY >= size) return;
+        
+        const tile = board[targetX][targetY];
+        
+        // Only reveal if hidden and has uses left
+        if (tile.isHide() && player.getKeychainUses('revelation') > 0) {
+            tile.setHide(false);
+            player.useKeychain('revelation');
+            this.gameManager.updateFlagUI();
+            console.log('[Revelation] Revealed tile at', targetX, targetY);
+        }
+    }
+
+    // ===== MEMORY: Place markers (3 per level) =====
+    handleMemory(direction, board, player) {
+        const px = player.getPosX();
+        const py = player.getPosY();
+        let targetX = px, targetY = py;
+        
+        switch(direction) {
+            case "Up":    targetY--; break;
+            case "Down":  targetY++; break;
+            case "Left":  targetX--; break;
+            case "Right": targetX++; break;
+        }
+        
+        const size = board.length;
+        if (targetX < 0 || targetX >= size || targetY < 0 || targetY >= size) return;
+        
+        const tile = board[targetX][targetY];
+        
+        // Check if tile already has a marker
+        if (tile.hasMemoryMarker()) {
+            tile.clearMemoryMarker();
+            this.gameManager.updateFlagUI();
+            console.log('[Memory] Removed marker at', targetX, targetY);
+            return;
+        }
+        
+        // Get available markers (a, b, c)
+        const markers = ['a', 'b', 'c'];
+        const usedMarkers = [];
+        
+        // Find used markers on board
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                const marker = board[i][j].getMemoryMarker();
+                if (marker) usedMarkers.push(marker);
+            }
+        }
+        
+        // Find available marker
+        const available = markers.filter(m => !usedMarkers.includes(m));
+        if (available.length === 0) {
+            console.log('[Memory] No markers available');
+            return;
+        }
+        
+        // Place marker
+        tile.setMemoryMarker(available[0]);
+        this.gameManager.memoryMarkers = available.length - 1;
+        this.gameManager.updateFlagUI();
+        console.log('[Memory] Placed marker', available[0], 'at', targetX, targetY);
+    }
+
+    // ===== PURITY: Clean damageratio tiles (9 uses) =====
+    handlePurity(direction, board, player) {
+        const px = player.getPosX();
+        const py = player.getPosY();
+        let targetX = px, targetY = py;
+        
+        switch(direction) {
+            case "Up":    targetY--; break;
+            case "Down":  targetY++; break;
+            case "Left":  targetX--; break;
+            case "Right": targetX++; break;
+        }
+        
+        const size = board.length;
+        if (targetX < 0 || targetX >= size || targetY < 0 || targetY >= size) return;
+        
+        const tile = board[targetX][targetY];
+        
+        // Only clean if has damageratio and has uses left
+        if (tile.getDamageratio() && player.getKeychainUses('purity') > 0) {
+            tile.setDamageratio(false);
+            player.useKeychain('purity');
+            this.gameManager.updateFlagUI();
+            console.log('[Purity] Cleaned damageratio at', targetX, targetY);
+        }
+    }
+    
+
+    // ===== NORMAL FLAG =====
+    handleNormalFlag(direction, board, player, criticker) {
         const px = player.getPosX();
         const py = player.getPosY();
         const abilityId = player.getAbilityId();

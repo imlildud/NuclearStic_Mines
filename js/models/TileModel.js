@@ -26,6 +26,9 @@ export class TileModel {
         this.jumpflagged = false;       // Define if the tile has a jump flag marker
         this.marked = false;            // Define if the tile is marked as a hazard
         this.treasure = false;          // Define if the tile have a treasure
+
+        // ========== MEMORY MARKERS ==========
+        this.memoryMarker = null; // 'a' | 'b' | 'c' | null
         
         // ========== TILE HEIGHT ==========
         this.height = 0;                // 0 = default height (terrain elevation)
@@ -85,6 +88,11 @@ export class TileModel {
     
     isJumpflagged() { return this.jumpflagged; }
     setJumpflagged(v) { this.jumpflagged = v; }
+
+    getMemoryMarker() { return this.memoryMarker; }
+    setMemoryMarker(v) { this.memoryMarker = v; }
+    hasMemoryMarker() { return this.memoryMarker !== null; }
+    clearMemoryMarker() { this.memoryMarker = null; }
     
     // ======================= MARKED GETTERS & SETTERS =======================
     

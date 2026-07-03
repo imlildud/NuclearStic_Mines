@@ -52,6 +52,7 @@ export class HUDManager {
         this.updateFatigue(player);
         this.updateCoordinates();
         this.updateSupport(player);
+        this.updateTreasureIndicator();
     }
 
     updateCharacterIcon(player) {
@@ -84,7 +85,40 @@ export class HUDManager {
 
     updateFlags(player) {
         const el = document.getElementById("hud-flags-text");
-        if (el) el.textContent = player.getFlags();
+        if (!el) return;
+        
+        const mode = this.game.getFlagMode();
+        let text = '';
+        
+        switch(mode) {
+            case 1: // Revelation
+                text = player.getKeychainUses('revelation') || 0;
+                break;
+            case 2: // Memory
+                const used = this.countMemoryMarkers();
+                text = Math.max(0, 3 - used);
+                break;
+            case 3: // Purity
+                text = player.getKeychainUses('purity') || 0;
+                break;
+            default: // Normal
+                text = player.getFlags();
+                break;
+        }
+        
+        el.textContent = text;
+    }
+
+    countMemoryMarkers() {
+        const board = this.game.getBoard();
+        if (!board) return 0;
+        let count = 0;
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                if (board[i][j].hasMemoryMarker()) count++;
+            }
+        }
+        return count;
     }
 
     updateRescued(player) {
@@ -358,6 +392,35 @@ export class HUDManager {
             
             slotsContainer.appendChild(slot);
         }
+    }
+
+    updateTreasureIndicator() {
+        const player = this.game.getPlayer();
+        if (!player) return;
+        
+        const icon = document.getElementById("hud-treasure-icon");
+        if (!icon) return;
+        
+        if (!player.hasKeychain('greed')) {
+            icon.style.display = "none";
+            return;
+        }
+        
+        const board = this.game.getBoard();
+        if (!board) return;
+        
+        let hasTreasure = false;
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                if (board[i][j].haveTreasure && board[i][j].haveTreasure()) {
+                    hasTreasure = true;
+                    break;
+                }
+            }
+            if (hasTreasure) break;
+        }
+        
+        icon.style.display = hasTreasure ? "block" : "none";
     }
 
     getMaxHpByCharacter(type) {

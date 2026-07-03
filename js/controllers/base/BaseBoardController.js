@@ -306,7 +306,7 @@ export class BaseBoardController {
         const visionX = character.getPosX();
         const visionY = character.getPosY();
         const visionRange = character.getVision();
-    
+
         const minX = Math.max(0, visionX - visionRange);
         const maxX = Math.min(boardSize - 1, visionX + visionRange);
         const minY = Math.max(0, visionY - visionRange);
@@ -314,7 +314,9 @@ export class BaseBoardController {
 
         const hasVision = character.hasKeychain('vision');
         const hasHorizon = character.hasKeychain('horizon');
-    
+        const hasTopography = character.hasKeychain('topography');
+        const maxHeightDiff = hasTopography ? 2 : 1;
+
         // Hide all non-secure tiles in range first
         for (let i = minX; i <= maxX; i++) {
             for (let j = minY; j <= maxY; j++) {
@@ -337,33 +339,35 @@ export class BaseBoardController {
                 }
             }
         }
-    
+
         const playerTile = board[visionX][visionY];
         const playerHeight = playerTile.getTileheight();
         const playerHazardCount = playerTile.getHazardcount();
-    
+
         if (playerHazardCount > 0) {
             playerTile.setHide(false);
             return;
         }
-    
+
         playerTile.setHide(false);
-    
+
         // Reveal in cardinal directions with height blocking
         const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    
+
         for (const [dx, dy] of directions) {
             let x = visionX;
             let y = visionY;
             let heightBlocked = false;
-        
+
             while (true) {
                 x += dx;
                 y += dy;
                 if (x < minX || x > maxX || y < minY || y > maxY) break;
-            
+
                 const tile = board[x][y];
-                if (tile.getTileheight() > playerHeight + 1) {
+                
+                // ===== TOPOGRAPHY: Allow seeing up to 2 levels above =====
+                if (tile.getTileheight() > playerHeight + maxHeightDiff) {
                     heightBlocked = true;
                     break;
                 }
@@ -377,55 +381,53 @@ export class BaseBoardController {
                 } else {
                     tile.setHide(false);
                 }
-            
-                tile.setHide(false);
+
                 if (tile.getHazardcount() > 0) break;
             }
             if (heightBlocked) continue;
         }
-    
+
         // Reveal diagonal tiles
         if (visionRange >= 2) {
             const diagonals = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-        
+
             for (const [dx, dy] of diagonals) {
                 const diagX = visionX + dx;
                 const diagY = visionY + dy;
                 if (diagX < minX || diagX > maxX || diagY < minY || diagY > maxY) continue;
-            
+
                 const card1X = visionX + dx;
                 const card1Y = visionY;
                 const card2X = visionX;
                 const card2Y = visionY + dy;
-            
+
                 let canSee = true;
-            
+
                 if (card1X >= minX && card1X <= maxX && card1Y >= minY && card1Y <= maxY) {
                     const tile1 = board[card1X][card1Y];
                     if (tile1.isHide() || tile1.getHazardcount() > 0 ||
                         tile1.getHazardtype() !== "none" ||
-                        tile1.getTileheight() > playerHeight + 1) {
+                        tile1.getTileheight() > playerHeight + maxHeightDiff) {
                         canSee = false;
                     }
                 } else {
                     canSee = false;
                 }
-            
+
                 if (canSee && card2X >= minX && card2X <= maxX && card2Y >= minY && card2Y <= maxY) {
                     const tile2 = board[card2X][card2Y];
                     if (tile2.isHide() || tile2.getHazardcount() > 0 ||
                         tile2.getHazardtype() !== "none" ||
-                        tile2.getTileheight() > playerHeight + 1) {
+                        tile2.getTileheight() > playerHeight + maxHeightDiff) {
                         canSee = false;
                     }
                 } else if (canSee) {
                     canSee = false;
                 }
-            
+
                 if (canSee) {
                     const diagTile = board[diagX][diagY];
-                    
-                    if (diagTile.getTileheight() > playerHeight + 1){
+                    if (diagTile.getTileheight() > playerHeight + maxHeightDiff){
                         canSee = false;
                     }
                 }
