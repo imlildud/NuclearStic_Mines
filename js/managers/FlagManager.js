@@ -57,6 +57,33 @@ export class FlagManager {
             if ((isChef || isCriticized) && hasHazard) {
                 tile.setMarked(true);
                 tile.setFlagged(false);
+
+                // ===== CONCENTRATION: Reveal 3x3 =====
+                const hasConcentration = player.hasKeychain('concentration');
+                if (hasConcentration) {
+                    const directions = [
+                        [-1,-1], [-1,0], [-1,1],
+                        [0,-1],  [0,0],  [0,1],
+                        [1,-1],  [1,0],  [1,1]
+                    ];
+
+                    for (const [dx, dy] of directions) {
+                        const nx = targetX + dx;
+                        const ny = targetY + dy;
+
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                            const adjacentTile = board[nx][ny];
+                            
+                            const hazardType = adjacentTile.getHazardtype();
+                            if (hazardType !== "none") { 
+                                continue;
+                            }
+                                
+                            adjacentTile.setUnhideable(true);
+                            adjacentTile.setHide(false);
+                        }
+                    }
+                }
                 
                 if (isCriticized && criticker) {
                     const currentProgress = player.getCritickerProgress();
@@ -90,7 +117,6 @@ export class FlagManager {
         if (tile.isJumpflagged()) {
             player.setPosX(jumpX);
             player.setPosY(jumpY);
-            // Devolver información para que GameManager ejecute verifyTile y updateVision
             return { jumped: true, x: jumpX, y: jumpY };
         }
         return { jumped: false };

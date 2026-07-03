@@ -132,6 +132,7 @@ export class BaseBoardController {
     // Regenerate hazards after player actions (flagging, etc.)
     regenerateHazards(board, totalHazards, level, size) {
         const boardSize = size;
+        const hasConcentration = this.player.hasKeychain('concentration');
         this.resetHazardCount(board, boardSize);
         let remainingHazards = 0;
         let markedHazards = 0;
@@ -147,7 +148,12 @@ export class BaseBoardController {
                         tile.setMarked(true);
                         tile.setFlagged(false);
                         markedHazards++;
-                        continue;
+
+                        // Reveal 3x3 when a hazard is marked =====
+                        if (hasConcentration) {
+                                this.revealConcentration(board, i, j, boardSize);
+                            }
+                            continue;
                     }
                     
                     if (tile.isMarked()) {
@@ -216,7 +222,7 @@ export class BaseBoardController {
                 
                 if (tile.getGoaltype() === "joni") {
                     tile.setHide(true);
-                } else if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure()) {
+                } else if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isUnhideable()) {
                     tile.setHide(true);
                 }
             }
@@ -314,6 +320,11 @@ export class BaseBoardController {
             for (let j = minY; j <= maxY; j++) {
                 const tile = board[i][j];
 
+                if (tile.isUnhideable()){
+                    tile.setHide(false);
+                    continue;
+                }
+
                 if (hasHorizon && tile.getObstacletype() === "natural") {
                     tile.setHide(false);
                     continue;
@@ -357,6 +368,10 @@ export class BaseBoardController {
                     break;
                 }
                 if (tile.getHazardtype() !== "none") break;
+                if (tile.isUnhideable()){
+                    tile.setHide(false);
+                    continue;
+                }
                 if (hasHorizon && tile.getObstacletype() === "natural") {
                     tile.setHide(false);
                 } else {
@@ -417,7 +432,10 @@ export class BaseBoardController {
 
                 if (canSee){
                     const diagTile = board[diagX][diagY];
-                    if (hasHorizon && diagTile.getObstacletype() === "natural") {
+
+                    if (diagTile.isUnhideable()){
+                        diagTile.setHide(false);
+                    } else if (hasHorizon && diagTile.getObstacletype() === "natural") {
                         diagTile.setHide(false);
                     } else {
                         diagTile.setHide(false);
@@ -425,6 +443,36 @@ export class BaseBoardController {
                 }
             }
         }
+    }
+
+    // ===== CONCENTRATION HELPER =====
+    revealConcentration(board, x, y, size) {
+        const directions = [
+            [-1,-1], [-1,0], [-1,1],
+            [0,-1],  [0,0],  [0,1],
+            [1,-1],  [1,0],  [1,1]
+        ];
+
+        let revealedCount = 0;
+        for (const [dx, dy] of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                const tile = board[nx][ny];
+                
+                const hazardType = tile.getHazardtype();
+                if (hazardType !== "none") {
+                    console.log(`[Concentration] Skipping (${nx},${ny}) - has hazard: ${hazardType}`);
+                    continue;
+                }
+                
+                tile.setUnhideable(true);
+                tile.setHide(false);
+                revealedCount++;
+            }
+        }
+        
+        return revealedCount;
     }
     
     // ======================= GAME MANAGER SETTER =======================

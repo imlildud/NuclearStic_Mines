@@ -240,9 +240,13 @@ export class HUDManager {
 
     updateGeologicalAlert() {
         const player = this.game.getPlayer();
-        if (!player) return;
+        if (!player) {
+            return;
+        }
+
+        const abilityId = player.getAbilityId ? player.getAbilityId() : player.abilityId;
         
-        if (player.getAbilityId() !== 2) {
+        if (abilityId !== 2) {
             document.getElementById("hud-geohaz-alert").style.display = "none";
             document.getElementById("hud-geoobs-alert").style.display = "none";
             return;
@@ -274,20 +278,43 @@ export class HUDManager {
             else if (obstacleType === "spikes") hasSpikes = true;
             else if (obstacleType === "pit") hasPit = true;
         }
-        
+
         const alertIcon = document.getElementById("hud-geohaz-alert");
         const alertIcon2 = document.getElementById("hud-geoobs-alert");
+        let alertType = null;
+        let alertType2 = null;
         
-        if (hasLive) alertIcon.src = PathResolver.resolveAsset('gameStats', 'live.png');
-        else if (hasDamage && hasKill) alertIcon.src = PathResolver.resolveAsset('gameStats', 'mixed.png');
-        else if (hasKill) alertIcon.src = PathResolver.resolveAsset('gameStats', 'kill.png');
-        else if (hasDamage) alertIcon.src = PathResolver.resolveAsset('gameStats', 'damage.png');
-        else alertIcon.style.display = "none";
+        if (hasLive){
+            alertType = "live.png"
+        } else if (hasDamage && hasKill) { 
+            alertType = "mixed.png";
+        } else if (hasKill) { 
+            alertType = "kill.png";
+        } else if (hasDamage) { 
+            alertType = "damage.png";
+        }
         
-        if (hasRiver && (hasPit || hasSpikes)) alertIcon2.src = PathResolver.resolveAsset('gameStats', 'obsmixed.png');
-        else if (hasRiver) alertIcon2.src = PathResolver.resolveAsset('gameStats', 'obsriver.png');
-        else if (hasPit || hasSpikes) alertIcon2.src = PathResolver.resolveAsset('gameStats', 'obspit.png');
-        else alertIcon2.style.display = "none";
+        if (hasRiver && (hasPit || hasSpikes)) { 
+            alertType2 = "obsmixed.png"
+        } else if (hasRiver) { 
+            alertType2 = "obsriver.png"
+        } else if (hasPit || hasSpikes) { 
+            alertType2 = "obspit.png"
+        }
+
+        if (alertType){
+            alertIcon.src = PathResolver.resolveAsset('gameStats', alertType);
+            alertIcon.style.display = "block";
+        } else {
+            alertIcon.style.display = "none"
+        }
+        
+        if (alertType2){
+            alertIcon2.src = PathResolver.resolveAsset('gameStats', alertType2);
+            alertIcon2.style.display = "block";
+        } else {
+            alertIcon2.style.display = "none"
+        }
     }
 
     updateSupport(player) {

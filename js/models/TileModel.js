@@ -11,6 +11,7 @@ export class TileModel {
     constructor() {
         // ========== VIEW STATUS ==========
         this.hide = true;               // Hide the content of the tile (undiscovered)
+        this.unhideable = false;        // Never hide the content
         
         // ========== START & GOAL TILES ==========
         this.start = false;             // Define if the tile is the starting position
@@ -47,6 +48,9 @@ export class TileModel {
     
     isHide() { return this.hide; }
     setHide(v) { this.hide = v; }
+
+    isUnhideable() { return this.unhideable; }
+    setUnhideable(v) { this.unhideable = v; }
     
     // ======================= START GETTERS & SETTERS =======================
     
