@@ -361,7 +361,8 @@ export class BoardController extends BaseBoardController {
                 if (["spiderMine", "liberal", "sandsnake"].includes(chosenType)) {
                     this.applyRadiusWithHeightCheck(tile, board, x, y, "setDetectionratio");
                 }
-            
+                
+                tile.setUnhideable(false);
                 remaining--;
             }
         }
