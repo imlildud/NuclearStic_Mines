@@ -62,18 +62,20 @@ export class BundleManager {
         // Keychain list
         this.keychainList = [
             { id: 'horizon', rareza: 'typical' },
-            { id: 'revelation', rareza: 'typical' },
             { id: 'home', rareza: 'typical'},
+            { id: 'topography', rareza: 'typical' },
             { id: 'memory', rareza: 'typical' },
+            { id: 'safekeeping', rareza: 'typical' },
+            { id: 'purity', rareza: 'abnormal' },
             { id: 'destiny', rareza: 'abnormal' },
             { id: 'ascent', rareza: 'abnormal' },
             { id: 'protection', rareza: 'abnormal' },
             { id: 'descent', rareza: 'abnormal' },
             { id: 'greed', rareza: 'abnormal' },
+            { id: 'revelation', rareza: 'extravagant' },
             { id: 'resistance', rareza: 'extravagant' },
             { id: 'salvation', rareza: 'extravagant' },
             { id: 'stealth', rareza: 'extravagant' },
-            { id: 'purity', rareza: 'extravagant' },
             { id: 'concentration', rareza: 'extravagant'},
             { id: 'fortune', rareza: 'unheard' },
             { id: 'vision', rareza: 'unheard'},
@@ -88,12 +90,30 @@ export class BundleManager {
 
         this.dailyExcludedIds = ['fortune', 'greed'];
     }
-    
+
     getTier() {
-        const roll = Math.random();
+        // ===== FORTUNE: Increases chance of better bundles =====
+        const hasFortune = this.gameManager && this.gameManager.getPlayer() 
+            ? this.gameManager.getPlayer().hasKeychain('fortune') 
+            : false;
+        
+        let roll = Math.random();
         let cumulative = 0;
         
-        for (const [key, tier] of Object.entries(this.bundleTiers)) {
+        // Clone bundle tiers to avoid modifying original
+        const tiers = { ...this.bundleTiers };
+        
+        if (hasFortune) {
+            // Adjust probabilities: increase saturated and cursed, decrease basic bundle
+            tiers.bundle.probability = 0.45;          // 60% → 45%
+            tiers.stockedbundle.probability = 0.25;   // 25% → 25% (unchanged)
+            tiers.saturatedbundle.probability = 0.20; // 10% → 20%
+            tiers.cursedbundle.probability = 0.10;    // 5% → 10%
+            
+            console.log('[Fortune] Bundle probabilities boosted!');
+        }
+        
+        for (const [key, tier] of Object.entries(tiers)) {
             cumulative += tier.probability;
             if (roll <= cumulative) {
                 return key;
@@ -110,12 +130,53 @@ export class BundleManager {
     
     rollKeychainType(tierKey) {
         const tier = this.bundleTiers[tierKey];
-        const roll = Math.random();
+        let roll = Math.random();
         let cumulative = 0;
         
+        // ===== FORTUNE: Improves keychain quality =====
+        const hasFortune = this.gameManager && this.gameManager.getPlayer() 
+            ? this.gameManager.getPlayer().hasKeychain('fortune') 
+            : false;
+        
         const rarezaKeys = ['typical', 'abnormal', 'extravagant', 'unheard', 'cursed'];
+        
+        // Clone rarezas to avoid modifying original
+        let rarezas = { ...tier.rarezas };
+        
+        if (hasFortune) {
+            // Shift probabilities towards rarer keychains
+            // Reduce typical, increase abnormal, extravagant, unheard, cursed
+            const adjusted = { ...rarezas };
+            
+            // Reduce typical by 20% of its value
+            if (adjusted.typical > 0) {
+                const reduction = adjusted.typical * 0.20;
+                adjusted.typical = Math.max(0, adjusted.typical - reduction);
+                
+                // Redistribute the reduction to higher tiers proportionally
+                const bonus = reduction / 4; // Split among 4 higher tiers
+                adjusted.abnormal = Math.min(1, adjusted.abnormal + bonus);
+                adjusted.extravagant = Math.min(1, adjusted.extravagant + bonus);
+                adjusted.unheard = Math.min(1, adjusted.unheard + bonus);
+                adjusted.cursed = Math.min(1, adjusted.cursed + bonus);
+                
+                // Normalize to ensure sum = 1
+                const total = adjusted.typical + adjusted.abnormal + adjusted.extravagant + adjusted.unheard + adjusted.cursed;
+                if (total > 0) {
+                    adjusted.typical /= total;
+                    adjusted.abnormal /= total;
+                    adjusted.extravagant /= total;
+                    adjusted.unheard /= total;
+                    adjusted.cursed /= total;
+                }
+                
+                rarezas = adjusted;
+                console.log('[Fortune] Keychain quality boosted for tier:', tierKey);
+            }
+        }
+        
         for (const key of rarezaKeys) {
-            const prob = tier.rarezas[key] || 0;
+            const prob = rarezas[key] || 0;
             cumulative += prob;
             if (roll <= cumulative) {
                 return key;
@@ -139,7 +200,7 @@ export class BundleManager {
             const cursedAvailable = this.keychainList.filter(k => 
                 k.rareza === 'cursed' && 
                 !usedIds.has(k.id) &&
-                !ownedKeychains.includes(k.id)  // ← Evitar duplicados
+                !ownedKeychains.includes(k.id)
             );
             
             // Shuffle and take up to count
@@ -161,7 +222,7 @@ export class BundleManager {
             return keychains;
         }
         
-        // Saturated bundle: 3 random keychains
+        // Saturated bundle: random keychains
         if (tierKey === 'saturatedbundle') {
             const randomCount = count;
             for (let i = 0; i < randomCount; i++) {
@@ -170,7 +231,7 @@ export class BundleManager {
                 const available = this.keychainList.filter(k => 
                     k.rareza === type && 
                     !usedIds.has(k.id) &&
-                    !ownedKeychains.includes(k.id)  // ← Evitar duplicados
+                    !ownedKeychains.includes(k.id)
                 );
                 
                 if (available.length > 0) {
@@ -205,7 +266,7 @@ export class BundleManager {
             const available = this.keychainList.filter(k => 
                 k.rareza === type && 
                 !usedIds.has(k.id) &&
-                !ownedKeychains.includes(k.id)  // ← Evitar duplicados
+                !ownedKeychains.includes(k.id)
             );
             
             if (available.length > 0) {

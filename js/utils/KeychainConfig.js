@@ -7,9 +7,9 @@ export const KeychainConfig = {
     // Keychains with limited uses (maxUses)
     uses: {
         'revelation': 10,
-        'descent': 5,
+        'descent': 9,
         'salvation': 3,
-        'purity': 9,
+        'purity': 18,
         'reversion': 4,
         'stuffed': 20
     },
@@ -18,7 +18,9 @@ export const KeychainConfig = {
     passive: [
         'horizon',
         'home',
+        'topography',
         'memory',
+        'safekeeping',
         'destiny',
         'ascent',
         'protection',
@@ -56,7 +58,10 @@ export const KeychainConfig = {
         
         for (const [id, maxUses] of Object.entries(this.uses)) {
             if (player.inventory.includes(id)) {
-                player.initKeychainUses(id, maxUses);
+                // Only initialize if not already set (preserve saved uses)
+                if (player.keychainUses[id] === undefined || player.keychainUses[id] === 0) {
+                    player.initKeychainUses(id, maxUses);
+                }
             }
         }
     }

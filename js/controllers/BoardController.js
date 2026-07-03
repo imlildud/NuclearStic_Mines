@@ -438,22 +438,50 @@ export class BoardController extends BaseBoardController {
         let probability = 0;
         let maxTreasures = 0;
         
+        // ===== GREED & FORTUNE: Stacking effects =====
+        const savedKeychains = JSON.parse(localStorage.getItem("legacyKeychains") || "[]");
+        const hasGreed = savedKeychains.includes('greed');
+        const hasFortune = savedKeychains.includes('fortune');
+        
+        // Base values by size
+        let baseProbability = 0;
+        let baseMaxTreasures = 0;
+        
         if (size <= 8) {
-            probability = 0.30;
-            maxTreasures = 1;
+            baseProbability = 0.35;
+            baseMaxTreasures = 1;
         } else if (size <= 12) {
-            probability = 0.40;
-            maxTreasures = 1;
+            baseProbability = 0.45;
+            baseMaxTreasures = 1;
         } else if (size <= 16) {
-            probability = 0.50;
-            maxTreasures = 1;
+            baseProbability = 0.55;
+            baseMaxTreasures = 2;
         } else if (size <= 20) {
-            probability = 0.65;
-            maxTreasures = 2;
+            baseProbability = 0.70;
+            baseMaxTreasures = 3;
         } else {
-            probability = 0.75;
-            maxTreasures = 2;
+            baseProbability = 0.80;
+            baseMaxTreasures = 3;
         }
+        
+        // Apply Greed (+10% probability, +1 max treasure)
+        if (hasGreed) {
+            probability = baseProbability + 0.10;
+            maxTreasures = baseMaxTreasures + 1;
+        } else {
+            probability = baseProbability;
+            maxTreasures = baseMaxTreasures;
+        }
+        
+        // Apply Fortune (+10% probability, +1 max treasure, stacks with Greed)
+        if (hasFortune) {
+            probability += 0.10;
+        }
+        
+        // Cap probability at 95%
+        probability = Math.min(probability, 0.95);
+        
+        console.log(`[Treasure] Greed: ${hasGreed}, Fortune: ${hasFortune}, Probability: ${Math.round(probability * 100)}%, Max: ${maxTreasures}`);
         
         const random = this.random();
         if (random > probability) {
@@ -463,7 +491,7 @@ export class BoardController extends BaseBoardController {
         
         let count = 1;
         if (maxTreasures > 1 && this.random() < 0.5) {
-            count = 2;
+            count = Math.min(maxTreasures, Math.floor(this.random() * maxTreasures) + 1);
         }
         
         console.log(`[Treasure] Generating ${count} treasure(s) on ${size}x${size} board`);

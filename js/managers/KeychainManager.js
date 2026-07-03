@@ -15,15 +15,23 @@ export class KeychainManager {
     saveLegacyKeychains(player) {
         const keychains = player.inventory || [];
         this.gameManager.save.setLegacyKeychains(keychains);
+        
+        // ===== Save keychain uses too =====
+        const uses = player.keychainUses || {};
+        this.gameManager.save.setLegacyKeychainUses(uses);
+        
         console.log('[Legacy] Saved keychains:', keychains);
+        console.log('[Legacy] Saved uses:', uses);
     }
 
     loadLegacyKeychains(player) {
         const savedKeychains = this.gameManager.save.getLegacyKeychains();
+        const savedUses = this.gameManager.save.getLegacyKeychainUses();
         
         if (!savedKeychains || savedKeychains.length === 0) {
             console.log('[Legacy] No saved keychains found, using empty inventory');
             player.inventory = [];
+            player.keychainUses = {};
             return;
         }
         
@@ -39,14 +47,24 @@ export class KeychainManager {
             }
         }
 
-        KeychainConfig.initKeychainUsesForPlayer(player);
+        // ===== Load keychain uses =====
+        player.keychainUses = { ...savedUses };
+        
+        // Clean up uses for keychains no longer in inventory
+        for (const [id] of Object.entries(player.keychainUses)) {
+            if (!player.inventory.includes(id)) {
+                delete player.keychainUses[id];
+            }
+        }
         
         console.log(`[Legacy] Loaded ${loadedCount} keychains: ${player.inventory.join(', ')}`);
+        console.log('[Legacy] Loaded uses:', player.keychainUses);
     }
 
     clearLegacyKeychains() {
         this.gameManager.save.clearLegacyKeychains();
-        console.log('[Legacy] Keychains cleared');
+        this.gameManager.save.clearLegacyKeychainUses();
+        console.log('[Legacy] Keychains and uses cleared');
     }
 
     // ===== DAILY MODE =====

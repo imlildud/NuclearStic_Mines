@@ -131,6 +131,9 @@ export class Renderer {
             "flaggoal",      // Goal
             "jumpflag",      // Jump flag (Scout ability)
             "marked",        // Marked hazard (Chef ability)
+            "memory_a",      // Memory markers
+            "memory_b",
+            "memory_c",
             "treasure",      // X
             "toxic",         // Damage radius indicator
             "smoke",         // Smoke radius
@@ -404,8 +407,20 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
+                }
+ 
+                // ===== LAYER 6.5: MEMORY MARKERS =====
+                if (tile.hasMemoryMarker()) {
+                    const marker = tile.getMemoryMarker();
+                    const markerHeight = objSize * 1.1;
+                    this.safeDraw(
+                        `memory_${marker}`,
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (markerHeight - objSize),
+                        objSize
+                    );
                 } 
-                
+                                
                 // ===== LAYER 7: START TILE =====
                 if (tile.isStart()) {
                     this.safeDraw(

@@ -35,6 +35,14 @@ export class InputManager {
         // Extend game movement with animations
         this.extendGameMovement();
         this.extendGameFlag();
+
+        // Swamp mode toggle (F key)
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "f" || e.key === "F") {
+                e.preventDefault();
+                this.toggleSwampMode();
+            }
+        });
     }
 
     handleMovement(key) {
@@ -131,5 +139,28 @@ export class InputManager {
             btn.addEventListener('click', handleFlag);
             btn.addEventListener('touchstart', handleFlag);
         });
+
+        // Swamp button
+        const swampBtn = document.getElementById("swamp-btn");
+        if (swampBtn) {
+            swampBtn.addEventListener("click", () => {
+                this.toggleSwampMode();
+            });
+        }
+    }
+
+    toggleSwampMode() {
+        const game = this.game;
+        const player = game.getPlayer();
+        
+        // Check if player has any flag-mode keychain
+        const available = game.getAvailableFlagModes();
+        if (available.length === 0) {
+            game.showMessage('No flag-mode keychains available');
+            return;
+        }
+        
+        // Cycle to next mode
+        game.cycleFlagMode();
     }
 }
