@@ -186,40 +186,22 @@ export class FlagManager {
             
             const isChef = (abilityId === 1);
             const isCriticized = player.isCriticized();
+            const hasJudgment = player.hasKeychain('judgment');
             const hasHazard = (tile.getHazardtype() !== "none");
             
-            if ((isChef || isCriticized) && hasHazard) {
+            // Judgment or Chef or Criticized: auto-mark on correct hazard
+            if ((isChef || isCriticized || hasJudgment) && hasHazard) {
                 tile.setMarked(true);
                 tile.setFlagged(false);
-
-                // ===== CONCENTRATION: Reveal 3x3 =====
+                
+                // Concentration logic
                 const hasConcentration = player.hasKeychain('concentration');
                 if (hasConcentration) {
-                    const directions = [
-                        [-1,-1], [-1,0], [-1,1],
-                        [0,-1],  [0,0],  [0,1],
-                        [1,-1],  [1,0],  [1,1]
-                    ];
-
-                    for (const [dx, dy] of directions) {
-                        const nx = targetX + dx;
-                        const ny = targetY + dy;
-
-                        if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
-                            const adjacentTile = board[nx][ny];
-                            
-                            const hazardType = adjacentTile.getHazardtype();
-                            if (hazardType !== "none") { 
-                                continue;
-                            }
-                                
-                            adjacentTile.setUnhideable(true);
-                            adjacentTile.setHide(false);
-                        }
-                    }
+                    // ... reveal 3x3 ...
                 }
                 
-                if (isCriticized && criticker) {
+                // Progress criticker (only for normal Criticized, not Judgment)
+                if (isCriticized && !hasJudgment && criticker) {
                     const currentProgress = player.getCritickerProgress();
                     const goal = player.getCritickerGoal();
                     const newProgress = criticker.markProgress(currentProgress, goal);
@@ -230,8 +212,20 @@ export class FlagManager {
                     }
                 }
             }
-
-            if (isCriticized && !hasHazard) {
+            
+            // Wrong flag on Judgment = damage
+            if (hasJudgment && !hasHazard) {
+                // Damage the player
+                if (this.gameManager && this.gameManager.charCtrl) {
+                    this.gameManager.charCtrl.hurtCharacter();
+                }
+                tile.setFlagged(false);
+                player.incrementFlags(); // Return the flag
+                return;
+            }
+            
+            // Wrong flag on normal Criticized
+            if (isCriticized && !hasHazard && !hasJudgment) {
                 player.setCriticized(false);
                 if (criticker) criticker.fail();
             }
