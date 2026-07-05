@@ -197,7 +197,35 @@ export class FlagManager {
                 // Concentration logic
                 const hasConcentration = player.hasKeychain('concentration');
                 if (hasConcentration) {
-                    // ... reveal 3x3 ...
+                    const directions = [
+                        [-1,-1], [-1,0], [-1,1],
+                        [0,-1],  [0,0],  [0,1],
+                        [1,-1],  [1,0],  [1,1]
+                    ];
+
+                    for (const [dx, dy] of directions) {
+                        const nx = targetX + dx;
+                        const ny = targetY + dy;
+
+                        if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                            const adjacentTile = board[nx][ny];
+                            
+                            const hazardType = adjacentTile.getHazardtype();
+                            if (hazardType !== "none") {
+                                continue;
+                            }
+                            
+                            const obstacleType = adjacentTile.getObstacletype();
+                            if (obstacleType === "pit" || obstacleType === "spikes") {
+                                continue;
+                            }
+                            
+                            adjacentTile.setUnhideable(true);
+                            adjacentTile.setHide(false);
+                        }
+                    }
+                    
+                    console.log('[Concentration] Revealed 3x3 around marked hazard');
                 }
                 
                 // Progress criticker (only for normal Criticized, not Judgment)

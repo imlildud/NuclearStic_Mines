@@ -146,7 +146,7 @@ export class Renderer {
             "spikes_prepared", 
             "spikes_on",
             "spikes_hide",       
-            "1","2","3","4","5","6","7","8","9","?"  // Hazard count numbers
+            "1","2","3","4","5","6","7","8","9","question"  // Hazard count numbers
         ];
         
         // Character and goal sprites
@@ -305,8 +305,13 @@ export class Renderer {
                 // ===== LAYER 3: HAZARD COUNT =====
                 const count = tile.getHazardcount();
                 if (count > 0 && !tile.isHide() && obstacle === "none" && hazard === "none") {
+                    const hasDelirium = currentPlayer.hasKeychain('delirium');
+                    let textureName = String(count);
+                    if (hasDelirium) {
+                        textureName = "question"; // uses ?.png from assets
+                    }
                     this.safeDraw(
-                        String(count),
+                        textureName,
                         drawX - objOffsetX,
                         drawY - objOffsetY,
                         objSize
@@ -379,24 +384,33 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
-                if (tile.isMarked() && tile.getHazardtype() === "nest" && !tile.isSmoke()) {
+                const hasDelirium = currentPlayer.hasKeychain('delirium');
+                const isMarked = tile.isMarked();
+                const isFlagged = tile.isFlagged();
+                const isJumpflagged = tile.isJumpflagged();
+                const isSmoke = tile.isSmoke();
+
+                // Delirium: marked always shows as flagged (visual only)
+                const shouldShowAsFlagged = hasDelirium && isMarked;
+
+                if (isMarked && tile.getHazardtype() === "nest" && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
-                        "nest_marked",
+                        shouldShowAsFlagged ? "flagged" : "nest_marked",
                         drawX - objOffsetX,
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
                 }
-                else if (tile.isMarked() && !tile.isSmoke()) {
+                else if (isMarked && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
-                        "marked",
+                        shouldShowAsFlagged ? "flagged" : "marked",
                         drawX - objOffsetX,
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (tile.isFlagged() && !tile.isSmoke()) {
+                } else if (isFlagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "flagged",
@@ -404,7 +418,7 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (tile.isJumpflagged() && !tile.isSmoke()) {
+                } else if (isJumpflagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "jumpflag",
@@ -560,6 +574,15 @@ export class Renderer {
                     );
                 }
             }
+        }
+        // ===== DELIRIUM: =====
+        const hasDelirium = currentPlayer.hasKeychain('delirium');
+        if (hasDelirium) {
+            ctx.save();
+            ctx.globalAlpha = 0.25;
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
         }
     }
     
