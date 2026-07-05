@@ -120,6 +120,10 @@ export class GameManager {
         
         // Apply keychains functions
         this.keychainManager.applyResistance(this.player);
+        if (this.player.hasKeychain('judgment')) {
+            this.player.setCriticized(true);
+            this.player.setCritickerGoal(9999); // Permanent effect
+        }
         this.getFlagModeManager().updateSwampButtonUI();
         this.reversionManager.updateButtonUI();
         // Memory markers

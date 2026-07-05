@@ -531,6 +531,11 @@ canvas {
 /* ========================================================= */
 
 @media (orientation: portrait) {
+    .touch-movement, .touch-flags {
+        bottom: 3vh;
+        grid-template-columns: repeat(3, clamp(42px, 38vw, 50px));
+        grid-template-rows: repeat(2, clamp(42px, 38vw, 50px));
+    }
     
     .touch-movement { left: 3vw; }
     .touch-flags    { right: 3vw; }

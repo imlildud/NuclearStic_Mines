@@ -319,7 +319,6 @@ export class CharacterController {
                 if (this.gameManager && this.gameManager.criticker) {
                     this.gameManager.criticker.abandon();
                 }
-                return;
             }
 
             // Normal damage
@@ -430,29 +429,43 @@ export class CharacterController {
     
     // Check if player has won (all goals rescued and returned to start)
     winCondition(board) {
-        return board[this.character.getPosX()][this.character.getPosY()].isStart() &&
-               this.character.getRescued() === this.remainingGoals;
+        const hasJudgment = this.character.hasKeychain('judgment');
+        const allRescued = board[this.character.getPosX()][this.character.getPosY()].isStart() &&
+                        this.character.getRescued() === this.remainingGoals;
+        
+        if (hasJudgment) {
+            // Must have 0 flags remaining
+            return allRescued && this.character.getFlags() === 0;
+        }
+        
+        return allRescued;
     }
     
     // ======================= DAMAGE HANDLING =======================
     
     // Apply damage to character
     hurtCharacter() {
+        // Judgment: criticized never goes away
+        const hasJudgment = this.character.hasKeychain('judgment');
+        
         this.character.decrementHp(1);
-        this.character.incrementDamageTaken(1); 
+        this.character.incrementDamageTaken(1);
 
-        // Play hurt sound
         if (this.gameManager && this.gameManager.audio) {
             this.gameManager.audio.playHurtSFX();
         }
 
-        // Trigger visual damage flash (set flag for renderer)
         this.character.setDamageFlash(true);
         setTimeout(() => {
             if (this.character) {
                 this.character.setDamageFlash(false);
             }
         }, 150);
+        
+        // If Judgment, stay criticized
+        if (hasJudgment) {
+            this.character.setCriticized(true);
+        }
         
         if (this.character.getHp() <= 0) this.killCharacter();
     }
