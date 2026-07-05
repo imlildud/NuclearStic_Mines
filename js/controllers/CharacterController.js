@@ -12,8 +12,8 @@ export class CharacterController {
         this.character = character;              // Reference to CharacterModel
         this.boardController = boardController;  // Reference to BoardController
         this.gameManager = gameManager;          // Reference to GameManager for settings
-        this.totalGoals = 0;                     // Total goals to rescue
-        this.remainingGoals = 0;                 // Goals still needing rescue
+        this.totalPals = 0;                     // Total pals to rescue
+        this.remainingPals = 0;                 // Pals still needing rescue
     }
     
     // Helper to check if fall damage is enabled
@@ -24,9 +24,9 @@ export class CharacterController {
     // ======================= GOAL SETTER =======================
     
     // Set the number of goals for the current mission
-    setCharacterGoals(v) {
-        this.remainingGoals = v;
-        this.totalGoals = v;
+    setCharacterPals(v) {
+        this.remainingPals = v;
+        this.totalPals = v;
     }
     
     // ======================= START POSITION =======================
@@ -253,7 +253,7 @@ export class CharacterController {
         const isMarked = tile.isMarked();
         const hasDamageRatio = tile.getDamageratio();
         const hasDetectionRatio = tile.getDetectionratio();
-        const goalType = tile.getGoaltype();
+        const palType = tile.getPalType();
         const isStartTile = tile.isStart();
         
         // ===================== HAZARD HANDLING =====================
@@ -363,17 +363,17 @@ export class CharacterController {
             }
         }
         
-        // ===================== GOAL HANDLING =====================
+        // ===================== PAL HANDLING =====================
         
-        // Rescue children if conditions are met
-        if (goalType !== "none") {
+        // Rescue pals if conditions are met
+        if (palType !== "none" && tile.isPalAlive()) {
             if (this.character.getForce() > this.character.getRescued()) {
                 this.character.incrementRescue();
-                tile.setGoaltype("none");
-                tile.setGoallive(false);
+                tile.setPalType("none");
+                tile.setPalAlive(false);
                 this.character.setRegen(true);
                 
-                // Reset destiny target when a goal is rescued
+                // Reset destiny target when a pal is rescued
                 if (this.gameManager) {
                     this.gameManager.resetDestinyTarget();
                 }
@@ -388,14 +388,14 @@ export class CharacterController {
         
         // Deliver rescued children at start tile
         if (isStartTile) {
-            this.deliverGoal(board);
+            this.deliverPal(board);
         }
     }
     
-    // ======================= GOAL DELIVERY =======================
+    // ======================= PAL DELIVERY =======================
     
-    // Deliver rescued children at the start tile and apply rewards
-    deliverGoal(board) {
+    // Deliver rescued pals at the start tile and apply rewards
+    deliverPal(board) {
         const tile = board[this.character.getPosX()][this.character.getPosY()];
         
         if (tile.isStart() && this.character.getRescued() > 0) {
@@ -407,7 +407,7 @@ export class CharacterController {
             }
             
             // ===== MOMMY ABILITY (Ability 3) =====
-            // Each rescued child grants armor, health and force.
+            // Each rescued pal grants armor, health and force.
             if (this.character.getAbilityId() === 3) {
                 for (let i = 0; i < rescued; i++) {
                     if (this.character.getAp() < 3) {
@@ -420,7 +420,7 @@ export class CharacterController {
             }
             
             // Update mission stats
-            this.remainingGoals -= rescued;
+            this.remainingPals -= rescued;
             this.character.decrementRescue(rescued);
             this.character.incrementTotalRescued(rescued);
         }
@@ -432,7 +432,7 @@ export class CharacterController {
     winCondition(board) {
         const hasJudgment = this.character.hasKeychain('judgment');
         const allRescued = board[this.character.getPosX()][this.character.getPosY()].isStart() &&
-                        this.character.getRescued() === this.remainingGoals;
+                        this.character.getRescued() === this.remainingPals;
         
         if (hasJudgment) {
             // Must have 0 flags remaining
@@ -475,6 +475,11 @@ export class CharacterController {
                 flagManager.removeMarkedHazard(board);
             }
         }
+
+        // ===== LINK: Kill linked pal on damage =====
+        if (this.gameManager) {
+            this.gameManager.onPlayerDamage();
+        }
         
         if (this.character.getHp() <= 0) this.killCharacter();
     }
@@ -499,7 +504,7 @@ export class CharacterController {
         
     // ======================= GETTERS =======================
     
-    getTotalGoals() { return this.totalGoals; }
-    getRemainingGoals() { return this.remainingGoals; }
-    getRescuedGoals() { return this.character.getRescued(); }
+    getTotalPals() { return this.totalPals; }
+    getRemainingPals() { return this.remainingPals; }
+    getRescuedPals() { return this.character.getRescued(); }
 }

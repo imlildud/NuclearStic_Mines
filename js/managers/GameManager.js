@@ -18,6 +18,7 @@ import { BundleUIManager } from "./BundleUIManager.js";
 import { KeychainUIManager } from "./KeychainUIManager.js";
 import { KeychainManager } from "./KeychainManager.js";
 import { ReversionManager } from "./ReversionManager.js";
+import { LinkManager } from "./LinkManager.js";
 import { FlagManager } from "./FlagManager.js";
 import { FlagModeManager } from "./FlagModeManager.js"; 
 import { UIManager } from "./UIManager.js";
@@ -58,6 +59,7 @@ export class GameManager {
         // Sub-managers
         this.keychainManager = new KeychainManager(this);
         this.reversionManager = new ReversionManager(this);
+        this.linkManager = new LinkManager(this);
         this.flagManager = new FlagManager(this);
         this.uiManager = new UIManager(this);
         this.levelConfigurator = new LevelConfigurator(this);
@@ -79,6 +81,7 @@ export class GameManager {
         }
         
         this.player = CharacterFactory.createCharacter(this.config.character);
+        this.player.resetDeadPals();
         this.turnManager.reset();
         
         // Board controller
@@ -126,6 +129,7 @@ export class GameManager {
         }
         this.getFlagModeManager().updateSwampButtonUI();
         this.reversionManager.updateButtonUI();
+        this.setLinkedPal(this.board);
         // Memory markers
         this.memoryMarkers = 3;
         
@@ -226,6 +230,18 @@ export class GameManager {
 
     activateReversion() {
         return this.reversionManager.activate();
+    }
+
+    setLinkedPal(board) {
+        this.linkManager.setLinkedPal(board);
+    }
+
+    getLinkedPal() {
+        return this.linkManager.getLinkedPal();
+    }
+
+    onPlayerDamage() {
+        this.linkManager.onPlayerDamage();
     }
 
     // ======================= FLAG SYSTEM =======================

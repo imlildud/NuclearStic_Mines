@@ -33,6 +33,7 @@ export class CharacterModel {
         this.regen = false;         // Health regeneration flag
         this.rescued = 0;           // Currently rescued count (current mission)
         this.totalRescued = 0;      // Total rescued across all missions
+        this.deadPals = 0;          // Dead pals across all missions
         this.failedFlags = 0;       // Failed flag attempts
         this.failedJumpFlags = 0;   // Failed jump flag attempts
 
@@ -165,6 +166,11 @@ export class CharacterModel {
     
     getTotalRescued() { return this.totalRescued; }
     incrementTotalRescued(v) { this.totalRescued += v; }
+
+    getDeadPals() { return this.deadPals; }
+    setDeadPals(v) { this.deadPals = v; }
+    incrementDeadPals() { this.deadPals++; }
+    resetDeadPals() { this.deadPals = 0; }
     
     // ======================= CHARACTER TYPE GETTERS & SETTERS =======================
     

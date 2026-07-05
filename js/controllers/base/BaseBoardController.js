@@ -62,8 +62,8 @@ export class BaseBoardController {
     }
     
     // Place start and goal tiles (override for custom placement)
-    generateStartAndGoal(board, numGoals, level) {
-        throw new Error("generateStartAndGoal() must be implemented by child class");
+    generateStartAndPal(board, numPals, level) {
+        throw new Error("generateStartAndPal() must be implemented by child class");
     }
     
     // Set safe tiles around start and goals (override for custom logic)
@@ -220,9 +220,9 @@ export class BaseBoardController {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
                 
-                if (tile.getGoaltype() === "joni") {
+                if (tile.getPalType() === "joni") {
                     tile.setHide(true);
-                } else if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isUnhideable()) {
+                } else if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure() && !tile.isUnhideable()) {
                     tile.setHide(true);
                 }
             }
@@ -332,7 +332,7 @@ export class BaseBoardController {
                     continue;
                 }
 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure()) {
+                if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure()) {
                     if (!hasVision){
                         tile.setHide(true);
                     }

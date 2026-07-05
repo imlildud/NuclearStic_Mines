@@ -21,6 +21,7 @@ export class CharacterFactory {
     static createCharacter(characterType) {
         const isHardcore = this.isHardcoreEnabled();
         const character = new CharacterModel();
+        character.deadPals = 0;
         character.setType(characterType);
         
         switch (characterType) {

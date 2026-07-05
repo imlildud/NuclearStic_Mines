@@ -159,7 +159,8 @@ export class Renderer {
             "dummie",        // Tutorial goal
             "charlie",       // Goal type
             "joni",          // Hidden goal type
-            "ru"             // Goal type
+            "ru",             // Goal type
+            "deathpal"
         ];
         
         // Helper function to load an image
@@ -450,14 +451,23 @@ export class Renderer {
                     );
                 }
                 
-                // ===== LAYER 7.5: GOALS (Children to rescue) =====
-                const goalType = tile.getGoaltype();
-                if (goalType !== "none" && !tile.isSmoke()) {
-                    const shouldDraw = (goalType !== "joni") || (goalType === "joni" && !tile.isHide());
+                // ===== LAYER 7.5: PALS (Children to rescue) =====
+                const palType = tile.getPalType();
+                const palAlive = tile.isPalAlive();
+
+                if (palType !== "none" && !tile.isSmoke()) {
+                    const shouldDraw = (palType !== "joni") || (palType === "joni" && !tile.isHide());
                     if (shouldDraw) {
                         const goalHeight = objSize * 1.3;
+                        
+                        // ===== DEATHPAL: Show for any dead pal =====
+                        let spriteName = palType;
+                        if (!palAlive) {
+                            spriteName = "deathpal";
+                        }
+                        
                         this.safeDraw(
-                            goalType,
+                            spriteName,
                             drawX - objOffsetX,
                             drawY - objOffsetY - (goalHeight - objSize),
                             objSize

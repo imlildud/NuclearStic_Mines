@@ -50,14 +50,14 @@ export class BoardController extends BaseBoardController {
         return this.createEmptyBoard(boardSize);
     }
     
-    generateStartAndGoal(board, numGoals, level) {
+    generateStartAndPal(board, numPals, level) {
         const boardSize = board.length;
         const probability = this.randInt(0, 3);
         const edgemin = 0;
         const edgemax = boardSize - 1;
         const randomPos = this.randInt(0, boardSize - 1);
         
-        const goalTypes = [
+        const palTypes = [
             { type: "charlie", minLevel: 0 },
             { type: "joni", minLevel: 5 },
             { type: "ru", minLevel: 9999 },
@@ -65,7 +65,7 @@ export class BoardController extends BaseBoardController {
             { type: "zac", minLevel: 9999 }
         ];
         
-        const validGoals = goalTypes.filter(g => level >= g.minLevel);
+        const validPals = palTypes.filter(g => level >= g.minLevel);
         
         switch (probability) {
             case 0: board[edgemin][randomPos].setStart(true); break;
@@ -74,45 +74,46 @@ export class BoardController extends BaseBoardController {
             case 3: board[randomPos][edgemax].setStart(true); break;
         }
         
-        if (validGoals.length === 0) {
-            console.warn("No valid goals");
+        if (validPals.length === 0) {
+            console.warn("No valid pals");
             return board;
         }
         
-        let remainingGoals = numGoals;
+        let remainingPals = numPals;
         let attempts = 0;
         const maxattempts = 5000;
     
-        while (remainingGoals > 0 && attempts < maxattempts) {
+        while (remainingPals > 0 && attempts < maxattempts) {
             attempts++;
-            let goalX = this.randInt(0, boardSize - 1);
-            let goalY = this.randInt(0, boardSize - 1);
+            let palX = this.randInt(0, boardSize - 1);
+            let palY = this.randInt(0, boardSize - 1);
             
             switch (probability) {
-                case 0: if (goalX <= boardSize / 2) goalX = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
-                case 1: if (goalY <= boardSize / 2) goalY = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
-                case 2: if (goalX >= boardSize / 2) goalX = Math.floor(this.random() * (boardSize / 2)); break;
-                case 3: if (goalY >= boardSize / 2) goalY = Math.floor(this.random() * (boardSize / 2)); break;
+                case 0: if (palX <= boardSize / 2) palX = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
+                case 1: if (palY <= boardSize / 2) palY = Math.floor(boardSize / 2 + this.random() * (boardSize / 2)); break;
+                case 2: if (palX >= boardSize / 2) palX = Math.floor(this.random() * (boardSize / 2)); break;
+                case 3: if (palY >= boardSize / 2) palY = Math.floor(this.random() * (boardSize / 2)); break;
             }
             
-            const tile = board[goalX][goalY];
+            const tile = board[palX][palY];
             
-            if (tile.getGoaltype() === "none" && !tile.isStart()) {
-                const goalIndex = this.randInt(0, validGoals.length - 1);
-                tile.setGoaltype(validGoals[goalIndex].type);
+            if (tile.getPalType() === "none" && !tile.isStart()) {
+                const palIndex = this.randInt(0, validPals.length - 1);
+                tile.setPalType(validPals[palIndex].type);
+                tile.setPalAlive(true);
                 
-                if (validGoals[goalIndex].type === "joni") {
+                if (validPals[palIndex].type === "joni") {
                     tile.setSecurehidden(true);
                 } else {
                     tile.setSecure(true);
                 }
                 
-                console.log(`Children tile generated at [${goalX},${goalY}]: ${validGoals[goalIndex].type}`);
-                remainingGoals--;
+                console.log(`Pal tile generated at [${palX},${palY}]: ${validPals[palIndex].type}`);
+                remainingPals--;
             }
             
             if (attempts >= maxattempts) {
-                console.warn("Goal generation stopped by safety");
+                console.warn("Pal generation stopped by safety");
             }
         }
         
@@ -130,14 +131,14 @@ export class BoardController extends BaseBoardController {
             for (let j = 0; j < boardSize; j++) {
                 board[i][j].setHide(false);
                 
-                if (board[i][j].getGoaltype() === "joni") {
+                if (board[i][j].getPalType() === "joni") {
                     for (const [dx, dy] of directions) {
                         const x = i + dx, y = j + dy;
                         if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
                             board[x][y].setSecurehidden(true);
                         }
                     }
-                } else if (board[i][j].isStart() || board[i][j].getGoaltype() !== "none") {
+                } else if (board[i][j].isStart() || board[i][j].getPalType() !== "none") {
                     for (const [dx, dy] of directions) {
                         const x = i + dx, y = j + dy;
                         if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
@@ -186,7 +187,7 @@ export class BoardController extends BaseBoardController {
                 const y = this.randInt(0, boardSize - 1);
                 const tile = board[x][y];
                 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() && !tile.isSecurehidden() &&
+                if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure() && !tile.isSecurehidden() &&
                     !tile.isMarked() && tile.getHazardtype() === "none" && tile.getObstacletype() === "none") {
                     tile.setTileheight(chosenType);
                     remaining--;
@@ -235,7 +236,7 @@ export class BoardController extends BaseBoardController {
                             const targetTile = board[x][y];
                             
                             if (!targetTile.isStart() && 
-                                targetTile.getGoaltype() === "none" && 
+                                targetTile.getPalType() === "none" && 
                                 !targetTile.isSecure() &&
                                 !targetTile.isSecurehidden() &&
                                 !targetTile.isMarked() && 
@@ -288,7 +289,7 @@ export class BoardController extends BaseBoardController {
                 const y = this.randInt(0, boardSize - 1);
                 const tile = board[x][y];
                 
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() &&
+                if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure() &&
                     !tile.isSecurehidden() && !tile.isMarked() && tile.getHazardtype() === "none" &&
                     tile.getObstacletype() === "none") {
                     tile.setObstacletype(chosenType);
@@ -341,7 +342,7 @@ export class BoardController extends BaseBoardController {
             const y = this.randInt(0, boardSize - 1);
             const tile = board[x][y];
         
-            if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure() &&
+            if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure() &&
                 !tile.isSecurehidden() && !tile.isMarked() && tile.getHazardtype() === "none" &&
                 tile.getObstacletype() === "none") {
             
@@ -501,7 +502,7 @@ export class BoardController extends BaseBoardController {
             for (let j = 0; j < board.length; j++) {
                 const tile = board[i][j];
                 if (!tile.isStart() && 
-                    tile.getGoaltype() === "none" &&
+                    tile.getPalType() === "none" &&
                     tile.getHazardtype() === "none" &&
                     tile.getObstacletype() === "none" &&
                     !tile.haveTreasure()) {
@@ -521,7 +522,7 @@ export class BoardController extends BaseBoardController {
             board[pos.x][pos.y].setTreasure(true);
             console.log(`[Treasure] Placed at (${pos.x}, ${pos.y})`);
         }
-
+        
         return board;
     }
 }
