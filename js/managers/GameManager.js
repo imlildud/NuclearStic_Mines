@@ -120,12 +120,6 @@ export class GameManager {
         
         // Apply keychains functions
         this.keychainManager.applyResistance(this.player);
-        if (this.player.hasKeychain('revelation')) {
-            this.player.initKeychainUses('revelation', 10);
-        }
-        if (this.player.hasKeychain('purity')) {
-            this.player.initKeychainUses('purity', 9);
-        }
         this.getFlagModeManager().updateSwampButtonUI();
         this.reversionManager.updateButtonUI();
         // Memory markers
