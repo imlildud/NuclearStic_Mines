@@ -40,6 +40,10 @@ export class HUDManager {
         const renderer = this.game.renderer;
         if (renderer) renderer.setPlayer(player);
 
+        // ===== DELIRIUM: Full screen grayscale =====
+        const hasDelirium = player.hasKeychain('delirium');
+        document.body.classList.toggle('delirium', hasDelirium);
+
         this.updateCharacterIcon(player);
         this.updateHealth(player);
         this.updateFlags(player);
@@ -226,6 +230,7 @@ export class HUDManager {
         const hazardCount = tile.getHazardcount();
         const goalType = tile.getGoaltype();
         const pipe = tile.isSmoke();
+        const hasDelirium = player.hasKeychain('delirium');
 
         if (!pipe) {
             if (hazardType !== "none") {
@@ -234,12 +239,13 @@ export class HUDManager {
                 if (obstacleType === "spikes") {
                     const spikeState = tile.getSpikeState();
                     textureName = spikeState === "prepared" ? "spikes_prepared" :
-                                 spikeState === "on" ? "spikes_on" : "spikes_off";
+                                spikeState === "on" ? "spikes_on" : "spikes_off";
                 } else {
                     textureName = obstacleType;
                 }
             } else if (hazardCount > 0) {
-                textureName = hazardCount.toString();
+                // ===== DELIRIUM: Show "?" instead of number =====
+                textureName = hasDelirium ? "question" : hazardCount.toString();
             } else if (goalType !== "none") {
                 textureName = goalType;
             } else if (tile.isStart()) {

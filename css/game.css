@@ -80,6 +80,21 @@ canvas {
     z-index: 10001;
 }
 
+/* Delirium effect - full screen grayscale */
+body.delirium {
+    filter: grayscale(1) brightness(0.95);
+    transition: filter 0.5s ease;
+}
+
+body.delirium::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: inherit;
+    filter: grayscale(1) brightness(0.95);
+}
+
 /* ==================== CHARACTER GROUP ==================== */
 
 /* Character Group Container */
