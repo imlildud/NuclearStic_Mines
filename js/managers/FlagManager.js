@@ -221,6 +221,12 @@ export class FlagManager {
                 }
                 tile.setFlagged(false);
                 player.incrementFlags(); // Return the flag
+
+                // ===== OBLIVION: Remove a marked hazard =====
+                const hasOblivion = player.hasKeychain('oblivion');
+                if (hasOblivion) {
+                    this.removeMarkedHazard(board);
+                }
                 return;
             }
             
@@ -228,6 +234,12 @@ export class FlagManager {
             if (isCriticized && !hasHazard && !hasJudgment) {
                 player.setCriticized(false);
                 if (criticker) criticker.fail();
+
+                // ===== OBLIVION: Remove a marked hazard =====
+                const hasOblivion = player.hasKeychain('oblivion');
+                if (hasOblivion) {
+                    this.removeMarkedHazard(board);
+                }
             }
         }
     }
@@ -248,5 +260,38 @@ export class FlagManager {
             return { jumped: true, x: jumpX, y: jumpY };
         }
         return { jumped: false };
+    }
+
+    // ===== OBLIVION: Remove a marked hazard =====
+    removeMarkedHazard(board) {
+        const markedHazards = [];
+        
+        // Collect all marked hazards
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                const tile = board[i][j];
+                if (tile.isMarked() && tile.getHazardtype() !== "none") {
+                    markedHazards.push({ x: i, y: j, tile: tile });
+                }
+            }
+        }
+        
+        if (markedHazards.length === 0) {
+            console.log('[Oblivion] No marked hazards to remove');
+            return;
+        }
+        
+        // Pick random marked hazard
+        const random = markedHazards[Math.floor(Math.random() * markedHazards.length)];
+        
+        // Remove the mark
+        random.tile.setMarked(false);
+        
+        // Also remove flag if present (cleanup)
+        if (random.tile.isFlagged()) {
+            random.tile.setFlagged(false);
+        }
+        
+        console.log(`[Oblivion] Removed mark at (${random.x}, ${random.y})`);
     }
 }

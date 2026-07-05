@@ -296,6 +296,7 @@ export class CharacterController {
             }
             
             const hasProtection = this.character.hasKeychain("protection");
+            const hasJudgment = this.character.hasKeychain("judgment");
             if (hasProtection && isMarked) {
                 return;
             }
@@ -312,7 +313,7 @@ export class CharacterController {
             }
 
             // Criticker damage
-            if (this.character.isCriticized()) {
+            if (this.character.isCriticized() && !hasJudgment) {
                 this.character.setCriticized(false);
                 this.hurtCharacter();
                 
@@ -445,8 +446,8 @@ export class CharacterController {
     
     // Apply damage to character
     hurtCharacter() {
-        // Judgment: criticized never goes away
         const hasJudgment = this.character.hasKeychain('judgment');
+        const hasOblivion = this.character.hasKeychain('oblivion');
         
         this.character.decrementHp(1);
         this.character.incrementDamageTaken(1);
@@ -465,6 +466,14 @@ export class CharacterController {
         // If Judgment, stay criticized
         if (hasJudgment) {
             this.character.setCriticized(true);
+        }
+
+        if (hasOblivion && this.gameManager) {
+            const board = this.gameManager.getBoard();
+            const flagManager = this.gameManager.flagManager;
+            if (board && flagManager && typeof flagManager.removeMarkedHazard === 'function') {
+                flagManager.removeMarkedHazard(board);
+            }
         }
         
         if (this.character.getHp() <= 0) this.killCharacter();
