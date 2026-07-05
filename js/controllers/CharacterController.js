@@ -80,6 +80,68 @@ export class CharacterController {
         const currentTile = board[this.character.getPosX()][this.character.getPosY()];
         const targetTile = board[newX][newY];
 
+        // ===== HEIGHT DIFFERENCE CHECK =====
+        const heightDiff = targetTile.getTileheight() - currentTile.getTileheight();
+    
+        // Ability 4 (Scout) ignores all height restrictions
+        if (this.character.getAbilityId() !== 4) {
+            const hasAscent = this.character.hasKeychain('ascent');
+            const maxClimb = hasAscent ? 2 : 1;
+
+            // Can't climb up more than maxClimb levels
+            if (heightDiff > maxClimb) return;
+
+            // Can fall down 2 or more levels
+            if (heightDiff < - 1) { // Only trigger if falling 2 or more levels
+                const fallDistance = Math.abs(heightDiff);
+                const hasDescent = this.character.hasKeychain('descent');
+                const hasStealth = this.character.hasKeychain('stealth');
+
+                if (hasAscent && fallDistance < 3){
+                }
+                else if (hasDescent) {
+                    if (this.character.useKeychain('descent')) {
+                    } else {
+                        return;
+                    }
+                } else {
+                    const fallDamageEnabled = this.isFallDamageEnabled();
+                    
+                    if (fallDamageEnabled) {
+                        let fallDamage = fallDistance - 1;
+                        if (hasStealth) {
+                            fallDamage = Math.max(0, fallDamage - 1);
+                        }
+                        if (fallDamage > 0) {
+                            this.character.decrementHp(fallDamage);
+                            this.character.incrementDamageTaken(fallDamage);
+
+                            // Play hurt sound
+                            if (this.gameManager && this.gameManager.audio) {
+                                this.gameManager.audio.playHurtSFX();
+                            }
+
+                            // Trigger visual damage flash (set flag for renderer)
+                            this.character.setDamageFlash(true);
+                            setTimeout(() => {
+                                if (this.character) {
+                                    this.character.setDamageFlash(false);
+                                }
+                            }, 150);
+                            this.character.incrementDamageTaken(1);
+                        
+                            if (this.character.getHp() <= 0) {
+                                this.killCharacter();
+                                return;
+                            }
+                        }
+                    } else {
+                        return;
+                    }
+                }
+            }
+        }
+
         // ===== OBSTACLE HANDLING =====
         const obst = targetTile.getObstacletype();
         const pipe = targetTile.getHazardtype() === "pipe";
@@ -156,67 +218,6 @@ export class CharacterController {
                 this.character.setPosY(newY);
             }
             return;
-        }
-    
-        // ===== HEIGHT DIFFERENCE CHECK =====
-        const heightDiff = targetTile.getTileheight() - currentTile.getTileheight();
-    
-        // Ability 4 (Scout) ignores all height restrictions
-        if (this.character.getAbilityId() !== 4) {
-            const hasAscent = this.character.hasKeychain('ascent');
-            const maxClimb = hasAscent ? 2 : 1;
-
-            // Can't climb up more than maxClimb levels
-            if (heightDiff > maxClimb) return;
-
-            // Can fall down 2 or more levels
-            if (heightDiff < - 1) { // Only trigger if falling 2 or more levels
-                const fallDistance = Math.abs(heightDiff);
-                const hasDescent = this.character.hasKeychain('descent');
-                const hasStealth = this.character.hasKeychain('stealth');
-
-                if (hasAscent && fallDistance < 3){
-                }
-                else if (hasDescent) {
-                    if (this.character.useKeychain('descent')) {
-                    } else {
-                        return;
-                    }
-                } else {
-                    const fallDamageEnabled = this.isFallDamageEnabled();
-                    
-                    if (fallDamageEnabled) {
-                        let fallDamage = fallDistance - 1;
-                        if (hasStealth) {
-                            fallDamage = Math.max(0, fallDamage - 1);
-                        }
-                        if (fallDamage > 0) {
-                            this.character.decrementHp(fallDamage);
-
-                            // Play hurt sound
-                            if (this.gameManager && this.gameManager.audio) {
-                                this.gameManager.audio.playHurtSFX();
-                            }
-
-                            // Trigger visual damage flash (set flag for renderer)
-                            this.character.setDamageFlash(true);
-                            setTimeout(() => {
-                                if (this.character) {
-                                    this.character.setDamageFlash(false);
-                                }
-                            }, 150);
-                            this.character.incrementDamageTaken(1);
-                        
-                            if (this.character.getHp() <= 0) {
-                                this.killCharacter();
-                                return;
-                            }
-                        }
-                    } else {
-                        return;
-                    }
-                }
-            }
         }
     
         // Normal movement (no obstacle)
@@ -458,13 +459,22 @@ export class CharacterController {
     
     // Kill character and trigger game over
     killCharacter() {
-        this.character.setAlive(false);
-        this.character.incrementDamageTaken(10); 
+        // ===== CHECK FOR REVERSION AUTO-ACTIVATE =====
+        if (this.gameManager) {
+            const reversionManager = this.gameManager.reversionManager;
+            if (reversionManager && reversionManager.autoActivateOnDeath()) {
+                // Reversion activated, prevent game over
+                return;
+            }
+        }
+        
         if (this.boardController && this.boardController.gameManager) {
+            this.character.setAlive(false);
+            this.character.incrementDamageTaken(10);
             this.boardController.gameManager.handleGameOver();
         }
     }
-    
+        
     // ======================= GETTERS =======================
     
     getTotalGoals() { return this.totalGoals; }

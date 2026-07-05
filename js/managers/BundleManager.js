@@ -88,7 +88,7 @@ export class BundleManager {
             { id: 'delirium', rareza: 'cursed' }
         ];
 
-        this.dailyExcludedIds = ['fortune', 'greed'];
+        this.dailyExcludedIds = ['fortune', 'greed', 'stuffed'];
     }
 
     getTier() {

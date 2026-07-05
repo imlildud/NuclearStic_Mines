@@ -71,7 +71,17 @@ export class GameModeManager {
 
     handleLegacyLose(game) {
         console.log(`Game over: Record ${game.currentLevel}`);
+        const player = game.player;
+        if (player.hasKeychain('stuffed')) {
+            const keychainsToSave = player.inventory.filter(id => id !== 'stuffed');
+            if (keychainsToSave.length > 0) {
+                game.save.setStuffedKeychains(keychainsToSave);
+                console.log('[Stuffed] Saved keychains on death:', keychainsToSave);
+            }
+        }
+        
         game.keychainManager.clearLegacyKeychains();
+        
         if (game.isHardcoreEnabled()) {
             game.save.clearHardcoreProgress();
             game.currentLevel = 1;
@@ -81,26 +91,12 @@ export class GameModeManager {
         }
     }
 
-    // ======================= DAILY =======================
-    
-    handleDailyVictory(saveManager, score) {
-        console.log(`Daily complete! Score: ${score}`);
-        saveManager.saveDailyScore(score, true);
-    }
-
-    handleDailyLose(saveManager, score) {
-        console.log(`Daily failed! Score: ${score}`);
-        saveManager.saveDailyScore(score, false);
-    }
-
     // ======================= GENERIC =======================
     
     handleGameOver(game) {
         const scores = game.scoreboard.calculateScores();
         if (game.config.mode === "legacy") {
             this.handleLegacyLose(game);
-        } else if (game.config.mode === "daily") {
-            this.handleDailyLose(game.save, scores.total);
         }
     }
 

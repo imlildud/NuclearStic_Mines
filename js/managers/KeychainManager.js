@@ -16,7 +16,6 @@ export class KeychainManager {
         const keychains = player.inventory || [];
         this.gameManager.save.setLegacyKeychains(keychains);
         
-        // ===== Save keychain uses too =====
         const uses = player.keychainUses || {};
         this.gameManager.save.setLegacyKeychainUses(uses);
         
@@ -25,6 +24,36 @@ export class KeychainManager {
     }
 
     loadLegacyKeychains(player) {
+        // ===== CHECK FOR STUFFED FIRST =====
+        const stuffedKeychains = this.gameManager.save.getStuffedKeychains();
+        
+        if (stuffedKeychains && stuffedKeychains.length > 0) {
+            // Stuffed found: use it as legacy inventory
+            console.log('[Stuffed] Found saved keychains:', stuffedKeychains);
+            
+            const maxSize = player.maxInventorySize || 5;
+            player.inventory = [];
+            
+            for (const keychainId of stuffedKeychains) {
+                if (player.inventory.length >= maxSize) break;
+                if (keychainId && !player.inventory.includes(keychainId)) {
+                    player.inventory.push(keychainId);
+                }
+            }
+            
+            // Clear stuffed after using it (one-time use)
+            this.gameManager.save.clearStuffedKeychains();
+            
+            // Initialize uses for loaded keychains
+            KeychainConfig.initKeychainUsesForPlayer(player);
+            this.gameManager.getFlagModeManager().updateSwampButtonUI();
+            this.gameManager.reversionManager.updateButtonUI();
+            
+            console.log('[Stuffed] Loaded into inventory:', player.inventory);
+            return;
+        }
+        
+        // ===== Normal legacy loading (no stuffed) =====
         const savedKeychains = this.gameManager.save.getLegacyKeychains();
         const savedUses = this.gameManager.save.getLegacyKeychainUses();
         
@@ -47,10 +76,8 @@ export class KeychainManager {
             }
         }
 
-        // ===== Load keychain uses =====
         player.keychainUses = { ...savedUses };
         
-        // Clean up uses for keychains no longer in inventory
         for (const [id] of Object.entries(player.keychainUses)) {
             if (!player.inventory.includes(id)) {
                 delete player.keychainUses[id];
@@ -87,6 +114,8 @@ export class KeychainManager {
         }
 
         KeychainConfig.initKeychainUsesForPlayer(player);
+        this.gameManager.getFlagModeManager().updateSwampButtonUI();
+        this.gameManager.reversionManager.updateButtonUI();
         
         console.log(`[Daily] Gave ${addedCount} keychains from seed ${seed}`);
         console.log(`[Daily] Keychains: ${player.inventory.join(', ')}`);
@@ -114,6 +143,8 @@ export class KeychainManager {
         }
 
         KeychainConfig.initKeychainUsesForPlayer(player);
+        this.gameManager.getFlagModeManager().updateSwampButtonUI();
+        this.gameManager.reversionManager.updateButtonUI();
         
         console.log(`[Custom] Loaded ${addedCount} saved keychains: ${player.inventory.join(', ')}`);
     }

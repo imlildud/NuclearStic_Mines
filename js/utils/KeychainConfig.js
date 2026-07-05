@@ -10,8 +10,7 @@ export const KeychainConfig = {
         'descent': 9,
         'salvation': 3,
         'purity': 18,
-        'reversion': 4,
-        'stuffed': 20
+        'reversion': 3,
     },
     
     // Keychains that are passive (no uses)
@@ -31,6 +30,7 @@ export const KeychainConfig = {
         'fortune',
         'vision',
         'continuity',
+        'stuffed',
         'judgment',
         'link',
         'oblivion',

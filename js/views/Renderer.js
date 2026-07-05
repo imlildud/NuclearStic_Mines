@@ -37,6 +37,11 @@ export class Renderer {
         this.justMoved = false;
         this.isScoutJump = false;
         this.justMovedFrames = 0;
+
+        // Mine flash state
+        this.isFlashing = false;
+        this.flashOverlay = null;
+        this.flashTimeouts = [];
     }
     
     // ======================= HEIGHT OFFSET CACHE =======================
@@ -578,9 +583,41 @@ export class Renderer {
         this.ctx.drawImage(img, x, y, size, size);
     }
 
+    // ======================= FLASH EFFECT HELPERS =======================
+
+    clearFlashTimeouts() {
+        for (const timeout of this.flashTimeouts) {
+            clearTimeout(timeout);
+        }
+        this.flashTimeouts = [];
+    }
+
+    removeFlashOverlay() {
+        if (this.flashOverlay && this.flashOverlay.parentNode) {
+            this.flashOverlay.remove();
+            this.flashOverlay = null;
+        }
+    }
+
     // Trigger mine explosion effect (blackout + blur recovery)
     triggerMineFlash() {
-        // Create overlay container
+        // ===== If already flashing, reset =====
+        if (this.isFlashing) {
+            this.clearFlashTimeouts();
+            this.removeFlashOverlay();
+            this.canvas.style.filter = '';
+            this.canvas.style.transition = '';
+        }
+        
+        this.isFlashing = true;
+        
+        // ===== PLAY DEATH SFX =====
+        const audioManager = this.game.audio;
+        if (audioManager) {
+            audioManager.playDeathSFX();
+        }
+        
+        // ===== CREATE OVERLAY =====
         const overlay = document.createElement('div');
         overlay.style.position = 'fixed';
         overlay.style.top = '0';
@@ -594,39 +631,123 @@ export class Renderer {
         overlay.style.transition = 'opacity 0.15s ease';
         
         document.body.appendChild(overlay);
+        this.flashOverlay = overlay;
         
-        // Apply blur to canvas
+        // ===== CANVAS BLUR =====
         const canvas = this.canvas;
         const originalFilter = canvas.style.filter;
         canvas.style.transition = 'filter 0.2s ease';
         canvas.style.filter = 'blur(8px) brightness(0.3)';
         
-        // Blackout
-        setTimeout(() => {
-            overlay.style.opacity = '1';
+        // ===== BLACKOUT =====
+        const t1 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '1';
         }, 90);
+        this.flashTimeouts.push(t1);
         
-        // Hold blackout + blur
-        setTimeout(() => {
-            // Start recovery - fade out black overlay
-            overlay.style.opacity = '0';
-            
-            // Gradually remove blur
+        // ===== RECOVERY =====
+        const t2 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '0';
             canvas.style.filter = 'blur(4px) brightness(0.5)';
             
-            setTimeout(() => {
-                canvas.style.filter = 'blur(2px) brightness(0.7)';
-                
-                setTimeout(() => {
-                    canvas.style.filter = 'blur(1px) brightness(0.9)';
-                    
-                    setTimeout(() => {
-                        canvas.style.filter = originalFilter || 'none';
+            const finalSteps = [
+                { delay: 3000, filter: 'blur(2px) brightness(0.7)' },
+                { delay: 6000, filter: 'blur(1px) brightness(0.9)' },
+                { delay: 9000, filter: originalFilter || 'none' }
+            ];
+            
+            for (const step of finalSteps) {
+                const t = setTimeout(() => {
+                    canvas.style.filter = step.filter;
+                    if (step.filter === originalFilter || step.filter === 'none') {
                         canvas.style.transition = '';
-                        overlay.remove();
-                    }, 6000);
-                }, 6000);
-            }, 3000);
+                        if (overlay && overlay.parentNode) {
+                            overlay.remove();
+                        }
+                        this.isFlashing = false;
+                        this.flashOverlay = null;
+                    }
+                }, step.delay);
+                this.flashTimeouts.push(t);
+            }
         }, 3000);
+        this.flashTimeouts.push(t2);
+    }
+
+    // ======================= REWIND EFFECT =======================
+    
+    triggerRewind() {
+        // ===== If already rewinding, reset =====
+        if (this.isRewinding) {
+            this.clearFlashTimeouts();
+            this.removeFlashOverlay();
+            this.canvas.style.filter = '';
+            this.canvas.style.transition = '';
+        }
+        
+        this.isRewinding = true;
+        
+        // ===== PLAY REWIND SOUND =====
+        const audioManager = this.game.audio;
+        if (audioManager) {
+            audioManager.playRewindSFX();
+        }
+        
+        // ===== CREATE OVERLAY =====
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'black';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '20000';
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.15s ease';
+        
+        document.body.appendChild(overlay);
+        this.flashOverlay = overlay;
+        
+        // ===== CANVAS EFFECT =====
+        const canvas = this.canvas;
+        const originalFilter = canvas.style.filter;
+        canvas.style.transition = 'filter 0.2s ease';
+        canvas.style.filter = 'blur(6px) brightness(0.4)';
+        
+        // ===== FLASH IN =====
+        const t1 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '1';
+        }, 80);
+        this.flashTimeouts.push(t1);
+        
+        // ===== FLASH OUT =====
+        const t2 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '0';
+            canvas.style.filter = 'blur(3px) brightness(0.6)';
+            
+            // ===== RECOVERY =====
+            const recoverySteps = [
+                { delay: 400, filter: 'blur(2px) brightness(0.8)' },
+                { delay: 800, filter: 'blur(1px) brightness(0.9)' },
+                { delay: 1200, filter: originalFilter || 'none' }
+            ];
+            
+            for (const step of recoverySteps) {
+                const t = setTimeout(() => {
+                    canvas.style.filter = step.filter;
+                    if (step.filter === originalFilter || step.filter === 'none') {
+                        canvas.style.transition = '';
+                        if (overlay && overlay.parentNode) {
+                            overlay.remove();
+                        }
+                        this.isRewinding = false;
+                        this.flashOverlay = null;
+                    }
+                }, step.delay);
+                this.flashTimeouts.push(t);
+            }
+        }, 300);
+        this.flashTimeouts.push(t2);
     }
 }

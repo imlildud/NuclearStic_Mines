@@ -8,13 +8,35 @@ export class InputManager {
         this.game = game;
         this.renderer = renderer;
         this.audio = audio;
+
+        this.lastFlagTime = 0;
+        this.FLAG_DELAY = 200;
+        this.lastSwampTime = 0;
+        this.SWAMP_DELAY = 300;
+
         this.setupKeyboard();
         this.setupTouch();
+    }
+
+    canActFlag() {
+        const now = Date.now();
+        if (now - this.lastFlagTime < this.FLAG_DELAY) return false;
+        this.lastFlagTime = now;
+        return true;
+    }
+
+    canActSwamp() {
+        const now = Date.now();
+        if (now - this.lastSwampTime < this.SWAMP_DELAY) return false;
+        this.lastSwampTime = now;
+        return true;
     }
 
     setupKeyboard() {
         // Flag controls (Arrow keys)
         window.addEventListener("keydown", (e) => {
+            if (!this.canActFlag()) return;
+
             switch (e.key) {
                 case "ArrowUp":    this.game.handleFlagDirection("Up"); break;
                 case "ArrowDown":  this.game.handleFlagDirection("Down"); break;
@@ -40,7 +62,17 @@ export class InputManager {
         window.addEventListener("keydown", (e) => {
             if (e.key === "f" || e.key === "F") {
                 e.preventDefault();
-                this.toggleSwampMode();
+                if (this.canActSwamp()) {
+                    this.toggleSwampMode();
+                }
+            }
+        });
+
+        // Reversion shortcut (R key)
+        window.addEventListener("keydown", (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                this.game.reversionManager.activate();
             }
         });
     }
@@ -147,6 +179,18 @@ export class InputManager {
                 this.toggleSwampMode();
             });
         }
+
+        // Rewind button
+        const restartBtn = document.getElementById("restart-btn");
+        if (restartBtn) {
+            restartBtn.addEventListener("click", () => {
+                this.game.reversionManager.activate();
+            });
+            restartBtn.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                this.game.reversionManager.activate();
+            });
+        }
     }
 
     toggleSwampMode() {
@@ -156,11 +200,14 @@ export class InputManager {
         // Check if player has any flag-mode keychain
         const available = game.getAvailableFlagModes();
         if (available.length === 0) {
-            game.showMessage('No flag-mode keychains available');
             return;
         }
         
         // Cycle to next mode
         game.cycleFlagMode();
+
+        if (this.audio) {
+            this.audio.playRescueSFX();
+        }
     }
 }

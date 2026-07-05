@@ -17,6 +17,7 @@ import { BundleManager } from "./BundleManager.js";
 import { BundleUIManager } from "./BundleUIManager.js";
 import { KeychainUIManager } from "./KeychainUIManager.js";
 import { KeychainManager } from "./KeychainManager.js";
+import { ReversionManager } from "./ReversionManager.js";
 import { FlagManager } from "./FlagManager.js";
 import { FlagModeManager } from "./FlagModeManager.js"; 
 import { UIManager } from "./UIManager.js";
@@ -56,6 +57,7 @@ export class GameManager {
         
         // Sub-managers
         this.keychainManager = new KeychainManager(this);
+        this.reversionManager = new ReversionManager(this);
         this.flagManager = new FlagManager(this);
         this.uiManager = new UIManager(this);
         this.levelConfigurator = new LevelConfigurator(this);
@@ -124,6 +126,8 @@ export class GameManager {
         if (this.player.hasKeychain('purity')) {
             this.player.initKeychainUses('purity', 9);
         }
+        this.getFlagModeManager().updateSwampButtonUI();
+        this.reversionManager.updateButtonUI();
         // Memory markers
         this.memoryMarkers = 3;
         
@@ -222,6 +226,10 @@ export class GameManager {
         }
     }
 
+    activateReversion() {
+        return this.reversionManager.activate();
+    }
+
     // ======================= FLAG SYSTEM =======================
     
     handleFlagDirection(direction) {
@@ -274,8 +282,7 @@ export class GameManager {
     handleVictory() {
         this.gameInputLocked = true;
         if (this.config.mode === "daily") {
-            const scores = this.scoreboard.calculateScores();
-            this.gameModeManager.handleDailyVictory(this.save, scores.total);
+            this.save.markDailyCompleted();
         }
         this.scoreboard.show(true);
         this.lastResult = "victory";
@@ -283,6 +290,9 @@ export class GameManager {
 
     handleGameOver() {
         this.gameInputLocked = true;
+        if (this.config.mode === "daily") {
+            this.save.markDailyFailed();
+        }
         this.audio.playDeathSFX();
         this.gameModeManager.handleGameOver(this);
         this.scoreboard.show(false);

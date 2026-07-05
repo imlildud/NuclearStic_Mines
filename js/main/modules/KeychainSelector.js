@@ -29,7 +29,7 @@ const rarezaMap = {
 function getKeychainList() {
     const bundleManager = new BundleManager(null, null);
     return bundleManager.getAllKeychains().filter(k => 
-        !['fortune', 'greed'].includes(k.id)
+        !['fortune', 'greed', 'stuffed'].includes(k.id)
     );
 }
 

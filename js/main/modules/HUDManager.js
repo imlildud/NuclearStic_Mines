@@ -392,6 +392,8 @@ export class HUDManager {
             
             slotsContainer.appendChild(slot);
         }
+        this.game.getFlagModeManager().updateSwampButtonUI();
+        this.game.reversionManager.updateButtonUI();
     }
 
     updateTreasureIndicator() {

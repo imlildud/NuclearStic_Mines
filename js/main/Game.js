@@ -72,14 +72,6 @@ function applyTouchButtonsVisibility() {
     touchFlags.style.display = touchEnabled ? 'grid' : 'none';
 }
 
-function updateSwampButtonVisibility() {
-    const swampBtn = document.getElementById("swamp-btn");
-    if (!swampBtn) return;
-    
-    const hasModes = game.hasFlagModeKeychain();
-    swampBtn.style.display = hasModes ? 'block' : 'none';
-}
-
 // ==============================================================
 // ==================== PAUSE BUTTON ============================
 // ==============================================================
@@ -184,4 +176,3 @@ async function start() {
 
 // Start the game
 start();
-updateSwampButtonVisibility();

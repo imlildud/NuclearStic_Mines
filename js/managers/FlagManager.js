@@ -55,6 +55,8 @@ export class FlagManager {
         if (tile.isHide() && player.getKeychainUses('revelation') > 0) {
             tile.setHide(false);
             player.useKeychain('revelation');
+
+            this.gameManager.getFlagModeManager().checkDepleted();
             this.gameManager.updateFlagUI();
             console.log('[Revelation] Revealed tile at', targetX, targetY);
         }
@@ -134,6 +136,8 @@ export class FlagManager {
         if (tile.getDamageratio() && player.getKeychainUses('purity') > 0) {
             tile.setDamageratio(false);
             player.useKeychain('purity');
+
+            this.gameManager.getFlagModeManager().checkDepleted();
             this.gameManager.updateFlagUI();
             console.log('[Purity] Cleaned damageratio at', targetX, targetY);
         }

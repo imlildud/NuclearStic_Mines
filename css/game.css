@@ -339,7 +339,7 @@ canvas {
 
 .hud-support-container {
     position: fixed;
-    top: clamp(60px, 38vmin, 190px); 
+    top: clamp(56px, 34vmin, 186px); 
     right: 0; 
     width: clamp(250px, 45vmin, 450px);
     height: clamp(60px, 12vmin, 120px);
@@ -473,6 +473,21 @@ canvas {
     user-select: none;
     transition: transform 0.1s ease, filter 0.1s ease;
     margin-bottom: 0.5vmin;
+    display: block;
+}
+
+.restart-btn {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: clamp(45px, 25vmin, 70px);
+    height: clamp(45px, 25vmin, 70px);
+    cursor: pointer;
+    z-index: 10001;
+    user-select: none;
+    transition: transform 0.1s ease, filter 0.1s ease;
+    margin-bottom: 0.5vmin;
+    display: block;
 }
 
 /* Control Buttons Base */
@@ -486,14 +501,22 @@ canvas {
 }
 
 /* Control Buttons Hover & Active Effects */
-.touch-btn:hover, .flag-btn:hover, .swamp-btn:hover {
+.touch-btn:hover, .flag-btn:hover, .swamp-btn:hover, .restart-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-.touch-btn:active, .flag-btn:active, .swamp-btn:active {
+.touch-btn:active, .flag-btn:active, .swamp-btn:active, .restart-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
+}
+
+.swamp-btn.disabled,
+.restart-btn.disabled {
+    filter: brightness(0.3) saturate(0.2);
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* WASD / Arrow Keys Grid Positioning */
@@ -508,11 +531,6 @@ canvas {
 /* ========================================================= */
 
 @media (orientation: portrait) {
-    .touch-movement, .touch-flags {
-        bottom: 3vh;
-        grid-template-columns: repeat(3, clamp(42px, 38vw, 50px));
-        grid-template-rows: repeat(2, clamp(42px, 38vw, 50px));
-    }
     
     .touch-movement { left: 3vw; }
     .touch-flags    { right: 3vw; }
