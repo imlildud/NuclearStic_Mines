@@ -48,7 +48,7 @@ export class HUDManager {
         this.updateHealth(player);
         this.updateFlags(player);
         this.updateRescued(player);
-        this.updateRemainingGoals(player);
+        this.updateRemainingPals(player);
         this.updateCriticized(player);
         this.updateCurrentTile();
         this.updateHeightometer();
@@ -130,10 +130,10 @@ export class HUDManager {
         if (el) el.textContent = player.getRescued();
     }
 
-    updateRemainingGoals(player) {
+    updateRemainingPals(player) {
         const el = document.getElementById("hud-goals-text");
         if (el && this.game.charCtrl) {
-            el.textContent = this.game.charCtrl.getRemainingGoals();
+            el.textContent = this.game.charCtrl.getRemainingPals();
         }
     }
 
@@ -228,7 +228,8 @@ export class HUDManager {
         const hazardType = tile.getHazardtype();
         const obstacleType = tile.getObstacletype();
         const hazardCount = tile.getHazardcount();
-        const goalType = tile.getGoaltype();
+        const palType = tile.getPalType();
+        const palAlive = tile.isPalAlive();
         const pipe = tile.isSmoke();
         const hasDelirium = player.hasKeychain('delirium');
 
@@ -244,10 +245,7 @@ export class HUDManager {
                     textureName = obstacleType;
                 }
             } else if (hazardCount > 0) {
-                // ===== DELIRIUM: Show "?" instead of number =====
                 textureName = hasDelirium ? "question" : hazardCount.toString();
-            } else if (goalType !== "none") {
-                textureName = goalType;
             } else if (tile.isStart()) {
                 textureName = "start";
             }

@@ -12,7 +12,7 @@ export class LevelConfigurator {
     }
 
     configure(game) {
-        let size, goals, hazardAmount, hazardIntensity, heightIntensity, obstacleIntensity, zone, childLevel;
+        let size, pals, hazardAmount, hazardIntensity, heightIntensity, obstacleIntensity, zone, childLevel;
         const config = game.config;
         const player = game.player;
         const boardCtrl = game.boardCtrl;
@@ -40,7 +40,7 @@ export class LevelConfigurator {
         if (config.mode === "legacy") {
             if (isHardcore) {
                 size = 12 + currentLevel;
-                goals = DifficultyScaler.getGoalCount(currentLevel) + 4;
+                pals = DifficultyScaler.getPalCount(currentLevel) + 4;
                 hazardAmount = DifficultyScaler.getHazardCountBySize(size);
                 hazardIntensity = config.hazards;
                 heightIntensity = config.obstacles;
@@ -50,7 +50,7 @@ export class LevelConfigurator {
             } else {
                 size = DifficultyScaler.getBoardSize(currentLevel);
                 hazardAmount = DifficultyScaler.getHazardCount(currentLevel);
-                goals = DifficultyScaler.getGoalCount(currentLevel);
+                pals = DifficultyScaler.getPalCount(currentLevel);
                 heightIntensity = currentLevel;
                 obstacleIntensity = currentLevel;
                 zone = DifficultyScaler.getZoneByLevel(currentLevel);
@@ -60,7 +60,7 @@ export class LevelConfigurator {
         // ===== CUSTOM / DAILY MODE =====
         else {
             size = config.size;
-            goals = config.goals;
+            pals = config.pals;
             hazardAmount = DifficultyScaler.getHazardCountBySize(size);
             hazardIntensity = config.hazards;
             heightIntensity = config.obstacles;
@@ -75,7 +75,7 @@ export class LevelConfigurator {
             boardCtrl.setSeed(config.seed);
             console.log(`[GameManager] Setting board seed: ${config.seed}`);
         }
-        game.board = boardCtrl.generateStartAndGoal(game.board, goals, childLevel);
+        game.board = boardCtrl.generateStartAndPal(game.board, pals, childLevel);
         game.board = boardCtrl.setSafeTiles(game.board, size);
         game.board = boardCtrl.generateHeights(game.board, heightIntensity, size);
         game.board = boardCtrl.generateObstacles(game.board, obstacleIntensity, size);
@@ -86,7 +86,7 @@ export class LevelConfigurator {
             game.board = boardCtrl.generateTreasures(game.board, size);
         }
         
-        charCtrl.setCharacterGoals(goals);
+        charCtrl.setCharacterPals(pals);
         charCtrl.getStartCoords(game.board);
         boardCtrl.updateVision(game.board, player);
         
@@ -95,7 +95,7 @@ export class LevelConfigurator {
         console.log(`Mode: ${config.mode}`);
         console.log(`Seed: ${config.seed}`);
         console.log(`Size: ${size}`);
-        console.log(`Goals: ${goals}`);
+        console.log(`Pals: ${pals}`);
         console.log(`Hazard Amount: ${hazardAmount}`);
         console.log(`Zone: ${zone}`);
         console.log(`Character: ${config.character}`);

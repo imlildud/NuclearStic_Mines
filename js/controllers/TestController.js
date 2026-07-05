@@ -112,9 +112,12 @@ export class TestController extends BaseBoardController {
         board[3][15].setFlaggoal(true);
 
         // Test row 8 (Pals)
-        board[1][17].setGoaltype("charlie");
-        board[3][17].setGoaltype("joni");
-        board[2][18].setGoaltype("ru");
+        board[1][17].setPalType("charlie");
+        board[1][17].setPalAlive(true);
+        board[3][17].setPalType("joni");
+        board[3][17].setPalAlive(true);
+        board[2][18].setPalType("ru");
+        board[2][18].setPalAlive(true);
 
         // Test row 9 (Treasure)
         board[1][20].setTreasure(true);

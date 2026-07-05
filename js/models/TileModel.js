@@ -15,9 +15,11 @@ export class TileModel {
         
         // ========== START & GOAL TILES ==========
         this.start = false;             // Define if the tile is the starting position
-        this.goaltype = "none";         // Define if the tile is a goal (rescue target)
-        this.goallive = false;          // Define if the goal is still active (not lost)
         this.flaggoal = false;          // Define if the tile is a tutorial goal
+
+        // ========== PAL STATUS ==========
+        this.palAlive = false;      // If the pal is alive (can be rescued)
+        this.palType = "none";      // Type of pal (charlie, joni, etc.)
         
         // ========== MAP CONDITIONS ==========
         this.secure = false;            // Define if the tile is a secure area
@@ -60,13 +62,13 @@ export class TileModel {
     isStart() { return this.start; }
     setStart(v) { this.start = v; }
     
-    // ======================= GOAL GETTERS & SETTERS =======================
+    // ======================= PAL GETTERS & SETTERS =======================
     
-    getGoaltype() { return this.goaltype; }
-    setGoaltype(v) { this.goaltype = v; }
+    getPalType() { return this.palType; }
+    setPalType(v) { this.palType = v; }
     
-    isGoallive() { return this.goallive; }
-    setGoallive(v) { this.goallive = v; }
+    isPalAlive() { return this.palAlive; }
+    setPalAlive(v) { this.palAlive = v; }
 
     // ===================== FLAG GOAL GETTERS & SETTERS =====================
     

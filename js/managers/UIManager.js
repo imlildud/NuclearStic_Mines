@@ -38,9 +38,9 @@ export class UIManager {
                 seedEl.textContent = seedText;
             }
             
-            const totalGoals = charCtrl.getTotalGoals();
-            const remainingGoals = charCtrl.getRemainingGoals();
-            const statsText = `${this.getText('game.wanted')}: ${totalGoals} | ${this.getText('game.remaining')}: ${remainingGoals}`;
+            const totalPals = charCtrl.getTotalPals();
+            const remainingPals = charCtrl.getRemainingPals();
+            const statsText = `${this.getText('game.wanted')}: ${totalPals} | ${this.getText('game.remaining')}: ${remainingPals}`;
             statsEl.textContent = statsText;
             
             const childTypes = this.getChildTypesFromBoard(board);
@@ -106,16 +106,16 @@ export class UIManager {
             if (config.mode === "legacy") {
                 title = `${this.getText('game.level')} ${this.gameManager.currentLevel}`;
                 seedText = `${this.getText('menu.punchcard.seed')}${config.seed || '---'}`;
-                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalGoals()}`;
+                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalPals()}`;
             } else if (config.mode === "daily") {
                 const today = new Date();
                 title = today.toLocaleDateString();
                 seedText = `${this.getText('menu.punchcard.seed')}${config.seed || '---'}`;
-                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalGoals()}`;
+                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalPals()}`;
             } else {
                 title = this.getText('game.customMission');
                 seedText = `${this.getText('menu.punchcard.seed')}${config.seed || '---'}`;
-                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalGoals()}`;
+                info = `${this.getText('game.wanted')}: ${charCtrl.getTotalPals()}`;
             }
             
             titleEl.textContent = title;
@@ -174,8 +174,8 @@ export class UIManager {
         const childTypes = new Set();
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board.length; j++) {
-                const goalType = board[i][j].getGoaltype();
-                if (goalType !== "none") childTypes.add(goalType);
+                const palType = board[i][j].getPalType();
+                if (palType !== "none") childTypes.add(palType);
             }
         }
         return Array.from(childTypes);

@@ -91,13 +91,13 @@ function getObstacleTexture(value) {
     return "assets/hud/punchcard/obstacles/nsanlyhigh.png";
 }
 
-function getGoalsTexture(value) {
-    if (value == 1) return "assets/hud/punchcard/goals/1.png";
-    if (value == 2) return "assets/hud/punchcard/goals/2.png";
-    if (value == 3) return "assets/hud/punchcard/goals/3.png";
-    if (value == 4) return "assets/hud/punchcard/goals/4.png";
-    if (value == 5) return "assets/hud/punchcard/goals/5.png";
-    return "assets/hud/punchcard/goals/5.png";
+function getPalsTexture(value) {
+    if (value == 1) return "assets/hud/punchcard/pals/1.png";
+    if (value == 2) return "assets/hud/punchcard/pals/2.png";
+    if (value == 3) return "assets/hud/punchcard/pals/3.png";
+    if (value == 4) return "assets/hud/punchcard/pals/4.png";
+    if (value == 5) return "assets/hud/punchcard/pals/5.png";
+    return "assets/hud/punchcard/pals/5.png";
 }
 
 function getZoneTexture(value) {
@@ -265,7 +265,7 @@ function updatePunchcardTextures(config) {
 
     document.getElementById("pcHazards").src = getHazardTexture(config.hazards);
     document.getElementById("pcObstacles").src = getObstacleTexture(config.obstacles);
-    document.getElementById("pcWanted").src = getGoalsTexture(config.goals);
+    document.getElementById("pcWanted").src = getPalsTexture(config.pals);
     document.getElementById("pcZone").src = getZoneTexture(config.zone);
 
     triggerIconFade("pcCharacter");
@@ -403,7 +403,7 @@ function createBaseConfig() {
         size: 1,
         hazards: 1,
         obstacles: 1,
-        goals: 1,
+        pals: 1,
         zone: "desert"
     };
 }
@@ -448,7 +448,7 @@ function generateLegacyConfig() {
     config.level = level;
 
     if (isHardcore) {
-        config.goals = 5;
+        config.pals = 5;
         config.size = 12 + level;
         config.hazards = 5 + level;
         config.obstacles = 10 + level;
@@ -456,13 +456,13 @@ function generateLegacyConfig() {
         
         console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Goals: ${config.goals}`);
     } else {
-        let goals = 1;
-        if (level >= 5) goals = 2;
-        if (level >= 10) goals = 3;
-        if (level >= 15) goals = 4;
-        if (level >= 20) goals = 5;
+        let pals = 1;
+        if (level >= 5) pals = 2;
+        if (level >= 10) pals = 3;
+        if (level >= 15) pals = 4;
+        if (level >= 20) pals = 5;
         
-        config.goals = goals;
+        config.pals = pals;
         config.size = level;
         config.hazards = level;
         config.obstacles = level;
@@ -513,7 +513,7 @@ function generateDailyConfig() {
 
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
-    config.goals = getRandomInRange(random, 1, 5);
+    config.pals = getRandomInRange(random, 1, 5);
 
     const zoneNum = getRandomInRange(random, 1, 3);
     const zoneMap = {1: "desert", 2: "snow", 3: "ash"};
@@ -595,7 +595,7 @@ function updateCustomTextures() {
     config.size = parseInt(document.getElementById("custom-size-select").value);
     config.hazards = parseInt(document.getElementById("custom-hazards-select").value);
     config.obstacles = parseInt(document.getElementById("custom-obstacles-select").value);
-    config.goals = parseInt(document.getElementById("custom-wanted-select").value);
+    config.pals = parseInt(document.getElementById("custom-wanted-select").value);
     config.zone = document.getElementById("custom-zone-select").value;
 
     currentConfig = config;

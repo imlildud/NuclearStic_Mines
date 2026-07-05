@@ -175,25 +175,25 @@ export class KeychainManager {
     getDestinyTarget(board, currentTarget) {
         if (currentTarget) {
             const tile = board[currentTarget.x]?.[currentTarget.y];
-            if (tile && tile.getGoaltype() !== 'none' && tile.getGoaltype() !== 'joni') {
+            if (tile && tile.getPalType() !== 'none' && tile.getPalType() !== 'joni') {
                 return currentTarget;
             }
         }
 
-        const goals = [];
+        const pals = [];
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board.length; j++) {
-                const goalType = board[i][j].getGoaltype();
-                if (goalType !== 'none' && goalType !== 'joni') {
-                    goals.push({ x: i, y: j });
+                const palType = board[i][j].getPalType();
+                if (palType !== 'none' && palType !== 'joni') {
+                    pals.push({ x: i, y: j });
                 }
             }
         }
         
-        if (goals.length === 0) return null;
+        if (pals.length === 0) return null;
         
-        const randomIndex = Math.floor(Math.random() * goals.length);
-        const target = goals[randomIndex];
+        const randomIndex = Math.floor(Math.random() * pals.length);
+        const target = pals[randomIndex];
         console.log('[Destiny] Target set to:', target);
         return target;
     }
