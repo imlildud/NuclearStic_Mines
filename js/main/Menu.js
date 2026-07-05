@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? localeManager.get('menu.dailyCompleted')
                 : "Daily mission already completed today! Come back tomorrow.";
             PunchcardPanel.showModal(message);
-            return;
+            if (startBtn) startBtn.style.display = "none";
         }
         
         punchcardScreen.classList.add('active');

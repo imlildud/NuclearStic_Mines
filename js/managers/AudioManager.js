@@ -157,6 +157,13 @@ export class AudioManager {
         this.playSFX("rescued.mp3", false, 0.4);
     }
 
+    // Play rewind sound (when use reversion)
+    playRewindSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("rewind.mp3", false, 0.4);
+    }
+
     // Play deliver sound (when delivering children to start)
     playDeliverSFX() {
         if (!this.sfxEnabled) return;

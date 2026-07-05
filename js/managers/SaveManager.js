@@ -221,40 +221,33 @@ export class SaveManager {
     
     // ======================= DAILY MODE =======================
 
-    // Get today's date string (consistent with existing keys)
+    // Get today's date string
     getTodayString() {
         const today = new Date();
         return today.toDateString();
     }
 
-    // Get date string for a specific date
-    getDateString(date) {
-        return date.toDateString();
-    }
-
-    // Check if daily was completed today
-    isDailyCompletedToday() {
-        const today = this.getTodayString();
-        const completed = localStorage.getItem(`daily_completed_${today}`);
-        console.log(`[SaveManager] Checking daily for ${today}: ${completed}`);
-        return completed === "true";
-    }
-
-    // Check if daily was attempted today (even if failed)
+    // Check if daily was attempted today
     isDailyAttemptedToday() {
         const today = this.getTodayString();
-        const completed = localStorage.getItem(`daily_completed_${today}`);
-        return completed === "true" || completed === "failed";
+        const lastPlayed = localStorage.getItem("lastDailyPlayed");
+        return lastPlayed === today;
     }
 
-    // Save daily score for today
-    saveDailyScore(score, completed = true) {
+    // Mark daily as completed today (no score saved)
+    markDailyCompleted() {
         const today = this.getTodayString();
-        localStorage.setItem(`daily_completed_${today}`, completed ? "true" : "failed");
-        localStorage.setItem(`daily_score_${today}`, score.toString());
-        console.log(`[SaveManager] Daily saved for ${today}: score=${score}, completed=${completed}`);
-        
-        this.updateDailyStreak(completed);
+        localStorage.setItem("lastDailyPlayed", today);
+        this.updateDailyStreak(true);
+        console.log("[SaveManager] Daily marked as completed for:", today);
+    }
+
+    // Mark daily as failed today (no score saved)
+    markDailyFailed() {
+        const today = this.getTodayString();
+        localStorage.setItem("lastDailyPlayed", today);
+        this.updateDailyStreak(false);
+        console.log("[SaveManager] Daily marked as failed for:", today);
     }
 
     // ======================= DAILY STREAK =======================
@@ -339,60 +332,6 @@ export class SaveManager {
         localStorage.setItem("debug_mode", enabled);
     }
     
-    // ======================= DAILY CLEANUP =======================
-    
-    // Remove old daily entries
-    cleanupOldDailyEntries(maxDays = 7) {
-        const keys = Object.keys(localStorage);
-        const now = new Date();
-        let removedCount = 0;
-        
-        for (const key of keys) {
-            // Check if key is a daily entry (daily_completed_ or daily_score_)
-            if (key.startsWith("daily_completed_") || key.startsWith("daily_score_")) {
-                // Extract date from key (format: daily_completed_2025-1-15)
-                const dateStr = key.replace(/^(daily_completed_|daily_score_)/, '');
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const entryDate = new Date(year, month - 1, day);
-                
-                // Calculate days difference
-                const daysDiff = Math.floor((now - entryDate) / (1000 * 60 * 60 * 24));
-                
-                if (daysDiff > maxDays) {
-                    localStorage.removeItem(key);
-                    removedCount++;
-                }
-            }
-        }
-        
-        if (removedCount > 0) {
-            console.log(`[SaveManager] Cleaned up ${removedCount} old daily entries`);
-        }
-    }
-    
-    // Remove daily entries older than specific date
-    cleanupDailyBeforeDate(date) {
-        const keys = Object.keys(localStorage);
-        let removedCount = 0;
-        
-        for (const key of keys) {
-            if (key.startsWith("daily_completed_") || key.startsWith("daily_score_")) {
-                const dateStr = key.replace(/^(daily_completed_|daily_score_)/, '');
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const entryDate = new Date(year, month - 1, day);
-                
-                if (entryDate < date) {
-                    localStorage.removeItem(key);
-                    removedCount++;
-                }
-            }
-        }
-        
-        if (removedCount > 0) {
-            console.log(`[SaveManager] Cleaned up ${removedCount} daily entries before ${date.toDateString()}`);
-        }
-    }
-    
     // ======================= TUTORIAL =======================
     
     // Check if tutorial has been completed
@@ -446,6 +385,26 @@ export class SaveManager {
     clearLegacyKeychainUses() {
         localStorage.removeItem("legacyKeychainUses");
         console.log("[SaveManager] Legacy keychain uses cleared");
+    }
+
+    // ======================= STUFFED KEYCHAINS =======================
+
+    // Get saved stuffed keychains (post-death inventory)
+    getStuffedKeychains() {
+        const data = localStorage.getItem("stuffedKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set stuffed keychains
+    setStuffedKeychains(keychains) {
+        localStorage.setItem("stuffedKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Stuffed keychains saved:", keychains);
+    }
+
+    // Clear stuffed keychains (after loading into legacy)
+    clearStuffedKeychains() {
+        localStorage.removeItem("stuffedKeychains");
+        console.log("[SaveManager] Stuffed keychains cleared");
     }
 
     // ======================= CUSTOM KEYCHAINS =======================

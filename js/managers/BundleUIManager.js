@@ -359,6 +359,8 @@ export class BundleUIManager {
         
         // Initialize uses if this keychain has them (single line)
         KeychainConfig.initKeychainUsesForPlayer(player);
+        this.gameManager.getFlagModeManager().updateSwampButtonUI();
+        this.gameManager.reversionManager.updateButtonUI();
         
         if (this.audioManager) this.audioManager.playRescueSFX();
         

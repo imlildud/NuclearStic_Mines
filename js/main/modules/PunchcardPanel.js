@@ -494,7 +494,6 @@ function generateDailySeed() {
 }
 
 function generateDailyConfig() {
-    saveManager.cleanupOldDailyEntries(7);
     hideAllSelects();
 
     document.querySelector(".pct-title").style.display = "none";

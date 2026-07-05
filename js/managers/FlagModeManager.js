@@ -100,6 +100,24 @@ export class FlagModeManager {
         if (swampBtn) {
             swampBtn.classList.toggle('active', isActive);
         }
+
+        this.updateSwampButtonUI();
+    }
+
+    updateSwampButtonUI() {
+        const swampBtn = document.getElementById("swamp-btn");
+        if (!swampBtn) return;
+        
+        const hasModes = this.hasAnyMode();
+        const isActive = this.flagMode !== 0;
+        
+        if (hasModes && isActive) {
+            swampBtn.className = 'swamp-btn active';
+        } else if (hasModes) {
+            swampBtn.className = 'swamp-btn';
+        } else {
+            swampBtn.className = 'swamp-btn disabled';
+        }
     }
 
     // ======================= MEMORY MARKERS =======================
@@ -134,12 +152,24 @@ export class FlagModeManager {
         const player = this.gameManager.getPlayer();
         if (!player) return;
         
+        let shouldReset = false;
+        
         // Check if current mode is depleted
         if (this.flagMode === 1 && player.getKeychainUses('revelation') === 0) {
-            this.setFlagMode(0);
+            shouldReset = true;
+            console.log('[FlagMode] Revelation depleted, switching to normal');
         }
         if (this.flagMode === 3 && player.getKeychainUses('purity') === 0) {
+            shouldReset = true;
+            console.log('[FlagMode] Purity depleted, switching to normal');
+        }
+        
+        if (shouldReset) {
             this.setFlagMode(0);
+            // Update UI to reflect normal mode
+            this.updateUI();
+            // Update swamp button state
+            this.updateSwampButtonUI();
         }
     }
 }

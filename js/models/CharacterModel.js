@@ -147,6 +147,7 @@ export class CharacterModel {
     // ========================= DAMAGE TRACKER ============================
     
     getDamageTaken() { return this.damageTaken; }
+    setDamageTaken(v) { this.damageTaken = v; } 
     incrementDamageTaken(v) { this.damageTaken += v; }
     resetDamageTaken() { this.damageTaken = 0; }
     
