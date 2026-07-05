@@ -28,7 +28,6 @@ export class KeychainManager {
         const stuffedKeychains = this.gameManager.save.getStuffedKeychains();
         
         if (stuffedKeychains && stuffedKeychains.length > 0) {
-            // Stuffed found: use it as legacy inventory
             console.log('[Stuffed] Found saved keychains:', stuffedKeychains);
             
             const maxSize = player.maxInventorySize || 5;
@@ -41,10 +40,7 @@ export class KeychainManager {
                 }
             }
             
-            // Clear stuffed after using it (one-time use)
             this.gameManager.save.clearStuffedKeychains();
-            
-            // Initialize uses for loaded keychains
             KeychainConfig.initKeychainUsesForPlayer(player);
             this.gameManager.getFlagModeManager().updateSwampButtonUI();
             this.gameManager.reversionManager.updateButtonUI();
@@ -76,11 +72,24 @@ export class KeychainManager {
             }
         }
 
+        // Load saved uses
         player.keychainUses = { ...savedUses };
         
+        // Clean up uses for keychains no longer in inventory
         for (const [id] of Object.entries(player.keychainUses)) {
             if (!player.inventory.includes(id)) {
                 delete player.keychainUses[id];
+            }
+        }
+        
+        // Initialize uses for keychains that have no saved uses (first time or new keychain)
+        for (const keychainId of player.inventory) {
+            if (KeychainConfig.hasUses(keychainId)) {
+                if (player.keychainUses[keychainId] === undefined || player.keychainUses[keychainId] === 0) {
+                    const maxUses = KeychainConfig.getMaxUses(keychainId);
+                    player.initKeychainUses(keychainId, maxUses);
+                    console.log(`[Legacy] Initialized ${keychainId} with ${maxUses} uses (first time)`);
+                }
             }
         }
         

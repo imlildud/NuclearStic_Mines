@@ -9,7 +9,7 @@ export const KeychainConfig = {
         'revelation': 10,
         'descent': 9,
         'salvation': 3,
-        'purity': 18,
+        'purity': 20,
         'reversion': 3,
     },
     

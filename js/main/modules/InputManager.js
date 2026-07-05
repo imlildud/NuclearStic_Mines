@@ -10,7 +10,7 @@ export class InputManager {
         this.audio = audio;
 
         this.lastFlagTime = 0;
-        this.FLAG_DELAY = 200;
+        this.FLAG_DELAY = 150;
         this.lastSwampTime = 0;
         this.SWAMP_DELAY = 300;
 

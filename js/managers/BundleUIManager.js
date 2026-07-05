@@ -252,6 +252,7 @@ export class BundleUIManager {
                 height: ${itemSize};
             `;
             
+            // Aura with pulse animation
             const aura = document.createElement('img');
             aura.src = PathResolver.resolveAsset('keychains', `${rarezaMap[keychain.rareza]?.bg || 'typical'}_aura.png`);
             aura.style.cssText = `
@@ -261,8 +262,11 @@ export class BundleUIManager {
                 image-rendering: pixelated;
                 opacity: 0.5;
                 pointer-events: none;
+                animation: keychainAuraPulse 3s ease-in-out infinite;
+                filter: drop-shadow(0 0 30px ${rarezaMap[keychain.rareza]?.borderColor || '#8B7355'}60);
             `;
             
+            // Icon with float animation
             const icon = document.createElement('img');
             icon.src = PathResolver.resolveAsset('keychains', `keychain_${keychain.id}.png`);
             icon.style.cssText = `
@@ -271,11 +275,14 @@ export class BundleUIManager {
                 image-rendering: pixelated;
                 z-index: 1;
                 position: relative;
+                animation: keychainFloat 2.5s ease-in-out infinite;
+                filter: drop-shadow(0 0 30px ${rarezaMap[keychain.rareza]?.borderColor || '#8B7355'}40);
             `;
             icon.alt = keychain.name;
             
             iconWrapper.appendChild(aura);
             iconWrapper.appendChild(icon);
+            item.appendChild(iconWrapper);
             
             const rarezaWrapper = document.createElement('div');
             rarezaWrapper.style.cssText = `
@@ -661,6 +668,18 @@ export class BundleUIManager {
             @keyframes keychainFadeIn {
                 0% { opacity: 0; }
                 100% { opacity: 1; }
+            }
+            
+            @keyframes keychainFloat {
+                0% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-12px) rotate(3deg); }
+                100% { transform: translateY(0px) rotate(0deg); }
+            }
+            
+            @keyframes keychainAuraPulse {
+                0% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.15); opacity: 0.8; }
+                100% { transform: scale(1); opacity: 0.5; }
             }
         `;
         document.head.appendChild(style);
