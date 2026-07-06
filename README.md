@@ -43,7 +43,8 @@ Explore dangerous wastelands, reveal hidden hazards, rescue stranded pals, and r
 | **Move** | `WASD` or Touch Pad |
 | **Interact** | `Arrow Keys` or Touch Pad |
 | **Change Interaction Mode** | `F` or HUD Button |
-| **Pause** | `ESC` |
+| **Rewind** | `R` or HUD Button |
+| **Pause** | `ESC` or PAUSE Button |
 
 ### Objective
 
@@ -114,7 +115,6 @@ Special thanks to everyone who enjoys tactical games, Minesweeper, and discoveri
 
 # Download & Play
 
-| Link | Platform |
-| :--- | :--- |
-| [![itch.io](https://static.itch.io/images/badge.svg)](https://imlildud.itch.io/nuclear-stic-mines-retrashd) | Itch.io |
-| [![GameJolt](assets/hud/game.png)](https://gamejolt.com/games/nuclearstic-mines/1068281) | Game Jolt |
+| :--- |
+| [![itch.io](https://static.itch.io/images/badge.svg)](https://imlildud.itch.io/nuclear-stic-mines-retrashd) |
+| [![GameJolt](assets/hud/game.png)](https://gamejolt.com/games/nuclearstic-mines/1068281) |
