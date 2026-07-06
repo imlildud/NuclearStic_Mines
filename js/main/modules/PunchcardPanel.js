@@ -438,6 +438,8 @@ function generateLegacyConfig() {
     updateSeedDisplay(config.seed);
 
     const isHardcore = isHardcoreEnabled();
+    const legacySelect = document.getElementById("legacy-character-select");
+    
     let savedLevel;
     if (isHardcore) {
         savedLevel = saveManager.getHardcoreLevel();
@@ -448,14 +450,31 @@ function generateLegacyConfig() {
     config.level = level;
 
     if (isHardcore) {
+        // ===== HARDCORE: Lock character if level > 1 =====
+        const savedChar = saveManager.getHardcoreCharacter();
+        
+        if (level > 1 && savedChar) {
+            // Force saved character and disable select
+            config.character = savedChar;
+            legacySelect.value = savedChar;
+            legacySelect.disabled = true;
+            console.log('[Hardcore] Character locked to:', savedChar);
+        } else {
+            // Level 1: allow selection
+            legacySelect.disabled = false;
+        }
+        
         config.pals = 5;
         config.size = 12 + level;
         config.hazards = 5 + level;
         config.obstacles = 10 + level;
         config.zone = "ash";
         
-        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Goals: ${config.goals}`);
+        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Pals: ${config.pals}`);
     } else {
+        // ===== NORMAL LEGACY: Always enable select =====
+        legacySelect.disabled = false;
+        
         let pals = 1;
         if (level >= 5) pals = 2;
         if (level >= 10) pals = 3;

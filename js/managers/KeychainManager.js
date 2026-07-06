@@ -24,11 +24,11 @@ export class KeychainManager {
     }
 
     loadLegacyKeychains(player) {
-        // ===== CHECK FOR STUFFED FIRST =====
-        const stuffedKeychains = this.gameManager.save.getStuffedKeychains();
+        // ===== CHECK FOR LEGACY STUFFED FIRST =====
+        const stuffedKeychains = this.gameManager.save.getLegacyStuffedKeychains();
         
         if (stuffedKeychains && stuffedKeychains.length > 0) {
-            console.log('[Stuffed] Found saved keychains:', stuffedKeychains);
+            console.log('[Stuffed Legacy] Found saved keychains:', stuffedKeychains);
             
             const maxSize = player.maxInventorySize || 5;
             player.inventory = [];
@@ -40,12 +40,12 @@ export class KeychainManager {
                 }
             }
             
-            this.gameManager.save.clearStuffedKeychains();
+            this.gameManager.save.clearLegacyStuffedKeychains();
             KeychainConfig.initKeychainUsesForPlayer(player);
             this.gameManager.getFlagModeManager().updateSwampButtonUI();
             this.gameManager.reversionManager.updateButtonUI();
             
-            console.log('[Stuffed] Loaded into inventory:', player.inventory);
+            console.log('[Stuffed Legacy] Loaded into inventory:', player.inventory);
             return;
         }
         
@@ -101,6 +101,86 @@ export class KeychainManager {
         this.gameManager.save.clearLegacyKeychains();
         this.gameManager.save.clearLegacyKeychainUses();
         console.log('[Legacy] Keychains and uses cleared');
+    }
+
+    // ===== HARDCORE MODE =====
+    saveHardcoreKeychains(player) {
+        const keychains = player.inventory || [];
+        this.gameManager.save.setHardcoreKeychains(keychains);
+        
+        const uses = player.keychainUses || {};
+        this.gameManager.save.setHardcoreKeychainUses(uses);
+        
+        console.log('[Hardcore] Saved keychains:', keychains);
+        console.log('[Hardcore] Saved uses:', uses);
+    }
+
+    loadHardcoreKeychains(player) {
+        // ===== CHECK FOR HARDCORE STUFFED FIRST =====
+        const stuffedKeychains = this.gameManager.save.getHardcoreStuffedKeychains();
+        
+        if (stuffedKeychains && stuffedKeychains.length > 0) {
+            console.log('[Stuffed Hardcore] Found saved keychains:', stuffedKeychains);
+            
+            const maxSize = player.maxInventorySize || 5;
+            player.inventory = [];
+            
+            for (const keychainId of stuffedKeychains) {
+                if (player.inventory.length >= maxSize) break;
+                if (keychainId && !player.inventory.includes(keychainId)) {
+                    player.inventory.push(keychainId);
+                }
+            }
+            
+            this.gameManager.save.clearHardcoreStuffedKeychains();
+            KeychainConfig.initKeychainUsesForPlayer(player);
+            this.gameManager.getFlagModeManager().updateSwampButtonUI();
+            this.gameManager.reversionManager.updateButtonUI();
+            
+            console.log('[Stuffed Hardcore] Loaded into inventory:', player.inventory);
+            return;
+        }
+
+        // ===== Hardcore legacy loading (no stuffed) =====
+        const savedKeychains = this.gameManager.save.getHardcoreKeychains();
+        const savedUses = this.gameManager.save.getHardcoreKeychainUses();
+        
+        if (!savedKeychains || savedKeychains.length === 0) {
+            console.log('[Hardcore] No saved keychains found, using empty inventory');
+            player.inventory = [];
+            player.keychainUses = {};
+            return;
+        }
+        
+        const maxSize = player.maxInventorySize || 5;
+        player.inventory = [];
+        
+        let loadedCount = 0;
+        for (const keychainId of savedKeychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (keychainId && !player.inventory.includes(keychainId)) {
+                player.inventory.push(keychainId);
+                loadedCount++;
+            }
+        }
+
+        player.keychainUses = { ...savedUses };
+        
+        // Clean up uses for keychains no longer in inventory
+        for (const [id] of Object.entries(player.keychainUses)) {
+            if (!player.inventory.includes(id)) {
+                delete player.keychainUses[id];
+            }
+        }
+        
+        console.log(`[Hardcore] Loaded ${loadedCount} keychains: ${player.inventory.join(', ')}`);
+        console.log('[Hardcore] Loaded uses:', player.keychainUses);
+    }
+
+    clearHardcoreKeychains() {
+        this.gameManager.save.clearHardcoreKeychains();
+        this.gameManager.save.clearHardcoreKeychainUses();
+        console.log('[Hardcore] Keychains and uses cleared');
     }
 
     // ===== DAILY MODE =====

@@ -529,7 +529,7 @@ export class ScoreboardManager {
         if (mode === "legacy" && isVictory) {
             continueBtn.style.display = "block";
 
-            const currentLevel = this.gameManager.currentLevel;
+            const currentLevel = this.gameManager.currentLevel + 1;
             const isBiomeTransition = currentLevel % 10 === 0;
 
             if (isBiomeTransition) {

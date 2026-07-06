@@ -108,9 +108,22 @@ export class GameManager {
         this.keychainUIManager = new KeychainUIManager(this, this.audio);
         this.keychainUIManager.setLocaleManager(this.localeManager);
         
-       // Load keychains
+        // Load keychains
         if (this.config.mode === "legacy") {
-            this.keychainManager.loadLegacyKeychains(this.player);
+            if (this.isHardcoreEnabled()) {
+                this.keychainManager.loadHardcoreKeychains(this.player);
+                
+                // Restore character and health
+                const savedChar = this.save.getHardcoreCharacter();
+                const savedHealth = this.save.getHardcoreHealth();
+                
+                if (savedChar && savedChar === this.config.character && savedHealth !== null) {
+                    this.player.setHp(savedHealth);
+                    console.log('[Hardcore] Restored health:', savedHealth);
+                }
+            } else {
+                this.keychainManager.loadLegacyKeychains(this.player);
+            }
         }
         if (this.config.mode === "daily") {
             this.keychainManager.giveDailyKeychains(this.bundleManager, this.player, this.config.seed || Date.now());
