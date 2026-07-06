@@ -52,7 +52,11 @@
             "custom": "Personalizada",
             "seed": "Semilla: ",
             "enterSeed": "Ingrese el número de semilla:",
-            "copied": "¡Copiado!"
+            "copied": "¡Copiado!",
+            "selectKeychains": "Elige hasta 5 llaveros",
+            "keychainSelected": "Seleccionados: {count}/5",
+            "keychainConfirm": "Confirmar Llaveros",
+            "keychainReset": "Reiniciar Selección"
         }
     },
 
@@ -184,5 +188,49 @@
             "main": "¡Qué conducta tan impropia! Intentar asesinar a un observador imparcial constituye una grave falta al protocolo civilizado.",
             "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
         }
+    },
+    
+    "bundle": {
+        "clickToOpen": "Haz clic para abrir",
+        "inventoryFull": "¡Inventario lleno! No puedes llevar más llaveros.",
+        "nothingFound": "No encontraste nada...",
+        "trashFound": "¡Encontraste fuego! Click para tirar un keychain",
+        "trashTitle": "Selecciona un keychain para eliminar:",
+        "trashSelect": "Elige qué keychain quieres tirar",
+        "close": "Cerrar",
+        "rareza": {
+            "typical": "Típico",
+            "abnormal": "Anormal",
+            "extravagant": "Extravagante",
+            "unheard": "Inaudito",
+            "cursed": "Maldito"
+        }
+    },
+    "keychain": {
+        "horizon": { "name": "Horizonte", "description": "La tierra revela sus secretos. Se ven desde lo oculto." },
+        "home": { "name": "Hogar", "description": "Un faro te llama de vuelta. Sabrás cómo regresar." },
+        "topography": { "name": "Topografía", "description": "La tierra recuerda. Mantendrás la mirada en lo alto." },
+        "memory": { "name": "Memoria", "description": "Deja tu huella en el mundo. Coloca hasta 3 recuerdos." },
+        "safekeeping": { "name": "Resguardo", "description": "Evita el desgaste de algunas herramientas. No se pierden tan fácil." },
+        "revelation": { "name": "Revelación", "description": "Lo oculto no permanecerá así. Tus manos encontrarán la verdad." },
+        "destiny": { "name": "Destino", "description": "Siempre apunta a quien salvar. El camino ya está escrito." },
+        "ascent": { "name": "Ascenso", "description": "Donde otros tropiezan, tú escalas. La cima está más cerca." },
+        "protection": { "name": "Protección", "description": "Una cicatriz que protege. Las heridas que te hicieron más fuerte." },
+        "descent": { "name": "Descenso", "description": "La caída no es el final. Sobrevivirás a las profundidades." },
+        "greed": { "name": "Codicia", "description": "El oro llama. Y sabrás cuándo lo hace." },
+        "resistance": { "name": "Resistencia", "description": "Protección extra. Una segunda piel." },
+        "salvation": { "name": "Salvación", "description": "El abismo no te quiere. Escaparás." },
+        "stealth": { "name": "Sigilo", "description": "Pisada de felpa. El mundo no te notará." },
+        "purity": { "name": "Pureza", "description": "Limpia lo que otros evitan. La mancha no será permanente." },
+        "concentration": { "name": "Concentración", "description": "La presa revela el terreno. Marca una y la tierra se abre." },
+        "fortune": { "name": "Fortuna", "description": "La suerte del necio. La fortuna favorece a los audaces." },
+        "vision": { "name": "Visión", "description": "Lo visto no se olvida. Los ojos recuerdan." },
+        "continuity": { "name": "Continuidad", "description": "El mundo no tiene fin. Lo que va, vuelve." },
+        "reversion": { "name": "Reversión", "description": "Deshaz lo hecho. El tiempo puede doblarse." },
+        "stuffed": { "name": "Empaquetado", "description": "Lo que llevas no se pierde. Ni siquiera al final." },
+        "judgment": { "name": "Juicio", "description": "El veredicto es eterno. No hay apelación." },
+        "link": { "name": "Vínculo", "description": "Unidos por el destino. Más allá de lo que ves." },
+        "oblivion": { "name": "Olvido", "description": "El orden se deshace. Todo se desmorona." },
+        "delirium": { "name": "Delirio", "description": "La realidad se desdibuja. La mente divaga." }
     }
 }

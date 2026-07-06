@@ -7,6 +7,7 @@
 import { SaveManager } from "../../managers/SaveManager.js";
 import { AudioManager } from "../../managers/AudioManager.js";
 import { PathResolver } from "../../utils/PathResolver.js";
+import { KeychainSelector } from "./KeychainSelector.js";
 
 // ==================== INSTANCES ====================
 
@@ -19,6 +20,7 @@ let punchcardMode = null;
 let dailyConfig = null;
 let currentConfig = null;
 let localeManager = null;
+let customKeychains = [];
 
 // ==================== PRIVATE HELPERS ====================
 
@@ -89,13 +91,13 @@ function getObstacleTexture(value) {
     return "assets/hud/punchcard/obstacles/nsanlyhigh.png";
 }
 
-function getGoalsTexture(value) {
-    if (value == 1) return "assets/hud/punchcard/goals/1.png";
-    if (value == 2) return "assets/hud/punchcard/goals/2.png";
-    if (value == 3) return "assets/hud/punchcard/goals/3.png";
-    if (value == 4) return "assets/hud/punchcard/goals/4.png";
-    if (value == 5) return "assets/hud/punchcard/goals/5.png";
-    return "assets/hud/punchcard/goals/5.png";
+function getPalsTexture(value) {
+    if (value == 1) return "assets/hud/punchcard/pals/1.png";
+    if (value == 2) return "assets/hud/punchcard/pals/2.png";
+    if (value == 3) return "assets/hud/punchcard/pals/3.png";
+    if (value == 4) return "assets/hud/punchcard/pals/4.png";
+    if (value == 5) return "assets/hud/punchcard/pals/5.png";
+    return "assets/hud/punchcard/pals/5.png";
 }
 
 function getZoneTexture(value) {
@@ -263,7 +265,7 @@ function updatePunchcardTextures(config) {
 
     document.getElementById("pcHazards").src = getHazardTexture(config.hazards);
     document.getElementById("pcObstacles").src = getObstacleTexture(config.obstacles);
-    document.getElementById("pcWanted").src = getGoalsTexture(config.goals);
+    document.getElementById("pcWanted").src = getPalsTexture(config.pals);
     document.getElementById("pcZone").src = getZoneTexture(config.zone);
 
     triggerIconFade("pcCharacter");
@@ -311,13 +313,16 @@ function updateDailyButtonVisibility() {
 
 function updateCustomElementsVisibility(isCustom) {
     const seedButtonContainer = document.getElementById("pc-seed-button-container");
+    const keychainButtonContainer = document.getElementById("pc-keychain-button-container")
     const diceContainer = document.getElementById("custom-dice-container");
     
     if (isCustom) {
         if (seedButtonContainer) seedButtonContainer.style.display = "block";
+        if (keychainButtonContainer) keychainButtonContainer.style.display = "block";
         if (diceContainer) diceContainer.style.display = "flex";
     } else {
         if (seedButtonContainer) seedButtonContainer.style.display = "none";
+        if (keychainButtonContainer) keychainButtonContainer.style.display = "none";
         if (diceContainer) diceContainer.style.display = "none";
     }
 }
@@ -365,6 +370,28 @@ function showSeedInputModal(currentSeed, onConfirm) {
     });
 }
 
+// ==================== KEYCHAIN MANAGEMENT ====================
+
+function getCustomKeychains() {
+    return customKeychains;
+}
+
+function setCustomKeychains(keychains) {
+    customKeychains = keychains;
+    saveManager.setCustomKeychains(keychains);
+    console.log('[PunchcardPanel] Custom keychains set:', keychains);
+}
+
+function loadCustomKeychains() {
+    const saved = saveManager.getCustomKeychains();
+    if (saved && Array.isArray(saved)) {
+        customKeychains = saved;
+    } else {
+        customKeychains = [];
+    }
+    return customKeychains;
+}
+
 // ==================== MODE GENERATORS ====================
 
 function createBaseConfig() {
@@ -376,7 +403,7 @@ function createBaseConfig() {
         size: 1,
         hazards: 1,
         obstacles: 1,
-        goals: 1,
+        pals: 1,
         zone: "desert"
     };
 }
@@ -411,6 +438,8 @@ function generateLegacyConfig() {
     updateSeedDisplay(config.seed);
 
     const isHardcore = isHardcoreEnabled();
+    const legacySelect = document.getElementById("legacy-character-select");
+    
     let savedLevel;
     if (isHardcore) {
         savedLevel = saveManager.getHardcoreLevel();
@@ -421,21 +450,38 @@ function generateLegacyConfig() {
     config.level = level;
 
     if (isHardcore) {
-        config.goals = 5;
+        // ===== HARDCORE: Lock character if level > 1 =====
+        const savedChar = saveManager.getHardcoreCharacter();
+        
+        if (level > 1 && savedChar) {
+            // Force saved character and disable select
+            config.character = savedChar;
+            legacySelect.value = savedChar;
+            legacySelect.disabled = true;
+            console.log('[Hardcore] Character locked to:', savedChar);
+        } else {
+            // Level 1: allow selection
+            legacySelect.disabled = false;
+        }
+        
+        config.pals = 5;
         config.size = 12 + level;
         config.hazards = 5 + level;
         config.obstacles = 10 + level;
         config.zone = "ash";
         
-        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Goals: ${config.goals}`);
+        console.log(`[Hardcore] Level ${level} - Size: ${config.size}, Hazards: ${config.hazards}, Obstacles: ${config.obstacles}, Pals: ${config.pals}`);
     } else {
-        let goals = 1;
-        if (level >= 5) goals = 2;
-        if (level >= 10) goals = 3;
-        if (level >= 15) goals = 4;
-        if (level >= 20) goals = 5;
+        // ===== NORMAL LEGACY: Always enable select =====
+        legacySelect.disabled = false;
         
-        config.goals = goals;
+        let pals = 1;
+        if (level >= 5) pals = 2;
+        if (level >= 10) pals = 3;
+        if (level >= 15) pals = 4;
+        if (level >= 20) pals = 5;
+        
+        config.pals = pals;
         config.size = level;
         config.hazards = level;
         config.obstacles = level;
@@ -467,7 +513,6 @@ function generateDailySeed() {
 }
 
 function generateDailyConfig() {
-    saveManager.cleanupOldDailyEntries(7);
     hideAllSelects();
 
     document.querySelector(".pct-title").style.display = "none";
@@ -487,7 +532,7 @@ function generateDailyConfig() {
 
     const chars = ["chef", "mosquito", "mommy", "scout"];
     config.character = chars[getRandomInRange(random, 0, 3)];
-    config.goals = getRandomInRange(random, 1, 5);
+    config.pals = getRandomInRange(random, 1, 5);
 
     const zoneNum = getRandomInRange(random, 1, 3);
     const zoneMap = {1: "desert", 2: "snow", 3: "ash"};
@@ -550,6 +595,7 @@ function generateCustomConfig() {
     updatePunchcardLabelsColor();
     
     updateCustomElementsVisibility(true);
+    loadCustomKeychains();
 
     updateCustomTextures();
 }
@@ -568,7 +614,7 @@ function updateCustomTextures() {
     config.size = parseInt(document.getElementById("custom-size-select").value);
     config.hazards = parseInt(document.getElementById("custom-hazards-select").value);
     config.obstacles = parseInt(document.getElementById("custom-obstacles-select").value);
-    config.goals = parseInt(document.getElementById("custom-wanted-select").value);
+    config.pals = parseInt(document.getElementById("custom-wanted-select").value);
     config.zone = document.getElementById("custom-zone-select").value;
 
     currentConfig = config;
@@ -732,5 +778,17 @@ export const PunchcardPanel = {
             const event = new Event('change');
             zoneSelect.dispatchEvent(event);
         }
-    }
+    },
+
+    getCustomKeychains() {
+        return getCustomKeychains();
+    },
+    
+    setCustomKeychains(keychains) {
+        setCustomKeychains(keychains);
+    },
+    
+    loadCustomKeychains() {
+        return loadCustomKeychains();
+    },
 };

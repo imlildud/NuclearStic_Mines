@@ -1066,7 +1066,7 @@ body {
 }
 
 /* ========================================================= */
-/* ==================== SEED BUTTON ======================== */
+/* ================ SEED/KEYCHAIN BUTTON =================== */
 /* ========================================================= */
 
 .pc-seed-button-container {
@@ -1084,12 +1084,35 @@ body {
     filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
 }
 
+.pc-keychain-button-container {
+    position: absolute;
+    bottom: 19%;
+    right: -4%;
+    z-index: 6;
+}
+
+.pc-keychain-btn {
+    width: 12cqi;
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
+}
+
 .pc-seed-btn:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+.pc-keychain-btn:hover {
     transform: scale(1.1);
     filter: brightness(1.1);
 }
 
 .pc-seed-btn:active {
+    filter: brightness(0.75);
+    transform: scale(0.95);
+}
+.pc-keychain-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
 }

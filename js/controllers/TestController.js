@@ -27,6 +27,17 @@ export class TestController extends BaseBoardController {
         const board = this.createEmptyBoard(size);
         
         board[12][0].setStart(true);
+        board[13][0].setTreasure(true);
+        board[14][0].setTreasure(true);
+        board[15][0].setTreasure(true);
+        board[16][0].setTreasure(true);
+        board[17][0].setTreasure(true);
+        board[18][0].setTreasure(true);
+        board[19][0].setTreasure(true);
+        board[20][0].setTreasure(true);
+        board[21][0].setTreasure(true);
+        board[22][0].setTreasure(true);
+        board[23][0].setTreasure(true);
 
         // Test row 1 (Heights)
         board[1][3].setTileheight(1);
@@ -100,10 +111,18 @@ export class TestController extends BaseBoardController {
         board[2][15].setJumpflagged(true);
         board[3][15].setFlaggoal(true);
 
-        // Test row 8 (Goals)
-        board[1][17].setGoaltype("charlie");
-        board[3][17].setGoaltype("joni");
-        board[2][18].setGoaltype("ru");
+        // Test row 8 (Pals)
+        board[1][17].setPalType("charlie");
+        board[1][17].setPalAlive(true);
+        board[3][17].setPalType("joni");
+        board[3][17].setPalAlive(true);
+        board[2][18].setPalType("ru");
+        board[2][18].setPalAlive(true);
+
+        // Test row 9 (Treasure)
+        board[1][20].setTreasure(true);
+        board[2][20].setTreasure(true);
+        board[3][20].setTreasure(true);
 
         // Test row 8 (Hazards)
         board[6][3].setHazardtype("mine");
@@ -223,22 +242,6 @@ export class TestController extends BaseBoardController {
     }
     
     // ======================= HELPER METHODS =======================
-
-    updateVision(board, character) {
-        this.revealAllTiles(board);
-    }
-
-    updateVisionAroundPlayer(board, character) {
-        this.revealAllTiles(board);
-    }
-
-    revealAllTiles(board) {
-        for (let i = 0; i < board.length; i++) {
-          for (let j = 0; j < board.length; j++) {
-            board[i][j].setHide(false);
-            }
-        }
-    }
     
     loadDifficulty() { return 24; }
     loadNumberOfHazard() { return 0; }

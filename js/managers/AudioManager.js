@@ -157,6 +157,13 @@ export class AudioManager {
         this.playSFX("rescued.mp3", false, 0.4);
     }
 
+    // Play rewind sound (when use reversion)
+    playRewindSFX() {
+        if (!this.sfxEnabled) return;
+        if (this.sfxVolume <= 0) return;
+        this.playSFX("rewind.mp3", false, 0.4);
+    }
+
     // Play deliver sound (when delivering children to start)
     playDeliverSFX() {
         if (!this.sfxEnabled) return;
@@ -332,6 +339,30 @@ export class AudioManager {
         }
         
         const path = PathResolver.resolveAsset('music', 'menu.mp3');
+        this.currentMusic = new Audio(path);
+        this.currentMusic.loop = true;
+        this.currentMusic.volume = this.musicVolume;
+        
+        this.trackAudio(this.currentMusic, true);
+        
+        if (autoStart) {
+            this.startMusic();
+        }
+    }
+
+    // ======================= CONFIG MUSIC =======================
+
+    // Load config menu music
+    playConfigMusic(autoStart = false) {
+        // Stop current music if playing
+        if (this.currentMusic) {
+            this.currentMusic.pause();
+            this.currentMusic.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.currentMusic);
+            if (index > -1) this.activeAudio.splice(index, 1);
+        }
+        
+        const path = PathResolver.resolveAsset('music', 'configs.mp3');
         this.currentMusic = new Audio(path);
         this.currentMusic.loop = true;
         this.currentMusic.volume = this.musicVolume;

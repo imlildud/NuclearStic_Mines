@@ -33,10 +33,10 @@ export class DifficultyScaler {
     
     // ======================= GOAL AMOUNT =======================
     
-    static getGoalCount(level) {
-        const startGoals = 1;
+    static getPalCount(level) {
+        const startPals = 1;
         const step = 1;
-        return startGoals + Math.floor(step * (level / 5));
+        return startPals + Math.floor(step * (level / 5));
     }
     
     // ======================= ZONE SELECTION =======================

@@ -15,6 +15,7 @@ export class Renderer {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.game = game;
+        this.player = null;
         
         // Camera position for following the player
         this.camera = { x: 0, y: 0 };
@@ -36,6 +37,11 @@ export class Renderer {
         this.justMoved = false;
         this.isScoutJump = false;
         this.justMovedFrames = 0;
+
+        // Mine flash state
+        this.isFlashing = false;
+        this.flashOverlay = null;
+        this.flashTimeouts = [];
     }
     
     // ======================= HEIGHT OFFSET CACHE =======================
@@ -87,6 +93,10 @@ export class Renderer {
         this.TILE_SIZE = Math.floor(this.canvas.width / 7);
         this.TILE_SIZE = Math.max(12, Math.min(100, this.TILE_SIZE));
     }
+
+    setPlayer(player){
+        this.player = player;
+    }
     
     // ======================= SPRITE LOADING =======================
     
@@ -106,8 +116,10 @@ export class Renderer {
             "hide",          // Hidden tile cover
             "natural",       // Natural obstacle
             "pit",           // Pit obstacle
+            "pit_hide",
             "safepit",       // Pit without death
-            "river"          // River obstacle
+            "river",          // River obstacle
+            "river_hide"
         ];
         
         // Global textures (shared across all biomes)
@@ -124,12 +136,17 @@ export class Renderer {
             "flaggoal",      // Goal
             "jumpflag",      // Jump flag (Scout ability)
             "marked",        // Marked hazard (Chef ability)
+            "memory_a",      // Memory markers
+            "memory_b",
+            "memory_c",
+            "treasure",      // X
             "toxic",         // Damage radius indicator
             "smoke",         // Smoke radius
             "spikes_off",     // Spike obstacle
             "spikes_prepared", 
-            "spikes_on",       
-            "1","2","3","4","5","6","7","8","9","?"  // Hazard count numbers
+            "spikes_on",
+            "spikes_hide",       
+            "1","2","3","4","5","6","7","8","9","question"  // Hazard count numbers
         ];
         
         // Character and goal sprites
@@ -142,7 +159,8 @@ export class Renderer {
             "dummie",        // Tutorial goal
             "charlie",       // Goal type
             "joni",          // Hidden goal type
-            "ru"             // Goal type
+            "ru",             // Goal type
+            "deathpal"
         ];
         
         // Helper function to load an image
@@ -166,7 +184,10 @@ export class Renderer {
         const board = this.game.getBoard();
         const player = this.game.getPlayer();
         if (!board || !player) return;
-        
+
+        const currentPlayer = player;
+        this.player = currentPlayer;
+
         const ctx = this.ctx;
         const TILE_SIZE = this.TILE_SIZE;
         
@@ -249,6 +270,7 @@ export class Renderer {
                 
                 // ===== LAYER 2: OBSTACLE =====
                 const obstacle = tile.getObstacletype();
+                const hasHorizon = this.player.inventory.includes('horizon');
                 if (obstacle !== "none" && !tile.isHide()) {
                     
                     // ===== SPIKE SPECIAL RENDERING =====
@@ -284,8 +306,13 @@ export class Renderer {
                 // ===== LAYER 3: HAZARD COUNT =====
                 const count = tile.getHazardcount();
                 if (count > 0 && !tile.isHide() && obstacle === "none" && hazard === "none") {
+                    const hasDelirium = currentPlayer.hasKeychain('delirium');
+                    let textureName = String(count);
+                    if (hasDelirium) {
+                        textureName = "question"; // uses ?.png from assets
+                    }
                     this.safeDraw(
-                        String(count),
+                        textureName,
                         drawX - objOffsetX,
                         drawY - objOffsetY,
                         objSize
@@ -305,6 +332,47 @@ export class Renderer {
                         );
                     }
                 }
+
+                // ===== LAYER 4.5: COVER MARKERS =====
+                if (tile.haveTreasure()) {
+                    this.safeDraw(
+                        "treasure",
+                        drawX - objOffsetX,
+                        drawY - objOffsetY,
+                        objSize
+                    );
+                }
+                
+                if (tile.isHide()){
+                    const hasHorizon = this.player.inventory.includes('horizon');
+                    if (hasHorizon){
+                        if(obstacle === "river"){
+                            this.safeDraw(
+                                "river_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                        if(obstacle === "spikes"){
+                            this.safeDraw(
+                                "spikes_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                        if(obstacle === "pit"){
+                            this.safeDraw(
+                                "pit_hide",
+                                drawX - objOffsetX,
+                                drawY - objOffsetY,
+                                objSize
+                            );
+                        }
+                    }
+                }
+                
                 
                 // ===== LAYER 5: DAMAGE RATIO (Toxic radius) =====
                 if (tile.getDamageratio()) {
@@ -317,24 +385,33 @@ export class Renderer {
                 }
                 
                 // ===== LAYER 6: FLAG / MARKED =====
-                if (tile.isMarked() && tile.getHazardtype() === "nest" && !tile.isSmoke()) {
+                const hasDelirium = currentPlayer.hasKeychain('delirium');
+                const isMarked = tile.isMarked();
+                const isFlagged = tile.isFlagged();
+                const isJumpflagged = tile.isJumpflagged();
+                const isSmoke = tile.isSmoke();
+
+                // Delirium: marked always shows as flagged (visual only)
+                const shouldShowAsFlagged = hasDelirium && isMarked;
+
+                if (isMarked && tile.getHazardtype() === "nest" && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
-                        "nest_marked",
+                        shouldShowAsFlagged ? "flagged" : "nest_marked",
                         drawX - objOffsetX,
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
                 }
-                else if (tile.isMarked() && !tile.isSmoke()) {
+                else if (isMarked && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
-                        "marked",
+                        shouldShowAsFlagged ? "flagged" : "marked",
                         drawX - objOffsetX,
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (tile.isFlagged() && !tile.isSmoke()) {
+                } else if (isFlagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "flagged",
@@ -342,7 +419,7 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (tile.isJumpflagged() && !tile.isSmoke()) {
+                } else if (isJumpflagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "jumpflag",
@@ -350,8 +427,20 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
+                }
+ 
+                // ===== LAYER 6.5: MEMORY MARKERS =====
+                if (tile.hasMemoryMarker()) {
+                    const marker = tile.getMemoryMarker();
+                    const markerHeight = objSize * 1.1;
+                    this.safeDraw(
+                        `memory_${marker}`,
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (markerHeight - objSize),
+                        objSize
+                    );
                 } 
-                
+                                
                 // ===== LAYER 7: START TILE =====
                 if (tile.isStart()) {
                     this.safeDraw(
@@ -362,14 +451,23 @@ export class Renderer {
                     );
                 }
                 
-                // ===== LAYER 7.5: GOALS (Children to rescue) =====
-                const goalType = tile.getGoaltype();
-                if (goalType !== "none" && !tile.isSmoke()) {
-                    const shouldDraw = (goalType !== "joni") || (goalType === "joni" && !tile.isHide());
+                // ===== LAYER 7.5: PALS (Children to rescue) =====
+                const palType = tile.getPalType();
+                const palAlive = tile.isPalAlive();
+
+                if (palType !== "none" && !tile.isSmoke()) {
+                    const shouldDraw = (palType !== "joni") || (palType === "joni" && !tile.isHide());
                     if (shouldDraw) {
                         const goalHeight = objSize * 1.3;
+                        
+                        // ===== DEATHPAL: Show for any dead pal =====
+                        let spriteName = palType;
+                        if (!palAlive) {
+                            spriteName = "deathpal";
+                        }
+                        
                         this.safeDraw(
-                            goalType,
+                            spriteName,
                             drawX - objOffsetX,
                             drawY - objOffsetY - (goalHeight - objSize),
                             objSize
@@ -487,6 +585,15 @@ export class Renderer {
                 }
             }
         }
+        // ===== DELIRIUM: =====
+        const hasDelirium = currentPlayer.hasKeychain('delirium');
+        if (hasDelirium) {
+            ctx.save();
+            ctx.globalAlpha = 0.25;
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
+        }
     }
     
     // ======================= SAFE DRAWING HELPERS =======================
@@ -509,9 +616,41 @@ export class Renderer {
         this.ctx.drawImage(img, x, y, size, size);
     }
 
+    // ======================= FLASH EFFECT HELPERS =======================
+
+    clearFlashTimeouts() {
+        for (const timeout of this.flashTimeouts) {
+            clearTimeout(timeout);
+        }
+        this.flashTimeouts = [];
+    }
+
+    removeFlashOverlay() {
+        if (this.flashOverlay && this.flashOverlay.parentNode) {
+            this.flashOverlay.remove();
+            this.flashOverlay = null;
+        }
+    }
+
     // Trigger mine explosion effect (blackout + blur recovery)
     triggerMineFlash() {
-        // Create overlay container
+        // ===== If already flashing, reset =====
+        if (this.isFlashing) {
+            this.clearFlashTimeouts();
+            this.removeFlashOverlay();
+            this.canvas.style.filter = '';
+            this.canvas.style.transition = '';
+        }
+        
+        this.isFlashing = true;
+        
+        // ===== PLAY DEATH SFX =====
+        const audioManager = this.game.audio;
+        if (audioManager) {
+            audioManager.playDeathSFX();
+        }
+        
+        // ===== CREATE OVERLAY =====
         const overlay = document.createElement('div');
         overlay.style.position = 'fixed';
         overlay.style.top = '0';
@@ -525,39 +664,123 @@ export class Renderer {
         overlay.style.transition = 'opacity 0.15s ease';
         
         document.body.appendChild(overlay);
+        this.flashOverlay = overlay;
         
-        // Apply blur to canvas
+        // ===== CANVAS BLUR =====
         const canvas = this.canvas;
         const originalFilter = canvas.style.filter;
         canvas.style.transition = 'filter 0.2s ease';
         canvas.style.filter = 'blur(8px) brightness(0.3)';
         
-        // Blackout
-        setTimeout(() => {
-            overlay.style.opacity = '1';
+        // ===== BLACKOUT =====
+        const t1 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '1';
         }, 90);
+        this.flashTimeouts.push(t1);
         
-        // Hold blackout + blur
-        setTimeout(() => {
-            // Start recovery - fade out black overlay
-            overlay.style.opacity = '0';
-            
-            // Gradually remove blur
+        // ===== RECOVERY =====
+        const t2 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '0';
             canvas.style.filter = 'blur(4px) brightness(0.5)';
             
-            setTimeout(() => {
-                canvas.style.filter = 'blur(2px) brightness(0.7)';
-                
-                setTimeout(() => {
-                    canvas.style.filter = 'blur(1px) brightness(0.9)';
-                    
-                    setTimeout(() => {
-                        canvas.style.filter = originalFilter || 'none';
+            const finalSteps = [
+                { delay: 3000, filter: 'blur(2px) brightness(0.7)' },
+                { delay: 6000, filter: 'blur(1px) brightness(0.9)' },
+                { delay: 9000, filter: originalFilter || 'none' }
+            ];
+            
+            for (const step of finalSteps) {
+                const t = setTimeout(() => {
+                    canvas.style.filter = step.filter;
+                    if (step.filter === originalFilter || step.filter === 'none') {
                         canvas.style.transition = '';
-                        overlay.remove();
-                    }, 6000);
-                }, 6000);
-            }, 3000);
+                        if (overlay && overlay.parentNode) {
+                            overlay.remove();
+                        }
+                        this.isFlashing = false;
+                        this.flashOverlay = null;
+                    }
+                }, step.delay);
+                this.flashTimeouts.push(t);
+            }
         }, 3000);
+        this.flashTimeouts.push(t2);
+    }
+
+    // ======================= REWIND EFFECT =======================
+    
+    triggerRewind() {
+        // ===== If already rewinding, reset =====
+        if (this.isRewinding) {
+            this.clearFlashTimeouts();
+            this.removeFlashOverlay();
+            this.canvas.style.filter = '';
+            this.canvas.style.transition = '';
+        }
+        
+        this.isRewinding = true;
+        
+        // ===== PLAY REWIND SOUND =====
+        const audioManager = this.game.audio;
+        if (audioManager) {
+            audioManager.playRewindSFX();
+        }
+        
+        // ===== CREATE OVERLAY =====
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'black';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '20000';
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.15s ease';
+        
+        document.body.appendChild(overlay);
+        this.flashOverlay = overlay;
+        
+        // ===== CANVAS EFFECT =====
+        const canvas = this.canvas;
+        const originalFilter = canvas.style.filter;
+        canvas.style.transition = 'filter 0.2s ease';
+        canvas.style.filter = 'blur(6px) brightness(0.4)';
+        
+        // ===== FLASH IN =====
+        const t1 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '1';
+        }, 80);
+        this.flashTimeouts.push(t1);
+        
+        // ===== FLASH OUT =====
+        const t2 = setTimeout(() => {
+            if (overlay) overlay.style.opacity = '0';
+            canvas.style.filter = 'blur(3px) brightness(0.6)';
+            
+            // ===== RECOVERY =====
+            const recoverySteps = [
+                { delay: 400, filter: 'blur(2px) brightness(0.8)' },
+                { delay: 800, filter: 'blur(1px) brightness(0.9)' },
+                { delay: 1200, filter: originalFilter || 'none' }
+            ];
+            
+            for (const step of recoverySteps) {
+                const t = setTimeout(() => {
+                    canvas.style.filter = step.filter;
+                    if (step.filter === originalFilter || step.filter === 'none') {
+                        canvas.style.transition = '';
+                        if (overlay && overlay.parentNode) {
+                            overlay.remove();
+                        }
+                        this.isRewinding = false;
+                        this.flashOverlay = null;
+                    }
+                }, step.delay);
+                this.flashTimeouts.push(t);
+            }
+        }, 300);
+        this.flashTimeouts.push(t2);
     }
 }

@@ -91,7 +91,7 @@ export class ScoreboardManager {
             maxMarked: scores.maxMarked,
             size: scores.size,
             hurt: scores.hurt, 
-            deaths: parseInt(scores.deaths) || 0,
+            deaths: parseInt(scores.deaths.replace(/[^0-9-]/g, '')) || 0,
             failed: parseInt(scores.failed.replace(/[^0-9-]/g, '')) || 0,
             total: scores.total,
             maxTotal: scores.maxTotal
@@ -345,7 +345,7 @@ export class ScoreboardManager {
         const player = this.gameManager.getPlayer();
         const board = this.gameManager.getBoard();
         const charCtrl = this.gameManager.charCtrl;
-        const totalGoals = charCtrl.getTotalGoals();
+        const totalPals = charCtrl.getTotalPals();
         const size = board.length;
         const isHardcore = this.gameManager.isHardcoreEnabled() && this.gameManager.config.mode === "legacy";
         
@@ -359,7 +359,7 @@ export class ScoreboardManager {
         // ===== RESCUED SCORE =====
         const rescuedCount = player.getTotalRescued();
         const rescuedPoints = rescuedCount * rescueValue;
-        const maxRescuedPoints = totalGoals * rescueValue;
+        const maxRescuedPoints = totalPals * rescueValue;
         
         // ===== MARKED HAZARDS SCORE =====
         let markedPoints = 0;
@@ -382,13 +382,16 @@ export class ScoreboardManager {
             maxMarkedPoints = 0;
         }
         
-        // ===== DIFFICULTY BONUS (now a multiplier, not flat points) =====
+        // ===== DIFFICULTY BONUS =====
         let difficultyMultiplier = this.calculateDifficultyMultiplier();
         if (isHardcore){
-            difficultyMultiplier += 0.5
+            difficultyMultiplier += 0.5;
         }
         
         // ===== PENALTIES =====
+        const deadPals = player.getDeadPals ? player.getDeadPals() : 0;
+        const deadPenalty = -(deadPals * rescueValue);
+
         const failedFlags = player.getFailedFlags ? player.getFailedFlags() : 0;
         const failedJumpFlags = player.getFailedJumpFlags ? player.getFailedJumpFlags() : 0;
         const failedPenalty = (failedFlags * flagValue) + (failedJumpFlags * (flagValue / 2));
@@ -396,16 +399,15 @@ export class ScoreboardManager {
         // ===== HURT PENALTY =====
         const hurtCount = player.getDamageTaken ? player.getDamageTaken() : 0;
         const hurtPenalty = -(hurtCount * 100);
-        const hurtDisplay = hurtPenalty.toString();
-                
+        
         // ===== SUBTOTAL (before multiplier) =====
-        let subTotal = rescuedPoints + markedPoints - failedPenalty + hurtPenalty;
+        let subTotal = rescuedPoints + markedPoints + deadPenalty - failedPenalty + hurtPenalty;
 
         // Only clamp to 0 for non-hardcore modes
         if (!isHardcore && subTotal < 0) {
             subTotal = 0;
         }
-            
+        
         // ===== APPLY MODE MULTIPLIER =====
         const modeMultiplier = this.getModeMultiplier();
         const totalPoints = Math.floor(subTotal * difficultyMultiplier * modeMultiplier);
@@ -414,6 +416,34 @@ export class ScoreboardManager {
         const maxSubTotal = maxRescuedPoints + maxMarkedPoints;
         const maxTotal = Math.floor(maxSubTotal * difficultyMultiplier * modeMultiplier);
         
+        // ===== S RANK CHECK =====
+        const isSRank = totalPoints >= maxTotal * 0.9;
+        
+        // ===== CURSE MULTIPLIERS =====
+        const hasOblivion = player.hasKeychain('oblivion');
+        const hasLink = player.hasKeychain('link');
+        const hasJudgment = player.hasKeychain('judgment');
+        const hasDelirium = player.hasKeychain('delirium');
+        
+        let curseBonus = 0;
+        
+        if (hasOblivion) curseBonus += 0.1;
+        if (hasLink) curseBonus += 0.2;
+        if (hasJudgment) curseBonus += 0.3;
+        if (hasDelirium) curseBonus += 0.4;
+        
+        if (isSRank) {
+            if (hasOblivion) curseBonus += 0.4;
+            if (hasLink) curseBonus += 0.5;
+            if (hasJudgment) curseBonus += 0.5;
+            if (hasDelirium) curseBonus += 0.6;
+        }
+        
+        // Recalculate with curse bonus
+        const finalMultiplier = difficultyMultiplier + curseBonus;
+        const finalTotal = Math.floor(subTotal * finalMultiplier * modeMultiplier);
+        const finalMaxTotal = Math.floor(maxSubTotal * finalMultiplier * modeMultiplier);
+        
         return {
             rescued: rescuedPoints,
             maxRescued: maxRescuedPoints,
@@ -421,15 +451,15 @@ export class ScoreboardManager {
             marked: markedPoints,
             maxMarked: maxMarkedPoints,
             markedDisplay: `${markedPoints}/${maxMarkedPoints}`,
-            size: difficultyMultiplier,
-            sizeDisplay: `x${difficultyMultiplier.toFixed(1)}`,
-            deaths: "0",
+            size: finalMultiplier,
+            sizeDisplay: `x${(finalMultiplier + (modeMultiplier - 1.0)).toFixed(2)}`,
+            deaths: `- ${Math.floor(Math.abs(deadPenalty))}`,
             failed: `- ${Math.floor(failedPenalty)}`,
             hurt: hurtPenalty,
             hurtDisplay: `- ${hurtPenalty}`,
-            total: totalPoints,
-            maxTotal: maxTotal,
-            totalDisplay: `${totalPoints}/${maxTotal}`
+            total: finalTotal,
+            maxTotal: finalMaxTotal,
+            totalDisplay: `${finalTotal}/${finalMaxTotal}`
         };
     }
     
@@ -464,19 +494,19 @@ export class ScoreboardManager {
         // Base multiplier starts at 1.0
         let multiplier = 1.0;
         
-        // Hazard intensity bonus (max +0.05)
+        // Hazard intensity bonus
         if (hazards >= 30) multiplier += 0.05;
         else if (hazards >= 20) multiplier += 0.04;
         else if (hazards >= 12) multiplier += 0.04;
         else if (hazards >= 8) multiplier += 0.02;
         else if (hazards >= 5) multiplier += 0.01;
         
-        // Obstacle intensity bonus (max +0.03)
-        if (obstacles >= 30) multiplier += 0.03;
-        else if (obstacles >= 15) multiplier += 0.02;
-        else if (obstacles >= 10) multiplier += 0.015;
+        // Obstacle intensity bonus
+        if (obstacles >= 30) multiplier += 0.06;
+        else if (obstacles >= 15) multiplier += 0.04;
+        else if (obstacles >= 10) multiplier += 0.2;
         else if (obstacles >= 5) multiplier += 0.01;
-        else if (obstacles >= 3) multiplier += 0.005;
+        else if (obstacles >= 3) multiplier += 0.0;
         
         console.log(`[Difficulty] Final multiplier: ${multiplier}`);
         return multiplier;
@@ -498,6 +528,16 @@ export class ScoreboardManager {
         
         if (mode === "legacy" && isVictory) {
             continueBtn.style.display = "block";
+
+            const currentLevel = this.gameManager.currentLevel + 1;
+            const isBiomeTransition = currentLevel % 10 === 0;
+
+            if (isBiomeTransition) {
+                continueBtn.style.display = "none";
+                homeBtn.style.display = "block";
+            } else {
+                continueBtn.style.display = "block";
+            }
         } else if (mode === "custom") {
             retryBtn.style.display = "block";
             if (randomBtn) {

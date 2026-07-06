@@ -21,6 +21,21 @@ let touchButtonsEnabled = true;
 let fallDamageEnabled = true;
 let hardcoreEnabled = true;
 
+// Play config music
+audioManager.playConfigMusic();
+
+// Start music on first user interaction
+const startMusicOnce = () => {
+    audioManager.startMusic();
+    window.removeEventListener("keydown", startMusicOnce);
+    window.removeEventListener("click", startMusicOnce);
+    window.removeEventListener("touchstart", startMusicOnce);
+};
+
+window.addEventListener("keydown", startMusicOnce);
+window.addEventListener("click", startMusicOnce);
+window.addEventListener("touchstart", startMusicOnce);
+
 // ==============================================================
 // ====================== MODAL DIALOG ==========================
 // ==============================================================
@@ -494,13 +509,7 @@ function initOtherButtons() {
     });
     
     manualBtn.addEventListener('click', () => {
-        const lang = localeManager ? localeManager.currentLocale : saveManager.getLanguage();
-        const manualFile = lang === 'es' 
-            ? '../../NuclearStic Manual(es).pdf' 
-            : lang === 'mx'
-                ? '../../NuclearStic Manual(es).pdf'
-                : '../../NuclearStic Manual(en).pdf';
-        window.open(manualFile, '_blank');
+        window.open('https://github.com/imlildud/NuclearStic_Mines/wiki', '_blank');
     });
 }
 
@@ -701,6 +710,20 @@ async function init() {
     // Initialize LocaleManager
     localeManager = new LocaleManager();
     await localeManager.init();
+
+    // ===== PLAY CONFIG MUSIC =====
+    audioManager.playConfigMusic();
+    
+    // Start music on user interaction
+    const startMusicOnce = () => {
+        audioManager.startMusic();
+        window.removeEventListener("keydown", startMusicOnce);
+        window.removeEventListener("click", startMusicOnce);
+        window.removeEventListener("touchstart", startMusicOnce);
+    };
+    window.addEventListener("keydown", startMusicOnce);
+    window.addEventListener("click", startMusicOnce);
+    window.addEventListener("touchstart", startMusicOnce);
     
     initVolumeControls();
     initLanguageControls();

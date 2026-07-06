@@ -218,43 +218,84 @@ export class SaveManager {
         localStorage.removeItem("hardcore_highscore");
         console.log("[SaveManager] Hardcore high score reset");
     }
+
+    // ======================= HARDCORE CHARACTER =======================
+
+    // Get saved hardcore character
+    getHardcoreCharacter() {
+        return localStorage.getItem("hardcoreCharacter") || null;
+    }
+
+    // Set hardcore character
+    setHardcoreCharacter(char) {
+        localStorage.setItem("hardcoreCharacter", char);
+        console.log("[SaveManager] Hardcore character saved:", char);
+    }
+
+    // Clear hardcore character
+    clearHardcoreCharacter() {
+        localStorage.removeItem("hardcoreCharacter");
+        console.log("[SaveManager] Hardcore character cleared");
+    }
+
+    // ======================= HARDCORE HEALTH =======================
+
+    // Get saved hardcore health
+    getHardcoreHealth() {
+        const hp = localStorage.getItem("hardcoreHealth");
+        return hp ? parseInt(hp) : null;
+    }
+
+    // Set hardcore health
+    setHardcoreHealth(hp) {
+        localStorage.setItem("hardcoreHealth", hp);
+        console.log("[SaveManager] Hardcore health saved:", hp);
+    }
+
+    // Clear hardcore health
+    clearHardcoreHealth() {
+        localStorage.removeItem("hardcoreHealth");
+        console.log("[SaveManager] Hardcore health cleared");
+    }
+
+    // Clear ALL hardcore data
+    clearHardcoreAll() {
+        this.clearHardcoreKeychains();
+        this.clearHardcoreKeychainUses();
+        this.clearHardcoreCharacter();
+        this.clearHardcoreHealth();
+        console.log("[SaveManager] All hardcore data cleared");
+    }
     
     // ======================= DAILY MODE =======================
 
-    // Get today's date string (consistent with existing keys)
+    // Get today's date string
     getTodayString() {
         const today = new Date();
         return today.toDateString();
     }
 
-    // Get date string for a specific date
-    getDateString(date) {
-        return date.toDateString();
-    }
-
-    // Check if daily was completed today
-    isDailyCompletedToday() {
-        const today = this.getTodayString();
-        const completed = localStorage.getItem(`daily_completed_${today}`);
-        console.log(`[SaveManager] Checking daily for ${today}: ${completed}`);
-        return completed === "true";
-    }
-
-    // Check if daily was attempted today (even if failed)
+    // Check if daily was attempted today
     isDailyAttemptedToday() {
         const today = this.getTodayString();
-        const completed = localStorage.getItem(`daily_completed_${today}`);
-        return completed === "true" || completed === "failed";
+        const lastPlayed = localStorage.getItem("lastDailyPlayed");
+        return lastPlayed === today;
     }
 
-    // Save daily score for today
-    saveDailyScore(score, completed = true) {
+    // Mark daily as completed today (no score saved)
+    markDailyCompleted() {
         const today = this.getTodayString();
-        localStorage.setItem(`daily_completed_${today}`, completed ? "true" : "failed");
-        localStorage.setItem(`daily_score_${today}`, score.toString());
-        console.log(`[SaveManager] Daily saved for ${today}: score=${score}, completed=${completed}`);
-        
-        this.updateDailyStreak(completed);
+        localStorage.setItem("lastDailyPlayed", today);
+        this.updateDailyStreak(true);
+        console.log("[SaveManager] Daily marked as completed for:", today);
+    }
+
+    // Mark daily as failed today (no score saved)
+    markDailyFailed() {
+        const today = this.getTodayString();
+        localStorage.setItem("lastDailyPlayed", today);
+        this.updateDailyStreak(false);
+        console.log("[SaveManager] Daily marked as failed for:", today);
     }
 
     // ======================= DAILY STREAK =======================
@@ -339,60 +380,6 @@ export class SaveManager {
         localStorage.setItem("debug_mode", enabled);
     }
     
-    // ======================= DAILY CLEANUP =======================
-    
-    // Remove old daily entries
-    cleanupOldDailyEntries(maxDays = 7) {
-        const keys = Object.keys(localStorage);
-        const now = new Date();
-        let removedCount = 0;
-        
-        for (const key of keys) {
-            // Check if key is a daily entry (daily_completed_ or daily_score_)
-            if (key.startsWith("daily_completed_") || key.startsWith("daily_score_")) {
-                // Extract date from key (format: daily_completed_2025-1-15)
-                const dateStr = key.replace(/^(daily_completed_|daily_score_)/, '');
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const entryDate = new Date(year, month - 1, day);
-                
-                // Calculate days difference
-                const daysDiff = Math.floor((now - entryDate) / (1000 * 60 * 60 * 24));
-                
-                if (daysDiff > maxDays) {
-                    localStorage.removeItem(key);
-                    removedCount++;
-                }
-            }
-        }
-        
-        if (removedCount > 0) {
-            console.log(`[SaveManager] Cleaned up ${removedCount} old daily entries`);
-        }
-    }
-    
-    // Remove daily entries older than specific date
-    cleanupDailyBeforeDate(date) {
-        const keys = Object.keys(localStorage);
-        let removedCount = 0;
-        
-        for (const key of keys) {
-            if (key.startsWith("daily_completed_") || key.startsWith("daily_score_")) {
-                const dateStr = key.replace(/^(daily_completed_|daily_score_)/, '');
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const entryDate = new Date(year, month - 1, day);
-                
-                if (entryDate < date) {
-                    localStorage.removeItem(key);
-                    removedCount++;
-                }
-            }
-        }
-        
-        if (removedCount > 0) {
-            console.log(`[SaveManager] Cleaned up ${removedCount} daily entries before ${date.toDateString()}`);
-        }
-    }
-    
     // ======================= TUTORIAL =======================
     
     // Check if tutorial has been completed
@@ -408,6 +395,134 @@ export class SaveManager {
     // Reset tutorial (so it shows again)
     resetTutorial() {
         localStorage.removeItem("tutorialCompleted");
+    }
+
+    // ======================= LEGACY KEYCHAINS =======================
+
+    // Get saved legacy keychains
+    getLegacyKeychains() {
+        const data = localStorage.getItem("legacyKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set legacy keychains
+    setLegacyKeychains(keychains) {
+        localStorage.setItem("legacyKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Legacy keychains saved:", keychains);
+    }
+
+    // Clear legacy keychains (when dying)
+    clearLegacyKeychains() {
+        localStorage.removeItem("legacyKeychains");
+        console.log("[SaveManager] Legacy keychains cleared");
+    }
+
+    // Get saved legacy keychain uses
+    getLegacyKeychainUses() {
+        const data = localStorage.getItem("legacyKeychainUses");
+        return data ? JSON.parse(data) : {};
+    }
+
+    // Set legacy keychain uses
+    setLegacyKeychainUses(uses) {
+        localStorage.setItem("legacyKeychainUses", JSON.stringify(uses));
+        console.log("[SaveManager] Legacy keychain uses saved:", uses);
+    }
+
+    // Clear legacy keychain uses (when dying)
+    clearLegacyKeychainUses() {
+        localStorage.removeItem("legacyKeychainUses");
+        console.log("[SaveManager] Legacy keychain uses cleared");
+    }
+
+    // ======================= STUFFED KEYCHAINS =======================
+
+    // Get saved legacy stuffed keychains
+    getLegacyStuffedKeychains() {
+        const data = localStorage.getItem("legacyStuffedKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set legacy stuffed keychains
+    setLegacyStuffedKeychains(keychains) {
+        localStorage.setItem("legacyStuffedKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Legacy stuffed keychains saved:", keychains);
+    }
+
+    // Clear legacy stuffed keychains
+    clearLegacyStuffedKeychains() {
+        localStorage.removeItem("legacyStuffedKeychains");
+        console.log("[SaveManager] Legacy stuffed keychains cleared");
+    }
+
+    // Get hardcore stuffed keychains
+    getHardcoreStuffedKeychains() {
+        const data = localStorage.getItem("hardcoreStuffedKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set hardcore stuffed keychains
+    setHardcoreStuffedKeychains(keychains) {
+        localStorage.setItem("hardcoreStuffedKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Hardcore stuffed keychains saved:", keychains);
+    }
+
+    // Clear hardcore stuffed keychains
+    clearHardcoreStuffedKeychains() {
+        localStorage.removeItem("hardcoreStuffedKeychains");
+        console.log("[SaveManager] Hardcore stuffed keychains cleared");
+    }
+
+    // ======================= HARDCORE KEYCHAINS =======================
+
+    // Get saved hardcore keychains
+    getHardcoreKeychains() {
+        const data = localStorage.getItem("hardcoreKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set hardcore keychains
+    setHardcoreKeychains(keychains) {
+        localStorage.setItem("hardcoreKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Hardcore keychains saved:", keychains);
+    }
+
+    // Clear hardcore keychains (when dying or winning)
+    clearHardcoreKeychains() {
+        localStorage.removeItem("hardcoreKeychains");
+        console.log("[SaveManager] Hardcore keychains cleared");
+    }
+
+    // Get saved hardcore keychain uses
+    getHardcoreKeychainUses() {
+        const data = localStorage.getItem("hardcoreKeychainUses");
+        return data ? JSON.parse(data) : {};
+    }
+
+    // Set hardcore keychain uses
+    setHardcoreKeychainUses(uses) {
+        localStorage.setItem("hardcoreKeychainUses", JSON.stringify(uses));
+        console.log("[SaveManager] Hardcore keychain uses saved:", uses);
+    }
+
+    // Clear hardcore keychain uses
+    clearHardcoreKeychainUses() {
+        localStorage.removeItem("hardcoreKeychainUses");
+        console.log("[SaveManager] Hardcore keychain uses cleared");
+    }
+
+    // ======================= CUSTOM KEYCHAINS =======================
+
+    // Get saved custom keychains
+    getCustomKeychains() {
+        const data = localStorage.getItem("customKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set custom keychains
+    setCustomKeychains(keychains) {
+        localStorage.setItem("customKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Custom keychains saved:", keychains);
     }
     
     // ======================= SETTINGS =======================
