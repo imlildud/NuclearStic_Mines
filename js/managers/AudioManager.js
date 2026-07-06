@@ -349,6 +349,30 @@ export class AudioManager {
             this.startMusic();
         }
     }
+
+    // ======================= CONFIG MUSIC =======================
+
+    // Load config menu music
+    playConfigMusic(autoStart = false) {
+        // Stop current music if playing
+        if (this.currentMusic) {
+            this.currentMusic.pause();
+            this.currentMusic.currentTime = 0;
+            const index = this.activeAudio.indexOf(this.currentMusic);
+            if (index > -1) this.activeAudio.splice(index, 1);
+        }
+        
+        const path = PathResolver.resolveAsset('music', 'configs.mp3');
+        this.currentMusic = new Audio(path);
+        this.currentMusic.loop = true;
+        this.currentMusic.volume = this.musicVolume;
+        
+        this.trackAudio(this.currentMusic, true);
+        
+        if (autoStart) {
+            this.startMusic();
+        }
+    }
     
     // ======================= UTILITY =======================
     
