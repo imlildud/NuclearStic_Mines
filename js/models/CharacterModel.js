@@ -18,6 +18,7 @@ export class CharacterModel {
         this.ap = 0;                // Armor points
         this.flags = 0;             // Available flag count
         this.inventory = [];        // Array of inventory items
+        this.maxInventorySize = 5;
         this.force = 0;             // Force/power stat
         this.abilityId = 0;         // Active ability identifier
         this.vision = 0;            // Vision range (tiles visible)
@@ -32,11 +33,16 @@ export class CharacterModel {
         this.regen = false;         // Health regeneration flag
         this.rescued = 0;           // Currently rescued count (current mission)
         this.totalRescued = 0;      // Total rescued across all missions
+        this.deadPals = 0;          // Dead pals across all missions
         this.failedFlags = 0;       // Failed flag attempts
         this.failedJumpFlags = 0;   // Failed jump flag attempts
 
         // ========== CHARACTER IDENTITY ==========
         this.type = "none";         // Character type identifier
+
+        // ========== KEYCHAIN USAGE TRACKING ==========
+        this.keychainUses = {};
+        
     }
     
     // ======================= POSITION GETTERS & SETTERS =======================
@@ -84,20 +90,21 @@ export class CharacterModel {
     
     // ======================= INVENTORY GETTERS & SETTERS =======================
     
-    getInventorySize() { return this.inventory.length; }
-    
     setInventorySize(size) {
-        if (size < this.inventory.length) {
-            this.inventory = this.inventory.slice(0, size);  // Truncate if smaller
-        } else {
-            while (this.inventory.length < size) this.inventory.push(0);  // Pad with zeros
-        }
+        this.maxInventorySize = size;
     }
-    
-    getItem(slot) { return this.inventory[slot] ?? 0; }
-    setItem(slot, id) { if (slot >= 0 && slot < this.inventory.length) this.inventory[slot] = id; }
-    addItem(id) { this.inventory.push(id); }
-    removeItem(slot) { if (slot >= 0 && slot < this.inventory.length) this.inventory.splice(slot, 1); }
+
+    getInventorySize() {
+        return this.inventory.length;
+    }
+
+    getMaxInventorySize() {
+        return this.maxInventorySize || 5;
+    }
+
+    hasKeychain(id){
+      return this.inventory.includes(id);
+    }
     
     // ======================= FORCE GETTERS & SETTERS =======================
     
@@ -141,6 +148,7 @@ export class CharacterModel {
     // ========================= DAMAGE TRACKER ============================
     
     getDamageTaken() { return this.damageTaken; }
+    setDamageTaken(v) { this.damageTaken = v; } 
     incrementDamageTaken(v) { this.damageTaken += v; }
     resetDamageTaken() { this.damageTaken = 0; }
     
@@ -158,9 +166,102 @@ export class CharacterModel {
     
     getTotalRescued() { return this.totalRescued; }
     incrementTotalRescued(v) { this.totalRescued += v; }
+
+    getDeadPals() { return this.deadPals; }
+    setDeadPals(v) { this.deadPals = v; }
+    incrementDeadPals() { this.deadPals++; }
+    resetDeadPals() { this.deadPals = 0; }
     
     // ======================= CHARACTER TYPE GETTERS & SETTERS =======================
     
     getType() { return this.type; }
     setType(v) { this.type = v; }
+
+    // ======================= KEYCHAIN USAGE METHODS =======================
+
+    // Initialize a keychain with max uses
+    initKeychainUses(id, maxUses) {
+        // Only initialize if the keychain exists in inventory
+        if (this.inventory.includes(id)) {
+            this.keychainUses[id] = maxUses;
+            return true;
+        }
+        return false;
+    }
+    
+    // Get remaining uses for a keychain
+    getKeychainUses(id) {
+        return this.keychainUses[id] || 0;
+    }
+
+    // Check if keychain has uses left
+    hasKeychainUses(id) {
+        return this.keychainUses[id] > 0;
+    }
+
+    // Check if keychain is active (has uses left)
+    isKeychainActive(id) {
+        // If it's not in inventory, it's not active
+        if (!this.inventory.includes(id)) return false;
+        
+        // If it has uses tracked, check if > 0
+        if (this.keychainUses[id] !== undefined) {
+            return this.keychainUses[id] > 0;
+        }
+        
+        // No uses tracked = always active (passive keychain)
+        return true;
+    }
+
+    // Use one charge of a keychain, returns true if used
+    useKeychain(id) {
+        if (this.keychainUses[id] > 0) {
+            // Safekeeping: Chance to not consume use =====
+            const hasSafekeeping = this.hasKeychain('safekeeping');
+            const hasFortune = this.hasKeychain('fortune');
+            
+            let saveChance = 0;
+            if (hasSafekeeping) {
+                saveChance = hasFortune ? 0.40 : 0.20;
+            }
+            
+            const shouldConsume = Math.random() > saveChance;
+            
+            if (shouldConsume) {
+                this.keychainUses[id]--;
+                if (this.keychainUses[id] === 0) {
+                    // Remove from inventory when depleted
+                    const index = this.inventory.indexOf(id);
+                    if (index > -1) {
+                        this.inventory.splice(index, 1);
+                    }
+                    delete this.keychainUses[id];
+                }
+                
+                this.saveKeychainUses();
+            } else {
+                console.log(`[Safekeeping] Saved a use of ${id}!`);
+            }
+            
+            return true;
+        }
+        return false;
+    }
+
+    // ===== SAVE KEYCHAIN USES (for Legacy mode) =====
+    saveKeychainUses() {
+        // Only save if in Legacy mode
+        const gameManager = this._gameManager;
+        if (!gameManager) return;
+        
+        const config = gameManager.config;
+        if (!config || config.mode !== 'legacy') return;
+        
+        const saveManager = gameManager.save;
+        if (!saveManager) return;
+        
+        // Save current uses
+        saveManager.setLegacyKeychainUses(this.keychainUses || {});
+        console.log('[SaveManager] Keychain uses saved after use:', this.keychainUses);
+    }
 }

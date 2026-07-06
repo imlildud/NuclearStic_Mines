@@ -136,7 +136,8 @@ export class TutorialController extends BaseBoardController {
         const board = this.createEmptyBoard(size);
         
         board[4][2].setStart(true);
-        board[0][3].setGoaltype("dummie");
+        board[0][3].setPalType("dummie");
+        board[0][3].setPalAlive(true);
         board[0][3].setSecure(true);
         
         board[0][1].setHazardtype("cactus");
@@ -182,7 +183,7 @@ export class TutorialController extends BaseBoardController {
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board.length; j++) {
                 const tile = board[i][j];
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isFlaggoal()) {
+                if (!tile.isStart() && tile.getPalType() === "none" && !tile.isFlaggoal()) {
                     tile.setHide(true);
                 }
             }

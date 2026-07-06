@@ -62,8 +62,8 @@ export class BaseBoardController {
     }
     
     // Place start and goal tiles (override for custom placement)
-    generateStartAndGoal(board, numGoals, level) {
-        throw new Error("generateStartAndGoal() must be implemented by child class");
+    generateStartAndPal(board, numPals, level) {
+        throw new Error("generateStartAndPal() must be implemented by child class");
     }
     
     // Set safe tiles around start and goals (override for custom logic)
@@ -132,6 +132,7 @@ export class BaseBoardController {
     // Regenerate hazards after player actions (flagging, etc.)
     regenerateHazards(board, totalHazards, level, size) {
         const boardSize = size;
+        const hasConcentration = this.player.hasKeychain('concentration');
         this.resetHazardCount(board, boardSize);
         let remainingHazards = 0;
         let markedHazards = 0;
@@ -147,7 +148,12 @@ export class BaseBoardController {
                         tile.setMarked(true);
                         tile.setFlagged(false);
                         markedHazards++;
-                        continue;
+
+                        // Reveal 3x3 when a hazard is marked =====
+                        if (hasConcentration) {
+                                this.revealConcentration(board, i, j, boardSize);
+                            }
+                            continue;
                     }
                     
                     if (tile.isMarked()) {
@@ -214,9 +220,9 @@ export class BaseBoardController {
             for (let j = 0; j < boardSize; j++) {
                 const tile = board[i][j];
                 
-                if (tile.getGoaltype() === "joni") {
+                if (tile.getPalType() === "joni") {
                     tile.setHide(true);
-                } else if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure()) {
+                } else if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure() && !tile.isUnhideable()) {
                     tile.setHide(true);
                 }
             }
@@ -300,101 +306,175 @@ export class BaseBoardController {
         const visionX = character.getPosX();
         const visionY = character.getPosY();
         const visionRange = character.getVision();
-    
+
         const minX = Math.max(0, visionX - visionRange);
         const maxX = Math.min(boardSize - 1, visionX + visionRange);
         const minY = Math.max(0, visionY - visionRange);
         const maxY = Math.min(boardSize - 1, visionY + visionRange);
-    
+
+        const hasVision = character.hasKeychain('vision');
+        const hasHorizon = character.hasKeychain('horizon');
+        const hasTopography = character.hasKeychain('topography');
+        const maxHeightDiff = hasTopography ? 2 : 1;
+
         // Hide all non-secure tiles in range first
         for (let i = minX; i <= maxX; i++) {
             for (let j = minY; j <= maxY; j++) {
                 const tile = board[i][j];
-                if (!tile.isStart() && tile.getGoaltype() === "none" && !tile.isSecure()) {
-                    tile.setHide(true);
+
+                if (tile.isUnhideable()){
+                    tile.setHide(false);
+                    continue;
+                }
+
+                if (hasHorizon && tile.getObstacletype() === "natural") {
+                    tile.setHide(false);
+                    continue;
+                }
+
+                if (!tile.isStart() && tile.getPalType() === "none" && !tile.isSecure()) {
+                    if (!hasVision){
+                        tile.setHide(true);
+                    }
                 }
             }
         }
-    
+
         const playerTile = board[visionX][visionY];
         const playerHeight = playerTile.getTileheight();
         const playerHazardCount = playerTile.getHazardcount();
-    
+
         if (playerHazardCount > 0) {
             playerTile.setHide(false);
             return;
         }
-    
+
         playerTile.setHide(false);
-    
+
         // Reveal in cardinal directions with height blocking
         const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    
+
         for (const [dx, dy] of directions) {
             let x = visionX;
             let y = visionY;
             let heightBlocked = false;
-        
+
             while (true) {
                 x += dx;
                 y += dy;
                 if (x < minX || x > maxX || y < minY || y > maxY) break;
-            
+
                 const tile = board[x][y];
-                if (tile.getTileheight() > playerHeight + 1) {
+                
+                // ===== TOPOGRAPHY: Allow seeing up to 2 levels above =====
+                if (tile.getTileheight() > playerHeight + maxHeightDiff) {
                     heightBlocked = true;
                     break;
                 }
                 if (tile.getHazardtype() !== "none") break;
-                tile.setHide(false);
+                if (tile.isUnhideable()){
+                    tile.setHide(false);
+                    continue;
+                }
+                if (hasHorizon && tile.getObstacletype() === "natural") {
+                    tile.setHide(false);
+                } else {
+                    tile.setHide(false);
+                }
+
                 if (tile.getHazardcount() > 0) break;
             }
             if (heightBlocked) continue;
         }
-    
+
         // Reveal diagonal tiles
         if (visionRange >= 2) {
             const diagonals = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-        
+
             for (const [dx, dy] of diagonals) {
                 const diagX = visionX + dx;
                 const diagY = visionY + dy;
                 if (diagX < minX || diagX > maxX || diagY < minY || diagY > maxY) continue;
-            
+
                 const card1X = visionX + dx;
                 const card1Y = visionY;
                 const card2X = visionX;
                 const card2Y = visionY + dy;
-            
+
                 let canSee = true;
-            
+
                 if (card1X >= minX && card1X <= maxX && card1Y >= minY && card1Y <= maxY) {
                     const tile1 = board[card1X][card1Y];
                     if (tile1.isHide() || tile1.getHazardcount() > 0 ||
-                        tile1.getHazardtype() !== "none" || tile1.getObstacletype() !== "none" ||
-                        tile1.getTileheight() > playerHeight + 1) {
+                        tile1.getHazardtype() !== "none" ||
+                        tile1.getTileheight() > playerHeight + maxHeightDiff) {
                         canSee = false;
                     }
                 } else {
                     canSee = false;
                 }
-            
+
                 if (canSee && card2X >= minX && card2X <= maxX && card2Y >= minY && card2Y <= maxY) {
                     const tile2 = board[card2X][card2Y];
                     if (tile2.isHide() || tile2.getHazardcount() > 0 ||
-                        tile2.getHazardtype() !== "none" || tile2.getObstacletype() !== "none" ||
-                        tile2.getTileheight() > playerHeight + 1) {
+                        tile2.getHazardtype() !== "none" ||
+                        tile2.getTileheight() > playerHeight + maxHeightDiff) {
                         canSee = false;
                     }
                 } else if (canSee) {
                     canSee = false;
                 }
-            
+
                 if (canSee) {
-                    board[diagX][diagY].setHide(false);
+                    const diagTile = board[diagX][diagY];
+                    if (diagTile.getTileheight() > playerHeight + maxHeightDiff){
+                        canSee = false;
+                    }
+                }
+
+                if (canSee){
+                    const diagTile = board[diagX][diagY];
+
+                    if (diagTile.isUnhideable()){
+                        diagTile.setHide(false);
+                    } else if (hasHorizon && diagTile.getObstacletype() === "natural") {
+                        diagTile.setHide(false);
+                    } else {
+                        diagTile.setHide(false);
+                    }
                 }
             }
         }
+    }
+
+    // ===== CONCENTRATION HELPER =====
+    revealConcentration(board, x, y, size) {
+        const directions = [
+            [-1,-1], [-1,0], [-1,1],
+            [0,-1],  [0,0],  [0,1],
+            [1,-1],  [1,0],  [1,1]
+        ];
+
+        let revealedCount = 0;
+        for (const [dx, dy] of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                const tile = board[nx][ny];
+                
+                const hazardType = tile.getHazardtype();
+                if (hazardType !== "none") {
+                    console.log(`[Concentration] Skipping (${nx},${ny}) - has hazard: ${hazardType}`);
+                    continue;
+                }
+                
+                tile.setUnhideable(true);
+                tile.setHide(false);
+                revealedCount++;
+            }
+        }
+        
+        return revealedCount;
     }
     
     // ======================= GAME MANAGER SETTER =======================

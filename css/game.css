@@ -80,6 +80,21 @@ canvas {
     z-index: 10001;
 }
 
+/* Delirium effect - full screen grayscale */
+body.delirium {
+    filter: grayscale(1) brightness(0.95);
+    transition: filter 0.5s ease;
+}
+
+body.delirium::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: inherit;
+    filter: grayscale(1) brightness(0.95);
+}
+
 /* ==================== CHARACTER GROUP ==================== */
 
 /* Character Group Container */
@@ -128,6 +143,14 @@ canvas {
     top: 70%;
     left: -5%;
     width: clamp(20px, 8vmin, 80px); 
+}
+
+/* Treasure founded Icon Position */
+.hud-treasure-icon {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: clamp(10px, 6vmin, 70px); 
 }
 
 /* ==================== HEALTH GROUP ==================== */
@@ -282,9 +305,12 @@ canvas {
 .hud-coordinates-container {
     position: fixed;
     top: clamp(30px, 30vmin, 155px);
-    right: clamp(15px, 15vmin, 30px);
+    right: clamp(5px, 3vmin, 5px);
+    display: flex;
+    align-items: center;
+    gap: 0.8vmin;
     height: 5vmin;
-    width: 15vmin;
+    padding: 0 1.2vmin;
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 1vmin;
     font-family: monospace;
@@ -292,15 +318,145 @@ canvas {
     color: white;
     text-shadow: 1px 1px 0 #000;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .coords-text {
-    position: relative;
-    top: 15%;
-    left: 20%;
     font-family: 'Shampoos', sans-serif;
     font-size: clamp(14px, 4vmin, 30px);
     font-weight: bold;
+}
+
+.coords-indicator-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.2vmin;
+}
+
+.coords-indicator-text {
+    font-family: 'Shampoos', sans-serif;
+    font-size: clamp(12px, 3.5vmin, 26px);
+    font-weight: bold;
+    opacity: 0.9;
+}
+
+.coords-indicator-icon {
+    width: clamp(14px, 4vmin, 28px);
+    height: clamp(14px, 4vmin, 28px);
+    object-fit: contain;
+    image-rendering: pixelated;
+    opacity: 0.9;
+}
+
+/* ========================================================= */
+/* ===================== RAMITA HUD ========================= */
+/* ========================================================= */
+
+.hud-support-container {
+    position: fixed;
+    top: clamp(56px, 34vmin, 186px); 
+    right: 0; 
+    width: clamp(250px, 45vmin, 450px);
+    height: clamp(60px, 12vmin, 120px);
+    z-index: 10001;
+    pointer-events: none;
+}
+
+.hud-support {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: right center; 
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+.hud-keychain-slots {
+    position: absolute;
+    top: 55%; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-end; 
+    padding-right: clamp(2.5px, 1.5vmin, 10px); 
+    gap: clamp(2px, 0.25vmin, 5px);
+    pointer-events: none;
+}
+
+/* Individual keychain slot */
+.keychain-slot {
+    position: relative;
+    width: clamp(45px, 10vmin, 80px);
+    height: clamp(55px, 12vmin, 110px);
+    pointer-events: auto;
+    cursor: pointer;
+    transform-origin: top center;
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+    opacity: 0;
+    animation: keychainHang 0.5s ease-out forwards;
+}
+
+.keychain-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    object-position: top center; 
+    image-rendering: pixelated;
+}
+
+/* Hover effect for keychain slots */
+.keychain-slot:hover {
+    transform: rotate(-10deg) scale(1.12);
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
+}
+
+/* Active (click) effect */
+.keychain-slot:active {
+    transform: rotate(-5deg) scale(0.92);
+    filter: brightness(0.75);
+    transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+/* Keychain hanging animation */
+@keyframes keychainHang {
+    0% { transform: translateY(-20px) rotate(-15deg); opacity: 0; }
+    60% { transform: translateY(4px) rotate(5deg); opacity: 1; }
+    100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .hud-support-container {
+        width: clamp(140px, 25vw, 200px); 
+        height: clamp(45px, 8vw, 70px);
+    }
+    .keychain-slot {
+        width: clamp(22px, 4vw, 35px);
+        height: clamp(30px, 6vw, 50px); 
+    }
+}
+
+@media (orientation: portrait) {
+    .hud-support-container {
+        top: clamp(65px, 35vw, 150px); 
+        width: clamp(200px, 45vw, 300px); 
+        height: clamp(65px, 15vw, 100px);
+    }
+    .keychain-slot {
+        width: clamp(40px, 9vw, 60px);
+        height: clamp(55px, 12vw, 85px);
+    }
+    .hud-keychain-slots {
+        padding-right: clamp(10px, 4vw, 20px);
+    }
 }
 
 /* ========================================================= */
@@ -321,6 +477,34 @@ canvas {
 .touch-movement { left: clamp(15px, 3vw, 40px); }
 .touch-flags    { right: clamp(15px, 3vw, 40px); }
 
+.swamp-btn {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: clamp(45px, 25vmin, 70px);
+    height: clamp(45px, 25vmin, 70px);
+    cursor: pointer;
+    z-index: 10001;
+    user-select: none;
+    transition: transform 0.1s ease, filter 0.1s ease;
+    margin-bottom: 0.5vmin;
+    display: block;
+}
+
+.restart-btn {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: clamp(45px, 25vmin, 70px);
+    height: clamp(45px, 25vmin, 70px);
+    cursor: pointer;
+    z-index: 10001;
+    user-select: none;
+    transition: transform 0.1s ease, filter 0.1s ease;
+    margin-bottom: 0.5vmin;
+    display: block;
+}
+
 /* Control Buttons Base */
 .touch-btn, .flag-btn {
     width: 100%;
@@ -332,14 +516,22 @@ canvas {
 }
 
 /* Control Buttons Hover & Active Effects */
-.touch-btn:hover, .flag-btn:hover {
+.touch-btn:hover, .flag-btn:hover, .swamp-btn:hover, .restart-btn:hover {
     filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,200,0.7));
     transform: scale(1.05);
 }
 
-.touch-btn:active, .flag-btn:active {
+.touch-btn:active, .flag-btn:active, .swamp-btn:active, .restart-btn:active {
     filter: brightness(0.75);
     transform: scale(0.95);
+}
+
+.swamp-btn.disabled,
+.restart-btn.disabled {
+    filter: brightness(0.3) saturate(0.2);
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* WASD / Arrow Keys Grid Positioning */
@@ -859,6 +1051,13 @@ canvas {
     font-size: min(5vmin, 40px);
     color: #000000;
     font-weight: bold;
+}
+
+.pause-seed {
+    font-family: 'Shampoos';
+    font-size: min(3vmin, 24px);
+    color: #000000;
+    margin-bottom: 1vmin;
 }
 
 .pause-stats {

@@ -144,7 +144,7 @@ export class TutorialManager {
         this.gameManager.setGameInputLocked(true);
         this.gameManager.player.setFlags(4);
         this.gameManager.boardCtrl.currentPhase = 5;
-        this.gameManager.charCtrl.remainingGoals = 1;
+        this.gameManager.charCtrl.remainingPals = 1;
         this.gameManager.boardCtrl.hideAllTiles(this.gameManager.board);
         this.gameManager.boardCtrl.updateVision(this.gameManager.board, this.gameManager.player);
 
@@ -235,13 +235,13 @@ export class TutorialManager {
             }
         
             const currentTile = board[player.getPosX()][player.getPosY()];
-            if (currentTile && currentTile.isStart() && self.gameManager.charCtrl.remainingGoals === 0) {
+            if (currentTile && currentTile.isStart() && self.gameManager.charCtrl.remainingPals === 0) {
                 hasDelivered = true;
                 clearInterval(self.rescueCheckInterval);
                 self.rescueCheckInterval = null;
                 self.dialogManager.clearWaiters();
             
-                self.gameManager.charCtrl.deliverGoal(board);
+                self.gameManager.charCtrl.deliverPal(board);
             
                 self.dialogManager.typeWriter(self.getText('tutorial.phase5.successMessage'), () => {
                     self.dialogManager.waitForAnyInput(() => {
@@ -313,16 +313,11 @@ export class TutorialManager {
             this.completeTutorial();
         };
     
-        const lang = this.localeManager?.currentLocale || 'en';
-        const manualFile = lang === 'es' 
-            ? '../../NuclearStic Manual(es).pdf' 
-            : '../../NuclearStic Manual(en).pdf';
-    
         yesBtn.addEventListener('click', () => {
-            window.open(manualFile, '_blank');
+            window.open('https://github.com/imlildud/NuclearStic_Mines/wiki', '_blank');
             closeOverlay();
         });
-    
+
         noBtn.addEventListener('click', closeOverlay);
     }
 

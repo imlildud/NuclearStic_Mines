@@ -11,12 +11,15 @@ export class TileModel {
     constructor() {
         // ========== VIEW STATUS ==========
         this.hide = true;               // Hide the content of the tile (undiscovered)
+        this.unhideable = false;        // Never hide the content
         
         // ========== START & GOAL TILES ==========
         this.start = false;             // Define if the tile is the starting position
-        this.goaltype = "none";         // Define if the tile is a goal (rescue target)
-        this.goallive = false;          // Define if the goal is still active (not lost)
         this.flaggoal = false;          // Define if the tile is a tutorial goal
+
+        // ========== PAL STATUS ==========
+        this.palAlive = false;      // If the pal is alive (can be rescued)
+        this.palType = "none";      // Type of pal (charlie, joni, etc.)
         
         // ========== MAP CONDITIONS ==========
         this.secure = false;            // Define if the tile is a secure area
@@ -24,6 +27,10 @@ export class TileModel {
         this.flagged = false;           // Define if the tile has a flag marker
         this.jumpflagged = false;       // Define if the tile has a jump flag marker
         this.marked = false;            // Define if the tile is marked as a hazard
+        this.treasure = false;          // Define if the tile have a treasure
+
+        // ========== MEMORY MARKERS ==========
+        this.memoryMarker = null; // 'a' | 'b' | 'c' | null
         
         // ========== TILE HEIGHT ==========
         this.height = 0;                // 0 = default height (terrain elevation)
@@ -46,19 +53,22 @@ export class TileModel {
     
     isHide() { return this.hide; }
     setHide(v) { this.hide = v; }
+
+    isUnhideable() { return this.unhideable; }
+    setUnhideable(v) { this.unhideable = v; }
     
     // ======================= START GETTERS & SETTERS =======================
     
     isStart() { return this.start; }
     setStart(v) { this.start = v; }
     
-    // ======================= GOAL GETTERS & SETTERS =======================
+    // ======================= PAL GETTERS & SETTERS =======================
     
-    getGoaltype() { return this.goaltype; }
-    setGoaltype(v) { this.goaltype = v; }
+    getPalType() { return this.palType; }
+    setPalType(v) { this.palType = v; }
     
-    isGoallive() { return this.goallive; }
-    setGoallive(v) { this.goallive = v; }
+    isPalAlive() { return this.palAlive; }
+    setPalAlive(v) { this.palAlive = v; }
 
     // ===================== FLAG GOAL GETTERS & SETTERS =====================
     
@@ -80,11 +90,21 @@ export class TileModel {
     
     isJumpflagged() { return this.jumpflagged; }
     setJumpflagged(v) { this.jumpflagged = v; }
+
+    getMemoryMarker() { return this.memoryMarker; }
+    setMemoryMarker(v) { this.memoryMarker = v; }
+    hasMemoryMarker() { return this.memoryMarker !== null; }
+    clearMemoryMarker() { this.memoryMarker = null; }
     
     // ======================= MARKED GETTERS & SETTERS =======================
     
     isMarked() { return this.marked; }
     setMarked(v) { this.marked = v; }
+
+    // ======================= TREASURE GETTERS & SETTERS =======================
+    
+    haveTreasure() { return this.treasure; }
+    setTreasure(v) { this.treasure = v; }
     
     // ======================= HEIGHT GETTERS & SETTERS =======================
     

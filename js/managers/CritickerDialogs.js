@@ -96,26 +96,16 @@ export class CritickerDialogs {
         const dialogues = [
             { 
                 text: this.getText('criticker.failure.main'),
-                // Después del primer diálogo, aplicar daño
                 afterCallback: () => {
                     if (!damageApplied) {
                         damageApplied = true;
                         console.log("[CritickerDialogs] Applying damage after first dialogue");
                         
-                        // Aplicar daño al jugador
-                        const player = gameManager.getPlayer();
-                        player.decrementHp(1);
-                        player.incrementDamageTaken(1);
-                        
-                        // Trigger visual flash
-                        player.setDamageFlash(true);
-                        setTimeout(() => {
-                            if (player) player.setDamageFlash(false);
-                        }, 150);
-                        
-                        // Play hurt sound
-                        if (self.audioManager) {
-                            self.audioManager.playHurtSFX();
+                        const charCtrl = gameManager.charCtrl;
+                        if (charCtrl && typeof charCtrl.hurtCharacter === 'function') {
+                            charCtrl.hurtCharacter();
+                        } else {
+                            console.warn("[CritickerDialogs] charCtrl.hurtCharacter not available");
                         }
                     }
                 }
@@ -123,7 +113,6 @@ export class CritickerDialogs {
             { text: this.getText('criticker.failure.damage') }
         ];
         
-        // Necesitamos una versión de sequence que soporte afterCallback
         this.dialogManager.sequenceWithCallbacks(dialogues, () => {
             if (this.dialogManager) {
                 this.dialogManager.hide();

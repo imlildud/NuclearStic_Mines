@@ -12,8 +12,8 @@ export class CharacterController {
         this.character = character;              // Reference to CharacterModel
         this.boardController = boardController;  // Reference to BoardController
         this.gameManager = gameManager;          // Reference to GameManager for settings
-        this.totalGoals = 0;                     // Total goals to rescue
-        this.remainingGoals = 0;                 // Goals still needing rescue
+        this.totalPals = 0;                     // Total pals to rescue
+        this.remainingPals = 0;                 // Pals still needing rescue
     }
     
     // Helper to check if fall damage is enabled
@@ -24,9 +24,9 @@ export class CharacterController {
     // ======================= GOAL SETTER =======================
     
     // Set the number of goals for the current mission
-    setCharacterGoals(v) {
-        this.remainingGoals = v;
-        this.totalGoals = v;
+    setCharacterPals(v) {
+        this.remainingPals = v;
+        this.totalPals = v;
     }
     
     // ======================= START POSITION =======================
@@ -64,43 +64,80 @@ export class CharacterController {
             case "Left": newX--; break;
             case "Right": newX++; break;
         }
-    
-        // Boundary check
-        if (newX < 0 || newX >= boardsize || newY < 0 || newY >= boardsize) return;
+
+        const hasContinuity = this.character.hasKeychain('continuity');
+        if (hasContinuity) {
+            // Wrap around edges
+            if (newX < 0) newX = boardsize - 1;
+            else if (newX >= boardsize) newX = 0;
+            if (newY < 0) newY = boardsize - 1;
+            else if (newY >= boardsize) newY = 0;
+        } else {
+            // Boundary check
+            if (newX < 0 || newX >= boardsize || newY < 0 || newY >= boardsize) return;
+        }
     
         const currentTile = board[this.character.getPosX()][this.character.getPosY()];
         const targetTile = board[newX][newY];
-    
+
         // ===== HEIGHT DIFFERENCE CHECK =====
         const heightDiff = targetTile.getTileheight() - currentTile.getTileheight();
     
         // Ability 4 (Scout) ignores all height restrictions
         if (this.character.getAbilityId() !== 4) {
-            // Can't climb up 2 or more levels
-            if (heightDiff >= 2) return;
+            const hasAscent = this.character.hasKeychain('ascent');
+            const maxClimb = hasAscent ? 2 : 1;
+
+            // Can't climb up more than maxClimb levels
+            if (heightDiff > maxClimb) return;
 
             // Can fall down 2 or more levels
-            if (heightDiff <= -2) {
-                const fallDamageEnabled = this.isFallDamageEnabled();
+            if (heightDiff < - 1) { // Only trigger if falling 2 or more levels
                 const fallDistance = Math.abs(heightDiff);
-                
-                if (fallDamageEnabled) {
-                    // FALL DAMAGE ENABLED: Allow fall but take damage
-                    const fallDamage = fallDistance - 1;
-                    if (fallDamage > 0) {
-                        this.character.decrementHp(fallDamage);
-                        this.character.incrementDamageTaken(1);
-                    
-                        if (this.character.getHp() <= 0) {
-                            this.killCharacter();
-                            return;
-                        }
+                const hasDescent = this.character.hasKeychain('descent');
+                const hasStealth = this.character.hasKeychain('stealth');
+
+                if (hasAscent && fallDistance < 3){
+                }
+                else if (hasDescent) {
+                    if (this.character.useKeychain('descent')) {
+                    } else {
+                        return;
                     }
-                    // Continue with movement after fall
                 } else {
-                    // FALL DAMAGE DISABLED: Block the fall (original behavior)
-                    // Cannot fall 2 or more levels
-                    return;
+                    const fallDamageEnabled = this.isFallDamageEnabled();
+                    
+                    if (fallDamageEnabled) {
+                        let fallDamage = fallDistance - 1;
+                        if (hasStealth) {
+                            fallDamage = Math.max(0, fallDamage - 1);
+                        }
+                        if (fallDamage > 0) {
+                            this.character.decrementHp(fallDamage);
+                            this.character.incrementDamageTaken(fallDamage);
+
+                            // Play hurt sound
+                            if (this.gameManager && this.gameManager.audio) {
+                                this.gameManager.audio.playHurtSFX();
+                            }
+
+                            // Trigger visual damage flash (set flag for renderer)
+                            this.character.setDamageFlash(true);
+                            setTimeout(() => {
+                                if (this.character) {
+                                    this.character.setDamageFlash(false);
+                                }
+                            }, 150);
+                            this.character.incrementDamageTaken(1);
+                        
+                            if (this.character.getHp() <= 0) {
+                                this.killCharacter();
+                                return;
+                            }
+                        }
+                    } else {
+                        return;
+                    }
                 }
             }
         }
@@ -113,14 +150,16 @@ export class CharacterController {
         if (obst === "spikes") {
             if (this.gameManager && this.gameManager.spikeController) {
                 const spikeState = this.gameManager.spikeController.getStateAt(newX, newY);
-                if (spikeState === "on") {
+                // STEALTH: Spikes are frozen (never activate)
+                const hasStealth = this.character.hasKeychain('stealth');
+                if (spikeState === "on" && !hasStealth) {
                     this.character.setPosX(newX);
                     this.character.setPosY(newY);
                     this.hurtCharacter();
                     return;
                 }
             }
-            // OFF o PREPARED → movimiento normal
+            // OFF, PREPARED, or STEALTH → movement normal
             this.character.setPosX(newX);
             this.character.setPosY(newY);
             return;
@@ -149,8 +188,19 @@ export class CharacterController {
                 this.character.setPosX(newX);
                 this.character.setPosY(newY);
                 if (this.character.getAbilityId() !== 4) {
-                    this.character.setHp(0);
-                    this.killCharacter();
+                    // Check for Salvation keychain
+                    if (this.character.hasKeychain('salvation') && this.character.isKeychainActive('salvation')) {
+                        this.character.useKeychain('salvation');
+                        
+                        if (this.gameManager && this.gameManager.audio) {
+                            this.gameManager.audio.playRescueSFX();
+                        }
+                        
+                        const remaining = this.character.getKeychainUses('salvation');
+                    } else {
+                        this.character.setHp(0);
+                        this.killCharacter();
+                    }
                 }
             return;
             case "safepit":
@@ -203,7 +253,7 @@ export class CharacterController {
         const isMarked = tile.isMarked();
         const hasDamageRatio = tile.getDamageratio();
         const hasDetectionRatio = tile.getDetectionratio();
-        const goalType = tile.getGoaltype();
+        const palType = tile.getPalType();
         const isStartTile = tile.isStart();
         
         // ===================== HAZARD HANDLING =====================
@@ -215,27 +265,24 @@ export class CharacterController {
             if (ability === 1 && (isMarked)) {
                 return;
             }
-            // Ability 3 (mommy) uses armor points
-            if (ability === 3) {
-                if (this.character.getAp() <= 0) {
-                    this.character.setHp(0);
-                    this.killCharacter();
-                } else {
-                    this.character.decrementAp(1);
-                    
-                    // Play death sound for dramatic effect
-                    if (this.gameManager && this.gameManager.audio) {
-                        this.gameManager.audio.playDeathSFX();
-                    }
-                    
-                    // Trigger screen blackout effect
-                    if (this.gameManager && this.gameManager.renderer) {
-                        this.gameManager.renderer.triggerMineFlash();
-                    }
+            
+            // Check if character has armor points
+            if (this.character.getAp() > 0) {
+                this.character.decrementAp(1);
+                
+                // Play armor hurt sound
+                if (this.gameManager && this.gameManager.audio) {
+                    this.gameManager.audio.playHurtMetalSFX();
+                }
+                
+                // Trigger screen blackout effect for dramatic mine explosion
+                if (this.gameManager && this.gameManager.renderer) {
+                    this.gameManager.renderer.triggerMineFlash();
                 }
                 return;
             }
-            // Normal death
+            
+            // No armor - die
             this.character.setHp(0);
             this.killCharacter();
             return;
@@ -243,31 +290,33 @@ export class CharacterController {
         
         // ----- DAMAGE HAZARDS (Cactus, Deadbush, Radioactive radius) -----
         if (hazardType === "cactus" || hazardType === "deadbush" || hasDamageRatio) {
-            // Scout survives if marked
+            // Chef survives if marked
             if (ability === 1 && (isMarked)) {
                 return;
             }
-            // Mommy uses armor
-            if (ability === 3) {
-                if (this.character.getAp() <= 0) {
-                    this.hurtCharacter();
-                } else {
-                    this.character.decrementAp(1);
-                    
-                    // Play armor hurt sound
-                    if (this.gameManager && this.gameManager.audio) {
-                        this.gameManager.audio.playHurtMetalSFX();
-                    }
+            
+            const hasProtection = this.character.hasKeychain("protection");
+            const hasJudgment = this.character.hasKeychain("judgment");
+            if (hasProtection && isMarked) {
+                return;
+            }
+            
+            // Check if character has armor points
+            if (this.character.getAp() > 0) {
+                this.character.decrementAp(1);
+                
+                // Play armor hurt sound
+                if (this.gameManager && this.gameManager.audio) {
+                    this.gameManager.audio.playHurtMetalSFX();
                 }
                 return;
             }
 
-            // Critiker damage
-            if (this.character.isCriticized()) {
+            // Criticker damage
+            if (this.character.isCriticized() && !hasJudgment) {
                 this.character.setCriticized(false);
                 this.hurtCharacter();
                 
-                // Notify criticker of abandonment
                 if (this.gameManager && this.gameManager.criticker) {
                     this.gameManager.criticker.abandon();
                 }
@@ -280,7 +329,10 @@ export class CharacterController {
 
         // ===== CRITICKER NEST HANDLING =====
         if (hazardType === "nest") {
-            if (!this.character.isCriticized() && this.character.getAbilityId() != 4) {
+            // STEALTH: Nest doesn't break
+            const hasStealth = this.character.hasKeychain('stealth');
+            
+            if (!this.character.isCriticized() && this.character.getAbilityId() != 4 && !hasStealth) {
                 this.character.setCriticized(true);
                 
                 const goal = Math.floor(Math.random() * 5) + 1;
@@ -289,15 +341,15 @@ export class CharacterController {
                 
                 tile.setHazardtype("nest_open");
                 
-                // Activate Criticker controller via GameManager (NOT a local method)
                 if (this.gameManager && this.gameManager.criticker) {
                     this.gameManager.criticker.activate(goal);
                 }
-                
                 return;
             } else {
                 tile.setHazardtype("nest_open");
-                this.hurtCharacter();
+                if (!hasStealth) {
+                    this.hurtCharacter();
+                }
             }
         }
         
@@ -311,18 +363,21 @@ export class CharacterController {
             }
         }
         
-        // ===================== GOAL HANDLING =====================
+        // ===================== PAL HANDLING =====================
         
-        // Rescue children if conditions are met
-        if (goalType !== "none") {
-            // Player needs enough force to rescue
+        // Rescue pals if conditions are met
+        if (palType !== "none" && tile.isPalAlive()) {
             if (this.character.getForce() > this.character.getRescued()) {
                 this.character.incrementRescue();
-                tile.setGoaltype("none");    // Remove goal
-                tile.setGoallive(false);     // Mark as rescued
-                this.character.setRegen(true); // Trigger regeneration
-
-                // Play rescue sound
+                tile.setPalType("none");
+                tile.setPalAlive(false);
+                this.character.setRegen(true);
+                
+                // Reset destiny target when a pal is rescued
+                if (this.gameManager) {
+                    this.gameManager.resetDestinyTarget();
+                }
+                
                 if (this.gameManager && this.gameManager.audio) {
                     this.gameManager.audio.playRescueSFX();
                 }
@@ -333,14 +388,14 @@ export class CharacterController {
         
         // Deliver rescued children at start tile
         if (isStartTile) {
-            this.deliverGoal(board);
+            this.deliverPal(board);
         }
     }
     
-    // ======================= GOAL DELIVERY =======================
+    // ======================= PAL DELIVERY =======================
     
-    // Deliver rescued children at the start tile and apply rewards
-    deliverGoal(board) {
+    // Deliver rescued pals at the start tile and apply rewards
+    deliverPal(board) {
         const tile = board[this.character.getPosX()][this.character.getPosY()];
         
         if (tile.isStart() && this.character.getRescued() > 0) {
@@ -352,7 +407,7 @@ export class CharacterController {
             }
             
             // ===== MOMMY ABILITY (Ability 3) =====
-            // Each rescued child grants armor, health and force.
+            // Each rescued pal grants armor, health and force.
             if (this.character.getAbilityId() === 3) {
                 for (let i = 0; i < rescued; i++) {
                     if (this.character.getAp() < 3) {
@@ -365,7 +420,7 @@ export class CharacterController {
             }
             
             // Update mission stats
-            this.remainingGoals -= rescued;
+            this.remainingPals -= rescued;
             this.character.decrementRescue(rescued);
             this.character.incrementTotalRescued(rescued);
         }
@@ -375,23 +430,32 @@ export class CharacterController {
     
     // Check if player has won (all goals rescued and returned to start)
     winCondition(board) {
-        return board[this.character.getPosX()][this.character.getPosY()].isStart() &&
-               this.character.getRescued() === this.remainingGoals;
+        const hasJudgment = this.character.hasKeychain('judgment');
+        const allRescued = board[this.character.getPosX()][this.character.getPosY()].isStart() &&
+                        this.character.getRescued() === this.remainingPals;
+        
+        if (hasJudgment) {
+            // Must have 0 flags remaining
+            return allRescued && this.character.getFlags() === 0;
+        }
+        
+        return allRescued;
     }
     
     // ======================= DAMAGE HANDLING =======================
     
     // Apply damage to character
     hurtCharacter() {
+        const hasJudgment = this.character.hasKeychain('judgment');
+        const hasOblivion = this.character.hasKeychain('oblivion');
+        
         this.character.decrementHp(1);
-        this.character.incrementDamageTaken(1); 
+        this.character.incrementDamageTaken(1);
 
-        // Play hurt sound
         if (this.gameManager && this.gameManager.audio) {
             this.gameManager.audio.playHurtSFX();
         }
 
-        // Trigger visual damage flash (set flag for renderer)
         this.character.setDamageFlash(true);
         setTimeout(() => {
             if (this.character) {
@@ -399,21 +463,48 @@ export class CharacterController {
             }
         }, 150);
         
+        // If Judgment, stay criticized
+        if (hasJudgment) {
+            this.character.setCriticized(true);
+        }
+
+        if (hasOblivion && this.gameManager) {
+            const board = this.gameManager.getBoard();
+            const flagManager = this.gameManager.flagManager;
+            if (board && flagManager && typeof flagManager.removeMarkedHazard === 'function') {
+                flagManager.removeMarkedHazard(board);
+            }
+        }
+
+        // ===== LINK: Kill linked pal on damage =====
+        if (this.gameManager) {
+            this.gameManager.onPlayerDamage();
+        }
+        
         if (this.character.getHp() <= 0) this.killCharacter();
     }
     
     // Kill character and trigger game over
     killCharacter() {
-        this.character.setAlive(false);
-        this.character.incrementDamageTaken(10); 
+        // ===== CHECK FOR REVERSION AUTO-ACTIVATE =====
+        if (this.gameManager) {
+            const reversionManager = this.gameManager.reversionManager;
+            if (reversionManager && reversionManager.autoActivateOnDeath()) {
+                // Reversion activated, prevent game over
+                return;
+            }
+        }
+        
         if (this.boardController && this.boardController.gameManager) {
+            this.character.setAlive(false);
+            this.character.incrementDamageTaken(10);
             this.boardController.gameManager.handleGameOver();
         }
     }
-    
+        
     // ======================= GETTERS =======================
     
-    getTotalGoals() { return this.totalGoals; }
-    getRemainingGoals() { return this.remainingGoals; }
-    getRescuedGoals() { return this.character.getRescued(); }
+    getTotalPals() { return this.totalPals; }
+    getRemainingPals() { return this.remainingPals; }
+    getRescuedPals() { return this.character.getRescued(); }
 }
