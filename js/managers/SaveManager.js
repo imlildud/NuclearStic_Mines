@@ -218,6 +218,54 @@ export class SaveManager {
         localStorage.removeItem("hardcore_highscore");
         console.log("[SaveManager] Hardcore high score reset");
     }
+
+    // ======================= HARDCORE CHARACTER =======================
+
+    // Get saved hardcore character
+    getHardcoreCharacter() {
+        return localStorage.getItem("hardcoreCharacter") || null;
+    }
+
+    // Set hardcore character
+    setHardcoreCharacter(char) {
+        localStorage.setItem("hardcoreCharacter", char);
+        console.log("[SaveManager] Hardcore character saved:", char);
+    }
+
+    // Clear hardcore character
+    clearHardcoreCharacter() {
+        localStorage.removeItem("hardcoreCharacter");
+        console.log("[SaveManager] Hardcore character cleared");
+    }
+
+    // ======================= HARDCORE HEALTH =======================
+
+    // Get saved hardcore health
+    getHardcoreHealth() {
+        const hp = localStorage.getItem("hardcoreHealth");
+        return hp ? parseInt(hp) : null;
+    }
+
+    // Set hardcore health
+    setHardcoreHealth(hp) {
+        localStorage.setItem("hardcoreHealth", hp);
+        console.log("[SaveManager] Hardcore health saved:", hp);
+    }
+
+    // Clear hardcore health
+    clearHardcoreHealth() {
+        localStorage.removeItem("hardcoreHealth");
+        console.log("[SaveManager] Hardcore health cleared");
+    }
+
+    // Clear ALL hardcore data
+    clearHardcoreAll() {
+        this.clearHardcoreKeychains();
+        this.clearHardcoreKeychainUses();
+        this.clearHardcoreCharacter();
+        this.clearHardcoreHealth();
+        console.log("[SaveManager] All hardcore data cleared");
+    }
     
     // ======================= DAILY MODE =======================
 
@@ -389,22 +437,78 @@ export class SaveManager {
 
     // ======================= STUFFED KEYCHAINS =======================
 
-    // Get saved stuffed keychains (post-death inventory)
-    getStuffedKeychains() {
-        const data = localStorage.getItem("stuffedKeychains");
+    // Get saved legacy stuffed keychains
+    getLegacyStuffedKeychains() {
+        const data = localStorage.getItem("legacyStuffedKeychains");
         return data ? JSON.parse(data) : [];
     }
 
-    // Set stuffed keychains
-    setStuffedKeychains(keychains) {
-        localStorage.setItem("stuffedKeychains", JSON.stringify(keychains));
-        console.log("[SaveManager] Stuffed keychains saved:", keychains);
+    // Set legacy stuffed keychains
+    setLegacyStuffedKeychains(keychains) {
+        localStorage.setItem("legacyStuffedKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Legacy stuffed keychains saved:", keychains);
     }
 
-    // Clear stuffed keychains (after loading into legacy)
-    clearStuffedKeychains() {
-        localStorage.removeItem("stuffedKeychains");
-        console.log("[SaveManager] Stuffed keychains cleared");
+    // Clear legacy stuffed keychains
+    clearLegacyStuffedKeychains() {
+        localStorage.removeItem("legacyStuffedKeychains");
+        console.log("[SaveManager] Legacy stuffed keychains cleared");
+    }
+
+    // Get hardcore stuffed keychains
+    getHardcoreStuffedKeychains() {
+        const data = localStorage.getItem("hardcoreStuffedKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set hardcore stuffed keychains
+    setHardcoreStuffedKeychains(keychains) {
+        localStorage.setItem("hardcoreStuffedKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Hardcore stuffed keychains saved:", keychains);
+    }
+
+    // Clear hardcore stuffed keychains
+    clearHardcoreStuffedKeychains() {
+        localStorage.removeItem("hardcoreStuffedKeychains");
+        console.log("[SaveManager] Hardcore stuffed keychains cleared");
+    }
+
+    // ======================= HARDCORE KEYCHAINS =======================
+
+    // Get saved hardcore keychains
+    getHardcoreKeychains() {
+        const data = localStorage.getItem("hardcoreKeychains");
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Set hardcore keychains
+    setHardcoreKeychains(keychains) {
+        localStorage.setItem("hardcoreKeychains", JSON.stringify(keychains));
+        console.log("[SaveManager] Hardcore keychains saved:", keychains);
+    }
+
+    // Clear hardcore keychains (when dying or winning)
+    clearHardcoreKeychains() {
+        localStorage.removeItem("hardcoreKeychains");
+        console.log("[SaveManager] Hardcore keychains cleared");
+    }
+
+    // Get saved hardcore keychain uses
+    getHardcoreKeychainUses() {
+        const data = localStorage.getItem("hardcoreKeychainUses");
+        return data ? JSON.parse(data) : {};
+    }
+
+    // Set hardcore keychain uses
+    setHardcoreKeychainUses(uses) {
+        localStorage.setItem("hardcoreKeychainUses", JSON.stringify(uses));
+        console.log("[SaveManager] Hardcore keychain uses saved:", uses);
+    }
+
+    // Clear hardcore keychain uses
+    clearHardcoreKeychainUses() {
+        localStorage.removeItem("hardcoreKeychainUses");
+        console.log("[SaveManager] Hardcore keychain uses cleared");
     }
 
     // ======================= CUSTOM KEYCHAINS =======================

@@ -89,16 +89,26 @@ export class ReversionManager {
             }
         }
         
-        // Calculate remaining flags (total hazards - marked count)
-        const remainingFlags = this.savedState.totalHazards - this.savedState.markedCount;
-        player.setFlags(remainingFlags);
+        // ===== SCOUT: Keep fixed flags (ability 4) =====
+        const isScout = player.getAbilityId() === 4;
+        if (isScout) {
+            // Scout keeps 3 flags
+            player.setFlags(3);
+            console.log('[Reversion] Scout flags kept at 3');
+        } else {
+            // Calculate remaining flags (total hazards - marked count)
+            const remainingFlags = this.savedState.totalHazards - this.savedState.markedCount;
+            player.setFlags(remainingFlags);
+            console.log('[Reversion] Flags restored to:', remainingFlags);
+        }
+        
         const reversionUses = this.savedState.reversionUses || 0;
         if (player.hasKeychain('reversion')) {
             player.keychainUses['reversion'] = reversionUses;
             console.log('[Reversion] Restored uses:', reversionUses);
         }
         
-        console.log('[Reversion] State restored - flags:', remainingFlags, 'marked:', this.savedState.markedCount);
+        console.log('[Reversion] State restored');
         return true;
     }
 
@@ -133,13 +143,13 @@ export class ReversionManager {
         // ===== 1. SAVE STATE =====
         this.saveState();
         
-        // ===== 2. GASTAR USO =====
+        // ===== 2. SPENT USE =====
         player.useKeychain('reversion');
         
-        // ===== 3. REINICIAR TABLERO =====
+        // ===== 3. RESTART BOARD =====
         game.retryLevel();
         
-        // ===== 4. RESTAURAR ESTADO =====
+        // ===== 4. LOAD STATE =====
         setTimeout(() => {
             this.restoreState();
             
