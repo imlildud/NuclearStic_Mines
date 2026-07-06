@@ -490,15 +490,20 @@ export class CharacterController {
         if (this.gameManager) {
             const reversionManager = this.gameManager.reversionManager;
             if (reversionManager && reversionManager.autoActivateOnDeath()) {
-                // Reversion activated, prevent game over
+                console.log('[KillCharacter] Reversion activated, preventing death');
                 return;
             }
         }
         
-        if (this.boardController && this.boardController.gameManager) {
-            this.character.setAlive(false);
-            this.character.incrementDamageTaken(10);
-            this.boardController.gameManager.handleGameOver();
+        console.log('[KillCharacter] Killing character');
+        this.character.setAlive(false);
+        this.character.incrementDamageTaken(10);
+        
+        // ===== USE this.gameManager DIRECTLY =====
+        if (this.gameManager) {
+            this.gameManager.handleGameOver();
+        } else {
+            console.error('[KillCharacter] CRITICAL: No gameManager!');
         }
     }
         
