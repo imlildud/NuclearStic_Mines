@@ -432,7 +432,7 @@ export class CharacterController {
     winCondition(board) {
         const hasJudgment = this.character.hasKeychain('judgment');
         const allRescued = board[this.character.getPosX()][this.character.getPosY()].isStart() &&
-                        this.character.getRescued() === this.remainingPals;
+        this.character.getRescued() === this.remainingPals;
         
         if (hasJudgment) {
             // Must have 0 flags remaining
@@ -505,6 +505,13 @@ export class CharacterController {
         } else {
             console.error('[KillCharacter] CRITICAL: No gameManager!');
         }
+        console.log('[KillCharacter] - Start state:', {
+                mode: this.gameManager?.config?.mode,
+                level: this.gameManager?.currentLevel,
+                inputLocked: this.gameManager?.gameInputLocked,
+                playerAlive: this.character.isAlive(),
+                playerHp: this.character.getHp()
+        });
     }
         
     // ======================= GETTERS =======================
