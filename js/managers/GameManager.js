@@ -328,13 +328,35 @@ export class GameManager {
 
     // Level progression
     async nextLevel() {
+        console.log('[NextLevel] START - Current state:', {
+            mode: this.mode,
+            level: this.currentLevel,
+            inputLocked: this.gameInputLocked,
+            playerAlive: this.player?.isAlive(),
+            playerHp: this.player?.getHp()
+        });
+
         if (this.config.mode === "legacy") {
             this.gameModeManager.handleLegacyVictory(this);
+            
+            console.log('[NextLevel] After handleLegacyVictory:', {
+                level: this.currentLevel,
+                inputLocked: this.gameInputLocked,
+                playerAlive: this.player?.isAlive(),
+                playerHp: this.player?.getHp()
+            });
+
             document.getElementById("scoreboard-overlay").classList.remove("active");
             if (this.config.mode !== "tutorial") {
                 await this.uiManager.showLevelStartModal(this.charCtrl, this.config, this.board);
             }
             this.gameInputLocked = false;
+
+            console.log('[NextLevel] END - Final state:', {
+                inputLocked: this.gameInputLocked,
+                playerAlive: this.player?.isAlive(),
+                playerHp: this.player?.getHp()
+            });
         }
     }
 

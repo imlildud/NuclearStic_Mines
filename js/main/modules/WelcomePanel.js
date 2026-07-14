@@ -405,6 +405,7 @@ export const WelcomePanel = {
         const legacyHighScore = saveManager.getLegacyHighScore();
         const dailyStreak = saveManager.getDailyStreak();
         const hardcoreHighScore = saveManager.getHardcoreHighScore();
+        const dailyRecord = saveManager.getDailyRecord();
         
         // Determine mode for ranking display
         const isHardcore = isHardcoreEnabled();
@@ -461,6 +462,11 @@ export const WelcomePanel = {
         if (streakFire) {
             const fireFile = getDailyFireImage(dailyStreak);
             streakFire.src = `assets/hud/badges/${fireFile}`;
+        }
+
+        const dailyRecordNumber = document.getElementById("id-card-dailyrecord-number");
+        if (dailyRecordNumber) {
+            dailyRecordNumber.textContent = dailyRecord;
         }
 
         // Update rank display (always update, skipAnimation just means no counting animation)

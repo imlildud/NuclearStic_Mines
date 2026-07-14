@@ -17,8 +17,12 @@ export class GameModeManager {
     // ======================= LEGACY =======================
     
     handleLegacyVictory(game) {
-        console.log(`Legacy: Next level ${game.currentLevel + 1}`);
-        
+        console.log('[LegacyVictory] START - Player state:', {
+                alive: game.player.isAlive(),
+                hp: game.player.getHp(),
+                deadPals: game.player.getDeadPals?.()
+        });
+
         const isHardcore = game.isHardcoreEnabled();
         const player = game.player;
         const config = game.config;
@@ -45,7 +49,13 @@ export class GameModeManager {
             const currentType = player.getType();
             game.player = CharacterFactory.createCharacter(currentType);
             game.player.setHp(currentHp);
-            
+         
+            console.log('[LegacyVictory] After player creation:', {
+                alive: game.player.isAlive(),
+                hp: game.player.getHp(),
+                type: game.player.getType()
+            });
+      
             // Load hardcore keychains into new player
             game.keychainManager.loadHardcoreKeychains(game.player);
         } else {
@@ -81,7 +91,11 @@ export class GameModeManager {
         game.setPlayerFlagsFromBoard();
         game.gameInputLocked = false;
         
-        console.log(`Level ${game.currentLevel} started (Hardcore: ${isHardcore})`);
+        console.log('[LegacyVictory] END - final state:', {
+                alive: game.player.isAlive(),
+                hp: game.player.getHp(),
+                flags: game.player.getFlags()
+        });
     }
 
     handleLegacyLose(game) {

@@ -321,12 +321,39 @@ export class SaveManager {
             const currentStreak = this.getDailyStreak();
             const newStreak = currentStreak + 1;
             this.setDailyStreak(newStreak);
+            
+            // ===== UPDATE DAILY RECORD =====
+            this.updateDailyRecord();
+            
             console.log(`[SaveManager] Streak increased from ${currentStreak} to ${newStreak}`);
         } else if (completed === false) {
             // Lost today - reset streak to 0
             this.setDailyStreak(0);
             console.log(`[SaveManager] Streak reset to 0 due to loss`);
         }
+    }
+
+    // Get highest daily streak ever achieved
+    getDailyRecord() {
+        const record = localStorage.getItem("dailyRecord");
+        return record ? parseInt(record) : 0;
+    }
+
+    // Set daily record (only if higher)
+    setDailyRecord(streak) {
+        const current = this.getDailyRecord();
+        if (streak > current) {
+            localStorage.setItem("dailyRecord", streak);
+            console.log(`[SaveManager] New daily record: ${streak}`);
+            return true;
+        }
+        return false;
+    }
+
+    // Update daily record based on current streak
+    updateDailyRecord() {
+        const currentStreak = this.getDailyStreak();
+        return this.setDailyRecord(currentStreak);
     }
 
     // ======================= AVATAR =======================
