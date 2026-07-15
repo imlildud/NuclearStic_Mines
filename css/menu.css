@@ -617,6 +617,7 @@ body {
     height: 10vmin;
     background: url('../assets/hud/menu/legacy.png') no-repeat center;
     background-size: contain;
+    filter: brightness(1.15) drop-shadow(0 0 8px rgba(255, 255, 0, 0.7));
     cursor: pointer;
     z-index: 10;
 }

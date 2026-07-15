@@ -115,6 +115,5 @@ Special thanks to everyone who enjoys tactical games, Minesweeper, and discoveri
 
 # Download & Play
 
-| :--- |
 | [![itch.io](https://static.itch.io/images/badge.svg)](https://imlildud.itch.io/nuclear-stic-mines-retrashd) |
 | [![GameJolt](assets/hud/game.png)](https://gamejolt.com/games/nuclearstic-mines/1068281) |
