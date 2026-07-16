@@ -1,0 +1,236 @@
+{
+    "menu": {
+        "welcome": "Bienvenido a Nuclear-Stic Mines.\nPrepárate para chambear en el yermo, aguantar sus madres y \"pasartela a toda madre\"... después de cada muerte en este juego táctico, procedural y roguelike inspirado en Buscaminas.\n¿Quieres echarte el tutorial?",
+        "yes": "Sobres",
+        "no": "Nel",
+        "daily": "Chamba Diaria",
+        "custom": "Jale al\ngusto",
+        "dailyCompleted": "¡La chamba de hoy ya fue completada, Vuelve mañana.",
+        "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
+        
+        "welcomeBack": "¡Qué pedo, {name}!\n¿Listo para chambear?",
+        "currentLevel": "Nivel Actual",
+        "recordLevel": "Récord",
+        "dailyStreak": "Racha Diaria",
+        "play": "Jalar",
+        "enterName": "Pon tu nombre, rescatador:",
+        "namePlaceholder": "Tu nombre, wey",
+        "continue": "Seguir",
+        "selectAvatar": "¿Quien eres?:",
+        "confirm": "Confirmar",
+        "clickToEdit": "Picale para cambiar nombre",
+        "editName": "Bautizate cawn:",
+        "tutorialQuestion": "¿Quieres echarte el tutorial?",
+        "deleteData": "Borrar Partida",
+        "confirmDelete": "¡AGUAS! Esto va a borrar TODA tu información del juego (progreso, configuraciones, todo).\n\n¡No se puede deshacer, wey!\n\n¿Seguro?",
+
+        "punchcard": {
+            "character": "Chambeador",
+            "size": "Talla",
+            "hazards": "Peligros",
+            "obstacles": "Estorbos",
+            "wanted": "Morros:",
+            "zone": "Municipio",
+            "small": "Chiquito",
+            "medium": "Mediano",
+            "large": "Grandote",
+            "xtraLarge": "De aqui palla",
+            "ultraLarge": "De aqui a marte",
+            "low": "Poquito",
+            "high": "un Chingo",
+            "xtraHigh": "un Vergo",
+            "ultraHigh": "un Putero",
+            "nsanelyHigh": "Nambre, ni madres",
+            "backyard": "Changarro",
+            "desert": "Sonora",
+            "snow": "Nevado de Toluca",
+            "ash": "Colima",
+            "chef": "Pinche",
+            "mosquito": "Mosco",
+            "mommy": "Jefa",
+            "scout": "Ratero",
+            "custom": "Al gusto",
+            "seed": "Semilla: ",
+            "enterSeed": "Pon el número de semilla:",
+            "copied": "¡Copeado!",
+            "selectKeychains": "Castigate con hasta 5 llaveros",
+            "keychainSelected": "Trais: {count}/5",
+            "keychainConfirm": "Confirmar Llaveros",
+            "keychainReset": "Empezar de nuevo"
+        }
+    },
+
+    "game": {
+        "level": "NIVEL",
+        "wanted": "MORROS",
+        "customMission": "JALE AL GUSTO",
+        "paused": "PAUSA",
+        "remaining": "Faltan",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ruben",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Maniquí"
+        },
+        "scoreboard": {
+            "rescued": "Salvados",
+            "marked": "Madres Marcadas",
+            "difficulty": "Chamba",
+            "deaths": "Perecidos",
+            "failed": "Cagadas",
+            "damage": "Putasos Recibidos"
+        }
+    },
+
+    "config": {
+        "volume": "Ruido",
+        "music": "Música",
+        "sfx": "Efectos",
+        "language": "Idioma / Language",
+        "gameplay": "Jugabilidad",
+        "showTouch": "Mostrar Botones Táctiles",
+        "fallDamage": "Activar Daño por Caída",
+        "hardcore": "Modo cabrón",
+        "other": "Otros",
+        "replayTutorial": "Jugar Tutorial",
+        "manual": "Abrir Manual",
+        "save": "GUARDAR",
+        "langEn": "Inglés",
+        "langEs": "Español",
+        "langMx": "Mexicano",
+        "exportSuccess": "¡Configuración guardada, wey!",
+        "exportClipboard": "Configuración copiada al portapapeles. Pégalo en un archivo.",
+        "exportManual": "Copea este JSON para guardar tu configuración, carnal:",
+        "copied": "¡Copeado!",
+        "importSuccess": "Configuración importada chida. Reinicia el juego, wey.",
+        "importError": "¿Esa mamada que?, invalido",
+        "fallDamageWarning": "¡AGUAS!\nActivar el daño por caída te permite aventarte de cualquier pinche altura. Te puedes quedar ATORADO (sin poder trepar de regreso). ¿Seguro quieres prenderlo?",
+        "hardcoreWarning":"¡AGUAS! Prendiendo el modo CABRÓN...\nCuando acabes un nivel ya no recuperarás vida y nomás recuperarás una bandera por nivel.\n\n(Tu progreso actual de Legacy Normal no se verá afectado. Las otras madres quedarán apagadas.)\n¿Seguro quieres prenderlo?",
+        "secretTitle": "Pon el Código Secreto",
+        "secretPlaceholder": "Pon el código...",
+        "secretSubmit": "Mandar",
+        "secretCancel": "Cancelar",
+        "secretInvalid": "¡Código inválido, no te los inventes!",
+        "secretAlready": "¡Código ya chipeado!",
+        "secretBack2school": "¡CÓDIGO PRENDIDO: Zona Backyard desbloqueada en modo Custom!",
+        "secretMasiosare": "¡CÓDIGO PRENDIDO! Idioma cambiado a Mexicano.",
+        "secretDebugthis": "¡CÓDIGO PRENDIDO! Modo de prueba disponible en modo Custom."
+    },
+
+    "tutorial": {
+        "phase1": {
+            "dialog1": "Quiubo, chambeador. Bienvenido a tu prope de entrenamiento, donde te pondras cabron para salir al yermo y rescatar personas.",
+            "dialog2": "Empezaremos con el pilon. Aprende a caminar... Se suponía que debías haber aprendido eso hace años... lo que sea. Usa las teclas 'WASD' para moverte.",
+            "dialog3": "Eso merito. Vete a esa meta que está ahi, te vas con cuidado. Algunas madres allá afuera son un dolor de huevos, así que generalmente es mejor rodearlas."
+        },
+        "phase2": {
+            "dialog1": "A huevo. Ahora que sabes caminar, debes meterte en la cabeza como usar tus banderas sabiamente. Ahí abajo de tu icono, esta un contador que muestra cuántas traes.",
+            "dialog2": "El yermo está hasta la madre de Peligros, y ta mejor evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
+            "dialog3": "Usa los botones de flechas para echar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes wachar.",
+            "dialog4": "¿Va? Ve a marcar ese pinche Peligro, luego vete a la meta.",
+            "damageMessage": "Vamos, no es tan difícil, wey. Correr a chingarte un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
+            "wrongFlagMessage": "¿Tienes algún pedo? Vas de nuevo.",
+            "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a echar la bandera...",
+            "successMessage": "A toda madre. Ahora vete a la meta."
+        },
+        "phase3": {
+            "dialog1": "De huevos. Ahora que le sabes al bandereo, tienes que entender que los Peligros son bien cabrones e impredecibles.",
+            "dialog2": "Nadie sabe exactamente dónde están. Si varios están en putiza en casillas cercanas, el Conteo de Peligros se va a la chingada.",
+            "dialog3": "Te va a tocar usar la cabeza si quieres marcarlos o evitarlos, papá.",
+            "dialog4": "Usa todas tus banderas y márcalos todos, carajo.",
+            "damageMessage": "Lee los pinches números, wey. Allá afuera en el yermo, ya estarías más muerto que el perro de la vecina.",
+            "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de gastarlas a lo pendejo.",
+            "goalWithoutMarkingMessage": "Todavía no marcas todos los peligros. Sigue buscando, huevón.",
+            "successMessage": "¡Todos los peligros marcados! A huevo. Ahora dale a la meta."
+        },
+        "phase4": {
+            "dialog1": "Ahora que ya le entiendes a los números, debes saber que el terreno allá afuera no es parejo. Te tocarán cerros, hoyos, y un desmadre que te hará querer no levantarte de la hamaca.",
+            "dialog2": "Te puse este desmadre con diferentes alturas para que te acostumbres. No te avientes más de dos niveles de una sola vez o te vas a quebrar las pinches patas.",
+            "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta, ¿va?",
+            "dialog4": "Ah, y se me fue el pedo... hay un pinche ente castroso que anda moviendo todo de lugar. Nomás crees que ya le agarraste el pex y ¡zas!, otra vez a hacer ruta, cawn.",
+            "damageMessage": "Ya no sé si preocuparme por tu estado mental, wey. Estás pero bien pendejo.",
+            "wrongFlagMessage": "Sigue practicando, vas a necesitar mucha suerte...",
+            "goalWithoutMarkingMessage": "Todavía no los marcas todos. Sigue buscando, no te hagas.",
+            "successMessage": "¡Fantástico! Estoy orgulloso de ti, carnal. Ándale a la meta para el reto final. Tengo algo bien verga preparado."
+        },
+        "phase5": {
+            "dialog1": "Tu chamba allá afuera es encontrar morrillos perdidos y traerlos de regreso al punto de inicio. Bien fácil, ¿no?",
+            "dialog2": "Para la prueba final, quiero que simules un rescate, ¿va? Dejé un maniquí para que lo recojas y lo traigas de vuelta. Éxito, wey.",
+            "dialog3": "Ve por el maniquí y tráelo al inicio. Y trata de no matarte en el camino, ogete.",
+            "damageMessage": "Si traes de vuelta a un morrillo, dudo que quiera ser rescatado por alguien con una obsesión bien rara de abrazar pinches cactus. Por favor, ya dejate de mamadas.",
+            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera te esperan cosas que no vas a ver en este patiecito aburrido. Suerte, carnal...",
+            "manualPrompt": "Ah, y por cierto, tengo un manual que tal vez te mantenga vivo si te gusta leer, ¿va?",
+            "manualQuestion": "¿Leer el manual?",
+            "yes": "Órale",
+            "no": "Nel"
+        },
+        "pitFall": "¡JA! Mira por dónde pisas, wey. El suelo allá afuera está lleno de hoyos tan pinches profundos que ni los zopilotes se molestan en ir por tus restos. Échale otra vez.",
+        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotitas de sudor en tu icono? Significa que estás hasta la madre y no puedes cargar más morrillos. Si hubiera más que rescatar, tendrías que dejar los que llevas y volver por ellos, cabrón."
+    },
+    
+    "criticker": {
+        "infection": {
+            "step1": "Buenos días, estimado caballero. Lamento informarle que usted acaba de devastar una propiedad privada de considerable valor sentimental para mi persona. No obstante, soy un individuo razonable y estoy dispuesto a proceder mediante vías diplomáticas.",
+            "step2": "Permítame acompañarle durante sus labores de saneamiento ambiental. La presencia de estos deplorables 'Hazards' constituye una afrenta estética que perturba mis habituales paseos contemplativos.",
+            "step3": "Con su permiso, procederé a adherirme temporalmente a su anatomía. Le aseguro que esta acción posee fines estrictamente profesionales. Deberá marcar {goal} hazards correctamente para satisfacerme."
+        },
+        "success": {
+            "main": "Fascinante. Su desempeño ha excedido mis expectativas estadísticas. Resulta reconfortante comprobar que la incompetencia humana no es una constante universal.",
+            "farewell": "Ha sido un privilegio presenciar sus actividades. Espero no volver a encontrarme con usted bajo circunstancias catastróficas. Adiós."
+        },
+        "failure": {
+            "main": "Caballero, me encuentro profundamente decepcionado. La magnitud de este fracaso merece una tesis académica completa. Procederé a manifestar mi descontento mediante medios ligeramente perjudiciales.",
+            "damage": "Considere esta intervención una corrección pedagógica y no un acto hostil."
+        },
+        "damage": {
+            "main": "¡Qué conducta tan impropia! Intentar asesinar a un observador imparcial constituye una grave falta al protocolo civilizado.",
+            "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
+        }
+    },
+
+    "bundle": {
+        "clickToOpen": "Picale pa'abrir",
+        "inventoryFull": "¡Ya no caben más llaveros, wey!",
+        "nothingFound": "No encontraste nada...",
+        "trashFound": "¡Encontraste lumbre! Picale pa'tirar un llavero",
+        "trashTitle": "Elige un llavero pa'eliminar:",
+        "trashSelect": "Elige cuál llavero quieres tirar",
+        "close": "Cerrar",
+        "rareza": {
+            "typical": "Típico",
+            "abnormal": "Anormal",
+            "extravagant": "Extravagante",
+            "unheard": "Inaudito",
+            "cursed": "Maldito"
+        }
+    },
+    "keychain": {
+        "horizon": { "name": "Horizonte", "description": "La tierra suelta el secreto. Se ven hasta desde lo escondido." },
+        "home": { "name": "Canton", "description": "Un faro te jala de vuelta. Sabes pa'onde ir." },
+        "topography": { "name": "Topografía", "description": "La tierra no se le olvida. Vas a traer el ojo bien puesto en lo alto." },
+        "memory": { "name": "Memoria", "description": "Deja tu marca en el mundo. Pon hasta 3 recuerdos." },
+        "safekeeping": { "name": "Resguardo", "description": "Cuida que no se desgasten las cosas. No se te pierden tan fácil." },
+        "revelation": { "name": "Revelación", "description": "Lo escondido no se va a quedar así. Tus manos van a dar con la verdad." },
+        "destiny": { "name": "Destino", "description": "Siempre marca a quien hay que salvar. El camino ya está escrito." },
+        "ascent": { "name": "Ascenso", "description": "Donde otros se estrellan, tú te subes. La cima está más cerca." },
+        "protection": { "name": "Protección", "description": "Una cicatriz que te cuida. Las heridas que te hicieron más verga." },
+        "descent": { "name": "Descenso", "description": "La caída no es el final. Vas a sobrevivir a lo profundo." },
+        "greed": { "name": "Codicia", "description": "El oro llama. Y tú vas a saber cuándo." },
+        "resistance": { "name": "Resistencia", "description": "Protección extra. Como una segunda piel." },
+        "salvation": { "name": "Salvación", "description": "El abismo no te quiere. Vas a librarla." },
+        "stealth": { "name": "Sigilo", "description": "Pisada de felpa. El mundo ni te va a sentir." },
+        "purity": { "name": "Pureza", "description": "Limpia lo que otros le huyen. La mancha no se queda." },
+        "concentration": { "name": "Concentración", "description": "La presa te destapa el terreno. Marca una y se abre el mapa." },
+        "fortune": { "name": "Fortuna", "description": "La suerte del pendejo. La fortuna le sonríe a los que se avientan." },
+        "vision": { "name": "Visión", "description": "Lo que ves no se te olvida. Los ojos tienen memoria." },
+        "continuity": { "name": "Continuidad", "description": "El mundo no se acaba. Lo que va, vuelve." },
+        "reversion": { "name": "Reversión", "description": "Deshaz lo que hiciste. El tiempo se puede doblar." },
+        "stuffed": { "name": "Burro de carga", "description": "Lo que traes no se te vuela. Ni al final." },
+        "judgment": { "name": "Juicio", "description": "El veredicto es pa'siempre. No hay apelación." },
+        "link": { "name": "Vínculo", "description": "Unidos por el destino. Más allá de lo que ves." },
+        "oblivion": { "name": "Olvido", "description": "El orden se desmadra. Todo se cae a pedazos." },
+        "delirium": { "name": "Delirio", "description": "La realidad se difumina. La mente se va de viaje." }
+    }
+}

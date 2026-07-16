@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nuclear-Stic Mines - Configuration</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../assets/hud/nuclearlogo.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/config.css">
+</head>
+
+<body>
+
+    <!-- ====================================================== -->
+    <!-- ================= BACKGROUND FILTER =================== -->
+    <!-- ====================================================== -->
+    <div class="filter"></div>
+
+    <!-- ====================================================== -->
+    <!-- ================= CONFIGURATION PANEL ================= -->
+    <!-- ====================================================== -->
+    <div class="config-container">
+        
+        <div class="config-card">
+            
+            <!-- ================= HEADER ================= -->
+            <img src="../assets/hud/options/options.png" class="config-title" alt="Options">
+            
+            <!-- Close Button -->
+            <img src="../assets/hud/punchcard/close.png" class="close-btn" id="close-config" alt="Close">
+            
+            <!-- ================= CONTENT AREA ================= -->
+            <div class="scrollable-content">
+                
+                <!-- ================= VOLUME SECTION ================= -->
+                <div class="section-card metal">
+                    <img src="../assets/hud/options/metalback.png" class="section-bg" alt="Metal Background">
+                    <div class="section-content">
+                        <div class="section-title">Volume</div>
+                        
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <span class="slider-label">Music</span>
+                                <input type="range" id="music-volume" min="0" max="100" value="50" class="volume-slider">
+                                <span id="music-percent" class="volume-percent">50%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="slider-group">
+                            <div class="slider-row">
+                                <span class="slider-label">SFX</span>
+                                <input type="range" id="sfx-volume" min="0" max="100" value="50" class="volume-slider">
+                                <span id="sfx-percent" class="volume-percent">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ================= LANGUAGE SECTION ================= -->
+                <div class="section-card note">
+                    <img src="../assets/hud/options/noteback.png" class="section-bg" alt="Note Background">
+                    <div class="section-content">
+                        <div class="section-title">Language / Idioma</div>
+                        
+                        <div class="language-buttons">
+                            <!-- Converted to button wrappers to render text over optionbtn.png asset maps -->
+                            <button id="lang-en" class="lang-btn-prop" data-lang="en">English</button>
+                            <button id="lang-es" class="lang-btn-prop" data-lang="es">Español</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ================= GAMEPLAY SECTION ================= -->
+                <div class="section-card wood">
+                    <img src="../assets/hud/options/woodback.png" class="section-bg" alt="Wood Background">
+                    <div class="section-content">
+                        <div class="section-title">Gameplay</div>
+                        
+                        <div class="toggle-group">
+                            <div class="toggle-row">
+                                <span class="toggle-label">Show Touch Buttons</span>
+                                <div id="toggle-touch" class="toggle-switch"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="toggle-group">
+                            <div class="toggle-row">
+                                <span class="toggle-label">Enable Fall Damage</span>
+                                <div id="toggle-falldamage" class="toggle-switch"></div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-row">
+                                <span class="toggle-label">Hardcore Mode</span>
+                                <div id="toggle-hardcore" class="toggle-switch"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ================= OTHER SECTION ================= -->
+                <div class="section-card leather">
+                    <img src="../assets/hud/options/leatherback.png" class="section-bg" alt="Leather Background">
+                    <div class="section-content">
+                        <div class="section-title">Other</div>
+                        
+                        <!-- These now safely receive text strings handled by applyLanguage() -->
+                        <button id="replay-tutorial" class="config-button">Play Tutorial Again</button>
+                        <button id="open-manual" class="config-button">Open Manual</button>
+                    </div>
+                </div>
+                
+            </div> <!-- End scrollable-content -->
+            
+            <!-- ================= SAVE ROW ================= -->
+            <div class="action-buttons-group">
+                <button id="export-config" class="action-btn-side export-btn"></button>
+                <button id="save-config" class="save-btn-prop">SAVE</button>
+                <button id="import-config" class="action-btn-side import-btn"></button>
+            </div>
+            
+        </div>
+        
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- ===================  MODAL SETUP ====================== -->
+    <!-- ====================================================== -->
+
+    <div id="secret-code-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <img src="../assets/hud/menu/welcome.png" class="modal-bg" alt="Secret Code">
+            <div class="modal-content">
+                <div id="secret-code-title" class="modal-title">Enter Secret Code</div>
+                <input type="text" id="secret-code-input" class="secret-input" placeholder="Enter code...">
+                <div id="secret-code-message" class="secret-message"></div>
+                <div class="modal-buttons">
+                    <button id="secret-code-submit" class="modal-btn modal-ok">Submit</button>
+                    <button id="secret-code-cancel" class="modal-btn modal-no">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- =================== MODAL DIALOG ====================== -->
+    <!-- ====================================================== -->
+
+    <div id="modal-dialog" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <img src="../assets/hud/menu/welcome.png" class="modal-bg" alt="Dialog">
+            <div class="modal-content">
+                <div id="modal-text" class="modal-text"></div>
+                <div class="modal-buttons">
+                    <button id="modal-ok" class="modal-btn modal-ok">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="../js/main/Config.js"></script>
+</body>
+</html>
