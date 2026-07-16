@@ -129,12 +129,14 @@ export class Renderer {
             "pipe",          // Pipe hazard
             "nest",          // Nest hazard
             "nest_marked",
+            "nest_jumpmarked",
             "nest_open",
             "radioactive",   // Radioactive hazard
             "cactus",        // Cactus hazard
             "flagged",       // Flag marker
             "flaggoal",      // Goal
             "jumpflag",      // Jump flag (Scout ability)
+            "markedjumpflag",// Jump Marked flag
             "marked",        // Marked hazard (Chef ability)
             "memory_a",      // Memory markers
             "memory_b",
@@ -390,11 +392,34 @@ export class Renderer {
                 const isFlagged = tile.isFlagged();
                 const isJumpflagged = tile.isJumpflagged();
                 const isSmoke = tile.isSmoke();
+                const isMarkedJumpFlag = isJumpflagged && isMarked;
+                const hazardType = tile.getHazardtype();
 
                 // Delirium: marked always shows as flagged (visual only)
                 const shouldShowAsFlagged = hasDelirium && isMarked;
 
-                if (isMarked && tile.getHazardtype() === "nest" && !isSmoke) {
+                // ===== MARKED JUMP FLAG ON NEST (Scout) =====
+                if (isMarkedJumpFlag && hazardType === "nest" && !isSmoke) {
+                    const flagHeight = objSize * 1.3;
+                    this.safeDraw(
+                        shouldShowAsFlagged ? "flagged" : "nest_jumpmarked",
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
+                    );
+                }
+                // ===== MARKED JUMP FLAG (Scout on other hazards) =====
+                else if (isMarkedJumpFlag && !isSmoke) {
+                    const flagHeight = objSize * 1.3;
+                    this.safeDraw(
+                        shouldShowAsFlagged ? "flagged" : "markedjumpflag",
+                        drawX - objOffsetX,
+                        drawY - objOffsetY - (flagHeight - objSize),
+                        objSize
+                    );
+                }
+                // ===== MARKED NEST (normal mark) =====
+                else if (isMarked && hazardType === "nest" && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         shouldShowAsFlagged ? "flagged" : "nest_marked",
@@ -403,6 +428,7 @@ export class Renderer {
                         objSize
                     );
                 }
+                // ===== MARKED (normal mark) =====
                 else if (isMarked && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
@@ -411,7 +437,9 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (isFlagged && !isSmoke) {
+                }
+                // ===== FLAGGED =====
+                else if (isFlagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "flagged",
@@ -419,7 +447,9 @@ export class Renderer {
                         drawY - objOffsetY - (flagHeight - objSize),
                         objSize
                     );
-                } else if (isJumpflagged && !isSmoke) {
+                }
+                // ===== JUMP FLAG =====
+                else if (isJumpflagged && !isSmoke) {
                     const flagHeight = objSize * 1.3;
                     this.safeDraw(
                         "jumpflag",

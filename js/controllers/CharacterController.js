@@ -332,7 +332,7 @@ export class CharacterController {
             // STEALTH: Nest doesn't break
             const hasStealth = this.character.hasKeychain('stealth');
             
-            if (!this.character.isCriticized() && this.character.getAbilityId() != 4 && !hasStealth) {
+            if (!this.character.isCriticized() && !hasStealth) {
                 this.character.setCriticized(true);
                 
                 const goal = Math.floor(Math.random() * 5) + 1;
@@ -364,7 +364,7 @@ export class CharacterController {
         }
         
         // ===================== PAL HANDLING =====================
-        
+    
         // Rescue pals if conditions are met
         if (palType !== "none" && tile.isPalAlive()) {
             if (this.character.getForce() > this.character.getRescued()) {
@@ -376,6 +376,14 @@ export class CharacterController {
                 // Reset destiny target when a pal is rescued
                 if (this.gameManager) {
                     this.gameManager.resetDestinyTarget();
+                }
+                
+                // ===== SCOUT: Convert Jump Flags to Marked =====
+                if (this.character.getAbilityId() === 4 && this.gameManager) {
+                    const converted = this.gameManager.flagManager.convertJumpFlagsToMarked(board);
+                    if (converted > 0) {
+                        console.log(`[Scout] ${converted} Jump Flags converted to Marked`);
+                    }
                 }
                 
                 if (this.gameManager && this.gameManager.audio) {

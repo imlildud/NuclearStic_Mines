@@ -121,7 +121,7 @@ export class CharacterFactory {
         if (isHardcore) {
             character.setHp(1);
             character.setAp(0);
-            character.setFlags(3);
+            character.setFlags(0);
             character.maxInventorySize = 3;
             character.setAbilityId(4);
             character.setVision(2);
@@ -129,7 +129,7 @@ export class CharacterFactory {
         } else {
             character.setHp(1);
             character.setAp(0);
-            character.setFlags(3);
+            character.setFlags(0);
             character.maxInventorySize = 5;
             character.setAbilityId(4);
             character.setVision(2);

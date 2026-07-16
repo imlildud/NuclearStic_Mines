@@ -144,27 +144,25 @@ export class BaseBoardController {
                 const tile = board[i][j];
                 
                 if (tile.getHazardtype() !== "none") {
-                    if (tile.isFlagged()) {
+                    // ===== NORMAL FLAG → MARKED =====
+                    if (tile.isFlagged() || tile.isJumpflagged()) {
                         tile.setMarked(true);
                         tile.setFlagged(false);
                         markedHazards++;
-
-                        // Reveal 3x3 when a hazard is marked =====
+                        
                         if (hasConcentration) {
-                                this.revealConcentration(board, i, j, boardSize);
-                            }
-                            continue;
+                            this.revealConcentration(board, i, j, boardSize);
+                        }
+                        continue;
                     }
                     
-                    if (tile.isMarked()) {
+                    // ===== SCOUT: JUMP FLAG MARKED =====
+                    if (tile.isJumpflagged() && tile.isMarked()) {
                         markedHazards++;
                         continue;
                     }
-
-                    if (tile.getHazardtype() === "nest" && tile.isFlagged()) {
-                        tile.setMarked(true);
-                        tile.setFlagged(false);
-                        tile.setHazardtype("nest_marked");
+                    
+                    if (tile.isMarked()) {
                         markedHazards++;
                         continue;
                     }
@@ -178,7 +176,7 @@ export class BaseBoardController {
                     failedFlags++;
                 }
                 
-                if (tile.isJumpflagged() && tile.getHazardtype() === "none") {
+                if (tile.isJumpflagged() && tile.getHazardtype() === "none" && !tile.isMarked()) {
                     failedJumpFlags++;
                 }
             }

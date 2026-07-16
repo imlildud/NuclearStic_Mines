@@ -169,10 +169,6 @@ export class GameManager {
     }
 
     setPlayerFlagsFromBoard() {
-        if (this.player.getType() === "scout") {
-            console.log(`[Scout] Keeping fixed flags: ${this.player.getFlags()}`);
-            return;
-        }
         const totalHazards = this.getTotalHazardsOnBoard();
         this.player.setFlags(totalHazards);
         console.log(`[GameManager] Set flags to ${totalHazards}`);
