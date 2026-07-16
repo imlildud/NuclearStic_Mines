@@ -1,0 +1,280 @@
+// ==============================================================
+// ==================== KEYCHAIN MANAGER =========================
+// ==============================================================
+// Manages keychain loading and initialization
+
+import { KeychainConfig } from "../utils/KeychainConfig.js";
+
+export class KeychainManager {
+    
+    constructor(gameManager) {
+        this.gameManager = gameManager;
+    }
+
+    // ===== LEGACY MODE =====
+    saveLegacyKeychains(player) {
+        const keychains = player.inventory || [];
+        this.gameManager.save.setLegacyKeychains(keychains);
+        
+        const uses = player.keychainUses || {};
+        this.gameManager.save.setLegacyKeychainUses(uses);
+        
+        console.log('[Legacy] Saved keychains:', keychains);
+        console.log('[Legacy] Saved uses:', uses);
+    }
+
+    loadLegacyKeychains(player) {
+        // ===== CHECK FOR LEGACY STUFFED FIRST =====
+        const stuffedKeychains = this.gameManager.save.getLegacyStuffedKeychains();
+        
+        if (stuffedKeychains && stuffedKeychains.length > 0) {
+            console.log('[Stuffed Legacy] Found saved keychains:', stuffedKeychains);
+            
+            const maxSize = player.maxInventorySize || 5;
+            player.inventory = [];
+            
+            for (const keychainId of stuffedKeychains) {
+                if (player.inventory.length >= maxSize) break;
+                if (keychainId && !player.inventory.includes(keychainId)) {
+                    player.inventory.push(keychainId);
+                }
+            }
+            
+            this.gameManager.save.clearLegacyStuffedKeychains();
+            KeychainConfig.initKeychainUsesForPlayer(player);
+            this.gameManager.getFlagModeManager().updateSwampButtonUI();
+            this.gameManager.reversionManager.updateButtonUI();
+            
+            console.log('[Stuffed Legacy] Loaded into inventory:', player.inventory);
+            return;
+        }
+        
+        // ===== Normal legacy loading (no stuffed) =====
+        const savedKeychains = this.gameManager.save.getLegacyKeychains();
+        const savedUses = this.gameManager.save.getLegacyKeychainUses();
+        
+        if (!savedKeychains || savedKeychains.length === 0) {
+            console.log('[Legacy] No saved keychains found, using empty inventory');
+            player.inventory = [];
+            player.keychainUses = {};
+            return;
+        }
+        
+        const maxSize = player.maxInventorySize || 5;
+        player.inventory = [];
+        
+        let loadedCount = 0;
+        for (const keychainId of savedKeychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (keychainId && !player.inventory.includes(keychainId)) {
+                player.inventory.push(keychainId);
+                loadedCount++;
+            }
+        }
+
+        // Load saved uses
+        player.keychainUses = { ...savedUses };
+        
+        // Clean up uses for keychains no longer in inventory
+        for (const [id] of Object.entries(player.keychainUses)) {
+            if (!player.inventory.includes(id)) {
+                delete player.keychainUses[id];
+            }
+        }
+        
+        // Initialize uses for keychains that have no saved uses (first time or new keychain)
+        for (const keychainId of player.inventory) {
+            if (KeychainConfig.hasUses(keychainId)) {
+                if (player.keychainUses[keychainId] === undefined || player.keychainUses[keychainId] === 0) {
+                    const maxUses = KeychainConfig.getMaxUses(keychainId);
+                    player.initKeychainUses(keychainId, maxUses);
+                    console.log(`[Legacy] Initialized ${keychainId} with ${maxUses} uses (first time)`);
+                }
+            }
+        }
+        
+        console.log(`[Legacy] Loaded ${loadedCount} keychains: ${player.inventory.join(', ')}`);
+        console.log('[Legacy] Loaded uses:', player.keychainUses);
+    }
+
+    clearLegacyKeychains() {
+        this.gameManager.save.clearLegacyKeychains();
+        this.gameManager.save.clearLegacyKeychainUses();
+        console.log('[Legacy] Keychains and uses cleared');
+    }
+
+    // ===== HARDCORE MODE =====
+    saveHardcoreKeychains(player) {
+        const keychains = player.inventory || [];
+        this.gameManager.save.setHardcoreKeychains(keychains);
+        
+        const uses = player.keychainUses || {};
+        this.gameManager.save.setHardcoreKeychainUses(uses);
+        
+        console.log('[Hardcore] Saved keychains:', keychains);
+        console.log('[Hardcore] Saved uses:', uses);
+    }
+
+    loadHardcoreKeychains(player) {
+        // ===== CHECK FOR HARDCORE STUFFED FIRST =====
+        const stuffedKeychains = this.gameManager.save.getHardcoreStuffedKeychains();
+        
+        if (stuffedKeychains && stuffedKeychains.length > 0) {
+            console.log('[Stuffed Hardcore] Found saved keychains:', stuffedKeychains);
+            
+            const maxSize = player.maxInventorySize || 5;
+            player.inventory = [];
+            
+            for (const keychainId of stuffedKeychains) {
+                if (player.inventory.length >= maxSize) break;
+                if (keychainId && !player.inventory.includes(keychainId)) {
+                    player.inventory.push(keychainId);
+                }
+            }
+            
+            this.gameManager.save.clearHardcoreStuffedKeychains();
+            KeychainConfig.initKeychainUsesForPlayer(player);
+            this.gameManager.getFlagModeManager().updateSwampButtonUI();
+            this.gameManager.reversionManager.updateButtonUI();
+            
+            console.log('[Stuffed Hardcore] Loaded into inventory:', player.inventory);
+            return;
+        }
+
+        // ===== Hardcore legacy loading (no stuffed) =====
+        const savedKeychains = this.gameManager.save.getHardcoreKeychains();
+        const savedUses = this.gameManager.save.getHardcoreKeychainUses();
+        
+        if (!savedKeychains || savedKeychains.length === 0) {
+            console.log('[Hardcore] No saved keychains found, using empty inventory');
+            player.inventory = [];
+            player.keychainUses = {};
+            return;
+        }
+        
+        const maxSize = player.maxInventorySize || 5;
+        player.inventory = [];
+        
+        let loadedCount = 0;
+        for (const keychainId of savedKeychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (keychainId && !player.inventory.includes(keychainId)) {
+                player.inventory.push(keychainId);
+                loadedCount++;
+            }
+        }
+
+        player.keychainUses = { ...savedUses };
+        
+        // Clean up uses for keychains no longer in inventory
+        for (const [id] of Object.entries(player.keychainUses)) {
+            if (!player.inventory.includes(id)) {
+                delete player.keychainUses[id];
+            }
+        }
+        
+        console.log(`[Hardcore] Loaded ${loadedCount} keychains: ${player.inventory.join(', ')}`);
+        console.log('[Hardcore] Loaded uses:', player.keychainUses);
+    }
+
+    clearHardcoreKeychains() {
+        this.gameManager.save.clearHardcoreKeychains();
+        this.gameManager.save.clearHardcoreKeychainUses();
+        console.log('[Hardcore] Keychains and uses cleared');
+    }
+
+    // ===== DAILY MODE =====
+    giveDailyKeychains(bundleManager, player, seed) {
+        if (!bundleManager) {
+            console.warn('[Daily] BundleManager not available');
+            return;
+        }
+        
+        const keychains = bundleManager.getDailyKeychains(seed);
+        const maxSize = player.maxInventorySize || 5;
+        
+        let addedCount = 0;
+        for (const keychain of keychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (!player.inventory.includes(keychain.id)) {
+                player.inventory.push(keychain.id);
+                addedCount++;
+            }
+        }
+
+        KeychainConfig.initKeychainUsesForPlayer(player);
+        this.gameManager.getFlagModeManager().updateSwampButtonUI();
+        this.gameManager.reversionManager.updateButtonUI();
+        
+        console.log(`[Daily] Gave ${addedCount} keychains from seed ${seed}`);
+        console.log(`[Daily] Keychains: ${player.inventory.join(', ')}`);
+    }
+
+    // ===== CUSTOM MODE =====
+    loadCustomKeychains(saveManager, player) {
+        const savedKeychains = saveManager.getCustomKeychains();
+        
+        if (!savedKeychains || savedKeychains.length === 0) {
+            console.log('[Custom] No saved keychains found, using default empty inventory');
+            return;
+        }
+        
+        const maxSize = player.maxInventorySize || 5;
+        player.inventory = [];
+        
+        let addedCount = 0;
+        for (const keychainId of savedKeychains) {
+            if (player.inventory.length >= maxSize) break;
+            if (keychainId && !player.inventory.includes(keychainId)) {
+                player.inventory.push(keychainId);
+                addedCount++;
+            }
+        }
+
+        KeychainConfig.initKeychainUsesForPlayer(player);
+        this.gameManager.getFlagModeManager().updateSwampButtonUI();
+        this.gameManager.reversionManager.updateButtonUI();
+        
+        console.log(`[Custom] Loaded ${addedCount} saved keychains: ${player.inventory.join(', ')}`);
+    }
+
+    // ===== RESISTANCE =====
+    applyResistance(player) {
+        if (!player.hasKeychain('resistance')) return;
+        
+        if (player.getAbilityId() === 3) {
+            player.incrementAp(1);
+            console.log('[Resistance] Mommy +1 AP (total: ' + player.getAp() + ')');
+        } else {
+            player.setAp(1);
+            console.log('[Resistance] AP set to 1');
+        }
+    }
+
+    // ===== DESTINY =====
+    getDestinyTarget(board, currentTarget) {
+        if (currentTarget) {
+            const tile = board[currentTarget.x]?.[currentTarget.y];
+            if (tile && tile.getPalType() !== 'none' && tile.getPalType() !== 'joni') {
+                return currentTarget;
+            }
+        }
+
+        const pals = [];
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                const palType = board[i][j].getPalType();
+                if (palType !== 'none' && palType !== 'joni') {
+                    pals.push({ x: i, y: j });
+                }
+            }
+        }
+        
+        if (pals.length === 0) return null;
+        
+        const randomIndex = Math.floor(Math.random() * pals.length);
+        const target = pals[randomIndex];
+        console.log('[Destiny] Target set to:', target);
+        return target;
+    }
+}
