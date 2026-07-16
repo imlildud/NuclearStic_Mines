@@ -439,7 +439,7 @@ function processSecretCode(code) {
                 mode: "test",
                 seed: null,
                 level: 1,
-                character: "chef",
+                character: "scout",
                 size: 24,
                 hazards: 1,
                 obstacles: 1,

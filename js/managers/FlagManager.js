@@ -274,20 +274,128 @@ export class FlagManager {
 
     handleScoutFlag(player, board, tile, targetX, targetY, jumpX, jumpY) {
         const size = board.length;
-        if (jumpX < 0 || jumpX >= size || jumpY < 0 || jumpY >= size) return;
+        const isCriticized = player.isCriticized();
+        const hasJudgment = player.hasKeychain('judgment');
+        const hasHazard = tile.getHazardtype() !== "none";
         
-        if (player.getFlags() > 0 && !tile.isJumpflagged()) {
-            tile.setJumpflagged(true);
-            player.decrementFlags();
-            console.log(`[Scout] Jump flag placed at (${targetX},${targetY}), flags left: ${player.getFlags()}`);
+        // ===== PLACE JUMP FLAG =====
+        if (tile.isHide() && !tile.isJumpflagged()) {
+            if (player.getFlags() > 0) {
+                tile.setJumpflagged(true);
+                player.decrementFlags();
+                
+                // ===== CRITICIZED or JUDGMENT: Immediately mark if on hazard =====
+                if ((isCriticized || hasJudgment) && hasHazard) {
+                    tile.setMarked(true);
+                    // Keep jumpflagged true so it's a Marked Jump Flag
+                    console.log('[Scout] Criticized/Judgment: Jump Flag instantly marked');
+                    
+                    // ===== CONCENTRATION: Reveal 3x3 =====
+                    const hasConcentration = player.hasKeychain('concentration');
+                    if (hasConcentration) {
+                        const directions = [
+                            [-1,-1], [-1,0], [-1,1],
+                            [0,-1],  [0,0],  [0,1],
+                            [1,-1],  [1,0],  [1,1]
+                        ];
+
+                        for (const [dx, dy] of directions) {
+                            const nx = targetX + dx;
+                            const ny = targetY + dy;
+
+                            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                                const adjacentTile = board[nx][ny];
+                                
+                                const hazardType = adjacentTile.getHazardtype();
+                                if (hazardType !== "none") {
+                                    continue;
+                                }
+                                
+                                const obstacleType = adjacentTile.getObstacletype();
+                                if (obstacleType === "pit" || obstacleType === "spikes") {
+                                    continue;
+                                }
+                                
+                                adjacentTile.setUnhideable(true);
+                                adjacentTile.setHide(false);
+                            }
+                        }
+                        
+                        console.log('[Concentration] Revealed 3x3 around marked Jump Flag');
+                    }
+                    
+                    // ===== PROGRESS CRITICKER (only for normal Criticized, not Judgment) =====
+                    if (isCriticized && !hasJudgment) {
+                        const criticker = this.gameManager.criticker;
+                        if (criticker) {
+                            const currentProgress = player.getCritickerProgress();
+                            const goal = player.getCritickerGoal();
+                            const newProgress = criticker.markProgress(currentProgress, goal);
+                            player.setCritickerProgress(newProgress);
+                            
+                            if (newProgress >= goal) {
+                                player.setCriticized(false);
+                            }
+                        }
+                    }
+                    return;
+                }
+                
+                // ===== JUDGMENT: Wrong flag on empty tile =====
+                if (hasJudgment && !hasHazard) {
+                    // Damage for wrong flag
+                    if (this.gameManager && this.gameManager.charCtrl) {
+                        this.gameManager.charCtrl.hurtCharacter();
+                    }
+                    tile.setJumpflagged(false);
+                    player.incrementFlags();
+                    
+                    // Oblivion: remove a marked hazard
+                    const hasOblivion = player.hasKeychain('oblivion');
+                    if (hasOblivion) {
+                        this.removeMarkedHazard(board);
+                    }
+                    
+                    console.log('[Scout] Judgment triggered on wrong flag');
+                    return;
+                }
+            }
+            return;
         }
         
+        // ===== JUMP =====
         if (tile.isJumpflagged()) {
-            player.setPosX(jumpX);
-            player.setPosY(jumpY);
-            return { jumped: true, x: jumpX, y: jumpY };
+            // Only jump if destination is within bounds
+            if (jumpX >= 0 && jumpX < size && jumpY >= 0 && jumpY < size) {
+                player.setPosX(jumpX);
+                player.setPosY(jumpY);
+                return { jumped: true, x: jumpX, y: jumpY };
+            } else {
+                console.log('[Scout] Jump out of bounds, blocked');
+                return { jumped: false };
+            }
         }
+        
         return { jumped: false };
+    }
+
+    // ===== SCOUT: Convert Jump Flags to Marked Jump Flags =====
+    convertJumpFlagsToMarked(board) {
+        let convertedCount = 0;
+        
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                const tile = board[i][j];
+                
+                if (tile.isJumpflagged() && tile.getHazardtype() !== "none") {
+                    tile.setJumpflagged(true);
+                    tile.setMarked(true);
+                    convertedCount++;
+                }
+            }
+        }
+        
+        return convertedCount;
     }
 
     // ===== OBLIVION: Remove a marked hazard =====

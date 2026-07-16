@@ -366,21 +366,16 @@ export class ScoreboardManager {
         let maxMarkedPoints = 0;
         let markedCount = 0;
 
-        // Scout cannot mark hazards (ability 4)
-        const isScout = player.getType() === "scout";
-
-        if (!isScout) {
-            for (let i = 0; i < board.length; i++) {
-                for (let j = 0; j < board.length; j++) {
-                    if (board[i][j].isMarked()) markedCount++;
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board.length; j++) {
+                const tile = board[i][j];
+                if (tile.isMarked() || (tile.isJumpflagged() && tile.isMarked())) {
+                    markedCount++;
                 }
             }
-            markedPoints = markedCount * flagValue;
-            maxMarkedPoints = maxFlags * flagValue;
-        } else {
-            markedPoints = 0;
-            maxMarkedPoints = 0;
         }
+        markedPoints = markedCount * flagValue;
+        maxMarkedPoints = maxFlags * flagValue;
         
         // ===== DIFFICULTY BONUS =====
         let difficultyMultiplier = this.calculateDifficultyMultiplier();
@@ -394,7 +389,7 @@ export class ScoreboardManager {
 
         const failedFlags = player.getFailedFlags ? player.getFailedFlags() : 0;
         const failedJumpFlags = player.getFailedJumpFlags ? player.getFailedJumpFlags() : 0;
-        const failedPenalty = (failedFlags * flagValue) + (failedJumpFlags * (flagValue / 2));
+        const failedPenalty = (failedFlags * flagValue) + (failedJumpFlags * (flagValue));
         
         // ===== HURT PENALTY =====
         const hurtCount = player.getDamageTaken ? player.getDamageTaken() : 0;
