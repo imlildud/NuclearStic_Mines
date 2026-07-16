@@ -32,6 +32,7 @@ export class ReversionManager {
         const player = this.gameManager.getPlayer();
         
         const markedHazards = [];
+        const markedJumpFlags = [];
         let totalHazards = 0;
         let markedCount = 0;
         
@@ -40,9 +41,14 @@ export class ReversionManager {
                 const tile = board[i][j];
                 if (tile.getHazardtype() !== "none") {
                     totalHazards++;
+                    // Normal marked hazards
                     if (tile.isMarked()) {
                         markedHazards.push({ x: i, y: j });
                         markedCount++;
+                    }
+                    // ===== SCOUT: Marked Jump Flags =====
+                    if (tile.isJumpflagged() && tile.isMarked()) {
+                        markedJumpFlags.push({ x: i, y: j });
                     }
                 }
             }
@@ -51,13 +57,14 @@ export class ReversionManager {
         
         this.savedState = {
             markedHazards: markedHazards,
+            markedJumpFlags: markedJumpFlags,
             markedCount: markedCount,
             totalHazards: totalHazards,
             flags: player.getFlags(),
             reversionUses: reversionUses - 1,
         };
         
-        console.log('[Reversion] State saved - marked:', markedCount, 'total:', totalHazards);
+        console.log('[Reversion] State saved - marked:', markedCount, 'total:', totalHazards, 'jumpFlags:', markedJumpFlags.length);
     }
 
     // ======================= RESTORE STATE =======================
@@ -89,18 +96,23 @@ export class ReversionManager {
             }
         }
         
-        // ===== SCOUT: Keep fixed flags (ability 4) =====
-        const isScout = player.getAbilityId() === 4;
-        if (isScout) {
-            // Scout keeps 3 flags
-            player.setFlags(3);
-            console.log('[Reversion] Scout flags kept at 3');
-        } else {
-            // Calculate remaining flags (total hazards - marked count)
-            const remainingFlags = this.savedState.totalHazards - this.savedState.markedCount;
-            player.setFlags(remainingFlags);
-            console.log('[Reversion] Flags restored to:', remainingFlags);
+        // ===== SCOUT: Restore Marked Jump Flags =====
+        if (this.savedState.markedJumpFlags) {
+            for (const pos of this.savedState.markedJumpFlags) {
+                const tile = board[pos.x][pos.y];
+                if (tile.getHazardtype() !== "none") {
+                    tile.setJumpflagged(true);
+                    tile.setMarked(true);
+                }
+            }
+            console.log('[Reversion] Restored', this.savedState.markedJumpFlags.length, 'marked jump flags');
         }
+        
+        // ===== FLAGS: Restore flags for all characters =====
+        // Scout already has jump flags, restore the count
+        const remainingFlags = this.savedState.totalHazards - this.savedState.markedCount;
+        player.setFlags(remainingFlags);
+        console.log('[Reversion] Flags restored to:', remainingFlags);
         
         const reversionUses = this.savedState.reversionUses || 0;
         if (player.hasKeychain('reversion')) {
