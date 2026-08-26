@@ -8,6 +8,7 @@ import { SaveManager } from "../managers/SaveManager.js";
 import { AudioManager } from "../managers/AudioManager.js";
 import { LocaleManager } from "../managers/LocaleManager.js";
 import { PathResolver } from "../utils/PathResolver.js";
+import { updateDiscordPresence } from "../utils/DiscordRPC.js";
 
 // ==============================================================
 // ====================== GLOBAL STATE ==========================
@@ -35,6 +36,20 @@ const startMusicOnce = () => {
 window.addEventListener("keydown", startMusicOnce);
 window.addEventListener("click", startMusicOnce);
 window.addEventListener("touchstart", startMusicOnce);
+
+// ==============================================================
+// ====================== DISCORD PRESENCE ======================
+// ==============================================================
+
+// Update Discord presence for the configuration screen
+function updateConfigDiscordPresence() {
+    // Use the nuclearstic_logo as the large image
+    updateDiscordPresence(
+        "⚙️ Adjusting settings",
+        "Configuring game options",
+        { largeImageKey: "nuclearstic_logo" }
+    );
+}
 
 // ==============================================================
 // ====================== MODAL DIALOG ==========================
