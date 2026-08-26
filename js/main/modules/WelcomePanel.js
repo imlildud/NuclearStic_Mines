@@ -3,11 +3,13 @@
 // ==============================================================
 // Handles ID Card display, avatar selection, name editing, 
 // tutorial prompt, and welcome screen panel management.
+// Manages Discord Rich Presence integration for the ID Card view.
 
 import { SaveManager } from "../../managers/SaveManager.js";
 import { AudioManager } from "../../managers/AudioManager.js";
 import { RankManager } from "./RankManager.js";
 import { PathResolver } from "../../utils/PathResolver.js";
+import { updateDiscordPresence, buildIdCardPresence } from "../../utils/DiscordRPC.js";
 
 // ==================== INSTANCES ====================
 
@@ -18,6 +20,7 @@ const audioManager = new AudioManager();
 
 let selectedAvatar = 1;
 let localeManager = null;
+let isIdCardVisible = false;
 
 // ==================== PRIVATE HELPERS ====================
 
@@ -269,6 +272,7 @@ function showTutorialPrompt() {
 // ==================== ID CARD TOGGLE ====================
 
 // Initialize the ID card toggle button (shows/hides the welcome screen)
+// Updates Discord Rich Presence when ID Card is opened/closed
 function initIdCardToggle() {
     const toggleBtn = document.getElementById("id-card-toggle-btn");
     const welcomeScreen = document.getElementById("welcome-screen");
@@ -277,23 +281,49 @@ function initIdCardToggle() {
         toggleBtn.addEventListener("click", () => {
             if (welcomeScreen) {
                 if (welcomeScreen.style.display === "flex") {
+                    // CLOSE ID CARD - Return to main menu
                     welcomeScreen.style.display = "none";
-                } else {
-                    welcomeScreen.style.display = "flex";
+                    isIdCardVisible = false;
                     
-                    // Get old total points (saved before game started) based on mode
-                    const isHardcore = isHardcoreEnabled();
-                    const oldTotalPoints = isHardcore ? saveManager.getOldHardcoreTotalPoints() : saveManager.getOldTotalPoints();
+                    // Update Discord to menu state
+                    updateDiscordPresence(
+                        "Choosing a mission",
+                        "Menu"
+                    );
+                } else {
+                    // OPEN ID CARD - Show player stats
+                    welcomeScreen.style.display = "flex";
+                    isIdCardVisible = true;
+                    
+                    // Get player data
+                    const username = saveManager.getUsername();
+                    const isHardcore = saveManager.isHardcoreEnabled();
+                    const totalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : saveManager.getTotalPoints();
+                    const legacyRecord = saveManager.getLegacyHighScore();
+                    const dailyStreak = saveManager.getDailyStreak();
+                    const hardcoreRecord = saveManager.getHardcoreHighScore();
+                    
+                    // Update Discord with ID Card status using 'idcard' as large image
+                    const presence = buildIdCardPresence(
+                        username,
+                        totalPoints,
+                        isHardcore,
+                        legacyRecord,
+                        dailyStreak,
+                        hardcoreRecord
+                    );
+                    updateDiscordPresence(presence.details, presence.state, {
+                        largeImageKey: "idcard"
+                    });
                     
                     // Refresh ID card content (skip animation on load)
-                    const username = saveManager.getUsername();
-                    const avatarId = saveManager.getAvatar();
-                    WelcomePanel.showWelcomePanel(username, avatarId, true);
+                    WelcomePanel.showWelcomePanel(username, saveManager.getAvatar(), true);
                     
                     // Get current total points (after game) based on mode
                     const newTotalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : saveManager.getTotalPoints();
                     
                     // Only animate if points changed
+                    const oldTotalPoints = isHardcore ? saveManager.getOldHardcoreTotalPoints() : saveManager.getOldTotalPoints();
                     if (oldTotalPoints !== newTotalPoints) {
                         RankManager.animateTotalPoints(oldTotalPoints, newTotalPoints, isHardcore);
                     }
@@ -306,6 +336,7 @@ function initIdCardToggle() {
 // ==================== WELCOME SCREEN INIT ====================
 
 // Initialize the welcome screen with appropriate panel based on player progress
+// Sets up Discord Rich Presence for the initial state
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const mainMenu = document.querySelector(".overlay");
@@ -331,7 +362,7 @@ function initWelcomeScreen() {
     
     // Existing player - show welcome panel with ID card
     if (tutorialCompleted && username) {
-        const isHardcore = isHardcoreEnabled();
+        const isHardcore = saveManager.isHardcoreEnabled();
         
         // Store old total points BEFORE showing the ID card (based on mode)
         const oldTotalPoints = isHardcore ? saveManager.getOldHardcoreTotalPoints() : saveManager.getOldTotalPoints();
@@ -344,6 +375,25 @@ function initWelcomeScreen() {
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
         if (idCardToggle) idCardToggle.style.display = "block";
+        
+        // UPDATE DISCORD WITH ID CARD STATE (when auto-opened)
+        isIdCardVisible = true;
+        const totalPoints = isHardcore ? saveManager.getHardcoreTotalPoints() : saveManager.getTotalPoints();
+        const legacyRecord = saveManager.getLegacyHighScore();
+        const dailyStreak = saveManager.getDailyStreak();
+        const hardcoreRecord = saveManager.getHardcoreHighScore();
+        
+        const presence = buildIdCardPresence(
+            username,
+            totalPoints,
+            isHardcore,
+            legacyRecord,
+            dailyStreak,
+            hardcoreRecord
+        );
+        updateDiscordPresence(presence.details, presence.state, {
+            largeImageKey: "idcard"
+        });
         
         // Animate if points changed (coming back from a game)
         if (oldTotalPoints !== newTotalPoints && newTotalPoints !== 0) {
@@ -372,6 +422,12 @@ function initWelcomeScreen() {
         if (avatarPanel) avatarPanel.style.display = "flex";
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
+        
+        // Discord - avatar selection state
+        updateDiscordPresence(
+            "Customizing profile",
+            "Selecting avatar"
+        );
     }
     // First time - ask for name
     else {
@@ -379,13 +435,24 @@ function initWelcomeScreen() {
         if (namePanel) namePanel.style.display = "flex";
         if (welcomeScreen) welcomeScreen.style.display = "flex";
         if (mainMenu) mainMenu.style.display = "none";
+        
+        // Discord - registration state
+        updateDiscordPresence(
+            "Creating account",
+            "Entering name"
+        );
     }
 }
 
 // ==================== EXPORTED MODULE ====================
 
 export const WelcomePanel = {
-    // Main method to display the ID card with player stats
+    /**
+     * Display the ID card with player stats
+     * @param {string} username - Player's display name
+     * @param {number} avatarId - Avatar ID (1-6)
+     * @param {boolean} skipAnimation - Skip the rank animation on load
+     */
     showWelcomePanel(username, avatarId, skipAnimation = false) {
         const greetingEl = document.getElementById("welcome-greeting");
         const playBtn = document.getElementById("welcome-play");
@@ -567,23 +634,40 @@ export const WelcomePanel = {
         }
     },
 
-    // Show tutorial prompt panel
+    /**
+     * Show the tutorial prompt panel
+     */
     showTutorialPrompt() {
         showTutorialPrompt();
     },
 
-    // Initialize welcome screen panels
+    /**
+     * Initialize the welcome screen panels
+     */
     initWelcomeScreen() {
         initWelcomeScreen();
     },
 
-    // Initialize ID card toggle button
+    /**
+     * Initialize the ID card toggle button
+     */
     initIdCardToggle() {
         initIdCardToggle();
     },
 
-    // Set locale manager for translations
+    /**
+     * Set the locale manager for translations
+     * @param {Object} lm - LocaleManager instance
+     */
     setLocaleManager(lm) {
         localeManager = lm;
+    },
+
+    /**
+     * Check if the ID Card is currently visible
+     * @returns {boolean} True if ID Card is open
+     */
+    isIdCardVisible() {
+        return isIdCardVisible;
     }
 };

@@ -11,6 +11,7 @@ import { WelcomePanel } from "./modules/WelcomePanel.js";
 import { PunchcardPanel } from "./modules/PunchcardPanel.js";
 import { KeychainSelector } from "./modules/KeychainSelector.js";
 import { PathResolver } from "../utils/PathResolver.js";
+import { updateDiscordPresence } from "../utils/DiscordRPC.js";
 
 // ==================== INSTANCES ====================
 
@@ -39,6 +40,12 @@ function addButtonSounds() {
 
 // Apply menu language
 function applyMenuLanguage() {
+    // Discord
+    updateDiscordPresence(
+        "Choosing a mission",
+        "Menu"
+    );
+
     if (!localeManager) return;
     
     // Welcome screen
@@ -196,6 +203,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (optionButton) {
         optionButton.addEventListener('click', () => {
             PathResolver.goToConfig();
+            updateDiscordPresence(
+                "⚙️ Adjusting settings",
+                "Configuring game options",
+                { largeImageKey: "nuclearstic_logo" }
+            );
         });
     }
     

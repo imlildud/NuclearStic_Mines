@@ -6,6 +6,7 @@
 
 import { DifficultyScaler } from "./DifficultyScaler.js";
 import { PathResolver } from "../utils/PathResolver.js";
+import { updateDiscordPresence } from "../utils/DiscordRPC.js";
 
 export class ScoreboardManager {
     
@@ -96,6 +97,17 @@ export class ScoreboardManager {
             total: scores.total,
             maxTotal: scores.maxTotal
         };
+
+        // ===== UPDATE DISCORD: SCOREBOARD =====
+        const gradeFileForDiscord = this.getGradeFile(scores.total, scores.maxTotal);
+        const gradeName = gradeFileForDiscord.replace('.png', '').toUpperCase();
+        const totalDisplay = `${scores.total}/${scores.maxTotal}`;
+        
+        updateDiscordPresence(
+            `📊 ${totalDisplay} - ${gradeName}`,
+            `Rescued: ${scores.rescued} | Marked: ${scores.marked}`,
+            { largeImageKey: "scoreboard" }
+        );
         
         const sfxEnabled = this.gameManager.save.isSFXEnabled();
         const sfxVolume = this.gameManager.save.getSFXVolume();

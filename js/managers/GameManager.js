@@ -27,6 +27,7 @@ import { GameModeManager } from "./GameModeManager.js";
 import { HazardManager } from "./HazardManager.js";
 import { KeychainConfig } from "../utils/KeychainConfig.js";
 import { PathResolver } from "../utils/PathResolver.js";
+import { updateDiscordPresence, buildDiscordPresence } from "../utils/DiscordRPC.js";
 
 export class GameManager {
     
@@ -164,6 +165,12 @@ export class GameManager {
         if (this.config.mode !== "tutorial") {
             await this.uiManager.showLevelStartModal(this.charCtrl, this.config, this.board);
         }
+
+        // DISCORD
+        const presence = buildDiscordPresence(this.config);
+        updateDiscordPresence(presence.details, presence.state, {
+            largeImageKey: presence.largeImageKey
+        });
 
         this.gameInputLocked = false;
     }
@@ -353,6 +360,15 @@ export class GameManager {
                 playerAlive: this.player?.isAlive(),
                 playerHp: this.player?.getHp()
             });
+
+            // ===== UPDATE DISCORD PRESENCE =====
+            const presence = buildDiscordPresence({
+                ...this.config,
+                level: this.currentLevel || 1
+            });
+            updateDiscordPresence(presence.details, presence.state, {
+                largeImageKey: presence.largeImageKey
+            });
         }
     }
 
@@ -377,6 +393,15 @@ export class GameManager {
 
     randomizeNewGame() {
         this.gameModeManager.randomizeNewGame(this);
+        
+        // ===== UPDATE DISCORD PRESENCE =====
+        const presence = buildDiscordPresence({
+            ...this.config,
+            level: this.currentLevel || 1
+        });
+        updateDiscordPresence(presence.details, presence.state, {
+            largeImageKey: presence.largeImageKey
+        });
     }
 
     returnToMenu() {
