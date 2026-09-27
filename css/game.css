@@ -974,8 +974,8 @@ body.delirium::after {
 }
 
 .level-start-child-img {
-    width: 12vmin;
-    height: 12vmin;
+    width: min(12vmin, 60px);
+    height: min(12vmin, 60px);
     object-fit: contain;
 }
 
@@ -1089,8 +1089,8 @@ body.delirium::after {
 }
 
 .pause-child-img {
-    width: 12vmin;
-    height: 12vmin;
+    width: min(12vmin, 60px);
+    height: min(12vmin, 60px);
     object-fit: contain;
 }
 
@@ -1108,7 +1108,7 @@ body.delirium::after {
 }
 
 .pause-btn-img {
-    width: 13vmin;
+    width: min(13vmin, 65px);
     cursor: pointer;
     transition: transform 0.2s ease;
 }
