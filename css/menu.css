@@ -28,6 +28,15 @@
     z-index: 9999;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 /* ========================================================= */
 /* ==================== WELCOME SCREEN ===================== */
 /* ========================================================= */
@@ -635,11 +644,11 @@ body {
     align-items: center;
     justify-content: center;
     white-space: pre-line;
-    padding-left: 12vmin;
+    padding-left: 9vmin;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    font-size: 3.5vmin;
+    font-size: clamp(16px, 3.5vmin, 28px);
     cursor: pointer;
     transition: transform 0.2s ease;
 }

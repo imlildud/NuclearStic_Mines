@@ -26,6 +26,15 @@
     z-index: 9999;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -34,10 +43,6 @@ body {
     background-size: cover;
     font-family: 'Shampoos', sans-serif;
     overflow-x: hidden;
-}
-
-*, *::before, *::after {
-    box-sizing: border-box;
 }
 
 /* ========================================================= */
@@ -77,19 +82,21 @@ body {
     position: relative;
     margin: 0 auto;
     width: min(100vw, 700px);
+    height: auto;
+    container-type: inline-size;
     background: url('../assets/hud/options/optionscard.png') no-repeat center top;
     background-size: 100% 100%;
-    padding: 16vmin 8% 6vmin 8%;
+    padding: clamp(15px, 9vmin, 63px) min(8vw, 56px); 
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .config-title {
     position: absolute;
-    top: 3.5vmin;
+    top: 5.2cqi;
     left: 50%;
     transform: translateX(-50%);
-    width: 42vmin;
+    width: 63cqi;
     height: auto;
     z-index: 5;
     filter: drop-shadow(2px 4px 5px rgba(0,0,0,0.6));
@@ -97,10 +104,10 @@ body {
 
 .close-btn {
     position: absolute;
-    top: 2vmin;
-    right: 2vmin;
-    width: 14vmin;
-    height: 14vmin;
+    top: 3cqi;
+    right: 3cqi;
+    width: 21cqi;
+    height: 21cqi;
     cursor: pointer;
     transition: transform 0.2s ease;
     z-index: 10;
@@ -132,9 +139,15 @@ body {
 
 .section-card {
     position: relative;
-    width: 100%;
-    margin-bottom: 3.5vmin;
-    min-height: 18vmin;
+    width: 90%;
+    margin: 0 auto 5.2cqi auto;
+    margin-bottom: 5.2cqi;
+    min-height: 27cqi;
+    padding: 4.5cqi 7.5cqi;
+}
+
+.scrollable-content > .section-card:first-child {
+    margin-top: 15cqi;
 }
 
 .section-bg {
@@ -151,15 +164,15 @@ body {
 .section-content {
     position: relative;
     z-index: 2;
-    padding: 3vmin 5vmin;
+    padding: 4.5cqi 7.5cqi;
     width: 100%;
 }
 
 .section-title {
-    font-size: 5vmin;
+    font-size: 7.5cqi;
     color: #2b1608;
     text-align: center;
-    margin-bottom: 2.5vmin;
+    margin-bottom: 3.7cqi;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: bold;
@@ -172,43 +185,44 @@ body {
 /* ========================================================= */
 
 .slider-group, .toggle-group {
-    display: table;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    margin: 2vmin 0;
+    margin: 3cqi 0;
 }
 
 .slider-row, .toggle-row {
-    display: table-row;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 2.5cqi 0;
 }
 
 .slider-label, .toggle-label {
-    display: table-cell;
-    font-size: 4vmin;
+    font-size: 6cqi;
     color: #201005;
-    vertical-align: middle;
     text-align: left;
+    flex-grow: 1;
 }
 
-.slider-label { width: 18%; }
-.toggle-label { width: auto; }
-
 .volume-slider {
-    display: table-cell;
-    width: 70%;
-    height: 1.2vmin;
+    flex-grow: 2;
+    height: 1.8cqi;
     background: #bfa38a;
     border-radius: 5px;
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
     border: 1px solid #6e5441;
-    margin: 0 1.5vmin;
+    margin: 0 3cqi;
 }
 
 .volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 3.5vmin;
-    height: 3.5vmin;
+    width: 5.2cqi;
+    height: 5.2cqi;
     background: #4a6b53;
     border: 2px solid #fffdfa;
     border-radius: 50%;
@@ -217,8 +231,8 @@ body {
 }
 
 .volume-slider::-moz-range-thumb {
-    width: 3.5vmin;
-    height: 3.5vmin;
+    width: 5.2cqi;
+    height: 5.2cqi;
     background: #4a6b53;
     border: 2px solid #fffdfa;
     border-radius: 50%;
@@ -227,11 +241,9 @@ body {
 }
 
 .volume-percent {
-    display: table-cell;
-    width: 12%;
-    font-size: 5vmin;
+    width: 15%;
+    font-size: 7.5cqi;
     color: #3b200c;
-    vertical-align: middle;
     text-align: right;
     font-weight: bold;
 }
@@ -243,29 +255,28 @@ body {
 .language-buttons {
     display: flex;
     justify-content: center;
-    gap: 4vmin;
+    gap: 6cqi;
     width: 100%;
-    margin-top: 1vmin;
+    margin-top: 1.5cqi;
 }
 
-/* New custom class replacing the bare image rules */
 .lang-btn-prop {
     font-family: 'Shampoos', sans-serif;
-    font-size: 2.2vmin;
+    font-size: 4.2cqi;
     color: #000000;
     font-weight: bold;
     border: none;
     cursor: pointer;
     background: url('../assets/hud/options/optionbtn.png') no-repeat center center;
     background-size: 100% 100%;
-    width: 32%;
+    width: 38cqi;
     max-width: 150px;
-    height: 7vmin;
+    height: 10.5cqi;
     min-height: 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 0.5vmin; /* Subtle shift down if font asset has high baseline */
+    padding-bottom: 0.8cqi;
     transition: all 0.2s ease;
     filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));
 }
@@ -291,8 +302,8 @@ body {
 
 .toggle-switch {
     display: inline-block;
-    width: 10vmin;
-    height: 4.8vmin;
+    width: 15cqi;
+    height: 7.2cqi;
     background: #090400;
     border-radius: 24px;
     cursor: pointer;
@@ -300,28 +311,25 @@ body {
     transition: background 0.2s ease;
     border: 2px solid #4a382b;
     box-shadow: inset 0px 2px 4px rgba(0,0,0,0.3);
+    flex-shrink: 0;
 }
 
 .toggle-switch::after {
     content: '';
     position: absolute;
-    width: 3.6vmin;
-    height: 3.6vmin;
+    width: 5.4cqi;
+    height: 5.4cqi;
     background: #e8d0b5;
     border-radius: 50%;
-    top: 0.3vmin;
-    left: 0.5vmin;
+    top: 0.5cqi;
+    left: 0.8cqi;
     transition: transform 0.2s ease;
     box-shadow: 0px 2px 3px rgba(0,0,0,0.4);
     border: 1px solid #aa9178;
 }
 
-.toggle-switch.active {
-    background: #b56b39;
-}
-
 .toggle-switch.active::after {
-    transform: translateX(4.8vmin);
+    transform: translateX(7.2cqi);
     background: #fffdfa;
 }
 
@@ -329,10 +337,9 @@ body {
 /* ===================== CONFIG BUTTONS ==================== */
 /* ========================================================= */
 
-/* Other utilities rewritten using the exact same asset wrapper requested */
 .config-button {
     font-family: 'Shampoos', sans-serif;
-    font-size: 2.7vmin;
+    font-size: 4cqi;
     color: #2b1608;
     font-weight: bold;
     border: none;
@@ -341,20 +348,20 @@ body {
     background-size: 100% 100%;
     width: 60%;
     max-width: 240px;
-    height: 12vmin;
+    height: 18cqi;
     min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 2vmin auto;
-    padding-bottom: 0.5vmin;
-    padding-left: 5vmin;
+    margin: 3cqi auto;
+    padding-bottom: 0.8cqi;
+    padding-left: 7.5cqi;
     transition: all 0.2s ease;
     filter: drop-shadow(0px 3px 4px rgba(0,0,0,0.34));
 }
 
 .config-button:hover {
-    background-size: 100% 100%; /* Keeps texture maps locked tight */
+    background-size: 100% 100%;
     transform: scale(1.03);
     filter: brightness(1.1) drop-shadow(0px 3px 6px rgba(0,0,0,0.4));
 }
@@ -367,20 +374,18 @@ body {
 /* ===================== SAVE ROW ========================== */
 /* ========================================================= */
 
-/* Container to perfectly space and align [EXPORT] [SAVE] [IMPORT] */
 .action-buttons-group {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2vmin; /* Spacing between the prop labels */
+    gap: 3cqi;
     width: 100%;
-    margin: 4vmin auto 0 auto;
+    margin: 6cqi auto 0 auto;
 }
 
-/* Base style for the new side buttons (Export / Import) */
 .action-btn-side {
     font-family: 'Shampoos', sans-serif;
-    font-size: 2vmin;
+    font-size: 3cqi;
     color: #2b1608;
     font-weight: bold;
     border: none;
@@ -388,28 +393,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20vmin;
+    width: 30cqi;
     max-width: 130px;
-    height: 20vmin;
+    height: 30cqi;
     min-height: 40px;
     transition: all 0.2s ease;
     filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.35));
-    padding-bottom: 0.5vmin; /* Dynamic vertical text baseline shift */
+    padding-bottom: 0.8cqi;
 }
 
-/* Specific background asset maps for Export */
 .export-btn {
     background: url('../assets/hud/options/export.png') no-repeat center center;
     background-size: 100% 100%;
 }
 
-/* Specific background asset maps for Import */
 .import-btn {
     background: url('../assets/hud/options/import.png') no-repeat center center;
     background-size: 100% 100%;
 }
 
-/* Hover and active animations for side buttons */
 .action-btn-side:hover {
     transform: scale(1.05);
     filter: brightness(1.15) drop-shadow(0px 4px 7px rgba(0,0,0,0.45));
@@ -419,10 +421,9 @@ body {
     transform: scale(0.97);
 }
 
-/* Converted to flexible text layout containing standard block flow rules */
 .save-btn-prop {
     font-family: 'Shampoos', sans-serif;
-    font-size: 3.2vmin;
+    font-size: 4.8cqi;
     color: #000000;
     font-weight: bold;
     letter-spacing: 2px;
@@ -431,16 +432,16 @@ body {
     background: url('../assets/hud/options/tag.png') no-repeat center center;
     background-size: 100% 100%;
     display: block;
-    margin: 3vmin auto 0 auto;
-    width: 28vmin;
+    margin: 4.5cqi auto 0 auto;
+    width: 42cqi;
     max-width: 190px;
-    height: 15vmin;
+    height: 22.5cqi;
     min-height: 55px;
     text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.6);
     transition: all 0.2s ease;
     filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.4));
-    padding-bottom: 6vmin;
-    padding-left: 5vmin;
+    padding-bottom: 9cqi;
+    padding-left: 7.5cqi;
 }
 
 .save-btn-prop:hover {
@@ -467,6 +468,8 @@ body {
     border-radius: 12px;
     outline: none;
     margin-bottom: 2vmin;
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 .secret-input:focus {
@@ -585,6 +588,7 @@ body {
 
 .modal-ok {
     background-color: #4a7c59;
+    content: white;
     color: white;
     box-shadow: 0 4px 0 #2a4a35;
 }

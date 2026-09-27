@@ -49,6 +49,15 @@ body {
     z-index: 9999;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
 /* ========================================================= */
 /* ======================== CANVAS ========================= */
 /* ========================================================= */
