@@ -328,6 +328,10 @@ body {
     border: 1px solid #aa9178;
 }
 
+.toggle-switch.active {
+    background: #b56b39;
+}
+
 .toggle-switch.active::after {
     transform: translateX(7.2cqi);
     background: #fffdfa;
