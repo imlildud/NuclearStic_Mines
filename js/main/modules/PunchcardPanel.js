@@ -632,11 +632,11 @@ function randomizeCustomSelectors() {
     const size = sizes[getRandomInRange(random, 0, 4)];
     document.getElementById("custom-size-select").value = size;
     
-    const hazards = ["1", "5", "8", "12", "20", "30"];
+    const hazards = ["1", "5", "10", "15", "20", "30"];
     const hazard = hazards[getRandomInRange(random, 0, 5)];
     document.getElementById("custom-hazards-select").value = hazard;
     
-    const obstacles = ["1", "3", "5", "10", "15", "30"];
+    const obstacles = ["1", "3", "5", "10", "15", "20"];
     const obstacle = obstacles[getRandomInRange(random, 0, 5)];
     document.getElementById("custom-obstacles-select").value = obstacle;
     
