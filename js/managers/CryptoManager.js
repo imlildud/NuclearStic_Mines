@@ -1,5 +1,5 @@
 // ==============================================================
-// ===================== CRYPTO MANAGER ==========================
+// ===================== CRYPTO MANAGER =========================
 // ==============================================================
 // Handles encryption and decryption of save data.
 //
@@ -9,6 +9,7 @@
 // - Integrity verification for encrypted values.
 // - JSON/object encryption helpers.
 // - Backwards compatibility detection.
+// - Full-storage encryption/migration utilities.
 //
 // NOTE:
 // This is client-side save protection. The secret is bundled with
@@ -27,6 +28,12 @@ export class CryptoManager {
     static VALUE_PREFIX = "NSV1:";
 
     static VERSION = 1;
+
+    // Keys that should NEVER be encrypted (browser/library-owned
+    // or internal crypto metadata keys).
+    static SKIP_KEYS = new Set([
+        // Add any keys here that must remain plaintext.
+    ]);
 
     // ======================= TEXT UTILITIES =======================
 
@@ -291,8 +298,23 @@ export class CryptoManager {
 
     // ======================= BYTE COMPARISON =======================
 
-    // Compare two byte arrays
+    // Compare two byte arrays (non constant-time, for general use)
     static bytesEqual(a, b) {
+        if (!a || !b || a.length !== b.length) {
+            return false;
+        }
+
+        let difference = 0;
+
+        for (let i = 0; i < a.length; i++) {
+            difference |= a[i] ^ b[i];
+        }
+
+        return difference === 0;
+    }
+
+    // Constant-time comparison for integrity tags
+    static constantTimeEqual(a, b) {
         if (!a || !b || a.length !== b.length) {
             return false;
         }
@@ -308,7 +330,7 @@ export class CryptoManager {
 
     // ======================= KEY STREAM =======================
 
-    // Generate a deterministic byte stream
+    // Generate a deterministic byte stream (used for key obfuscation)
     static generateKeyStream(length, context) {
 
         const result = new Uint8Array(length);
@@ -440,21 +462,15 @@ export class CryptoManager {
 
     // ======================= VALUE ENCRYPTION =======================
 
-    // Encrypt a string value
-    static encryptString(value) {
+    // Generate the SHA-256 keystream used for value encryption/decryption
+    static generateValueStream(length, nonce) {
 
-        const text = String(value);
-        const plaintext = this.stringToBytes(text);
-
-        // Generate a unique nonce for every save operation
-        const nonce = this.generateRandomBytes(12);
-
-        const stream = new Uint8Array(plaintext.length);
+        const stream = new Uint8Array(length);
 
         let generated = 0;
         let counter = 0;
 
-        while (generated < plaintext.length) {
+        while (generated < length) {
 
             const context = new Uint8Array([
                 ...this.stringToBytes(`${this.SECRET}|VALUE|`),
@@ -466,7 +482,7 @@ export class CryptoManager {
 
             const amount = Math.min(
                 block.length,
-                plaintext.length - generated
+                length - generated
             );
 
             stream.set(
@@ -478,13 +494,29 @@ export class CryptoManager {
             counter++;
         }
 
-        const encrypted = new Uint8Array(plaintext.length);
+        return stream;
+    }
 
-        for (let i = 0; i < plaintext.length; i++) {
-            encrypted[i] = plaintext[i] ^ stream[i];
+    // XOR a byte array with the value keystream (symmetric)
+    static cryptBytes(bytes, nonce) {
+
+        const stream = this.generateValueStream(
+            bytes.length,
+            nonce
+        );
+
+        const output = new Uint8Array(bytes.length);
+
+        for (let i = 0; i < bytes.length; i++) {
+            output[i] = bytes[i] ^ stream[i];
         }
 
-        // Generate a keyed integrity tag
+        return output;
+    }
+
+    // Compute the keyed integrity tag for an encrypted value
+    static computeAuthTag(nonce, encrypted) {
+
         const tag = this.sha256(
             new Uint8Array([
                 ...this.stringToBytes(`${this.SECRET}|VALUE_TAG|`),
@@ -493,11 +525,29 @@ export class CryptoManager {
             ])
         );
 
+        return tag.slice(0, 16);
+    }
+
+    // Encrypt a string value
+    static encryptString(value) {
+
+        const text = String(value);
+        const plaintext = this.stringToBytes(text);
+
+        // Generate a unique nonce for every save operation
+        const nonce = this.generateRandomBytes(12);
+
+        // XOR plaintext with the value keystream
+        const encrypted = this.cryptBytes(plaintext, nonce);
+
+        // Generate a keyed integrity tag
+        const tag = this.computeAuthTag(nonce, encrypted);
+
         return [
             this.VALUE_PREFIX,
             this.bytesToBase64Url(nonce),
             this.bytesToBase64Url(encrypted),
-            this.bytesToBase64Url(tag.slice(0, 16))
+            this.bytesToBase64Url(tag)
         ].join(".");
     }
 
@@ -510,69 +560,58 @@ export class CryptoManager {
 
         try {
 
-            const content = value.substring(this.VALUE_PREFIX.length);
+            let content = value.substring(this.VALUE_PREFIX.length);
+
+            if (content.startsWith(".")) {
+                content = content.substring(1);
+            }
+
             const parts = content.split(".");
 
             if (parts.length !== 3) {
-                throw new Error("Invalid encrypted value format.");
+                throw new Error(
+                    `Invalid encrypted value format. Expected 3 parts, received ${parts.length}.`
+                );
             }
 
             const nonce = this.base64UrlToBytes(parts[0]);
             const encrypted = this.base64UrlToBytes(parts[1]);
             const storedTag = this.base64UrlToBytes(parts[2]);
 
-            // Verify integrity before decrypting
-            const expectedTag = this.sha256(
-                new Uint8Array([
-                    ...this.stringToBytes(`${this.SECRET}|VALUE_TAG|`),
-                    ...nonce,
-                    ...encrypted
-                ])
-            ).slice(0, 16);
-
-            if (!this.bytesEqual(storedTag, expectedTag)) {
-                throw new Error("Encrypted save integrity check failed.");
-            }
-
-            const stream = new Uint8Array(encrypted.length);
-
-            let generated = 0;
-            let counter = 0;
-
-            while (generated < encrypted.length) {
-
-                const context = new Uint8Array([
-                    ...this.stringToBytes(`${this.SECRET}|VALUE|`),
-                    ...nonce,
-                    ...this.stringToBytes(`|${counter}`)
-                ]);
-
-                const block = this.sha256(context);
-
-                const amount = Math.min(
-                    block.length,
-                    encrypted.length - generated
+            if (nonce.length !== 12) {
+                throw new Error(
+                    `Invalid nonce length. Expected 12 bytes, received ${nonce.length}.`
                 );
+            }
 
-                stream.set(
-                    block.slice(0, amount),
-                    generated
+            if (storedTag.length !== 16) {
+                throw new Error(
+                    `Invalid authentication tag length. Expected 16 bytes, received ${storedTag.length}.`
                 );
-
-                generated += amount;
-                counter++;
             }
 
-            const decrypted = new Uint8Array(encrypted.length);
+            const expectedTag = this.computeAuthTag(
+                nonce,
+                encrypted
+            );
 
-            for (let i = 0; i < encrypted.length; i++) {
-                decrypted[i] = encrypted[i] ^ stream[i];
+            if (!this.constantTimeEqual(storedTag, expectedTag)) {
+                throw new Error("Authentication tag mismatch.");
             }
 
-            return this.bytesToString(decrypted);
+            const plaintext = this.cryptBytes(
+                encrypted,
+                nonce
+            );
+
+            return this.bytesToString(plaintext);
 
         } catch (error) {
-            console.error("[CryptoManager] Value decryption failed:", error);
+            console.error(
+                "[CryptoManager] Value decryption failed:",
+                error
+            );
+
             return null;
         }
     }
@@ -607,5 +646,380 @@ export class CryptoManager {
             console.error("[CryptoManager] JSON parsing failed:", error);
             return null;
         }
+    }
+
+    // ======================= STORAGE HELPERS =======================
+
+    // Check whether a localStorage key should be skipped
+    static shouldSkipKey(key) {
+        return this.SKIP_KEYS.has(key);
+    }
+
+    // Check whether a localStorage key is already encrypted
+    static isStorageKeyEncrypted(key) {
+        return this.isEncryptedKey(key);
+    }
+
+    // Check whether a localStorage value is already encrypted
+    static isStorageValueEncrypted(value) {
+        return this.isEncryptedValue(value);
+    }
+
+    // ======================= FULL STORAGE ENCRYPTION =======================
+
+    // Encrypt every entry in localStorage.
+    //
+    // Returns a report describing what happened.
+    //
+    // Options:
+    //   - skipEncryptedKeys:   do not re-encrypt keys already encrypted
+    //   - skipEncryptedValues: do not re-encrypt values already encrypted
+    //   - removePlaintext:     remove plaintext keys after migration
+    //   - dryRun:              do not modify localStorage, only report
+    //   - onProgress:          optional callback (index, total, key, action)
+    static encryptAllStorage(options = {}) {
+
+        const {
+            skipEncryptedKeys = true,
+            skipEncryptedValues = true,
+            removePlaintext = true,
+            dryRun = false,
+            onProgress = null
+        } = options;
+
+        const report = {
+            total: 0,
+            keysEncrypted: 0,
+            valuesEncrypted: 0,
+            skipped: 0,
+            failed: 0,
+            entries: []
+        };
+
+        // Snapshot all keys first (mutating localStorage while
+        // iterating is unsafe)
+        const keys = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            keys.push(localStorage.key(i));
+        }
+
+        report.total = keys.length;
+
+        keys.forEach((originalKey, index) => {
+
+            const originalValue = localStorage.getItem(originalKey);
+
+            const entry = {
+                originalKey,
+                encryptedKey: originalKey,
+                keyEncrypted: false,
+                valueEncrypted: false,
+                action: "none"
+            };
+
+            // Skip protected keys
+            if (this.shouldSkipKey(originalKey)) {
+                entry.action = "skipped-protected";
+                report.skipped++;
+                report.entries.push(entry);
+                if (onProgress) onProgress(index, report.total, originalKey, entry.action);
+                return;
+            }
+
+            try {
+                // ---- 1. Encrypt the key (deterministically) ----
+                const keyAlreadyEncrypted =
+                    this.isStorageKeyEncrypted(originalKey);
+
+                let newKey = originalKey;
+
+                if (keyAlreadyEncrypted) {
+                    if (skipEncryptedKeys) {
+                        newKey = originalKey;
+                    } else {
+                        // Decrypt then re-encrypt (idempotent, but
+                        // will produce the same key)
+                        newKey = this.encryptKey(
+                            this.decryptKey(originalKey) ?? originalKey
+                        );
+                        entry.keyEncrypted = true;
+                        report.keysEncrypted++;
+                    }
+                } else {
+                    newKey = this.encryptKey(originalKey);
+                    entry.keyEncrypted = true;
+                    report.keysEncrypted++;
+                }
+
+                // ---- 2. Encrypt the value (randomized) ----
+                let newValue = originalValue;
+
+                if (originalValue === null || originalValue === undefined) {
+                    entry.action = "skipped-null-value";
+                    report.skipped++;
+                    report.entries.push(entry);
+                    if (onProgress) onProgress(index, report.total, originalKey, entry.action);
+                    return;
+                }
+
+                const valueAlreadyEncrypted =
+                    this.isStorageValueEncrypted(originalValue);
+
+                if (valueAlreadyEncrypted && skipEncryptedValues) {
+                    newValue = originalValue;
+                } else {
+                    newValue = this.encryptString(originalValue);
+                    entry.valueEncrypted = true;
+                    report.valuesEncrypted++;
+                }
+
+                entry.encryptedKey = newKey;
+
+                // ---- 3. Write the new entry ----
+                if (!dryRun) {
+                    // If the key changed, remove the old entry first
+                    if (newKey !== originalKey) {
+                        localStorage.removeItem(originalKey);
+                    }
+
+                    localStorage.setItem(newKey, newValue);
+
+                    // Remove the plaintext original if requested
+                    if (removePlaintext && newKey !== originalKey) {
+                        localStorage.removeItem(originalKey);
+                    }
+                }
+
+                entry.action =
+                    newKey !== originalKey
+                        ? "migrated"
+                        : "re-encrypted";
+
+                report.entries.push(entry);
+
+            } catch (error) {
+                entry.action = "failed";
+                entry.error = String(error && error.message ? error.message : error);
+                report.failed++;
+                report.entries.push(entry);
+                console.error(
+                    `[CryptoManager] Failed to encrypt storage key: ${originalKey}`,
+                    error
+                );
+            }
+
+            if (onProgress) {
+                onProgress(index, report.total, originalKey, entry.action);
+            }
+        });
+
+        return report;
+    }
+
+    // Decrypt every entry in localStorage back to plaintext.
+    //
+    // Useful for debugging or exporting readable saves.
+    static decryptAllStorage(options = {}) {
+
+        const {
+            removeEncrypted = true,
+            dryRun = false,
+            onProgress = null
+        } = options;
+
+        const report = {
+            total: 0,
+            keysDecrypted: 0,
+            valuesDecrypted: 0,
+            skipped: 0,
+            failed: 0,
+            entries: []
+        };
+
+        const keys = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            keys.push(localStorage.key(i));
+        }
+
+        report.total = keys.length;
+
+        keys.forEach((originalKey, index) => {
+
+            const originalValue = localStorage.getItem(originalKey);
+
+            const entry = {
+                originalKey,
+                decryptedKey: originalKey,
+                keyDecrypted: false,
+                valueDecrypted: false,
+                action: "none"
+            };
+
+            try {
+                // ---- 1. Decrypt the key ----
+                let newKey = originalKey;
+
+                if (this.isStorageKeyEncrypted(originalKey)) {
+                    const decryptedKey = this.decryptKey(originalKey);
+
+                    if (decryptedKey === null) {
+                        entry.action = "skipped-invalid-key";
+                        report.skipped++;
+                        report.entries.push(entry);
+                        if (onProgress) onProgress(index, report.total, originalKey, entry.action);
+                        return;
+                    }
+
+                    newKey = decryptedKey;
+                    entry.keyDecrypted = true;
+                    report.keysDecrypted++;
+                }
+
+                // ---- 2. Decrypt the value ----
+                let newValue = originalValue;
+
+                if (originalValue !== null && this.isStorageValueEncrypted(originalValue)) {
+                    const decryptedValue = this.decryptString(originalValue);
+
+                    if (decryptedValue === null) {
+                        entry.action = "skipped-invalid-value";
+                        report.skipped++;
+                        report.entries.push(entry);
+                        if (onProgress) onProgress(index, report.total, originalKey, entry.action);
+                        return;
+                    }
+
+                    newValue = decryptedValue;
+                    entry.valueDecrypted = true;
+                    report.valuesDecrypted++;
+                }
+
+                entry.decryptedKey = newKey;
+
+                // ---- 3. Write the plaintext entry ----
+                if (!dryRun) {
+                    if (newKey !== originalKey) {
+                        localStorage.removeItem(originalKey);
+                    }
+
+                    localStorage.setItem(newKey, newValue);
+
+                    if (removeEncrypted && newKey !== originalKey) {
+                        localStorage.removeItem(originalKey);
+                    }
+                }
+
+                entry.action =
+                    newKey !== originalKey
+                        ? "migrated"
+                        : "decrypted";
+
+                report.entries.push(entry);
+
+            } catch (error) {
+                entry.action = "failed";
+                entry.error = String(error && error.message ? error.message : error);
+                report.failed++;
+                report.entries.push(entry);
+                console.error(
+                    `[CryptoManager] Failed to decrypt storage key: ${originalKey}`,
+                    error
+                );
+            }
+
+            if (onProgress) {
+                onProgress(index, report.total, originalKey, entry.action);
+            }
+        });
+
+        return report;
+    }
+
+    // ======================= STORAGE EXPORT / IMPORT =======================
+
+    // Export the entire (encrypted) storage as a JSON-friendly object.
+    // This is what an "exported save file" would look like.
+    static exportStorage() {
+
+        const snapshot = {};
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            snapshot[key] = localStorage.getItem(key);
+        }
+
+        return {
+            version: this.VERSION,
+            exportedAt: new Date().toISOString(),
+            encrypted: true,
+            data: snapshot
+        };
+    }
+
+    // Import a storage snapshot produced by exportStorage().
+    //
+    // If `encrypted` is true, keys/values are expected to be in
+    // encrypted form and are written as-is.
+    static importStorage(snapshot, options = {}) {
+
+        const {
+            clearExisting = false,
+            encryptPlaintext = true
+        } = options;
+
+        if (!snapshot || typeof snapshot !== "object" || !snapshot.data) {
+            throw new Error("Invalid storage snapshot.");
+        }
+
+        if (clearExisting) {
+            localStorage.clear();
+        }
+
+        const report = {
+            total: 0,
+            imported: 0,
+            encryptedOnImport: 0,
+            failed: 0
+        };
+
+        const entries = Object.entries(snapshot.data);
+        report.total = entries.length;
+
+        for (const [rawKey, rawValue] of entries) {
+
+            try {
+
+                let key = rawKey;
+                let value = rawValue;
+
+                // If the snapshot was plaintext but we want encryption,
+                // encrypt both key and value on import.
+                if (snapshot.encrypted === false && encryptPlaintext) {
+                    key = this.isEncryptedKey(rawKey)
+                        ? rawKey
+                        : this.encryptKey(rawKey);
+
+                    value = this.isEncryptedValue(rawValue)
+                        ? rawValue
+                        : this.encryptString(rawValue);
+
+                    report.encryptedOnImport++;
+                }
+
+                localStorage.setItem(key, value);
+                report.imported++;
+
+            } catch (error) {
+                report.failed++;
+                console.error(
+                    `[CryptoManager] Failed to import storage key: ${rawKey}`,
+                    error
+                );
+            }
+        }
+
+        return report;
     }
 }
