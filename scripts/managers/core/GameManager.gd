@@ -322,10 +322,10 @@ func handle_flag_direction(direction: String) -> void:
 func get_flag_mode_manager():
 	return _flag_mode_manager
 
-func get_flag_mode() -> String:
+func get_flag_mode() -> int:
 	return _flag_mode_manager.get_flag_mode()
 
-func set_flag_mode(mode: String) -> void:
+func set_flag_mode(mode: int) -> void:
 	_flag_mode_manager.set_flag_mode(mode)
 
 func cycle_flag_mode() -> void:

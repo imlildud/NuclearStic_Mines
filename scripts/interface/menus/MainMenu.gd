@@ -4,14 +4,16 @@
 # Main menu scene. Handles navigation to game modes and menus.
 #
 # Mode buttons (Legacy / Daily / Custom) open the PunchcardPanel
-# overlay in the corresponding mode. Close button inside the
-# punchcard closes it.
+# overlay in the corresponding mode. When the player presses Start
+# in the punchcard, the game config is saved to GameManager and the
+# scene changes to Game.tscn.
 #
 # Options, Diary and ID Card are placeholders for now.
 
 extends Control
 
 const PUNCHCARD_SCENE := "res://scenes/menu/PunchcardPanel.tscn"
+const GAME_SCENE := "res://scenes/game/Game.tscn"
 
 var _punchcard: Control = null
 
@@ -27,9 +29,11 @@ func _ready() -> void:
 	add_child(_punchcard)
 	_punchcard.visible = false
 
-	# Connect the punchcard's close signal.
+	# Connect the punchcard signals.
 	if _punchcard.has_signal("closed"):
 		_punchcard.closed.connect(_on_punchcard_closed)
+	if _punchcard.has_signal("start_requested"):
+		_punchcard.start_requested.connect(_on_punchcard_start)
 
 	# Wire every main-menu button.
 	_connect_button($MenuButtons/LegacyButton, _on_legacy_pressed)
@@ -81,6 +85,14 @@ func _open_punchcard(mode: String) -> void:
 # Called when the punchcard emits its "closed" signal.
 func _on_punchcard_closed() -> void:
 	AudioManager.play_click_sfx()
+
+
+# Called when the punchcard emits "start_requested".
+# Saves the config to GameManager and changes to Game.tscn.
+func _on_punchcard_start(config: Dictionary) -> void:
+	GameManager.config = config
+	GameManager.set_locale_manager(LocaleManager)
+	get_tree().change_scene_to_file(GAME_SCENE)
 
 
 # ======================= BUTTON HANDLERS =======================

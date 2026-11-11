@@ -7,6 +7,12 @@
 extends Node
 class_name CharacterController
 
+# ======================= SIGNALS =======================
+
+# Emitted when the player rescues a pal on the current tile.
+# Used by Game.gd to refresh the full vision after a rescue.
+signal pal_rescued
+
 # ======================= STATE =======================
 
 var character = null              # CharacterModel
@@ -339,6 +345,9 @@ func verify_tile(board: Array) -> void:
 
 			if game_manager != null:
 				AudioManager.play_rescue_sfx()
+
+			# Notify listeners (Game.gd uses this to refresh vision).
+			pal_rescued.emit()
 
 	# ===================== DELIVERY HANDLING =====================
 
