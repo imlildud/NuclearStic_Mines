@@ -1,23 +1,24 @@
 [gd_scene format=3 uid="uid://d2kppvor28nvn"]
 
 [ext_resource type="Script" uid="uid://ip3iuy5e8hsn" path="res://scripts/interface/game/Game.gd" id="1_game"]
-[ext_resource type="PackedScene" uid="uid://cwtgoyib55q8k" path="res://scenes/game/Board.tscn" id="2_board"]
+[ext_resource type="PackedScene" path="res://scenes/game/Board.tscn" id="2_board"]
+[ext_resource type="Texture2D" uid="uid://dnm8nytd78aoq" path="res://assets/hud/game/wallpaper/desert.png" id="2_lyhax"]
 [ext_resource type="PackedScene" path="res://scenes/game/Character.tscn" id="3_char"]
 [ext_resource type="PackedScene" uid="uid://56d6ce2h48ds" path="res://scenes/game/HUD.tscn" id="4_7qcb4"]
 
 [node name="Game" type="Node2D" unique_id=896148249]
 script = ExtResource("1_game")
 
-[node name="Background" type="TextureRect" parent="."]
-layout_mode = 3
+[node name="Background" type="TextureRect" parent="." unique_id=130205361]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_lyhax")
 expand_mode = 1
 stretch_mode = 6
-mouse_filter = 2
 
 [node name="Board" parent="." unique_id=1567699353 instance=ExtResource("2_board")]
 

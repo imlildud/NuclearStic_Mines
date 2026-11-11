@@ -127,38 +127,38 @@ stretch_mode = 5
 
 [node name="HealthGroup" type="Control" parent="Root" unique_id=2061290086]
 anchors_preset = 0
-offset_left = -4.0
+offset_left = 3.0
 offset_top = 164.0
-offset_right = 124.0
-offset_bottom = 207.0
+offset_right = 151.0
+offset_bottom = 224.0
 mouse_filter = 2
 
 [node name="HealthBar" type="TextureRect" parent="Root/HealthGroup" unique_id=1138545777]
 layout_mode = 0
-offset_left = 23.0
+offset_left = 13.0
 offset_top = -4.0
-offset_right = 153.0
-offset_bottom = 36.0
+offset_right = 169.0
+offset_bottom = 52.0
 texture = ExtResource("6_bar")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="HealthIcon" type="TextureRect" parent="Root/HealthGroup" unique_id=1243921825]
 layout_mode = 0
-offset_left = -3.0
-offset_top = -23.0
-offset_right = 81.0
-offset_bottom = 64.0
+offset_left = -13.0
+offset_top = -24.0
+offset_right = 88.0
+offset_bottom = 77.0
 texture = ExtResource("5_life")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="HealthText" type="Label" parent="Root/HealthGroup" unique_id=987089388]
 layout_mode = 0
-offset_left = 67.0
-offset_top = -2.0
-offset_right = 119.0
-offset_bottom = 32.0
+offset_left = 72.0
+offset_top = 7.0
+offset_right = 130.0
+offset_bottom = 41.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
@@ -171,36 +171,10 @@ vertical_alignment = 1
 
 [node name="StatsRow" type="HBoxContainer" parent="Root" unique_id=2028044993]
 layout_mode = 0
-offset_top = 214.0
+offset_top = 232.0
 offset_right = 312.0
-offset_bottom = 294.0
+offset_bottom = 312.0
 theme_override_constants/separation = 8
-
-[node name="FlagsIcon" type="TextureRect" parent="Root/StatsRow" unique_id=2035658878]
-custom_minimum_size = Vector2(110, 70)
-layout_mode = 2
-texture = ExtResource("7_flags")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="FlagsText" type="Label" parent="Root/StatsRow" unique_id=1790798433]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 32
-text = "0"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="RescuedIcon" type="TextureRect" parent="Root/StatsRow" unique_id=308276245]
-custom_minimum_size = Vector2(110, 70)
-layout_mode = 2
-texture = ExtResource("8_rescued")
-expand_mode = 1
-stretch_mode = 5
 
 [node name="RescuedText" type="Label" parent="Root/StatsRow" unique_id=1218074512]
 layout_mode = 2
@@ -214,14 +188,39 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="FlagsText" type="Label" parent="Root/StatsRow" unique_id=1790798433]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 32
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FlagsIcon" type="TextureRect" parent="Root/StatsRow" unique_id=2035658878]
+custom_minimum_size = Vector2(110, 70)
+layout_mode = 2
+texture = ExtResource("7_flags")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RescuedIcon" type="TextureRect" parent="Root/StatsRow" unique_id=308276245]
+custom_minimum_size = Vector2(110, 70)
+layout_mode = 2
+texture = ExtResource("8_rescued")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="TopCenter" type="HBoxContainer" parent="Root" unique_id=1108049861]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -320.0
+offset_left = -319.0
 offset_top = 4.0
-offset_right = -1.0
 offset_bottom = 160.0
 grow_horizontal = 0
 theme_override_constants/separation = 20
@@ -234,12 +233,12 @@ layout_mode = 2
 [node name="HeightIcon" type="TextureRect" parent="Root/TopCenter/HeightGroup" unique_id=1815384517]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.15
+anchor_left = 0.54
 anchor_top = 0.141
 anchor_right = 1.2700001
-anchor_bottom = 0.86800003
+anchor_bottom = 0.596
 offset_top = 0.00399971
-offset_bottom = 0.015991211
+offset_bottom = 0.023994446
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("9_height")
@@ -249,12 +248,12 @@ stretch_mode = 5
 [node name="HeightText" type="Label" parent="Root/TopCenter/HeightGroup" unique_id=18764060]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.58000004
-anchor_top = 0.365
-anchor_right = 0.90000004
-anchor_bottom = 0.614
-offset_top = 0.05999756
-offset_bottom = 0.01599884
+anchor_left = 0.78000003
+anchor_top = 0.19800001
+anchor_right = 1.1
+anchor_bottom = 0.53800005
+offset_top = 0.01199913
+offset_bottom = -0.028007507
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -262,7 +261,7 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 51
+theme_override_font_sizes/font_size = 40
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -397,10 +396,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -100.0
-offset_right = -10.0
-offset_bottom = -10.0
+offset_left = -272.0
+offset_top = -48.0
+offset_right = 7.0
+offset_bottom = 42.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 6
