@@ -1,25 +1,32 @@
 ; Engine configuration file.
-; NuclearStic Mines Retrash'd — Godot 4.4
-; Renderer: GL Compatibility (2D pixel art + _draw() + Android + Discord RPC)
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
 config/name="NuclearStic Mines Retrash'd"
-config/features=PackedStringArray("4.4", "GL Compatibility")
-config/icon="res://assets/ui/icon.png"
 run/main_scene="res://scenes/main/Main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://assets/ui/icon.png"
 
 [autoload]
 
-GameManager="*res://scripts/managers/GameManager.gd"
-AudioManager="*res://scripts/managers/AudioManager.gd"
-SaveManager="*res://scripts/managers/SaveManager.gd"
-CryptoManager="*res://scripts/managers/CryptoManager.gd"
-LocaleManager="*res://scripts/managers/LocaleManager.gd"
-InputManager="*res://scripts/managers/InputManager.gd"
-DiscordRPC="*res://scripts/utils/DiscordRPC.gd"
+GameManager="*res://scripts/managers/core/GameManager.gd"
+AudioManager="*res://scripts/managers/audio/AudioManager.gd"
+SaveManager="*res://scripts/managers/save/SaveManager.gd"
+CryptoManager="*res://scripts/managers/save/CryptoManager.gd"
+LocaleManager="*res://scripts/managers/locale/LocaleManager.gd"
+DiscordRPC="*res://scripts/utils/DiscordRCP.gd"
 
 [display]
 
@@ -77,7 +84,6 @@ pause={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-textures/default_filters/use_nearest_mipmap_filter=false
-textures/canvas_textures/default_texture_filter=0
