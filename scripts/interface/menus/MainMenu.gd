@@ -3,25 +3,35 @@
 # ==============================================================
 # Main menu scene. Handles navigation to game modes and menus.
 #
-# For now, only Legacy mode navigates to a Game scene (placeholder
-# until Phase 3.2). Daily, Custom, Diary, Options and ID Card print
-# a warning.
+# Mode buttons (Legacy / Daily / Custom) open the PunchcardPanel
+# overlay in the corresponding mode. Close button inside the
+# punchcard closes it.
 #
-# Visual feedback:
-#   - Hover  → sound + scale 1.05
-#   - Click  → sound + scale 0.95 → 1.05
-#   - Release → back to normal
+# Options, Diary and ID Card are placeholders for now.
 
 extends Control
 
-const GAME_SCENE := "res://scenes/game/Game.tscn"
+const PUNCHCARD_SCENE := "res://scenes/menu/PunchcardPanel.tscn"
 
+var _punchcard: Control = null
+
+
+# ======================= LIFECYCLE =======================
 
 func _ready() -> void:
 	# Play menu music when the menu loads.
 	AudioManager.play_menu_music(true)
 
-	# Wire every button with hover + click feedback.
+	# Instance the punchcard as a hidden child.
+	_punchcard = load(PUNCHCARD_SCENE).instantiate()
+	add_child(_punchcard)
+	_punchcard.visible = false
+
+	# Connect the punchcard's close signal.
+	if _punchcard.has_signal("closed"):
+		_punchcard.closed.connect(_on_punchcard_closed)
+
+	# Wire every main-menu button.
 	_connect_button($MenuButtons/LegacyButton, _on_legacy_pressed)
 	_connect_button($MenuButtons/DailyButton, _on_daily_pressed)
 	_connect_button($MenuButtons2/CustomButton, _on_custom_pressed)
@@ -29,6 +39,8 @@ func _ready() -> void:
 	_connect_button($BottomRow/OptionsButton, _on_options_pressed)
 	_connect_button($IdCardButton, _on_id_card_pressed)
 
+
+# ======================= BUTTON FEEDBACK =======================
 
 # Connects a button to its handler and adds hover/click feedback.
 func _connect_button(button: TextureButton, handler: Callable) -> void:
@@ -56,21 +68,36 @@ func _tween_button(button: TextureButton, scale_value: float, brightness: float)
 	button.modulate = Color(brightness, brightness, brightness, 1.0)
 
 
+# ======================= PUNCHCARD =======================
+
+# Opens the punchcard in the given mode.
+func _open_punchcard(mode: String) -> void:
+	if _punchcard == null:
+		push_error("[MainMenu] Punchcard not instanced")
+		return
+	_punchcard.open(mode)
+
+
+# Called when the punchcard emits its "closed" signal.
+func _on_punchcard_closed() -> void:
+	AudioManager.play_click_sfx()
+
+
 # ======================= BUTTON HANDLERS =======================
 
 func _on_legacy_pressed() -> void:
 	AudioManager.play_click_sfx()
-	push_warning("[MainMenu] Legacy mode: Game scene not implemented yet (Phase 3.2)")
+	_open_punchcard("legacy")
 
 
 func _on_daily_pressed() -> void:
 	AudioManager.play_click_sfx()
-	push_warning("[MainMenu] Daily mode: not implemented yet (Phase 3.4)")
+	_open_punchcard("daily")
 
 
 func _on_custom_pressed() -> void:
 	AudioManager.play_click_sfx()
-	push_warning("[MainMenu] Custom mode: not implemented yet (Phase 3.4)")
+	_open_punchcard("custom")
 
 
 func _on_diary_pressed() -> void:

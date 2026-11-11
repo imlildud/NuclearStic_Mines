@@ -1,0 +1,647 @@
+[gd_scene format=3 uid="uid://d0ipxe3vqounj"]
+
+[ext_resource type="Script" uid="uid://by8bsvyxuws6e" path="res://scripts/interface/menus/PunchcardPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dj8jaq3pah78v" path="res://assets/hud/punchcard/punchcard.png" id="2_pc"]
+[ext_resource type="Texture2D" uid="uid://chvu0662k1pqd" path="res://assets/hud/punchcard/close.png" id="3_close"]
+[ext_resource type="Texture2D" uid="uid://4ghx6xc14trb" path="res://assets/hud/punchcard/daily punch.png" id="4_daily"]
+[ext_resource type="Texture2D" uid="uid://bwfpmkjr8w8mh" path="res://assets/hud/punchcard/custom punch.png" id="5_custom"]
+[ext_resource type="Texture2D" uid="uid://c6nqs3xv4guha" path="res://assets/hud/punchcard/character/chefpin.png" id="6_char"]
+[ext_resource type="Texture2D" uid="uid://mbwnielssfgu" path="res://assets/hud/punchcard/size/small.png" id="7_size"]
+[ext_resource type="Texture2D" uid="uid://bqiiwyrkysc3c" path="res://assets/hud/punchcard/hazard/low.png" id="8_hazard"]
+[ext_resource type="Texture2D" uid="uid://bjvdaj2xc4oyh" path="res://assets/hud/punchcard/obstacles/low.png" id="9_obs"]
+[ext_resource type="Texture2D" uid="uid://b37nhs5g346de" path="res://assets/hud/punchcard/pals/1.png" id="10_pals"]
+[ext_resource type="Texture2D" uid="uid://bdo5b32vr2gi5" path="res://assets/hud/punchcard/zone/desert.png" id="11_zone"]
+[ext_resource type="Texture2D" uid="uid://3olm6j8htmr" path="res://assets/hud/badges/paper.png" id="12_badge"]
+[ext_resource type="Texture2D" uid="uid://cgvq70oicvgb6" path="res://assets/hud/badges/calendar.png" id="13_cal"]
+[ext_resource type="Texture2D" uid="uid://dquv4efih1ml3" path="res://assets/hud/punchcard/seed.png" id="14_seed"]
+[ext_resource type="Texture2D" uid="uid://tgnbw2oj1du0" path="res://assets/hud/punchcard/keychain.png" id="15_key"]
+[ext_resource type="Texture2D" uid="uid://daqg43ql0yb02" path="res://assets/hud/badges/fire0.png" id="15_svbd7"]
+[ext_resource type="Texture2D" uid="uid://c87ysqefhwwj7" path="res://assets/hud/punchcard/random.png" id="16_dice"]
+[ext_resource type="Texture2D" uid="uid://dalhnhlqqr4vq" path="res://assets/hud/punchcard/ready.png" id="17_ready"]
+[ext_resource type="Texture2D" uid="uid://ck28fxqfxla1" path="res://assets/hud/menu/welcome.png" id="18_welcome"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="19_font"]
+[ext_resource type="Texture2D" uid="uid://cqt58qo6l1ral" path="res://assets/hud/punchcard/note.png" id="20_note"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.4, 0.4, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_pressed"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(0.9, 0.9, 0.9, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.2, 0.2, 0.2, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_hover"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.3, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_focus"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.8, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="PunchcardPanel" type="Control" unique_id=1333636519]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=152718167]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="Punchcard" type="TextureRect" parent="." unique_id=192235144]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -312.0
+offset_right = 500.0
+offset_bottom = 312.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_pc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CloseButton" type="TextureButton" parent="Punchcard" unique_id=1921884538]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -121.0
+offset_top = 18.0
+offset_right = 14.0
+offset_bottom = 146.0
+grow_horizontal = 0
+texture_normal = ExtResource("3_close")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="SeedLabel" type="Label" parent="Punchcard" unique_id=2019391635]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = -25.0
+offset_right = 150.0
+offset_bottom = 15.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.73)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 40
+text = "Seed: ---"
+horizontal_alignment = 1
+
+[node name="NoteImage" type="TextureRect" parent="Punchcard" unique_id=555000001]
+layout_mode = 1
+offset_left = -152.0
+offset_top = 3.0
+offset_right = 264.0
+offset_bottom = 285.0
+mouse_filter = 2
+texture = ExtResource("20_note")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DateNote" type="Label" parent="Punchcard" unique_id=2012443448]
+layout_mode = 1
+offset_left = 37.000008
+offset_top = 77.0
+offset_right = 167.53757
+offset_bottom = 127.0
+rotation = 0.349
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 30
+text = "Lvl 1"
+horizontal_alignment = 1
+
+[node name="TitleDaily" type="TextureRect" parent="Punchcard" unique_id=988530936]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -322.0
+offset_top = 20.0
+offset_right = 397.0
+offset_bottom = 248.0
+grow_horizontal = 2
+texture = ExtResource("4_daily")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleCustom" type="TextureRect" parent="Punchcard" unique_id=1551330739]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -314.0
+offset_top = 17.0
+offset_right = 389.0
+offset_bottom = 236.0
+grow_horizontal = 2
+texture = ExtResource("5_custom")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharSection" type="VBoxContainer" parent="Punchcard" unique_id=1173376463]
+layout_mode = 1
+offset_left = 140.0
+offset_top = 199.0
+offset_right = 315.0
+offset_bottom = 386.0
+theme_override_constants/separation = 8
+
+[node name="CharLabel" type="Label" parent="Punchcard/CharSection" unique_id=2099155744]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 28
+text = "Character"
+horizontal_alignment = 1
+
+[node name="CharImage" type="TextureRect" parent="Punchcard/CharSection" unique_id=1386017853]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("6_char")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LegacyCharSelect" type="OptionButton" parent="Punchcard/CharSection" unique_id=2010846340]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="CustomCharSelect" type="OptionButton" parent="Punchcard/CharSection" unique_id=1703144372]
+visible = false
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="SizeSection" type="VBoxContainer" parent="Punchcard" unique_id=239042464]
+layout_mode = 1
+offset_left = 336.0
+offset_top = 206.0
+offset_right = 511.0
+offset_bottom = 393.0
+theme_override_constants/separation = 8
+
+[node name="SizeLabel" type="Label" parent="Punchcard/SizeSection" unique_id=1128169843]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 28
+text = "Size"
+horizontal_alignment = 1
+
+[node name="SizeImage" type="TextureRect" parent="Punchcard/SizeSection" unique_id=1833869258]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("7_size")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CustomSizeSelect" type="OptionButton" parent="Punchcard/SizeSection" unique_id=22451794]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="HazardsSection" type="VBoxContainer" parent="Punchcard" unique_id=1655922657]
+layout_mode = 1
+offset_left = 547.0
+offset_top = 220.0
+offset_right = 722.0
+offset_bottom = 407.0
+theme_override_constants/separation = 8
+
+[node name="HazardsLabel" type="Label" parent="Punchcard/HazardsSection" unique_id=2122939680]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 28
+text = "Hazards"
+horizontal_alignment = 1
+
+[node name="HazardsImage" type="TextureRect" parent="Punchcard/HazardsSection" unique_id=986693737]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("8_hazard")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CustomHazardsSelect" type="OptionButton" parent="Punchcard/HazardsSection" unique_id=187728111]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="ObstaclesSection" type="VBoxContainer" parent="Punchcard" unique_id=1452192504]
+layout_mode = 1
+offset_left = 724.0
+offset_top = 232.0
+offset_right = 899.0
+offset_bottom = 419.0
+theme_override_constants/separation = 8
+
+[node name="ObstaclesLabel" type="Label" parent="Punchcard/ObstaclesSection" unique_id=1126080804]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 28
+text = "Obstacles"
+horizontal_alignment = 1
+
+[node name="ObstaclesImage" type="TextureRect" parent="Punchcard/ObstaclesSection" unique_id=1566409112]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("9_obs")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CustomObstaclesSelect" type="OptionButton" parent="Punchcard/ObstaclesSection" unique_id=311622367]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="PalsSection" type="VBoxContainer" parent="Punchcard" unique_id=1814247379]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 210.0
+offset_top = -259.0
+offset_right = 385.0
+offset_bottom = -71.0
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="PalsLabel" type="Label" parent="Punchcard/PalsSection" unique_id=648124457]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 26
+text = "Wanted:"
+horizontal_alignment = 1
+
+[node name="PalsImage" type="TextureRect" parent="Punchcard/PalsSection" unique_id=305641349]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("10_pals")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CustomPalsSelect" type="OptionButton" parent="Punchcard/PalsSection" unique_id=553085947]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="ZoneSection" type="VBoxContainer" parent="Punchcard" unique_id=1925026509]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 619.0
+offset_top = -241.0
+offset_right = 794.0
+offset_bottom = -53.0
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="ZoneLabel" type="Label" parent="Punchcard/ZoneSection" unique_id=633695617]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 26
+text = "Zone"
+horizontal_alignment = 1
+
+[node name="ZoneImage" type="TextureRect" parent="Punchcard/ZoneSection" unique_id=319294883]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture = ExtResource("11_zone")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CustomZoneSelect" type="OptionButton" parent="Punchcard/ZoneSection" unique_id=1959245414]
+modulate = Color(1, 1, 1, 0.47058824)
+custom_minimum_size = Vector2(150, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_select")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
+theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+
+[node name="LegacyBadgeContainer" type="Control" parent="Punchcard" unique_id=1499201812]
+layout_mode = 1
+anchors_preset = 0
+offset_left = -4.3138103
+offset_top = 118.96065
+offset_right = 117.5349
+offset_bottom = 251.46933
+rotation = 0.349
+pivot_offset = Vector2(60, 75)
+
+[node name="LegacyBadgeImage" type="TextureRect" parent="Punchcard/LegacyBadgeContainer" unique_id=1800510080]
+layout_mode = 0
+offset_left = -0.9668928
+offset_top = -2.8028398
+offset_right = 119.33158
+offset_bottom = 129.38242
+texture = ExtResource("12_badge")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LegacyBadgeLabel" type="Label" parent="Punchcard/LegacyBadgeContainer" unique_id=596671710]
+layout_mode = 0
+offset_left = -2.2244396
+offset_top = 101.941696
+offset_right = 117.77556
+offset_bottom = 128.9417
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 7
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 30
+text = "Record: 0"
+horizontal_alignment = 1
+
+[node name="DailyBadgeContainer" type="Control" parent="Punchcard" unique_id=1490661637]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+offset_left = -10.317028
+offset_top = 119.96771
+offset_right = 120.554825
+offset_bottom = 245.65782
+rotation = 0.349
+pivot_offset = Vector2(60, 75)
+
+[node name="DailyFrame" type="TextureRect" parent="Punchcard/DailyBadgeContainer" unique_id=1856793303]
+layout_mode = 0
+offset_right = 122.407425
+offset_bottom = 118.05781
+texture = ExtResource("13_cal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DailyFire" type="TextureRect" parent="Punchcard/DailyBadgeContainer" unique_id=1260854186]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 109.29346
+offset_bottom = 106.74011
+texture = ExtResource("15_svbd7")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DailyStreakNumber" type="Label" parent="Punchcard/DailyBadgeContainer" unique_id=42471209]
+layout_mode = 0
+offset_left = 11.516537
+offset_top = 37.341373
+offset_right = 113.67731
+offset_bottom = 98.34137
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_outline_size = 8
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 45
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DiceButton" type="TextureButton" parent="Punchcard" unique_id=889243165]
+visible = false
+layout_mode = 1
+offset_left = -2.999998
+offset_top = 112.0
+offset_right = 135.27486
+offset_bottom = 235.00946
+rotation = 0.349
+pivot_offset = Vector2(50, 50)
+texture_normal = ExtResource("16_dice")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="KeychainButton" type="TextureButton" parent="Punchcard" unique_id=1674863038]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -139.0
+offset_top = -247.0
+offset_right = -11.0
+offset_bottom = -115.0
+grow_horizontal = 0
+grow_vertical = 0
+texture_normal = ExtResource("15_key")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="SeedButton" type="TextureButton" parent="Punchcard" unique_id=1950704141]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -151.0
+offset_top = -146.0
+offset_right = -20.0
+offset_bottom = -6.0
+grow_horizontal = 0
+grow_vertical = 0
+texture_normal = ExtResource("14_seed")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="StartButton" type="TextureButton" parent="Punchcard" unique_id=974864424]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -220.0
+offset_right = 75.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("17_ready")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ModalDialog" type="Control" parent="." unique_id=1077508899]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModalDimmer" type="ColorRect" parent="ModalDialog" unique_id=1854333081]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="ModalCard" type="TextureRect" parent="ModalDialog" unique_id=895549292]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("18_welcome")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ModalText" type="RichTextLabel" parent="ModalDialog/ModalCard" unique_id=767975530]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -120.0
+offset_right = 250.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("19_font")
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+
+[node name="ModalOkButton" type="Button" parent="ModalDialog/ModalCard" unique_id=253741982]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = 100.0
+offset_right = 80.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("19_font")
+theme_override_font_sizes/font_size = 28
+text = "OK"
