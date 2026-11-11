@@ -22,69 +22,86 @@
 [ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="19_font"]
 [ext_resource type="Texture2D" uid="uid://cqt58qo6l1ral" path="res://assets/hud/punchcard/note.png" id="20_note"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup_panel"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.839216, 0.780392, 0.580392, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup_hover"]
+bg_color = Color(0.121569, 0.380392, 0.85098, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Theme" id="Theme_punchcard_menu"]
+PopupMenu/colors/font_color = Color(0, 0, 0, 1)
+PopupMenu/colors/font_hover_color = Color(1, 1, 1, 1)
+PopupMenu/fonts/font = ExtResource("19_font")
+PopupMenu/font_sizes/font_size = 18
+PopupMenu/styles/hover = SubResource("StyleBoxFlat_popup_hover")
+PopupMenu/styles/panel = SubResource("StyleBoxFlat_popup_panel")
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select"]
 content_margin_left = 12.0
 content_margin_top = 4.0
 content_margin_right = 12.0
 content_margin_bottom = 4.0
-bg_color = Color(1, 1, 1, 1)
+bg_color = Color(1, 0.890196, 0.701961, 0.6)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.4, 0.4, 0.4, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 5
 corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_pressed"]
 content_margin_left = 12.0
 content_margin_top = 4.0
 content_margin_right = 12.0
 content_margin_bottom = 4.0
-bg_color = Color(0.9, 0.9, 0.9, 1)
+bg_color = Color(0.9, 0.8, 0.6, 0.9)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.2, 0.2, 0.2, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 5
 corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_hover"]
 content_margin_left = 12.0
 content_margin_top = 4.0
 content_margin_right = 12.0
 content_margin_bottom = 4.0
-bg_color = Color(1, 1, 1, 1)
+bg_color = Color(1, 1, 1, 0.9)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.3, 0.3, 0.3, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 5
 corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+corner_radius_bottom_left = 4
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_select_focus"]
-content_margin_left = 12.0
-content_margin_top = 4.0
-content_margin_right = 12.0
-content_margin_bottom = 4.0
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.6, 0.8, 1, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
 [node name="PunchcardPanel" type="Control" unique_id=1333636519]
 layout_mode = 3
@@ -93,6 +110,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_punchcard_menu")
 script = ExtResource("1_script")
 
 [node name="Dimmer" type="ColorRect" parent="." unique_id=152718167]
@@ -228,29 +246,35 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="LegacyCharSelect" type="OptionButton" parent="Punchcard/CharSection" unique_id=2010846340]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="CustomCharSelect" type="OptionButton" parent="Punchcard/CharSection" unique_id=1703144372]
 visible = false
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="SizeSection" type="VBoxContainer" parent="Punchcard" unique_id=239042464]
 layout_mode = 1
@@ -276,16 +300,19 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="CustomSizeSelect" type="OptionButton" parent="Punchcard/SizeSection" unique_id=22451794]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="HazardsSection" type="VBoxContainer" parent="Punchcard" unique_id=1655922657]
 layout_mode = 1
@@ -311,16 +338,19 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="CustomHazardsSelect" type="OptionButton" parent="Punchcard/HazardsSection" unique_id=187728111]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="ObstaclesSection" type="VBoxContainer" parent="Punchcard" unique_id=1452192504]
 layout_mode = 1
@@ -346,16 +376,19 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="CustomObstaclesSelect" type="OptionButton" parent="Punchcard/ObstaclesSection" unique_id=311622367]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="PalsSection" type="VBoxContainer" parent="Punchcard" unique_id=1814247379]
 layout_mode = 1
@@ -385,16 +418,19 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="CustomPalsSelect" type="OptionButton" parent="Punchcard/PalsSection" unique_id=553085947]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="ZoneSection" type="VBoxContainer" parent="Punchcard" unique_id=1925026509]
 layout_mode = 1
@@ -424,16 +460,19 @@ expand_mode = 1
 stretch_mode = 5
 
 [node name="CustomZoneSelect" type="OptionButton" parent="Punchcard/ZoneSection" unique_id=1959245414]
-modulate = Color(1, 1, 1, 0.47058824)
 custom_minimum_size = Vector2(150, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_select")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_select_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_select_hover")
-theme_override_styles/focus = SubResource("StyleBoxFlat_select_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+alignment = 1
 
 [node name="LegacyBadgeContainer" type="Control" parent="Punchcard" unique_id=1499201812]
 layout_mode = 1
