@@ -1,0 +1,187 @@
+[gd_scene format=3 uid="uid://c0m22nnbjydx2"]
+
+[ext_resource type="Script" uid="uid://rtygdvj1tqjv" path="res://scripts/interface/menus/MainMenu.gd" id="1_m2yvp"]
+[ext_resource type="Texture2D" uid="uid://bb4cimvamrdss" path="res://assets/hud/NuclearSticMines.png" id="2_s3dsm"]
+[ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="3_uwj7d"]
+[ext_resource type="Texture2D" uid="uid://76fu7y508vpa" path="res://assets/hud/nuclearlogo.png" id="4_2nud1"]
+[ext_resource type="Texture2D" uid="uid://dshl575xlg3ag" path="res://assets/hud/menu/legacy.png" id="5_y6vun"]
+[ext_resource type="Texture2D" uid="uid://sav8wofbcut5" path="res://assets/hud/menu/daily.png" id="6_e1dod"]
+[ext_resource type="Texture2D" uid="uid://ctpinugw1gbx4" path="res://assets/hud/menu/custom.png" id="7_bvc5d"]
+[ext_resource type="Texture2D" uid="uid://c40eh8nf4o7n" path="res://assets/hud/menu/diary.png" id="8_bvc5d"]
+[ext_resource type="Texture2D" uid="uid://cc01m5vbtqyqf" path="res://assets/hud/menu/options.png" id="9_ekkse"]
+[ext_resource type="Texture2D" uid="uid://chseidd1jxlkb" path="res://assets/hud/menu/lilidcard.png" id="10_ekkse"]
+[ext_resource type="Texture2D" uid="uid://fw1rnawhl257" path="res://assets/hud/cloudcon.png" id="11_84lro"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="12_u1wty"]
+
+[node name="MainMenu" type="Control" unique_id=68602743]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m2yvp")
+
+[node name="Background" type="TextureRect" parent="." unique_id=493380050]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_s3dsm")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Filter" type="TextureRect" parent="." unique_id=822040221]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_uwj7d")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Logo" type="TextureRect" parent="." unique_id=1222954223]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 6.0
+offset_right = 200.0
+offset_bottom = 226.0
+grow_horizontal = 2
+mouse_filter = 2
+texture = ExtResource("4_2nud1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MenuButtons" type="GridContainer" parent="." unique_id=208411255]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -344.0
+offset_top = -160.0
+offset_right = 376.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 30
+columns = 2
+
+[node name="LegacyButton" type="TextureButton" parent="MenuButtons" unique_id=1909482356]
+custom_minimum_size = Vector2(320, 160)
+layout_mode = 2
+texture_normal = ExtResource("5_y6vun")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="DailyButton" type="TextureButton" parent="MenuButtons" unique_id=1238396188]
+custom_minimum_size = Vector2(320, 160)
+layout_mode = 2
+texture_normal = ExtResource("6_e1dod")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="MenuButtons2" type="GridContainer" parent="." unique_id=927858177]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -181.0
+offset_top = 21.0
+offset_right = 143.0
+offset_bottom = 197.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 30
+columns = 2
+
+[node name="CustomButton" type="TextureButton" parent="MenuButtons2" unique_id=381584221]
+custom_minimum_size = Vector2(320, 160)
+layout_mode = 2
+texture_normal = ExtResource("7_bvc5d")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BottomRow" type="HBoxContainer" parent="." unique_id=830341192]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -152.0
+offset_right = 180.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 60
+alignment = 1
+
+[node name="DiaryButton" type="TextureButton" parent="BottomRow" unique_id=1103468325]
+custom_minimum_size = Vector2(150, 130)
+layout_mode = 2
+texture_normal = ExtResource("8_bvc5d")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="OptionsButton" type="TextureButton" parent="BottomRow" unique_id=1558804928]
+custom_minimum_size = Vector2(150, 130)
+layout_mode = 2
+texture_normal = ExtResource("9_ekkse")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="IdCardButton" type="TextureButton" parent="." unique_id=1861032133]
+layout_mode = 1
+offset_right = 120.0
+offset_bottom = 120.0
+texture_normal = ExtResource("10_ekkse")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="CloudLogo" type="TextureRect" parent="." unique_id=481490801]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+offset_right = 120.0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("11_84lro")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="." unique_id=2130499962]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -70.0
+offset_top = -31.0
+offset_right = -1.0
+offset_bottom = -1.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.627451)
+theme_override_fonts/font = ExtResource("12_u1wty")
+theme_override_font_sizes/font_size = 39
+text = "v1.1.0"
+horizontal_alignment = 1
