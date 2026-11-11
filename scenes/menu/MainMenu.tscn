@@ -34,18 +34,6 @@ texture = ExtResource("2_s3dsm")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Filter" type="TextureRect" parent="." unique_id=822040221]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("3_uwj7d")
-expand_mode = 1
-stretch_mode = 6
-
 [node name="Logo" type="TextureRect" parent="." unique_id=1222954223]
 layout_mode = 1
 anchors_preset = 5
@@ -85,12 +73,56 @@ texture_normal = ExtResource("5_y6vun")
 ignore_texture_size = true
 stretch_mode = 5
 
+[node name="Label" type="Label" parent="MenuButtons/LegacyButton" unique_id=111111111]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 112.0
+offset_top = 42.0
+offset_right = -11.0
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.5)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("12_u1wty")
+theme_override_font_sizes/font_size = 35
+text = "Legacy 
+Mode"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="DailyButton" type="TextureButton" parent="MenuButtons" unique_id=1238396188]
 custom_minimum_size = Vector2(320, 160)
 layout_mode = 2
 texture_normal = ExtResource("6_e1dod")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="Label" type="Label" parent="MenuButtons/DailyButton" unique_id=222222222]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 73.0
+offset_top = 9.0
+offset_right = -7.0
+offset_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.5)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("12_u1wty")
+theme_override_font_sizes/font_size = 35
+text = "Daily 
+Mission"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MenuButtons2" type="GridContainer" parent="." unique_id=927858177]
 layout_mode = 1
@@ -115,6 +147,28 @@ layout_mode = 2
 texture_normal = ExtResource("7_bvc5d")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="Label" type="Label" parent="MenuButtons2/CustomButton" unique_id=333333333]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 75.0
+offset_top = 8.0
+offset_right = -5.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.5)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("12_u1wty")
+theme_override_font_sizes/font_size = 35
+text = "Custom
+Mission"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BottomRow" type="HBoxContainer" parent="." unique_id=830341192]
 layout_mode = 1
@@ -185,3 +239,15 @@ theme_override_fonts/font = ExtResource("12_u1wty")
 theme_override_font_sizes/font_size = 39
 text = "v1.1.0"
 horizontal_alignment = 1
+
+[node name="Filter" type="TextureRect" parent="." unique_id=822040221]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_uwj7d")
+expand_mode = 1
+stretch_mode = 6

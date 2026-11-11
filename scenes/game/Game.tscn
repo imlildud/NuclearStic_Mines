@@ -1,15 +1,18 @@
 [gd_scene format=3 uid="uid://d2kppvor28nvn"]
 
-[ext_resource type="Script" uid="uid://ip3iuy5e8hsn" path="res://scripts/interface/game/Game.gd" id="1_game"]
+[ext_resource type="Script" path="res://scripts/interface/game/Game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/game/Board.tscn" id="2_board"]
-[ext_resource type="Texture2D" uid="uid://dnm8nytd78aoq" path="res://assets/hud/game/wallpaper/desert.png" id="2_lyhax"]
-[ext_resource type="PackedScene" path="res://scenes/game/Character.tscn" id="3_char"]
+[ext_resource type="Texture2D" path="res://assets/hud/game/wallpaper/desert.png" id="2_lyhax"]
 [ext_resource type="PackedScene" uid="uid://56d6ce2h48ds" path="res://scenes/game/HUD.tscn" id="4_7qcb4"]
 
-[node name="Game" type="Node2D" unique_id=896148249]
+[node name="Game" type="Node2D"]
 script = ExtResource("1_game")
 
-[node name="Background" type="TextureRect" parent="." unique_id=130205361]
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -100
+
+[node name="Background" type="TextureRect" parent="BackgroundLayer"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -20,12 +23,17 @@ texture = ExtResource("2_lyhax")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Board" parent="." unique_id=1567699353 instance=ExtResource("2_board")]
+[node name="Board" parent="." instance=ExtResource("2_board")]
 
-[node name="Character" parent="." unique_id=572753825 instance=ExtResource("3_char")]
+[node name="AnimationLayer" type="Node2D" parent="."]
+z_index = 1000
 
-[node name="Camera" type="Camera2D" parent="." unique_id=763542231]
+[node name="AnimSprite" type="Sprite2D" parent="AnimationLayer"]
+visible = false
+z_index = 0
+
+[node name="Camera" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
-[node name="HUD" parent="." unique_id=1643378140 instance=ExtResource("4_7qcb4")]
+[node name="HUD" parent="." instance=ExtResource("4_7qcb4")]
