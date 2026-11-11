@@ -1,0 +1,61 @@
+# ==============================================================
+# Godot 4+
+# ==============================================================
+# Godot's import cache. Regenerated on every project open.
+.godot/
+
+# Imported translation binaries (generated from CSV/source files).
+*.translation
+
+# Export configuration. May contain signing credentials in older versions.
+export_presets.cfg
+export_credentials.cfg
+export.cfg
+
+# ==============================================================
+# Mono / C# (reserved for future use)
+# ==============================================================
+.mono/
+data_*/
+mono_crash.*.json
+
+# ==============================================================
+# Builds & Exports
+# ==============================================================
+build/
+builds/
+export/
+exports/
+Exports/
+
+# Android / iOS build artifacts
+*.apk
+*.aab
+*.ipa
+android/build/
+*.dSYM
+
+# ==============================================================
+# IDEs & Editors
+# ==============================================================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains (Rider, CLion, IntelliJ)
+.idea/
+
+# ==============================================================
+# Operating Systems
+# ==============================================================
+# macOS
+.DS_Store
+__MACOSX/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+.directory
