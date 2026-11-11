@@ -26,6 +26,7 @@ extends Node2D
 const TILE_SIZE: int = 90
 const BIOME_PATH := "res://assets/sprites/tiles/%s/"
 const GLOBAL_PATH := "res://assets/sprites/tiles/"
+const CHARACTER_PATH := "res://assets/sprites/characters/"
 
 var board: Array = []
 var player = null
@@ -37,7 +38,6 @@ var _images: Dictionary = {}
 
 # ======================= INIT =======================
 
-# Loads all sprites. Call once after the game starts.
 func init_renderer(current_zone: String) -> void:
 	zone = current_zone
 	_load_images()
@@ -71,6 +71,12 @@ func _load_images() -> void:
 		"1", "2", "3", "4", "5", "6", "7", "8", "9", "question"
 	]
 
+	# Character sprites (Pals, player characters, deathpal).
+	var character_textures: Array = [
+		"chef", "mosquito", "mommy", "scout", "student",
+		"dummie", "charlie", "joni", "ru", "deathpal"
+	]
+
 	for name in biome_textures:
 		var path: String = BIOME_PATH % zone + name + ".png"
 		if ResourceLoader.exists(path):
@@ -78,6 +84,11 @@ func _load_images() -> void:
 
 	for name in global_textures:
 		var path: String = GLOBAL_PATH + name + ".png"
+		if ResourceLoader.exists(path):
+			_images[name] = load(path)
+
+	for name in character_textures:
+		var path: String = CHARACTER_PATH + name + ".png"
 		if ResourceLoader.exists(path):
 			_images[name] = load(path)
 

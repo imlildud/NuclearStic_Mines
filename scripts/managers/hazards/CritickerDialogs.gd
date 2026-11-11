@@ -24,7 +24,7 @@ func _init(locale = null, audio = null) -> void:
 # Returns a localized text for the given key.
 func get_text(key: String) -> String:
 	if locale_manager != null:
-		return locale_manager.get(key)
+		return locale_manager.get_translation(key)
 	return key
 
 
