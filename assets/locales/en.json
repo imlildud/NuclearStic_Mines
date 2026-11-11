@@ -3,11 +3,13 @@
         "welcome": "Welcome to Nuclear-Stic Mines.\nPrepare to venture into the wasteland, survive its dangers, and \"have fun\"... after every death in this tactical, procedural roguelike strategy game inspired by Minesweeper.\nWould you like to play the tutorial?",
         "yes": "Yep",
         "no": "No ty",
+        "legacy": "Legacy Mode",
         "daily": "Daily Mission",
         "custom": "Custom Mission",
+        "timetrials": "Time Trials",
         "dailyCompleted": "Daily mission already completed today! Come back tomorrow.",
         "tutorialCompleted": "Tutorial completed! Returning to main menu.",
-        
+
         "welcomeBack": "Welcome back, {name}!\nReady to play?",
         "currentLevel": "Current Level",
         "recordLevel": "Record Level",
@@ -23,7 +25,7 @@
         "tutorialQuestion": "Would you like to play the tutorial?",
         "deleteData": "Delete Save",
         "confirmDelete": "WARNING: This will delete ALL your game data (progress, settings, everything).\n\nThis cannot be undone!\n\nAre you sure?",
-        
+
         "punchcard": {
             "character": "Character",
             "size": "Size",
@@ -59,7 +61,7 @@
             "keychainReset": "Reset Selection"
         }
     },
-    
+
     "game": {
         "level": "LEVEL",
         "wanted": "WANTED",
@@ -169,7 +171,7 @@
         "pitFall": "HA! Watch where you're stepping. The ground out there is full of holes so deep that not even a vulture would bother going after your corpse. Try again.",
         "exhaustion": "Heavy, isn't it? See those sweat drops on your icon? That means you're exhausted and can't carry any more children. If there were others to rescue, you'd have to drop off the ones you're carrying and go back for the rest."
     },
-    
+
     "criticker": {
         "infection": {
             "step1": "Good day, esteemed sir. I regret to inform you that you have just devastated a property of considerable sentimental value to me. However, I am a reasonable individual and am willing to proceed through diplomatic channels.",
@@ -189,7 +191,7 @@
             "farewell": "I have concluded that the preservation of my biological integrity has a higher priority than continuing this exchange. I wish you a moderately acceptable day."
         }
     },
-    
+
     "bundle": {
         "clickToOpen": "Click to open",
         "inventoryFull": "Inventory is full! You can't carry more keychains.",

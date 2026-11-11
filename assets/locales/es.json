@@ -3,11 +3,13 @@
         "welcome": "Bienvenido a Nuclear-Stic Mines.\nPrepárate para aventurarte en el yermo, sobrevivir a sus peligros y \"divertirte\"... después de cada muerte en este juego táctico, procedural y roguelike inspirado en Buscaminas.\n¿Quieres jugar el tutorial?",
         "yes": "Sí",
         "no": "No, gracias",
+        "legacy": "Modo Legado",
         "daily": "Misión Diaria",
         "custom": "Misión\nPersonalizada",
+        "timetrials": "Prueba Contrareloj",
         "dailyCompleted": "¡La misión diaria ya fue completada hoy! Vuelve mañana.",
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
-        
+
         "welcomeBack": "¡Bienvenido de vuelta, {name}!\n¿Listo para jugar?",
         "currentLevel": "Nivel Actual",
         "recordLevel": "Nivel Récord",
@@ -23,7 +25,7 @@
         "tutorialQuestion": "¿Quieres jugar el tutorial?",
         "deleteData": "Borrar Partida",
         "confirmDelete": "ADVERTENCIA: Esto borrará TODOS los datos del juego (progreso, configuraciones, todo).\n\n¡Esto no se puede deshacer!\n\n¿Estás seguro?",
-        
+
         "punchcard": {
             "character": "Personaje",
             "size": "Tamaño",
@@ -169,7 +171,7 @@
         "pitFall": "¡JA! Mira por dónde pisas. El suelo allá afuera está lleno de agujeros tan profundos que ni un buitre se molestaría en ir tras tu cadáver. Inténtalo de nuevo.",
         "exhaustion": "Pesado, ¿eh? ¿Ves esas gotas de sudor en tu icono? Significa que estás exhausto y no puedes cargar más niños. Si hubiera más para rescatar, tendrías que dejar los que llevas y volver por el resto."
     },
-    
+
     "criticker": {
         "infection": {
             "step1": "Buenos días, estimado caballero. Lamento informarle que usted acaba de devastar una propiedad privada de considerable valor sentimental para mi persona. No obstante, soy un individuo razonable y estoy dispuesto a proceder mediante vías diplomáticas.",
@@ -189,7 +191,7 @@
             "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
         }
     },
-    
+
     "bundle": {
         "clickToOpen": "Haz clic para abrir",
         "inventoryFull": "¡Inventario lleno! No puedes llevar más llaveros.",
