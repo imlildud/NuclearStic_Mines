@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dotkrxf5so7m5" path="res://assets/hud/menu/icons/icon1.png" id="3_icon1"]
 [ext_resource type="Texture2D" uid="uid://dilykor3366c8" path="res://assets/hud/menu/edit.png" id="4_edit"]
 [ext_resource type="Texture2D" uid="uid://8kkl5pwl8wxd" path="res://assets/hud/menu/hardcore.png" id="5_hardcore"]
+[ext_resource type="Texture2D" uid="uid://cdtvt3gsr8dxs" path="res://assets/hud/menu/playnote.png" id="6_7ulov"]
 [ext_resource type="Texture2D" uid="uid://bxuo0y7cgy75u" path="res://assets/hud/badges/rank_f-.png" id="6_rankbadge"]
 [ext_resource type="Texture2D" uid="uid://3olm6j8htmr" path="res://assets/hud/badges/paper.png" id="7_legacybadge"]
 [ext_resource type="Texture2D" uid="uid://cgvq70oicvgb6" path="res://assets/hud/badges/calendar.png" id="8_calendar"]
@@ -64,30 +65,44 @@ offset_top = 386.0
 offset_right = 570.0
 offset_bottom = 436.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
 theme_override_font_sizes/font_size = 38
 text = "Player"
 horizontal_alignment = 1
 
+[node name="LegacyCurrentFrame" type="TextureRect" parent="." unique_id=1687984581]
+layout_mode = 0
+offset_left = 339.0
+offset_top = 472.0
+offset_right = 408.0
+offset_bottom = 539.0
+texture = ExtResource("6_7ulov")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="LevelLabel" type="Label" parent="." unique_id=1971174586]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 125.0
-offset_right = 440.0
-offset_bottom = 165.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+offset_left = 350.0
+offset_top = 486.0
+offset_right = 397.0
+offset_bottom = 530.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
-theme_override_font_sizes/font_size = 20
-text = "Current Level: 1"
+theme_override_font_sizes/font_size = 30
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="RankBadge" type="TextureRect" parent="." unique_id=686397032]
 layout_mode = 0
 offset_left = 597.0
-offset_top = 97.0
+offset_top = 96.0
 offset_right = 862.0
-offset_bottom = 334.0
+offset_bottom = 333.0
 texture = ExtResource("6_rankbadge")
 expand_mode = 1
 stretch_mode = 5
@@ -137,8 +152,8 @@ offset_top = 385.0
 offset_right = 687.0
 offset_bottom = 423.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
 theme_override_font_sizes/font_size = 36
 text = "0"
@@ -172,8 +187,8 @@ offset_top = 361.0
 offset_right = 765.0
 offset_bottom = 400.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
 theme_override_font_sizes/font_size = 35
 text = "0"
@@ -182,23 +197,23 @@ vertical_alignment = 1
 
 [node name="HardcoreFrame" type="TextureRect" parent="." unique_id=879715050]
 layout_mode = 0
-offset_left = 339.0
-offset_top = 463.0
-offset_right = 417.0
-offset_bottom = 548.0
+offset_left = 403.0
+offset_top = 459.0
+offset_right = 481.0
+offset_bottom = 544.0
 texture = ExtResource("5_hardcore")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="HardcoreLabel" type="Label" parent="." unique_id=1039992574]
 layout_mode = 0
-offset_left = 355.0
-offset_top = 487.0
-offset_right = 403.0
-offset_bottom = 534.0
+offset_left = 419.0
+offset_top = 483.0
+offset_right = 467.0
+offset_bottom = 530.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
 theme_override_font_sizes/font_size = 35
 text = "0"
@@ -207,23 +222,23 @@ vertical_alignment = 1
 
 [node name="DailyRecordFrame" type="TextureRect" parent="." unique_id=1053378998]
 layout_mode = 0
-offset_left = 415.0
-offset_top = 471.0
-offset_right = 481.0
-offset_bottom = 541.0
+offset_left = 477.0
+offset_top = 467.0
+offset_right = 543.0
+offset_bottom = 537.0
 texture = ExtResource("8_calendar")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="DailyRecordLabel" type="Label" parent="." unique_id=1479386547]
 layout_mode = 0
-offset_left = 422.0
-offset_top = 489.0
-offset_right = 470.0
-offset_bottom = 529.0
+offset_left = 484.0
+offset_top = 486.0
+offset_right = 532.0
+offset_bottom = 526.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 9
 theme_override_fonts/font = ExtResource("10_font")
 theme_override_font_sizes/font_size = 35
 text = "0"

@@ -56,7 +56,7 @@ func refresh(username: String, avatar_id: int) -> void:
 
 	avatar_image.texture = load(ICONS_PATH % avatar_id)
 	name_label.text = username
-	level_label.text = "Current Level: %d" % legacy_level
+	level_label.text = "%d" % legacy_level
 
 	var rank_file: String = "rank_%s.png" % rank_data["rank"].to_lower()
 	rank_badge.texture = load(BADGES_PATH % rank_file)
