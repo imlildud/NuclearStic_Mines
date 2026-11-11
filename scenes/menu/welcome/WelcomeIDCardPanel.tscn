@@ -1,0 +1,251 @@
+[gd_scene format=3 uid="uid://ce1qabo2y3d1m"]
+
+[ext_resource type="Script" uid="uid://c6ktyyghrrmx3" path="res://scripts/interface/menus/welcome/WelcomeIDCardPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://c0kbku8vcrckl" path="res://assets/hud/menu/idcard.png" id="2_idcard"]
+[ext_resource type="Texture2D" uid="uid://dotkrxf5so7m5" path="res://assets/hud/menu/icons/icon1.png" id="3_icon1"]
+[ext_resource type="Texture2D" uid="uid://dilykor3366c8" path="res://assets/hud/menu/edit.png" id="4_edit"]
+[ext_resource type="Texture2D" uid="uid://8kkl5pwl8wxd" path="res://assets/hud/menu/hardcore.png" id="5_hardcore"]
+[ext_resource type="Texture2D" uid="uid://bxuo0y7cgy75u" path="res://assets/hud/badges/rank_f-.png" id="6_rankbadge"]
+[ext_resource type="Texture2D" uid="uid://3olm6j8htmr" path="res://assets/hud/badges/paper.png" id="7_legacybadge"]
+[ext_resource type="Texture2D" uid="uid://cgvq70oicvgb6" path="res://assets/hud/badges/calendar.png" id="8_calendar"]
+[ext_resource type="Texture2D" uid="uid://daqg43ql0yb02" path="res://assets/hud/badges/fire0.png" id="9_fire0"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="10_font"]
+
+[node name="WelcomeIDCardPanel" type="Control" unique_id=2021107184]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="IDCardBg" type="TextureRect" parent="." unique_id=288051782]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -352.0
+offset_top = -249.0
+offset_right = 348.0
+offset_bottom = 251.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_idcard")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AvatarImage" type="TextureRect" parent="." unique_id=661629572]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 215.0
+offset_right = 521.0
+offset_bottom = 387.0
+texture = ExtResource("3_icon1")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EditButton" type="TextureButton" parent="." unique_id=1665631875]
+layout_mode = 0
+offset_left = 492.0
+offset_top = 328.0
+offset_right = 549.0
+offset_bottom = 384.0
+texture_normal = ExtResource("4_edit")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="." unique_id=509049587]
+layout_mode = 0
+offset_left = 324.0
+offset_top = 386.0
+offset_right = 570.0
+offset_bottom = 436.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 38
+text = "Player"
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="." unique_id=1971174586]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 125.0
+offset_right = 440.0
+offset_bottom = 165.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 20
+text = "Current Level: 1"
+
+[node name="RankBadge" type="TextureRect" parent="." unique_id=686397032]
+layout_mode = 0
+offset_left = 597.0
+offset_top = 97.0
+offset_right = 862.0
+offset_bottom = 334.0
+texture = ExtResource("6_rankbadge")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RankBarBg" type="ColorRect" parent="." unique_id=549970202]
+layout_mode = 0
+offset_left = 534.0
+offset_top = 275.0
+offset_right = 914.0
+offset_bottom = 285.0
+color = Color(0, 0, 0, 1)
+
+[node name="RankBarFill" type="ColorRect" parent="." unique_id=450917044]
+layout_mode = 0
+offset_left = 535.0
+offset_top = 275.0
+offset_right = 535.0
+offset_bottom = 285.0
+color = Color(0.29, 0.49, 0.35, 1)
+
+[node name="RankText" type="Label" parent="." unique_id=2085507198]
+layout_mode = 0
+offset_left = 536.0
+offset_top = 286.0
+offset_right = 913.0
+offset_bottom = 321.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 28
+text = "0 / 200,000"
+horizontal_alignment = 1
+
+[node name="LegacyBadge" type="TextureRect" parent="." unique_id=1667277589]
+layout_mode = 0
+offset_left = 578.0
+offset_top = 308.0
+offset_right = 699.0
+offset_bottom = 444.0
+texture = ExtResource("7_legacybadge")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RecordLabel" type="Label" parent="." unique_id=1995116321]
+layout_mode = 0
+offset_left = 587.0
+offset_top = 385.0
+offset_right = 687.0
+offset_bottom = 423.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 36
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StreakFrame" type="TextureRect" parent="." unique_id=1201717983]
+layout_mode = 0
+offset_left = 700.0
+offset_top = 322.0
+offset_right = 800.0
+offset_bottom = 422.0
+texture = ExtResource("8_calendar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StreakFire" type="TextureRect" parent="." unique_id=1114336771]
+layout_mode = 0
+offset_left = 718.0
+offset_top = 348.0
+offset_right = 778.0
+offset_bottom = 408.0
+texture = ExtResource("9_fire0")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StreakNumber" type="Label" parent="." unique_id=1123366041]
+layout_mode = 0
+offset_left = 730.0
+offset_top = 361.0
+offset_right = 765.0
+offset_bottom = 400.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 35
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HardcoreFrame" type="TextureRect" parent="." unique_id=879715050]
+layout_mode = 0
+offset_left = 339.0
+offset_top = 463.0
+offset_right = 417.0
+offset_bottom = 548.0
+texture = ExtResource("5_hardcore")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HardcoreLabel" type="Label" parent="." unique_id=1039992574]
+layout_mode = 0
+offset_left = 355.0
+offset_top = 487.0
+offset_right = 403.0
+offset_bottom = 534.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 35
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DailyRecordFrame" type="TextureRect" parent="." unique_id=1053378998]
+layout_mode = 0
+offset_left = 415.0
+offset_top = 471.0
+offset_right = 481.0
+offset_bottom = 541.0
+texture = ExtResource("8_calendar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DailyRecordLabel" type="Label" parent="." unique_id=1479386547]
+layout_mode = 0
+offset_left = 422.0
+offset_top = 489.0
+offset_right = 470.0
+offset_bottom = 529.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 35
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayButton" type="Button" parent="." unique_id=2116376780]
+layout_mode = 0
+offset_left = 409.0
+offset_top = 563.0
+offset_right = 559.0
+offset_bottom = 623.0
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 24
+text = "Play"
+
+[node name="DeleteButton" type="Button" parent="." unique_id=835856660]
+layout_mode = 0
+offset_left = 678.0
+offset_top = 561.0
+offset_right = 858.0
+offset_bottom = 621.0
+theme_override_fonts/font = ExtResource("10_font")
+theme_override_font_sizes/font_size = 20
+text = "Delete Save"

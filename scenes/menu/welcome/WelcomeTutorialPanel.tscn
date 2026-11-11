@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://welcome_tutorial_panel"]
+
+[ext_resource type="Script" path="res://scripts/interface/menus/welcome/WelcomeTutorialPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_welcomebg"]
+[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+
+[node name="WelcomeTutorialPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Card" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -350.0
+offset_right = 500.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_welcomebg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="QuestionLabel" type="Label" parent="Card"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 200.0
+offset_right = 900.0
+offset_bottom = 350.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+text = "Would you like to play the tutorial?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="YesButton" type="Button" parent="Card"]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 400.0
+offset_right = 500.0
+offset_bottom = 460.0
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+text = "Yep"
+
+[node name="NoButton" type="Button" parent="Card"]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 400.0
+offset_right = 670.0
+offset_bottom = 460.0
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+text = "No ty"

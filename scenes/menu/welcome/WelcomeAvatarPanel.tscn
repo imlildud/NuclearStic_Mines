@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://welcome_avatar_panel"]
+
+[ext_resource type="Script" path="res://scripts/interface/menus/welcome/WelcomeAvatarPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_welcomebg"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon1.png" id="3_icon1"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon2.png" id="4_icon2"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon3.png" id="5_icon3"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon4.png" id="6_icon4"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon5.png" id="7_icon5"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/icons/icon6.png" id="8_icon6"]
+[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="9_font"]
+
+[node name="WelcomeAvatarPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Card" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -350.0
+offset_right = 500.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_welcomebg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PromptLabel" type="Label" parent="Card"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 129.0
+offset_right = 900.0
+offset_bottom = 179.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("9_font")
+theme_override_font_sizes/font_size = 45
+text = "Choose your profile picture:"
+horizontal_alignment = 1
+
+[node name="AvatarGrid" type="GridContainer" parent="Card"]
+layout_mode = 0
+offset_left = 273.0
+offset_top = 187.0
+offset_right = 722.0
+offset_bottom = 469.0
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 40
+columns = 3
+
+[node name="Avatar1" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("3_icon1")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar2" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("4_icon2")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar3" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("5_icon3")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar4" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("6_icon4")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar5" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("7_icon5")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar6" type="TextureButton" parent="Card/AvatarGrid"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+texture_normal = ExtResource("8_icon6")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ConfirmButton" type="Button" parent="Card"]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 550.0
+offset_right = 600.0
+offset_bottom = 610.0
+theme_override_fonts/font = ExtResource("9_font")
+theme_override_font_sizes/font_size = 28
+text = "Confirm"
