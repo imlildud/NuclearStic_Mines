@@ -4,6 +4,7 @@
 # Handles save state, rewind effect, and reversion logic.
 
 extends RefCounted
+class_name ReversionManager
 
 # ======================= STATE =======================
 

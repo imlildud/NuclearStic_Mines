@@ -4,6 +4,7 @@
 # Handles turn counting and notifies listeners when a turn occurs.
 # Used for Spikes, Foes (1.2.0), and any turn-based mechanics.
 
+class_name TurnManager
 extends RefCounted
 
 # ======================= STATE =======================

@@ -14,6 +14,7 @@
 # the rest of the code compiles. Full wiring in Phase 3.
 
 extends RefCounted
+class_name KeychainUIManager
 
 # ======================= SIGNALS =======================
 

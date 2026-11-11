@@ -4,7 +4,8 @@
 # Handles character movement, tile interaction, combat,
 # goal delivery, and game status management.
 
-extends RefCounted
+extends Node
+class_name CharacterController
 
 # ======================= STATE =======================
 

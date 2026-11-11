@@ -120,7 +120,9 @@ func start_game(cfg: Dictionary) -> void:
 
 	# Character controller and scoreboard
 	char_ctrl = CharacterController.new(player, board_ctrl, self)
+	add_child(char_ctrl)
 	scoreboard = ScoreboardManager.new(self)
+	add_child(scoreboard)
 
 	# Configure level (difficulty, hazards, etc.)
 	_level_configurator.configure(self)

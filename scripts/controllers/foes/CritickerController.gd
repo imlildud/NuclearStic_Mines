@@ -11,6 +11,7 @@
 # DEPENDS ON: CritickerDialogs (translated in Ficha #09).
 
 extends RefCounted
+class_name CritickerController
 
 var game_manager = null
 var locale_manager = null

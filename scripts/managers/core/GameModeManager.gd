@@ -10,6 +10,7 @@
 # - Custom mode randomization.
 
 extends RefCounted
+class_name GameModeManager
 
 var game_manager = null
 
@@ -83,6 +84,7 @@ func handle_legacy_victory(game) -> void:
 	# Recreate controllers
 	game.board_ctrl = BoardController.new(game.player)
 	game.char_ctrl = CharacterController.new(game.player, game.board_ctrl, game)
+	game.add_child(game.char_ctrl)
 
 	# Reconfigure the level
 	var level_configurator = game.level_configurator

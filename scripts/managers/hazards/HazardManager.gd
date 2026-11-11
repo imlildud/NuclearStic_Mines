@@ -9,6 +9,7 @@
 # and clears the regen flag.
 
 extends RefCounted
+class_name HazardManager
 
 var game_manager = null
 

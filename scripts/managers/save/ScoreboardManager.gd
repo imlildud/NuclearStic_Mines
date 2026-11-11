@@ -3,25 +3,35 @@
 # ==============================================================
 # Handles scoreboard display, animations, grade calculation,
 # and all score-related UI logic.
+#
+# NOTE: The original JS manipulates DOM nodes directly. In Godot
+# this manager emits signals and lets a UI scene (Scoreboard.tscn)
+# listen and render. The score calculations and grade logic are
+# identical to the original.
+#
+# NOTE: This extends Node (not RefCounted) because it uses
+# get_tree() for timers and get_viewport() for responsive scaling.
+# GameManager must call `add_child(scoreboard)` after creating it.
 
-extends RefCounted
+extends Node
+class_name ScoreboardManager
 
 # ======================= SIGNALS =======================
 
 # Emitted when the scoreboard should be shown.
-signal show_scoreboard(data: Dictionary)
+signal scoreboard_shown(data: Dictionary)
 
 # Emitted when the scoreboard should be hidden.
-signal hide_scoreboard
+signal scoreboard_hidden
 
 # Emitted per label that should animate (for the UI to tween).
-signal animate_score_element(element_id: String, final_value: String, kind: String, animate_transform: bool)
+signal score_element_animated(element_id: String, final_value: String, kind: String, animate_transform: bool)
 
 # Emitted when the grade image should be revealed.
-signal reveal_grade(grade_file: String)
+signal grade_revealed(grade_file: String)
 
 # Emitted to update the rank display (RankManager).
-signal update_rank_display(new_total: int, is_hardcore: bool)
+signal rank_display_update_requested(new_total: int, is_hardcore: bool)
 
 # ======================= STATE =======================
 
@@ -142,7 +152,7 @@ func show(is_victory: bool) -> void:
 		"is_victory": is_victory,
 		"buttons": _build_button_config(is_victory)
 	}
-	show_scoreboard.emit(payload)
+	scoreboard_shown.emit(payload)
 
 	# Save total points with mode multiplier applied
 	var total_points_earned: int = scores["total"]
@@ -155,13 +165,13 @@ func show(is_victory: bool) -> void:
 	SaveManager.set_last_score(total_points_earned)
 
 	var new_total: int = SaveManager.get_hardcore_total_points() if is_hardcore else SaveManager.get_total_points()
-	update_rank_display.emit(new_total, is_hardcore)
+	rank_display_update_requested.emit(new_total, is_hardcore)
 
 
 # ======================= TRANSLATION METHOD =======================
 
 # Emits translated labels to the UI. The UI scene listens to
-# `show_scoreboard` and reads these keys from the payload.
+# `scoreboard_shown` and reads these keys from the payload.
 func update_scoreboard_labels() -> void:
 	# Translation is resolved by the UI scene using LocaleManager.
 	# This method is a hook for future label updates.
@@ -170,7 +180,7 @@ func update_scoreboard_labels() -> void:
 
 # Hide the scoreboard overlay.
 func hide() -> void:
-	hide_scoreboard.emit()
+	scoreboard_hidden.emit()
 
 
 # ======================= GRADE CALCULATION =======================
@@ -223,7 +233,7 @@ func _run_number_animation(with_sound: bool) -> void:
 		var e = element
 		var d: float = delay
 		get_tree().create_timer(d).timeout.connect(func():
-			animate_score_element.emit(e["id"], e["finalValue"], e["type"], e["animateTransform"])
+			score_element_animated.emit(e["id"], e["finalValue"], e["type"], e["animateTransform"])
 		)
 		delay += step_delay
 
@@ -233,7 +243,7 @@ func _run_number_animation(with_sound: bool) -> void:
 		if with_sound:
 			AudioManager.stop_score_animation_sfx()
 			AudioManager.play_grade_sfx()
-		reveal_grade.emit(get_grade_file(final_scores["total"], final_scores["maxTotal"]))
+		grade_revealed.emit(get_grade_file(final_scores["total"], final_scores["maxTotal"]))
 		is_score_animating = false
 	)
 

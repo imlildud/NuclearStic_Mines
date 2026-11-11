@@ -15,6 +15,7 @@
 # increment_turn() updates the spike states automatically.
 
 extends RefCounted
+class_name SpikeController
 
 # ======================= STATE =======================
 

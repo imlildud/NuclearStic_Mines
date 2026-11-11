@@ -17,6 +17,7 @@
 # will be done in Phase 3 (interfaces 1:1).
 
 extends RefCounted
+class_name TutorialDialogManager
 
 # ======================= SIGNALS =======================
 

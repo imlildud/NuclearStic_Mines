@@ -3,7 +3,7 @@
 # ==============================================================
 # Handles all UI modals (pause, level start, gameover).
 #
-# ⚠️ PHASE 3 STUB:
+# PHASE 3 STUB:
 # This manager is 100% UI/DOM in the original JS. Its real
 # implementation requires:
 #   - A `PauseModal.tscn` scene.
@@ -12,22 +12,27 @@
 #
 # For now, this stub exposes the public API and emits signals so
 # the rest of the code compiles. Full wiring in Phase 3.
+#
+# NOTE: This is a RefCounted (not a Node) so it can be instantiated
+# with `UIManager.new(self)`. Scene navigation is delegated to
+# GameManager, which is a Node and has `get_tree()`.
 
 extends RefCounted
+class_name UIManager
 
 # ======================= SIGNALS =======================
 
 # Emitted when the pause modal should be shown.
-signal show_pause_modal(data: Dictionary)
+signal pause_modal_requested(data: Dictionary)
 
 # Emitted when the level-start modal should be shown.
-signal show_level_start_modal(data: Dictionary)
+signal level_start_modal_requested(data: Dictionary)
 
 # Emitted when the pause modal should be hidden.
-signal hide_pause_modal
+signal pause_modal_hidden
 
 # Emitted when the level-start modal should be hidden.
-signal hide_level_start_modal
+signal level_start_modal_hidden
 
 # ======================= STATE =======================
 
@@ -49,7 +54,7 @@ func get_text(key: String) -> String:
 # ======================= PAUSE MODAL =======================
 
 # Shows the pause modal.
-# The UI scene listens to `show_pause_modal` and renders it.
+# The UI scene listens to `pause_modal_requested` and renders it.
 func show_pause_modal(char_ctrl, config: Dictionary, board: Array, gm) -> void:
 	var total_pals: int = char_ctrl.get_total_pals()
 	var remaining_pals: int = char_ctrl.get_remaining_pals()
@@ -67,22 +72,23 @@ func show_pause_modal(char_ctrl, config: Dictionary, board: Array, gm) -> void:
 		"child_types": child_types
 	}
 
-	show_pause_modal.emit(payload)
+	pause_modal_requested.emit(payload)
 
 
 # Called by the UI when the player clicks "Continue".
 func on_pause_continue(gm) -> void:
-	hide_pause_modal.emit()
+	pause_modal_hidden.emit()
 	if gm != null:
 		gm.set_game_input_locked(false)
 
 
 # Called by the UI when the player clicks "Exit".
+# Scene navigation is delegated to GameManager (which is a Node).
 func on_pause_exit(gm) -> void:
-	hide_pause_modal.emit()
+	pause_modal_hidden.emit()
 	if gm != null:
 		gm.set_game_input_locked(false)
-	get_tree().change_scene_to_file("res://scenes/menus/MainMenu.tscn")
+		gm.get_tree().change_scene_to_file("res://scenes/menu/MainMenu.tscn")
 
 
 # ======================= LEVEL START MODAL =======================
@@ -116,12 +122,12 @@ func show_level_start_modal(char_ctrl, config: Dictionary, board: Array) -> void
 		"child_types": child_types
 	}
 
-	show_level_start_modal.emit(payload)
+	level_start_modal_requested.emit(payload)
 
 
 # Called by the UI when the modal should close.
 func on_level_start_closed() -> void:
-	hide_level_start_modal.emit()
+	level_start_modal_hidden.emit()
 
 
 # ======================= HELPERS =======================
@@ -135,8 +141,3 @@ func get_child_types_from_board(board: Array) -> Array:
 			if pal_type != "none" and not child_types.has(pal_type):
 				child_types.append(pal_type)
 	return child_types
-
-
-# Returns the parent scene tree (for scene changes).
-func get_tree():
-	return game_manager.get_tree()

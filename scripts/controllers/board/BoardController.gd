@@ -8,6 +8,11 @@
 # class so a seed produces the same board every time.
 
 extends BaseBoardController
+class_name BoardController
+
+func _init(player_ref = null) -> void:
+	player = player_ref
+	is_procedural = true
 
 # ======================= DIFFICULTY LOADERS =======================
 # Returns the board size for a given level.

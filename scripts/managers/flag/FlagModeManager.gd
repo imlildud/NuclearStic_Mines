@@ -10,6 +10,7 @@
 # The available modes depend on which keychains the player has.
 
 extends RefCounted
+class_name FlagModeManager
 
 # ======================= SIGNALS =======================
 

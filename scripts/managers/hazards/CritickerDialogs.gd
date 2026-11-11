@@ -9,6 +9,7 @@
 # sequence structure are preserved.
 
 extends RefCounted
+class_name CritickerDialogs
 
 var locale_manager = null
 var audio_manager = null
@@ -30,7 +31,7 @@ func get_text(key: String) -> String:
 # Initializes the dialog manager (stub in Phase 3).
 func init() -> void:
 	# In Phase 3 this creates a real CritickerDialogManager.
-	# For now it uses the stub from criticker/CritickerDialogManager.gd.
+	# For now it uses the stub.
 	dialog_manager = CritickerDialogManager.new(audio_manager, {"speakerIcon": "criticized"})
 	dialog_manager.init()
 	print("[CritickerDialogs] Initialized")
@@ -99,22 +100,24 @@ func show_failure(game_manager, on_complete: Callable = Callable()) -> void:
 
 	var damage_applied: bool = false
 
-	var dialogues: Array = [
-		{
-			"text": get_text("criticker.failure.main"),
-			"after": func():
-				if not damage_applied:
-					damage_applied = true
-					print("[CritickerDialogs] Applying damage after first dialogue")
+	var first_dialogue: Dictionary = {
+		"text": get_text("criticker.failure.main"),
+		"after": func():
+			if not damage_applied:
+				damage_applied = true
+				print("[CritickerDialogs] Applying damage after first dialogue")
+				var char_ctrl = game_manager.char_ctrl
+				if char_ctrl != null and char_ctrl.has_method("hurt_character"):
+					char_ctrl.hurt_character()
+				else:
+					push_warning("[CritickerDialogs] char_ctrl.hurt_character not available")
+	}
 
-					var char_ctrl = game_manager.char_ctrl
-					if char_ctrl != null and char_ctrl.has_method("hurt_character"):
-						char_ctrl.hurt_character()
-					else:
-						push_warning("[CritickerDialogs] char_ctrl.hurt_character not available")
-		},
-		{"text": get_text("criticker.failure.damage")}
-	]
+	var second_dialogue: Dictionary = {
+		"text": get_text("criticker.failure.damage")
+	}
+
+	var dialogues: Array = [first_dialogue, second_dialogue]
 
 	dialog_manager.sequence_with_callbacks(dialogues, func():
 		if dialog_manager != null:

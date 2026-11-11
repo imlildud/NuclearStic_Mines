@@ -81,7 +81,7 @@ func load_locale(locale: String) -> void:
 # Returns the translated string for the given key.
 # Keys use dot notation: "menu.play", "tutorial.phase1.dialog1".
 # Falls back to the key itself if the translation is missing.
-func get(key: String) -> String:
+func get_translation(key: String) -> String:
 	if strings.is_empty():
 		return key
 

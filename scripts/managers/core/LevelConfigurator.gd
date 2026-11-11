@@ -11,6 +11,7 @@
 # custom paths. Tutorial and test paths work without it.
 
 extends RefCounted
+class_name LevelConfigurator
 
 var game_manager = null
 

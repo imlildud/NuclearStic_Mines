@@ -17,6 +17,7 @@
 # CritickerDialogs.gd compiles and can be wired.
 
 extends RefCounted
+class_name CritickerDialogManager
 
 # ======================= SIGNALS =======================
 
@@ -127,8 +128,9 @@ func clear_waiters() -> void:
 # Plays a sequence of dialogues: type, wait for input, next.
 func sequence(dialogues: Array, on_complete: Callable = Callable()) -> void:
 	var index: int = 0
+	var next: Callable
 
-	var next = func():
+	next = func():
 		if index >= dialogues.size():
 			clear_waiters()
 			hide()
@@ -151,8 +153,9 @@ func sequence(dialogues: Array, on_complete: Callable = Callable()) -> void:
 # Plays a sequence with `after` callbacks on each dialogue.
 func sequence_with_callbacks(dialogues: Array, on_complete: Callable = Callable()) -> void:
 	var index: int = 0
+	var next: Callable
 
-	var next = func():
+	next = func():
 		if index >= dialogues.size():
 			clear_waiters()
 			hide()

@@ -13,6 +13,7 @@
 # DEPENDS ON: KeychainConfig (pending .gd)
 
 extends RefCounted
+class_name KeychainManager
 
 var game_manager = null
 

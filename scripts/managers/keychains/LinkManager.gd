@@ -9,6 +9,7 @@
 # level harder to complete.
 
 extends RefCounted
+class_name LinkManager
 
 var game_manager = null
 var linked_pal = null  # {"x": int, "y": int, "type": String} or null

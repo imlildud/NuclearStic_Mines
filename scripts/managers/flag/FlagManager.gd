@@ -12,6 +12,7 @@
 # SCOUT (Ability 4) has special jump-flag behavior in Normal mode.
 
 extends RefCounted
+class_name FlagManager
 
 var game_manager = null
 

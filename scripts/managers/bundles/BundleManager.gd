@@ -18,6 +18,7 @@
 # the same day. Excludes 'fortune', 'greed', and 'stuffed'.
 
 extends RefCounted
+class_name BundleManager
 
 # ======================= STATE =======================
 

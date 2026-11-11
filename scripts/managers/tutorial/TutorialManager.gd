@@ -5,6 +5,7 @@
 # pit fall messages, and phase transitions.
 
 extends RefCounted
+class_name TutorialManager
 
 # ======================= SIGNALS =======================
 

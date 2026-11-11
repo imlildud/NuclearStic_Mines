@@ -3,7 +3,7 @@
 # ==============================================================
 # Handles bundle popup display, keychain selection, and animations.
 #
-# ⚠️ PHASE 3 STUB:
+# PHASE 3 STUB:
 # This manager is 100% UI/DOM in the original JS. Its real
 # implementation requires:
 #   - A `BundlePopup.tscn` scene with the bundle image, the
@@ -14,26 +14,31 @@
 #
 # For now, this stub exposes the public API and emits signals so
 # the rest of the code compiles. Full wiring in Phase 3.
+#
+# NOTE: This is a RefCounted (not a Node) so it can be instantiated
+# with `BundleUIManager.new(self, bundle_manager, AudioManager)`.
+# The timer for `take_keychain` uses GameManager's tree.
 
 extends RefCounted
+class_name BundleUIManager
 
 # ======================= SIGNALS =======================
 
 # Emitted when the bundle popup should be shown.
 # Payload: {tierKey: String, tier: Dictionary, keychains: Array}
-signal show_bundle_popup(data: Dictionary)
+signal bundle_popup_requested(data: Dictionary)
 
 # Emitted when the bundle should be opened (image swap).
-signal open_bundle(tier_key: String)
+signal bundle_opened(tier_key: String)
 
 # Emitted when the inventory is full (show trash/none popup).
-signal show_inventory_full_popup(is_trash: bool)
+signal inventory_full_requested(is_trash: bool)
 
 # Emitted when the trash selection popup should be shown.
-signal show_trash_selection(inventory: Array)
+signal trash_selection_requested(inventory: Array)
 
 # Emitted when the popup should be closed.
-signal close_popup
+signal popup_closed
 
 # ======================= STATE =======================
 
@@ -100,7 +105,7 @@ func show_bundle_popup(tile_x: int, tile_y: int) -> void:
 			"tier": tier,
 			"keychains": keychains
 		}
-		show_bundle_popup.emit(payload)
+		bundle_popup_requested.emit(payload)
 
 
 # ======================= INVENTORY FULL =======================
@@ -112,7 +117,7 @@ func show_inventory_full() -> void:
 	var roll: float = randf()
 	var is_trash: bool = roll < 0.20
 	is_trash_mode = is_trash
-	show_inventory_full_popup.emit(is_trash)
+	inventory_full_requested.emit(is_trash)
 
 
 # Shows the trash selection popup.
@@ -125,7 +130,7 @@ func show_trash_selection() -> void:
 		close()
 		return
 
-	show_trash_selection.emit(inventory)
+	trash_selection_requested.emit(inventory)
 
 
 # Called by the UI when the player selects a keychain to remove.
@@ -161,7 +166,7 @@ func take_keychain(keychain: Dictionary, item_index: int) -> void:
 	# Initialize uses if this keychain has them
 	KeychainConfig.init_keychain_uses_for_player(player)
 	game_manager.get_flag_mode_manager().update_swamp_button_ui()
-	game_manager.reversion_manager.update_button_ui()
+	game_manager._reversion_manager.update_button_ui()
 
 	if audio_manager != null:
 		audio_manager.play_rescue_sfx()
@@ -170,7 +175,8 @@ func take_keychain(keychain: Dictionary, item_index: int) -> void:
 
 	# Close the popup after a short delay (the UI handles the
 	# item fade-out animation and then calls close()).
-	get_tree().create_timer(0.4).timeout.connect(close)
+	# Delegate the timer to GameManager, which is a Node.
+	game_manager.get_tree().create_timer(0.4).timeout.connect(close)
 
 
 # ======================= CLOSE =======================
@@ -179,12 +185,5 @@ func take_keychain(keychain: Dictionary, item_index: int) -> void:
 func close() -> void:
 	is_open = false
 	is_trash_mode = false
-	close_popup.emit()
+	popup_closed.emit()
 	game_manager.set_game_input_locked(false)
-
-
-# ======================= INTERNAL HELPERS =======================
-
-# Returns the parent scene tree (for timers).
-func get_tree():
-	return game_manager.get_tree()

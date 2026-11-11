@@ -6,6 +6,7 @@
 # to provide pre-designed boards for each tutorial phase.
 
 extends BaseBoardController
+class_name TestController
 
 
 func _init(player_ref = null) -> void:

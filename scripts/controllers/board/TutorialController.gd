@@ -6,6 +6,7 @@
 # to provide pre-designed boards for each tutorial phase.
 
 extends BaseBoardController
+class_name TutorialController
 
 var current_phase: int = 0
 
