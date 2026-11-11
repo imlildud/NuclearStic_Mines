@@ -8,14 +8,21 @@
 # in the punchcard, the game config is saved to GameManager and the
 # scene changes to Game.tscn.
 #
-# Options, Diary and ID Card are placeholders for now.
+# The WelcomePanel is shown on top of the menu when the player
+# needs to register (first time) or when returning from a game.
+# The ID Card toggle button in the main menu also opens the
+# WelcomePanel in ID Card mode.
+#
+# Options, Diary are placeholders for now.
 
 extends Control
 
 const PUNCHCARD_SCENE := "res://scenes/menu/PunchcardPanel.tscn"
+const WELCOME_SCENE := "res://scenes/menu/WelcomePanel.tscn"
 const GAME_SCENE := "res://scenes/game/Game.tscn"
 
 var _punchcard: Control = null
+var _welcome_panel: CanvasLayer = null
 
 
 # ======================= LIFECYCLE =======================
@@ -35,6 +42,13 @@ func _ready() -> void:
 	if _punchcard.has_signal("start_requested"):
 		_punchcard.start_requested.connect(_on_punchcard_start)
 
+	# Instance the welcome panel as a hidden child.
+	_welcome_panel = load(WELCOME_SCENE).instantiate()
+	add_child(_welcome_panel)
+	_welcome_panel.visible = false
+	if _welcome_panel.has_signal("play_pressed"):
+		_welcome_panel.play_pressed.connect(_on_welcome_play_pressed)
+
 	# Wire every main-menu button.
 	_connect_button($MenuButtons/LegacyButton, _on_legacy_pressed)
 	_connect_button($MenuButtons/DailyButton, _on_daily_pressed)
@@ -42,6 +56,25 @@ func _ready() -> void:
 	_connect_button($BottomRow/DiaryButton, _on_diary_pressed)
 	_connect_button($BottomRow/OptionsButton, _on_options_pressed)
 	_connect_button($IdCardButton, _on_id_card_pressed)
+
+	# Show the welcome panel if needed (first time / returning player).
+	_maybe_show_welcome_panel()
+
+
+# Shows the welcome panel when the player needs to register or
+# when they're returning from a game.
+func _maybe_show_welcome_panel() -> void:
+	var tutorial_completed: bool = SaveManager.is_tutorial_completed()
+	var username: String = SaveManager.get_username()
+
+	# First time or no username → show the welcome panel.
+	if not tutorial_completed or username == "":
+		_welcome_panel.set_locale_manager(LocaleManager)
+		_welcome_panel.init_welcome_screen()
+		_welcome_panel.visible = true
+
+		# Also show the ID card toggle button (hidden until first login).
+		# In Godot we don't hide it, it's always available.
 
 
 # ======================= BUTTON FEEDBACK =======================
@@ -95,6 +128,14 @@ func _on_punchcard_start(config: Dictionary) -> void:
 	get_tree().change_scene_to_file(GAME_SCENE)
 
 
+# ======================= WELCOME PANEL =======================
+
+# Called when the welcome panel emits its "play_pressed" signal.
+func _on_welcome_play_pressed() -> void:
+	AudioManager.play_click_sfx()
+	_welcome_panel.visible = false
+
+
 # ======================= BUTTON HANDLERS =======================
 
 func _on_legacy_pressed() -> void:
@@ -124,4 +165,8 @@ func _on_options_pressed() -> void:
 
 func _on_id_card_pressed() -> void:
 	AudioManager.play_click_sfx()
-	push_warning("[MainMenu] ID Card: not implemented yet (Phase 3.4)")
+	# Open the welcome panel in ID Card mode.
+	if _welcome_panel != null:
+		_welcome_panel.set_locale_manager(LocaleManager)
+		_welcome_panel.init_welcome_screen()
+		_welcome_panel.visible = true
