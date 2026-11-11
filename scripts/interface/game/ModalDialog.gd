@@ -15,6 +15,7 @@ signal closed
 func _ready() -> void:
 	visible = false
 	ok_button.pressed.connect(_on_ok_pressed)
+	ButtonFeedback.attach_all(self)
 
 
 func show_message(message: String) -> void:

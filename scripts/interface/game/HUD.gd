@@ -90,6 +90,7 @@ func _ready() -> void:
 	level_start_modal.visible = false
 	pause_modal.visible = false
 	modal_dialog.visible = false
+	ButtonFeedback.attach_all(self)
 
 
 func _connect_touch_button(button: TextureButton, kind: String, direction: String) -> void:

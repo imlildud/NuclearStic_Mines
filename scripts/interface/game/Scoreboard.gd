@@ -53,6 +53,7 @@ func _ready() -> void:
 	retry_button.pressed.connect(func(): retry_pressed.emit())
 	home_button.pressed.connect(func(): home_pressed.emit())
 	random_button.pressed.connect(func(): random_pressed.emit())
+	ButtonFeedback.attach_all(self)
 
 
 # ======================= PUBLIC API =======================

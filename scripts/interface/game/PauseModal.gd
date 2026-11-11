@@ -23,6 +23,7 @@ func _ready() -> void:
 	visible = false
 	continue_button.pressed.connect(func(): continue_pressed.emit())
 	exit_button.pressed.connect(func(): exit_pressed.emit())
+	ButtonFeedback.attach_all(self)
 
 
 func show_modal(char_ctrl, config: Dictionary, board: Array) -> void:

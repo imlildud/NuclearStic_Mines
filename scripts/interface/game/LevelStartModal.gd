@@ -20,6 +20,7 @@ const CHILD_NAME_KEY := "game.children.%s"
 func _ready() -> void:
 	visible = false
 	set_process_input(false)
+	ButtonFeedback.attach_all(self)
 
 
 func show_modal(title: String, seed_text: String, info: String, child_types: Array) -> void:
