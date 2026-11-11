@@ -339,7 +339,8 @@ func verify_tile(board: Array) -> void:
 
 			# ===== SCOUT: Convert Jump Flags to Marked =====
 			if character.get_ability_id() == 4 and game_manager != null:
-				var converted: int = game_manager.flag_manager.convert_jump_flags_to_marked(board)
+				var flag_manager = game_manager.get_flag_manager()
+				var converted: int = flag_manager.convert_jump_flags_to_marked(board)
 				if converted > 0:
 					print("[Scout] %d Jump Flags converted to Marked" % converted)
 

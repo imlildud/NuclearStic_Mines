@@ -3,72 +3,43 @@
 # ==============================================================
 # Game scene. Orchestrates the entire game session.
 #
-# Responsibilities:
-#   - Start the game via GameManager.start_game(config).
-#   - Hand the board to the Board scene for rendering.
-#   - Place and animate the character sprite.
-#   - Load the character sprite based on the chosen character.
-#   - Handle input (WASD move / arrows flag).
-#   - Update the HUD each frame.
-#   - Wire HUD signals (touch controls, pause, back).
-#   - Wire modal signals (scoreboard, level start, pause).
-#   - Set the background wallpaper and play the music per biome.
-#   - Refresh vision after moves and after pal rescues.
-#   - Re-center the camera on new levels/retries/random games.
+# CHARACTER RENDERING (hybrid system):
+#   - Static state: the player is drawn inside TileRenderer._draw(),
+#     so mountains with a greater `y` correctly overlap the player.
+#   - Animated state (during movement): a temporary Sprite2D with a
+#     high z_index is used by Game.gd, so the player is rendered
+#     ON TOP of everything while moving. When the animation finishes,
+#     the Sprite2D is hidden and the static player is drawn again.
+#   - The Sprite2D uses the same scale and offset as the static player
+#     (via TileRenderer.get_player_visual_transform()), so there is no
+#     "pop" between states.
 #
-# INPUT ROUTING (matches JS InputManager.js):
-#   - WASD: character movement.
-#   - Arrows: flag placement in that direction (FLAG_DELAY = 150ms).
-#   - F: cycle flag mode (SWAMP_DELAY = 300ms).
-#   - R: reversion.
-#   - ESC: pause.
-#
-# MOVEMENT ANIMATION (ported from Renderer.js):
-#   - Normal move: character arcs 40px up and tilts +0.3 rad.
-#   - Scout jump:  character arcs 25px up and tilts -90° (quarter turn).
-#   - Height scaling from Renderer.js heightOffsetCache.
-#   - Both use a parallel Tween (position + rotation + scale).
-#   - Damage flash is triggered by CharacterController.hurt_character().
-#
-# SCOREBOARD (matches JS ScoreboardManager.js):
-#   - The ScoreboardManager only calculates scores.
-#   - Game.gd builds the payload and calls Scoreboard.display_scores().
-#   - Scoreboard.gd handles the animation (count-up, fade, grade pop).
-#   - No signal connection needed between the manager and the UI.
+# The camera follows the temporary Sprite2D during the animation.
 
 extends Node2D
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 const WALLPAPER_PATH := "res://assets/hud/game/wallpaper/%s.png"
-const CHARACTER_SPRITE_PATH := "res://assets/sprites/characters/%s.png"
 
-# --- Character visual tuning ---
-const HEIGHT_MULT: float = 1.25
-const WIDTH_MULT: float = 1.15
-const Y_LIFT: float = 5.0
-
-# --- Movement animation ---
+# --- Movement animation (matches Renderer.js timing) ---
 const MOVE_DURATION: float = 0.2
 const NORMAL_ARC_HEIGHT: float = 40.0
 const NORMAL_TILT: float = 0.3
 const SCOUT_ARC_HEIGHT: float = 25.0
 const SCOUT_TILT: float = -PI / 2.0
 
-# --- Input delays (matching JS InputManager.js) ---
+# --- Input delays ---
 const FLAG_DELAY: float = 0.15
 const SWAMP_DELAY: float = 0.3
 
 # --- Damage flash ---
 const DAMAGE_FLASH_DURATION: float = 0.15
 
-# --- Height scale map (from Renderer.js heightOffsetCache) ---
-const HEIGHT_SCALE_MAP: Dictionary = {1: 1.05, 2: 1.08, 3: 1.10, 4: 1.12}
-
 @onready var board_node: Node2D = $Board
-@onready var character_sprite: Sprite2D = $Character/Sprite
 @onready var camera: Camera2D = $Camera
 @onready var hud = $HUD
-@onready var background: TextureRect = $Background
+@onready var background: TextureRect = $BackgroundLayer/Background
+@onready var anim_sprite: Sprite2D = $AnimationLayer/AnimSprite
 
 var _is_scout_jump: bool = false
 var _is_animating: bool = false
@@ -85,6 +56,9 @@ func _ready() -> void:
 		push_error("[Game] No config found. Returning to menu.")
 		get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 		return
+
+	# Hide the animation sprite initially.
+	anim_sprite.visible = false
 
 	GameManager.start_game(config)
 
@@ -118,7 +92,7 @@ func _ready() -> void:
 	GameManager.scoreboard_requested.connect(_on_scoreboard_requested)
 	GameManager.level_start_requested.connect(_on_level_start_requested)
 
-	# Connect CharacterController signals (pal rescue -> vision refresh).
+	# Connect CharacterController signals.
 	if GameManager.char_ctrl != null:
 		GameManager.char_ctrl.pal_rescued.connect(refresh_vision_after_rescue)
 
@@ -150,26 +124,6 @@ func _set_background(zone: String) -> void:
 
 	background.texture = load(wallpaper_path)
 	print("[Game] Background texture set: ", background.texture)
-
-
-# ======================= CHARACTER SPRITE =======================
-
-func _update_character_sprite() -> void:
-	if GameManager.player == null:
-		push_warning("[Game] Cannot update character sprite: player is null")
-		return
-
-	var char_type: String = GameManager.player.get_type()
-	var path: String = CHARACTER_SPRITE_PATH % char_type
-
-	print("[Game] Loading character sprite: ", path)
-
-	if not ResourceLoader.exists(path):
-		push_warning("[Game] Character sprite not found: " + path)
-		return
-
-	character_sprite.texture = load(path)
-	print("[Game] Character sprite set: ", character_sprite.texture)
 
 
 # ======================= VISION REFRESH =======================
@@ -246,113 +200,110 @@ func _move(direction: String) -> void:
 	)
 
 	if old_pos == new_pos:
+		board_node.refresh()
 		return
 
 	AudioManager.play_move_sfx()
-	_animate_move(old_pos, new_pos)
+	_animate_character(old_pos, new_pos, false)
 
 
-func _animate_move(from_pos: Vector2i, to_pos: Vector2i) -> void:
+# Triggers the character movement animation using a temporary Sprite2D.
+# The Sprite2D is rendered on top of everything (z_index = 1000) during
+# the animation. When finished, it's hidden and the static player is
+# drawn again by TileRenderer._draw().
+func _animate_character(from_pos: Vector2i, to_pos: Vector2i, scout_jump: bool) -> void:
 	_is_animating = true
+	_is_scout_jump = scout_jump
 
-	var start_world: Vector2 = _get_character_world_position(from_pos)
-	var end_world: Vector2 = _get_character_world_position(to_pos)
-	var target_scale: Vector2 = _get_character_scale_at(to_pos)
+	var tile_layer = board_node.tile_layer
 
-	var arc_height: float = SCOUT_ARC_HEIGHT if _is_scout_jump else NORMAL_ARC_HEIGHT
-	var tilt_amount: float = SCOUT_TILT if _is_scout_jump else NORMAL_TILT
+	# 1. Hide the static player (drawn by TileRenderer).
+	tile_layer.hide_static_player = true
+	tile_layer.queue_redraw()
 
+	# 2. Prepare the animation sprite.
+	var tex: Texture2D = tile_layer.get_player_texture()
+	if tex == null:
+		tile_layer.hide_static_player = false
+		_is_animating = false
+		return
+
+	anim_sprite.texture = tex
+	anim_sprite.visible = true
+	anim_sprite.rotation = 0.0
+
+	# 3. Compute the start and end transforms (same as the static player).
+	var start_transform: Dictionary = tile_layer.get_player_visual_transform(from_pos)
+	var end_transform: Dictionary = tile_layer.get_player_visual_transform(to_pos)
+
+	var start_world: Vector2 = start_transform["position"]
+	var end_world: Vector2 = end_transform["position"]
+	var start_scale: Vector2 = start_transform["scale"]
+	var end_scale: Vector2 = end_transform["scale"]
+
+	anim_sprite.global_position = start_world
+	anim_sprite.scale = start_scale
+
+	# 4. Build the arc + tilt parameters.
+	var arc_height: float = SCOUT_ARC_HEIGHT if scout_jump else NORMAL_ARC_HEIGHT
+	var tilt_amount: float = SCOUT_TILT if scout_jump else NORMAL_TILT
+
+	# Midpoint of the arc (halfway between start and end, minus arc height).
 	var mid_world: Vector2 = (start_world + end_world) / 2.0
 	mid_world.y -= arc_height
 
+	# 5. Animate with a Tween.
 	var tween := create_tween()
 	tween.set_parallel(true)
 
-	tween.tween_property(character_sprite, "global_position", mid_world, MOVE_DURATION / 2.0)
-	tween.tween_property(character_sprite, "global_position", end_world, MOVE_DURATION / 2.0).set_delay(MOVE_DURATION / 2.0)
+	# Position: start -> mid -> end (2 segments).
+	tween.tween_property(anim_sprite, "global_position", mid_world, MOVE_DURATION / 2.0)
+	tween.tween_property(anim_sprite, "global_position", end_world, MOVE_DURATION / 2.0).set_delay(MOVE_DURATION / 2.0)
 
-	tween.tween_property(character_sprite, "rotation", tilt_amount, MOVE_DURATION / 2.0)
-	tween.tween_property(character_sprite, "rotation", 0.0, MOVE_DURATION / 2.0).set_delay(MOVE_DURATION / 2.0)
+	# Rotation: 0 -> tilt -> 0 (2 segments).
+	tween.tween_property(anim_sprite, "rotation", tilt_amount, MOVE_DURATION / 2.0)
+	tween.tween_property(anim_sprite, "rotation", 0.0, MOVE_DURATION / 2.0).set_delay(MOVE_DURATION / 2.0)
 
-	tween.tween_property(character_sprite, "scale", target_scale, MOVE_DURATION)
+	# Scale: interpolate to the destination height scale.
+	tween.tween_property(anim_sprite, "scale", end_scale, MOVE_DURATION)
 
-	tween.chain().tween_callback(func():
-		_is_animating = false
-		_is_scout_jump = false
-		camera.position = end_world
-		board_node.update_player()
-		refresh_vision_after_move()
-		board_node.refresh()
-	)
+	# Camera follows the animation sprite.
+	tween.set_parallel(false)
+
+	# Await the animation to finish.
+	await tween.finished
+
+	# 6. Animation done: hide the temp sprite, restore static player.
+	anim_sprite.visible = false
+	tile_layer.hide_static_player = false
+	tile_layer.queue_redraw()
+
+	camera.position = end_world
+
+	_is_animating = false
+	_is_scout_jump = false
+
+	# Refresh the vision after the animation.
+	refresh_vision_after_move()
 
 
+# Places the character at the current position (no animation).
 func _place_character() -> void:
 	var tile_pos := Vector2i(
 		GameManager.player.get_pos_x(),
 		GameManager.player.get_pos_y()
 	)
 
-	_update_character_sprite()
+	# Make sure the temp sprite is hidden and the static player is visible.
+	anim_sprite.visible = false
+	var tile_layer = board_node.tile_layer
+	if tile_layer != null:
+		tile_layer.hide_static_player = false
+		tile_layer.set_player(GameManager.player)
+		tile_layer.queue_redraw()
 
-	character_sprite.global_position = _get_character_world_position(tile_pos)
-	character_sprite.scale = _get_character_scale_at(tile_pos)
-	character_sprite.rotation = 0.0
-
-	camera.position = character_sprite.global_position
+	camera.position = board_node.tile_to_world(tile_pos)
 	camera.reset_smoothing()
-
-
-func _get_character_world_position(tile_pos: Vector2i) -> Vector2:
-	var tile_world_pos: Vector2 = board_node.tile_to_world(tile_pos)
-
-	var tex: Texture2D = character_sprite.texture
-	if tex == null:
-		return tile_world_pos
-
-	var tex_size: Vector2 = tex.get_size()
-	var tile_size: float = float(board_node.get_tile_size())
-
-	var height: int = _get_tile_height_at(tile_pos)
-	var height_scale: float = HEIGHT_SCALE_MAP.get(height, 1.0)
-
-	var target_height: float = tile_size * HEIGHT_MULT * height_scale
-	var scale_y: float = target_height / tex_size.y
-	var scale_x: float = scale_y * WIDTH_MULT
-
-	character_sprite.scale = Vector2(scale_x, scale_y)
-
-	var effective_tile_size: float = tile_size * height_scale
-	var y_offset: float = (target_height - effective_tile_size) * 1.5 + Y_LIFT
-
-	return tile_world_pos + Vector2(0, -y_offset)
-
-
-func _get_character_scale_at(tile_pos: Vector2i) -> Vector2:
-	var tex: Texture2D = character_sprite.texture
-	if tex == null:
-		return Vector2.ONE
-
-	var tex_size: Vector2 = tex.get_size()
-	var tile_size: float = float(board_node.get_tile_size())
-
-	var height: int = _get_tile_height_at(tile_pos)
-	var height_scale: float = HEIGHT_SCALE_MAP.get(height, 1.0)
-
-	var target_height: float = tile_size * HEIGHT_MULT * height_scale
-	var scale_y: float = target_height / tex_size.y
-	var scale_x: float = scale_y * WIDTH_MULT
-
-	return Vector2(scale_x, scale_y)
-
-
-func _get_tile_height_at(tile_pos: Vector2i) -> int:
-	if GameManager.board.is_empty():
-		return 0
-	if tile_pos.x < 0 or tile_pos.x >= GameManager.board.size():
-		return 0
-	if tile_pos.y < 0 or tile_pos.y >= GameManager.board.size():
-		return 0
-	return GameManager.board[tile_pos.x][tile_pos.y].get_tileheight()
 
 
 # ======================= FLAG HANDLING =======================
@@ -375,8 +326,7 @@ func _handle_flag(direction: String) -> void:
 	)
 
 	if is_scout and old_pos != new_pos:
-		_is_scout_jump = true
-		_animate_move(old_pos, new_pos)
+		_animate_character(old_pos, new_pos, true)
 		return
 
 	board_node.refresh()
@@ -402,16 +352,21 @@ func _reversion() -> void:
 # ======================= DAMAGE FLASH =======================
 
 func play_damage_flash() -> void:
-	if character_sprite == null:
+	if board_node == null or board_node.tile_layer == null:
 		return
 
-	var original_modulate: Color = character_sprite.modulate
-	character_sprite.modulate = Color(2.0, 2.0, 2.0, 1.0)
+	var tile_layer = board_node.tile_layer
+
+	var original_modulate: Color = tile_layer.modulate
+	tile_layer.modulate = Color(2.0, 2.0, 2.0, 1.0)
+	tile_layer.queue_redraw()
 
 	var tween := create_tween()
 	tween.tween_interval(DAMAGE_FLASH_DURATION)
 	tween.tween_callback(func():
-		character_sprite.modulate = original_modulate
+		if tile_layer != null:
+			tile_layer.modulate = original_modulate
+			tile_layer.queue_redraw()
 	)
 
 
@@ -436,8 +391,6 @@ func _on_pause_exit() -> void:
 
 # ======================= SCOREBOARD =======================
 
-# Called when GameManager emits `scoreboard_requested`.
-# Builds the payload and calls Scoreboard.display_scores() directly.
 func _on_scoreboard_requested(is_victory: bool) -> void:
 	if GameManager.scoreboard == null or hud.scoreboard == null:
 		push_error("[Game] Scoreboard or Manager missing")

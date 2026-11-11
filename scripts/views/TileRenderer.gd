@@ -1,25 +1,22 @@
 # ==============================================================
 # ===================== TILE RENDERER ==========================
 # ==============================================================
-# Draws the board grid using `_draw()` with real sprites.
-# Ported from Renderer.js (render() method).
+# Draws the board grid using `_draw()`. Ported from Renderer.js.
 #
-# Draw order (bottom to top), matching the original JS:
-#   0. Base / Mountain
-#   1. Hazard
-#   2. Obstacle (spikes have 3 states)
-#   3. Hazard count number
-#   4. Cover (hide)
-#   4.5 Cover markers (treasure, river_hide, etc. when Horizon)
-#   5. Damage ratio (toxic)
-#   6. Flag / Marked / Jump flag
-#   6.5 Memory markers
-#   7. Start tile
-#   7.5 Pals (deathpal if dead)
-#   7.6 Flaggoal
-#   8. Player character (handled by Game.gd with Sprite2D)
-#   9. Smoke
-#   Delirium: full-screen dark overlay.
+# The player is drawn INSIDE the _draw() loop, so taller tiles
+# (mountains) with a greater `y` correctly overlap the player.
+#
+# ANIMATION HANDLING:
+#   While the player is moving, Game.gd uses a temporary Sprite2D
+#   with a high z_index (rendered on top of everything). The
+#   TileRenderer HIDES the static player during that time by
+#   checking `hide_static_player`. When the animation finishes,
+#   Game.gd sets `hide_static_player = false` and the player is
+#   drawn again in the _draw() loop (respecting tile order).
+#
+# HEIGHT SCALING:
+#   The character scale and offset depend on the current tile's
+#   height (from Renderer.js heightOffsetCache).
 
 extends Node2D
 
@@ -28,12 +25,26 @@ const BIOME_PATH := "res://assets/sprites/tiles/%s/"
 const GLOBAL_PATH := "res://assets/sprites/tiles/"
 const CHARACTER_PATH := "res://assets/sprites/characters/"
 
+# --- Character visual tuning (from Renderer.js) ---
+const HEIGHT_MULT: float = 1.25
+const WIDTH_MULT: float = 1.15
+const Y_LIFT: float = 5.0
+
+# --- Height scale map (from Renderer.js heightOffsetCache) ---
+const HEIGHT_SCALE_MAP: Dictionary = {1: 1.05, 2: 1.08, 3: 1.10, 4: 1.12}
+
+# ======================= STATE =======================
+
 var board: Array = []
 var player = null
 var zone: String = "backyard"
 
 # Sprite cache: name -> Texture2D
 var _images: Dictionary = {}
+
+# When true, the static player is NOT drawn (a temporary Sprite2D
+# is being used by Game.gd for the movement animation).
+var hide_static_player: bool = false
 
 
 # ======================= INIT =======================
@@ -71,7 +82,6 @@ func _load_images() -> void:
 		"1", "2", "3", "4", "5", "6", "7", "8", "9", "question"
 	]
 
-	# Character sprites (Pals, player characters, deathpal).
 	var character_textures: Array = [
 		"chef", "mosquito", "mommy", "scout", "student",
 		"dummie", "charlie", "joni", "ru", "deathpal"
@@ -93,13 +103,65 @@ func _load_images() -> void:
 			_images[name] = load(path)
 
 
+# ======================= PUBLIC HELPERS =======================
+
+# Returns the world position of the given tile (top-left of the tile).
+func tile_to_world(tile_pos: Vector2i) -> Vector2:
+	var board_size: int = board.size()
+	var half: float = (board_size * TILE_SIZE) / 2.0
+	return Vector2(
+		tile_pos.x * TILE_SIZE - half + TILE_SIZE / 2.0,
+		tile_pos.y * TILE_SIZE - half + TILE_SIZE / 2.0
+	)
+
+
+# Returns the visual transform the player would have at the given tile:
+#   - position: world position of the character sprite center
+#   - scale: Vector2 scale for the sprite
+# Used by Game.gd to place the temporary Sprite2D during the animation.
+func get_player_visual_transform(tile_pos: Vector2i) -> Dictionary:
+	var tile_world_pos: Vector2 = tile_to_world(tile_pos)
+
+	if player == null:
+		return {"position": tile_world_pos, "scale": Vector2.ONE}
+
+	var player_type: String = player.get_type()
+	var tex: Texture2D = _images.get(player_type, null)
+	if tex == null:
+		return {"position": tile_world_pos, "scale": Vector2.ONE}
+
+	var tex_size: Vector2 = tex.get_size()
+	var tile_size: float = float(TILE_SIZE)
+
+	var height: int = _get_tile_height_at(tile_pos)
+	var height_scale: float = HEIGHT_SCALE_MAP.get(height, 1.0)
+
+	var target_height: float = tile_size * HEIGHT_MULT * height_scale
+	var scale_y: float = target_height / tex_size.y
+	var scale_x: float = scale_y * WIDTH_MULT
+
+	var effective_tile_size: float = tile_size * height_scale
+	var y_offset: float = (target_height - effective_tile_size) * 1.5 + Y_LIFT
+
+	var position: Vector2 = tile_world_pos + Vector2(0, -y_offset)
+
+	return {
+		"position": position,
+		"scale": Vector2(scale_x, scale_y)
+	}
+
+
+# Returns the current texture for the player (from the cache).
+func get_player_texture() -> Texture2D:
+	if player == null:
+		return null
+	return _images.get(player.get_type(), null)
+
+
 # ======================= MAIN DRAW =======================
 
 func _draw() -> void:
-	if board.is_empty():
-		return
-	if player == null:
-		push_warning("[TileRenderer] player is null, skipping draw")
+	if board.is_empty() or player == null:
 		return
 
 	var board_size: int = board.size()
@@ -162,7 +224,7 @@ func _draw() -> void:
 				else:
 					_draw_sprite("hide", draw_x - obj_offset.x, draw_y - obj_offset.y, obj_size)
 
-			# Layer 4.5: cover markers (treasure + horizon)
+			# Layer 4.5: cover markers
 			if tile.have_treasure():
 				_draw_sprite("treasure", draw_x - obj_offset.x, draw_y - obj_offset.y, obj_size)
 
@@ -217,14 +279,53 @@ func _draw() -> void:
 			if tile.is_flaggoal():
 				_draw_sprite("flaggoal", draw_x - obj_offset.x, draw_y - obj_offset.y, obj_size)
 
+			# Layer 8: player character (static, hidden during animation)
+			if not hide_static_player:
+				if player.get_pos_x() == x and player.get_pos_y() == y and not tile.is_smoke():
+					_draw_player(draw_x, draw_y, obj_offset, obj_size)
+
 			# Layer 9: smoke
 			if tile.is_smoke():
 				_draw_sprite("smoke", draw_x - obj_offset.x, draw_y - obj_offset.y, obj_size)
 
-	# Delirium overlay (full board dark)
+	# Delirium overlay
 	if player.has_keychain("delirium"):
 		var total_size: float = board_size * TILE_SIZE
 		draw_rect(Rect2(Vector2(-half, -half), Vector2(total_size, total_size)), Color(0, 0, 0, 0.25))
+
+
+# ======================= PLAYER DRAW (STATIC) =======================
+
+func _draw_player(draw_x: float, draw_y: float, obj_offset: Vector2, obj_size: float) -> void:
+	var tex: Texture2D = _images.get(player.get_type(), null)
+	if tex == null:
+		return
+
+	var tex_size: Vector2 = tex.get_size()
+	if tex_size == Vector2.ZERO:
+		return
+
+	var player_height: float = obj_size * HEIGHT_MULT
+	var scale_y: float = player_height / tex_size.y
+	var scale_x: float = scale_y * WIDTH_MULT
+
+	var y_offset: float = (player_height - obj_size) * 1.5 + Y_LIFT
+
+	var draw_player_x: float = draw_x - obj_offset.x
+	var draw_player_y: float = draw_y - obj_offset.y - y_offset
+
+	var center: Vector2 = Vector2(
+		draw_player_x + obj_size / 2.0,
+		draw_player_y + player_height / 2.0
+	)
+
+	draw_set_transform(center, 0.0, Vector2(scale_x, scale_y))
+	draw_texture_rect(
+		tex,
+		Rect2(-tex_size.x / 2.0, -tex_size.y / 2.0, tex_size.x, tex_size.y),
+		false
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 # ======================= FLAG LAYER =======================
@@ -292,6 +393,16 @@ func _get_object_offset(height: int) -> Vector2:
 	)
 
 
+func _get_tile_height_at(tile_pos: Vector2i) -> int:
+	if board.is_empty():
+		return 0
+	if tile_pos.x < 0 or tile_pos.x >= board.size():
+		return 0
+	if tile_pos.y < 0 or tile_pos.y >= board.size():
+		return 0
+	return board[tile_pos.x][tile_pos.y].get_tileheight()
+
+
 # ======================= DRAW HELPERS =======================
 
 func _draw_sprite(name: String, x: float, y: float, size: float) -> void:
@@ -299,14 +410,3 @@ func _draw_sprite(name: String, x: float, y: float, size: float) -> void:
 	if tex == null:
 		return
 	draw_texture_rect(tex, Rect2(x, y, size, size), false)
-
-
-# ======================= TILE-TO-WORLD =======================
-
-func tile_to_world(tile_pos: Vector2i) -> Vector2:
-	var board_size: int = board.size()
-	var half: float = (board_size * TILE_SIZE) / 2.0
-	return Vector2(
-		tile_pos.x * TILE_SIZE - half + TILE_SIZE / 2.0,
-		tile_pos.y * TILE_SIZE - half + TILE_SIZE / 2.0
-	)
