@@ -1,0 +1,234 @@
+[gd_scene format=3 uid="uid://ctpotjyjiawqk"]
+
+[ext_resource type="Script" uid="uid://dcyoeyp7uj7ox" path="res://scripts/interface/game/Scoreboard.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://irbc44y0rhf6" path="res://assets/hud/game/gameover/scoreboard.png" id="2_bg"]
+[ext_resource type="FontFile" uid="uid://bpm2yse2s76ho" path="res://assets/font/pencilant.script.otf" id="3_pencil"]
+[ext_resource type="Texture2D" uid="uid://dee3qsthrcaca" path="res://assets/hud/game/gameover/f.png" id="4_grade_f"]
+[ext_resource type="Texture2D" uid="uid://dwcciejqepbm6" path="res://assets/hud/game/gameover/continue.png" id="5_continue"]
+[ext_resource type="Texture2D" uid="uid://c1n04autcxjyk" path="res://assets/hud/game/gameover/retry.png" id="6_retry"]
+[ext_resource type="Texture2D" uid="uid://cs3mgoftx5p1b" path="res://assets/hud/game/gameover/home.png" id="7_home"]
+[ext_resource type="Texture2D" uid="uid://rg7j4ox1a41d" path="res://assets/hud/game/gameover/random.png" id="8_random"]
+
+[node name="Scoreboard" type="CanvasLayer" unique_id=1618794824]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="." unique_id=86688569]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root" unique_id=1357660540]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Card" type="TextureRect" parent="Root" unique_id=1884265977]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -350.0
+offset_right = 350.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LabelsCol" type="VBoxContainer" parent="Root/Card" unique_id=2021803795]
+layout_mode = 1
+offset_left = 142.0
+offset_top = 168.0
+offset_right = 352.0
+offset_bottom = 518.0
+theme_override_constants/separation = 20
+
+[node name="RescuedLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=1710519523]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 34
+text = "Rescued"
+
+[node name="MarkedLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=1467724010]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "Marked Hazard"
+
+[node name="DifficultyLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=697719958]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "Difficulty Bonus"
+
+[node name="DeathsLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=795091654]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "Deaths Penalty"
+
+[node name="FailedLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=226583783]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 35
+text = "Failed Penalty"
+
+[node name="DamageLabel" type="Label" parent="Root/Card/LabelsCol" unique_id=1465725663]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 30
+text = "Damage Penalty"
+
+[node name="ValuesCol" type="VBoxContainer" parent="Root/Card" unique_id=881782064]
+layout_mode = 1
+offset_left = 402.0
+offset_top = 180.0
+offset_right = 622.0
+offset_bottom = 474.0
+theme_override_constants/separation = 20
+
+[node name="RescuedValue" type="Label" parent="Root/Card/ValuesCol" unique_id=1856106933]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "0/0"
+horizontal_alignment = 2
+
+[node name="MarkedValue" type="Label" parent="Root/Card/ValuesCol" unique_id=362555049]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "0/0"
+horizontal_alignment = 2
+
+[node name="DifficultyValue" type="Label" parent="Root/Card/ValuesCol" unique_id=1968514296]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "x1.00"
+horizontal_alignment = 2
+
+[node name="DeathsValue" type="Label" parent="Root/Card/ValuesCol" unique_id=1431812585]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "0"
+horizontal_alignment = 2
+
+[node name="FailedValue" type="Label" parent="Root/Card/ValuesCol" unique_id=604503476]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "0"
+horizontal_alignment = 2
+
+[node name="DamageValue" type="Label" parent="Root/Card/ValuesCol" unique_id=296618369]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 31
+text = "0"
+horizontal_alignment = 2
+
+[node name="TotalLabel" type="Label" parent="Root/Card" unique_id=1667117358]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -144.0
+offset_right = 200.0
+offset_bottom = -84.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_pencil")
+theme_override_font_sizes/font_size = 42
+text = "0/0"
+horizontal_alignment = 1
+
+[node name="GradeIcon" type="TextureRect" parent="Root/Card" unique_id=1460858960]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -174.0
+offset_right = -70.0
+offset_bottom = -64.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("4_grade_f")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Root/Card" unique_id=1257196195]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -210.0
+offset_top = -93.0
+offset_right = 218.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="RandomButton" type="TextureButton" parent="Root/Card/ButtonsRow" unique_id=1740699415]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("8_random")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ContinueButton" type="TextureButton" parent="Root/Card/ButtonsRow" unique_id=477325388]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("5_continue")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="RetryButton" type="TextureButton" parent="Root/Card/ButtonsRow" unique_id=765370183]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("6_retry")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="HomeButton" type="TextureButton" parent="Root/Card/ButtonsRow" unique_id=1770325647]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("7_home")
+ignore_texture_size = true
+stretch_mode = 5

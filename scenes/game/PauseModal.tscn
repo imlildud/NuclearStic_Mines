@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://pausemodal_scene"]
+
+[ext_resource type="Script" path="res://scripts/interface/game/PauseModal.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_bg"]
+[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+[ext_resource type="Texture2D" path="res://assets/hud/game/control/continuegame.png" id="4_continue"]
+[ext_resource type="Texture2D" path="res://assets/hud/game/control/exit.png" id="5_exit"]
+
+[node name="PauseModal" type="CanvasLayer"]
+layer = 95
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Card" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Content" type="VBoxContainer" parent="Root/Card"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = 80.0
+offset_right = -80.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="SeedLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Seed: ---"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = ""
+horizontal_alignment = 1
+
+[node name="ChildrenContainer" type="HBoxContainer" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ButtonsRow" type="HBoxContainer" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="ContinueButton" type="TextureButton" parent="Root/Card/Content/ButtonsRow"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("4_continue")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ExitButton" type="TextureButton" parent="Root/Card/Content/ButtonsRow"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+texture_normal = ExtResource("5_exit")
+ignore_texture_size = true
+stretch_mode = 5

@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://levelstartmodal_scene"]
+
+[ext_resource type="Script" path="res://scripts/interface/game/LevelStartModal.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_bg"]
+[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+
+[node name="LevelStartModal" type="CanvasLayer"]
+layer = 90
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Dimmer" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Card" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Content" type="VBoxContainer" parent="Root/Card"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = 80.0
+offset_right = -80.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 40
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Level 1"
+horizontal_alignment = 1
+
+[node name="SeedLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Seed: ---"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Wanted: 1"
+horizontal_alignment = 1
+
+[node name="ChildrenContainer" type="HBoxContainer" parent="Root/Card/Content"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1

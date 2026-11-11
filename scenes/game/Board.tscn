@@ -1,3 +1,10 @@
-[gd_scene format=3 uid="uid://cwtgoyib55q8k"]
+[gd_scene format=3 uid="uid://board_scene_001"]
 
-[node name="Board" type="Node2D" unique_id=72968354]
+[ext_resource type="Script" path="res://scripts/interface/game/Board.gd" id="1_board"]
+[ext_resource type="Script" path="res://scripts/views/TileRenderer.gd" id="2_tilerenderer"]
+
+[node name="Board" type="Node2D"]
+script = ExtResource("1_board")
+
+[node name="TileLayer" type="Node2D" parent="."]
+script = ExtResource("2_tilerenderer")
