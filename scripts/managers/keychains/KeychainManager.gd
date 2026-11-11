@@ -58,7 +58,7 @@ func load_legacy_keychains(player) -> void:
 		SaveManager.clear_legacy_stuffed_keychains()
 		KeychainConfig.init_keychain_uses_for_player(player)
 		game_manager.get_flag_mode_manager().update_swamp_button_ui()
-		game_manager.reversion_manager.update_button_ui()
+		game_manager.get_reversion_manager().update_button_ui()
 
 		print("[Stuffed Legacy] Loaded into inventory: ", player.inventory)
 		return
@@ -149,7 +149,7 @@ func load_hardcore_keychains(player) -> void:
 		SaveManager.clear_hardcore_stuffed_keychains()
 		KeychainConfig.init_keychain_uses_for_player(player)
 		game_manager.get_flag_mode_manager().update_swamp_button_ui()
-		game_manager.reversion_manager.update_button_ui()
+		game_manager.get_reversion_manager().update_button_ui()
 
 		print("[Stuffed Hardcore] Loaded into inventory: ", player.inventory)
 		return
@@ -217,7 +217,7 @@ func give_daily_keychains(bundle_manager, player, seed: int) -> void:
 
 	KeychainConfig.init_keychain_uses_for_player(player)
 	game_manager.get_flag_mode_manager().update_swamp_button_ui()
-	game_manager.reversion_manager.update_button_ui()
+	game_manager.get_reversion_manager().update_button_ui()
 
 	print("[Daily] Gave %d keychains from seed %d" % [added_count, seed])
 	print("[Daily] Keychains: ", ", ".join(player.inventory))
@@ -246,7 +246,7 @@ func load_custom_keychains(save_manager, player) -> void:
 
 	KeychainConfig.init_keychain_uses_for_player(player)
 	game_manager.get_flag_mode_manager().update_swamp_button_ui()
-	game_manager.reversion_manager.update_button_ui()
+	game_manager.get_reversion_manager().update_button_ui()
 
 	print("[Custom] Loaded %d saved keychains: %s" % [added_count, ", ".join(player.inventory)])
 

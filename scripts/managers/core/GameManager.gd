@@ -11,7 +11,6 @@ extends Node
 # ======================= SIGNALS =======================
 
 # Emitted when a generic message modal must be shown.
-# Connect from a UI scene to display it.
 signal show_message(message: String, on_close: Callable)
 
 # Emitted when the scoreboard should be displayed.
@@ -344,6 +343,36 @@ func reset_memory_markers() -> void:
 	_flag_mode_manager.reset_memory_markers()
 
 
+# ======================= SUB-MANAGER GETTERS =======================
+# Public accessors for sub-managers. Used by KeychainManager,
+# BundleUIManager, KeychainUIManager, FlagManager, etc.
+# The internal variables are prefixed with `_` by convention.
+
+func get_keychain_manager():
+	return _keychain_manager
+
+func get_reversion_manager():
+	return _reversion_manager
+
+func get_link_manager():
+	return _link_manager
+
+func get_flag_manager():
+	return _flag_manager
+
+func get_ui_manager():
+	return _ui_manager
+
+func get_level_configurator():
+	return _level_configurator
+
+func get_game_mode_manager():
+	return _game_mode_manager
+
+func get_hazard_manager():
+	return _hazard_manager
+
+
 # ======================= GETTERS =======================
 
 func get_board() -> Array:
@@ -552,5 +581,4 @@ func create_seeded_random(seed_value: int) -> Callable:
 # UI scenes listen to `level_start_requested` and display it.
 func _show_level_start_modal() -> void:
 	level_start_requested.emit(char_ctrl, config, board)
-	# In a future version this could await a signal from the UI scene.
 	await get_tree().process_frame

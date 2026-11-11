@@ -8,6 +8,10 @@
 # - Legacy/Hardcore lose handling (clear progress, maybe save Stuffed).
 # - Game over dispatch.
 # - Custom mode randomization.
+#
+# NOTE: Sub-managers of GameManager are private (prefixed with `_`).
+# Use the public getters: get_keychain_manager(),
+# get_level_configurator(), get_reversion_manager(), etc.
 
 extends RefCounted
 class_name GameModeManager
@@ -33,10 +37,11 @@ func handle_legacy_victory(game) -> void:
 	var is_hardcore: bool = game.is_hardcore_enabled()
 	var player = game.player
 	var config: Dictionary = game.config
+	var keychain_manager = game.get_keychain_manager()
 
 	if is_hardcore:
 		# Save hardcore keychains and uses
-		game.keychain_manager.save_hardcore_keychains(player)
+		keychain_manager.save_hardcore_keychains(player)
 
 		# Save character and health
 		SaveManager.set_hardcore_character(player.get_type())
@@ -64,10 +69,10 @@ func handle_legacy_victory(game) -> void:
 		})
 
 		# Load hardcore keychains into new player
-		game.keychain_manager.load_hardcore_keychains(game.player)
+		keychain_manager.load_hardcore_keychains(game.player)
 	else:
 		# Normal Legacy
-		game.keychain_manager.save_legacy_keychains(player)
+		keychain_manager.save_legacy_keychains(player)
 		game.current_level += 1
 		SaveManager.set_legacy_level(game.current_level)
 
@@ -75,7 +80,7 @@ func handle_legacy_victory(game) -> void:
 		game.player = CharacterFactory.create_character(current_type)
 
 		# Load legacy keychains into new player
-		game.keychain_manager.load_legacy_keychains(game.player)
+		keychain_manager.load_legacy_keychains(game.player)
 
 	# Re-roll seed if one was set
 	if config.get("seed", null) != null:
@@ -87,7 +92,7 @@ func handle_legacy_victory(game) -> void:
 	game.add_child(game.char_ctrl)
 
 	# Reconfigure the level
-	var level_configurator = game.level_configurator
+	var level_configurator = game.get_level_configurator()
 	level_configurator.configure(game)
 
 	# Recreate spikes
@@ -114,6 +119,7 @@ func handle_legacy_lose(game) -> void:
 
 	var is_hardcore: bool = game.is_hardcore_enabled()
 	var player = game.player
+	var keychain_manager = game.get_keychain_manager()
 
 	# Stuffed: Save keychains before clearing (separated by mode)
 	if player.has_keychain("stuffed"):
@@ -131,12 +137,12 @@ func handle_legacy_lose(game) -> void:
 				print("[Stuffed Legacy] Saved keychains on death: ", keychains_to_save)
 
 	if is_hardcore:
-		game.keychain_manager.clear_hardcore_keychains()
+		keychain_manager.clear_hardcore_keychains()
 		SaveManager.clear_hardcore_all()
 		SaveManager.clear_hardcore_progress()
 		game.current_level = 1
 	else:
-		game.keychain_manager.clear_legacy_keychains()
+		keychain_manager.clear_legacy_keychains()
 		SaveManager.clear_legacy_progress()
 		game.current_level = 1
 
