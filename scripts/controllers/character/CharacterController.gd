@@ -441,7 +441,7 @@ func hurt_character() -> void:
 func kill_character() -> void:
 	# ===== CHECK FOR REVERSION AUTO-ACTIVATE =====
 	if game_manager != null:
-		var reversion_manager = game_manager.reversion_manager
+		var reversion_manager = game_manager.get_reversion_manager()
 		if reversion_manager != null and reversion_manager.auto_activate_on_death():
 			print("[KillCharacter] Reversion activated, preventing death")
 			return

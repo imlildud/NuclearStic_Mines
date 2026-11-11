@@ -12,4 +12,4 @@ const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 
 # Load the main menu as the first scene.
 func _ready() -> void:
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	get_tree().change_scene_to_file.call_deferred(MAIN_MENU_SCENE)
