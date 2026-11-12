@@ -107,6 +107,21 @@ static func sync_old_total_points(is_hardcore: bool = false) -> void:
 		SaveManager.sync_old_total_points()
 
 
+# ======================= UTILS =======================
+
+# Integer separator 200,000
+static func format_number(n: int) -> String:
+	var s: String = str(absi(n))
+	var out: String = ""
+	var count: int = 0
+	for i in range(s.length() - 1, -1, -1):
+		out = s[i] + out
+		count += 1
+		if count % 3 == 0 and i > 0:
+			out = "," + out
+	return ("-" if n < 0 else "") + out
+
+
 # ======================= ANIMATION =======================
 
 # Animates the rank display from `old_points` to `new_points` over 1.5s.
@@ -164,29 +179,12 @@ static func animate_total_points(
 	var duration: float = 1.5
 	var max_width: float = rank_bar_bg.size.x
 
-	# Reset the alpha to 0.0 so the Tween can drive it to 1.0.
-	rank_text.modulate = Color(1, 1, 1, 0.0)
-
-	# Tween the alpha from 0.0 to 1.0.
-	var tween: Tween = rank_text.create_tween()
-	tween.tween_property(rank_text, "modulate:a", 1.0, duration)
-
-	# Timer that reads the alpha (which acts as "progress") and updates the UI.
-	var update_timer: Timer = Timer.new()
-	update_timer.wait_time = 0.016  # ~60 FPS
-	update_timer.one_shot = false
-	update_timer.autostart = true
-	rank_text.add_child(update_timer)
-
-	var on_tick: Callable = func() -> void:
-		if not is_instance_valid(rank_text):
+	var apply_current: Callable = func(current: int) -> void:
+		if not is_instance_valid(rank_text) or not is_instance_valid(rank_bar_fill):
 			return
-		# The alpha goes from 0.0 to 1.0, so it acts as the progress.
-		var progress: float = rank_text.modulate.a
-		var current: int = int(floor(lerpf(float(old_points), float(new_points), progress)))
 		var rank_current: Dictionary = get_rank_data(current, is_hardcore)
 		var current_max: int = rank_current["max"]
-		rank_text.text = "%d / %d" % [current, current_max]
+		rank_text.text = "%s / %s" % [format_number(current), format_number(current_max)]
 		var percent: float = 0.0
 		var rank_range: int = current_max - rank_current["min"]
 		if rank_range > 0:
@@ -195,15 +193,22 @@ static func animate_total_points(
 			percent = 100.0
 		rank_bar_fill.size.x = max_width * (percent / 100.0)
 
-	update_timer.timeout.connect(on_tick)
+	var tween: Tween = rank_text.create_tween()
+	tween.tween_method(
+		func(t: float) -> void:
+			var current: int = int(floor(lerpf(float(old_points), float(new_points), t)))
+			apply_current.call(current),
+		0.0,
+		1.0,
+		duration
+	)
 
 	var on_finish: Callable = func() -> void:
-		update_timer.queue_free()
 		AudioManager.stop_score_animation_sfx()
 
-		# Set the final state exactly.
+		# Final state
 		var final_rank: Dictionary = get_rank_data(new_points, is_hardcore)
-		rank_text.text = "%d / %d" % [new_points, final_rank["max"]]
+		rank_text.text = "%s / %s" % [format_number(new_points), format_number(final_rank["max"])]
 		var percent: float = 0.0
 		var rank_range: int = final_rank["max"] - final_rank["min"]
 		if rank_range > 0:
@@ -211,9 +216,6 @@ static func animate_total_points(
 		else:
 			percent = 100.0
 		rank_bar_fill.size.x = max_width * (percent / 100.0)
-
-		# Reset the alpha to 1.0 (full visibility).
-		rank_text.modulate = Color(1, 1, 1, 1.0)
 
 		if on_complete.is_valid():
 			on_complete.call()

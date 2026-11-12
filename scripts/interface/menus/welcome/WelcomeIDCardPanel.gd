@@ -44,7 +44,9 @@ func _ready() -> void:
 
 
 # Refreshes the ID Card with the current save data.
-func refresh(username: String, avatar_id: int) -> void:
+# If `animate_points` is true, animates the rank bar / total from
+# the stored "old total points" to the current total.
+func refresh(username: String, avatar_id: int, animate_points: bool = false) -> void:
 	var legacy_level: int = SaveManager.get_legacy_level()
 	var legacy_high: int = SaveManager.get_legacy_high_score()
 	var daily_streak: int = SaveManager.get_daily_streak()
@@ -62,7 +64,7 @@ func refresh(username: String, avatar_id: int) -> void:
 	var rank_file: String = "rank_%s.png" % rank_data["rank"].to_lower()
 	rank_badge.texture = load(BADGES_PATH % rank_file)
 	rank_bar_fill.size.x = rank_bar_bg.size.x * (rank_data["percent"] / 100.0)
-	rank_text.text = "%d / %d" % [total_points, rank_data["max"]]
+	rank_text.text = "%s / %s" % [RankManager.format_number(total_points), RankManager.format_number(rank_data["max"])]
 
 	legacy_badge.texture = load(BADGES_PATH % _get_legacy_badge(legacy_high))
 	record_label.text = str(legacy_high)
@@ -72,6 +74,35 @@ func refresh(username: String, avatar_id: int) -> void:
 
 	hardcore_label.text = str(hardcore_high)
 	daily_record_label.text = str(daily_record)
+
+	if animate_points:
+		_animate_points_delta(is_hardcore)
+
+
+# Animates the rank display from the stored "old" total to the
+# current total, then syncs the old value so it doesn't replay.
+func _animate_points_delta(is_hardcore: bool) -> void:
+	var old_points: int = RankManager.get_old_total_points(is_hardcore)
+	var new_points: int = RankManager.get_total_points(is_hardcore)
+
+	if old_points == new_points:
+		# Nothing to animate (e.g. no delta), but keep old value in sync.
+		RankManager.sync_old_total_points(is_hardcore)
+		return
+
+	RankManager.animate_total_points(
+		old_points,
+		new_points,
+		is_hardcore,
+		rank_badge,
+		rank_bar_fill,
+		rank_bar_bg,
+		rank_text,
+		func() -> void:
+			# Once the animation is done, sync old -> new so the next
+			# return to the menu doesn't replay the same delta.
+			RankManager.sync_old_total_points(is_hardcore)
+	)
 
 
 func _get_legacy_badge(level: int) -> String:
