@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/backyard.mp3-bb310ea90bc3bd579bf9fd770ecc3c7e
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/scrapland.mp3-2739cb0f25223dab07615e617edad4f
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

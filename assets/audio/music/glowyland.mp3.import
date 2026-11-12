@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/glowyland.mp3-38e6cc39da55811f426349848a4dae9
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

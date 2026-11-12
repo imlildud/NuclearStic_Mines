@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/attic.mp3-5e15029d1534004fc69cb5b6497a8860.mp
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

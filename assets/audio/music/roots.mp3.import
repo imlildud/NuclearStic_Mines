@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/roots.mp3-2b3fac1454ca0db2801057cc488da5e7.mp
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0

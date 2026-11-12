@@ -12,7 +12,7 @@ dest_files=["res://.godot/imported/deepdry.mp3-2bd960fc2a204f9c7e661fd9b7eaa30e.
 
 [params]
 
-loop=false
+loop=true
 loop_offset=0
 bpm=0
 beat_count=0
