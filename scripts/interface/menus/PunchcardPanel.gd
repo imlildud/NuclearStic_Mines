@@ -578,15 +578,55 @@ func _on_start_pressed() -> void:
 func _on_seed_pressed() -> void:
 	if AudioManager.has_method("play_click_sfx"):
 		AudioManager.play_click_sfx()
-	var new_seed: int = generate_random_seed()
-	current_config["seed"] = new_seed
-	_update_seed_display(new_seed)
+
+	var modal = load("res://scenes/menu/SeedInputModal.tscn").instantiate()
+	add_child(modal)
+	modal.seed_confirmed.connect(func(new_seed: int):
+		current_config["seed"] = new_seed
+		_update_seed_display(new_seed)
+		modal.queue_free()
+	)
+	modal.cancelled.connect(func():
+		modal.queue_free()
+	)
+	modal.show_modal(current_config.get("seed", generate_random_seed()), locale_manager)
 
 
 func _on_keychain_pressed() -> void:
 	if AudioManager.has_method("play_click_sfx"):
 		AudioManager.play_click_sfx()
-	push_warning("Keychain selector not implemented")
+
+	if punchcard_mode != "custom":
+		return
+
+	var selector = load("res://scenes/menu/KeychainSelector.tscn").instantiate()
+	add_child(selector)
+	selector.confirmed.connect(func(selected_ids: Array):
+		set_custom_keychains(selected_ids)
+		selector.queue_free()
+	)
+	selector.cancelled.connect(func():
+		selector.queue_free()
+	)
+
+	# BundleManager provides the list of all keychains.
+	var bundle_manager = BundleManager.new(null, null)
+	selector.show_selector(custom_keychains, bundle_manager, locale_manager)
+
+func get_custom_keychains() -> Array:
+	return custom_keychains
+
+
+func set_custom_keychains(keychains: Array) -> void:
+	custom_keychains = keychains
+	SaveManager.set_custom_keychains(keychains)
+	print("[PunchcardPanel] Custom keychains set: ", keychains)
+
+
+func load_custom_keychains() -> Array:
+	if SaveManager.has_method("get_custom_keychains"):
+		custom_keychains = SaveManager.get_custom_keychains()
+	return custom_keychains
 
 
 func _on_dice_pressed() -> void:
