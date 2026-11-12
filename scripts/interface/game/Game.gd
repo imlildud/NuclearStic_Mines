@@ -320,6 +320,8 @@ func _handle_flag(direction: String) -> void:
 
 	GameManager.handle_flag_direction(direction)
 
+	AudioManager.play_flag_sfx()
+
 	var new_pos := Vector2i(
 		GameManager.player.get_pos_x(),
 		GameManager.player.get_pos_y()

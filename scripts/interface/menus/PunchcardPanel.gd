@@ -236,7 +236,7 @@ func generate_daily_config() -> void:
 	var seed_value: int = _generate_daily_seed()
 	var random: Callable = _create_seeded_random(seed_value)
 
-	var valid_sizes: Array = [8, 12, 16, 20, 24]
+	var valid_sizes: Array = [12, 16, 20, 24, 28, 32, 36, 40]
 	var size: int = valid_sizes[_get_random_in_range(random, 0, valid_sizes.size() - 1)]
 
 	var config: Dictionary = _create_base_config()
@@ -251,8 +251,9 @@ func generate_daily_config() -> void:
 	var zone_list: Array = ["desert", "snow", "scrapland", "roots", "glowyland", "ash"]
 	config["zone"] = zone_list[_get_random_in_range(random, 0, zone_list.size() - 1)]
 
-	config["hazards"] = _get_random_in_range(random, 1, size)
-	config["obstacles"] = _get_random_in_range(random, 1, size)
+	var intensity_max: int = maxi(1, floori(size / 4.0))
+	config["hazards"] = _get_random_in_range(random, 1, intensity_max)
+	config["obstacles"] = _get_random_in_range(random, 1, intensity_max)
 
 	daily_config = config
 	current_config = config
@@ -433,8 +434,17 @@ func _generate_daily_seed() -> int:
 	var date_string: String = "%d-%d-%d" % [date["year"], date["month"], date["day"]]
 	var hash_value: int = 0
 	for i in range(date_string.length()):
-		hash_value = date_string.unicode_at(i) + ((hash_value << 5) - hash_value)
+		var shifted: int = _to_int32(hash_value << 5)
+		hash_value = _to_int32(date_string.unicode_at(i) + (shifted - hash_value))
 	return absi(hash_value)
+
+
+# Truncates an int64 to a signed 32-bit int (mirrors JS `<<` and `|` semantics).
+func _to_int32(value: int) -> int:
+	var v: int = value & 0xFFFFFFFF
+	if v >= 0x80000000:
+		v -= 0x100000000
+	return v
 
 
 func _create_seeded_random(seed_value: int) -> Callable:
