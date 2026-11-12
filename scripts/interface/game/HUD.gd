@@ -424,16 +424,93 @@ func _update_support(player) -> void:
 
 	# Add new slots.
 	for keychain_id in visible_ids:
-		var slot := TextureRect.new()
-		slot.custom_minimum_size = Vector2(80, 80)
-		slot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-
-		var path: String = "res://assets/hud/game/keychains/keychain_%s.png" % keychain_id
-		if ResourceLoader.exists(path):
-			slot.texture = load(path)
-
+		var slot := _create_keychain_slot(keychain_id)
 		keychain_slots.add_child(slot)
+
+
+# Creates a clickable keychain slot with hover swing animation.
+# Creates a clickable keychain slot with hover swing animation.
+func _create_keychain_slot(keychain_id: String) -> Control:
+	var slot := Control.new()
+	# Reducimos de 80 a 55 para que quepan 5 en el HBoxContainer de 279px
+	slot.custom_minimum_size = Vector2(55, 55)
+	slot.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var tex := TextureRect.new()
+	# Igualamos el tamaño interno de la textura
+	tex.custom_minimum_size = Vector2(55, 55)
+	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var path: String = "res://assets/hud/game/keychains/keychain_%s.png" % keychain_id
+	if ResourceLoader.exists(path):
+		tex.texture = load(path)
+
+	slot.add_child(tex)
+	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	# Pivot at the top so it swings like a pendant.
+	tex.pivot_offset = Vector2(tex.size.x / 2.0, 0.0)
+	# Defer pivot fix until the slot has its final size.
+	slot.resized.connect(func():
+		tex.pivot_offset = Vector2(tex.size.x / 2.0, 0.0)
+	)
+
+	var swing_tween: Tween = null
+
+	slot.mouse_entered.connect(func():
+		AudioManager.play_hover_sfx()
+		if swing_tween != null and swing_tween.is_valid():
+			swing_tween.kill()
+		swing_tween = _build_swing_tween(tex)
+	)
+	slot.mouse_exited.connect(func():
+		if swing_tween != null and swing_tween.is_valid():
+			swing_tween.kill()
+		var t := create_tween()
+		t.tween_property(tex, "rotation", 0.0, 0.2).set_trans(Tween.TRANS_SINE)
+	)
+	slot.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_on_keychain_slot_clicked(keychain_id)
+	)
+
+	return slot
+
+
+# Builds the swing animation: 30° -> -30° -> 20° -> -20° -> 5° -> -5° -> 0°.
+# Each swing is shorter than the last (damped pendulum feel).
+func _build_swing_tween(tex: TextureRect) -> Tween:
+	var t := create_tween()
+
+	var swings: Array[Dictionary] = [
+		{"angle":  30.0, "time": 0.28},
+		{"angle": -25.0, "time": 0.26},
+		{"angle":  19.0, "time": 0.24},
+		{"angle": -13.0, "time": 0.22},
+		{"angle":   8.0, "time": 0.18},
+		{"angle":  -4.0, "time": 0.14},
+		{"angle":   0.0, "time": 0.12},
+	]
+
+	for s in swings:
+		t.tween_property(
+			tex,
+			"rotation",
+			deg_to_rad(s["angle"]),
+			s["time"]
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	return t
+
+
+# Called when a keychain slot is clicked: opens the info popup.
+func _on_keychain_slot_clicked(keychain_id: String) -> void:
+	AudioManager.play_click_sfx()
+	var ui = GameManager.keychain_ui_manager
+	if ui != null:
+		ui.show_keychain_info(keychain_id)
 
 
 # ======================= TREASURE INDICATOR =======================

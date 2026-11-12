@@ -411,7 +411,7 @@ offset_right = 7.0
 offset_bottom = 42.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_constants/separation = 1
+theme_override_constants/separation = 0
 alignment = 2
 
 [node name="TouchMovement" type="Control" parent="Root" unique_id=1789066705]
