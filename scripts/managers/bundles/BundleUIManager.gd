@@ -1,46 +1,23 @@
 # ==============================================================
 # ==================== BUNDLE UI MANAGER =======================
 # ==============================================================
-# Handles bundle popup display, keychain selection, and animations.
+# Orchestrator: instantiates BundlePopup / InventoryFullPopup /
+# TrashSelectionPopup and wires their signals. No UI code here.
 #
-# PHASE 3 STUB:
-# This manager is 100% UI/DOM in the original JS. Its real
-# implementation requires:
-#   - A `BundlePopup.tscn` scene with the bundle image, the
-#     keychain grid, and the rarity badges.
-#   - An `InventoryFullPopup.tscn` for the "inventory full" case.
-#   - A `TrashSelectionPopup.tscn` for the trash keychain removal.
-#   - Animations (appear, float, aura pulse).
+# Replaces the previous stub version. The public API is unchanged:
+#   - show_bundle_popup(tile_x, tile_y)
+#   - take_keychain (handled by the scene)
+#   - close()
 #
-# For now, this stub exposes the public API and emits signals so
-# the rest of the code compiles. Full wiring in Phase 3.
-#
-# NOTE: This is a RefCounted (not a Node) so it can be instantiated
-# with `BundleUIManager.new(self, bundle_manager, AudioManager)`.
-# The timer for `take_keychain` uses GameManager's tree.
+# Scene instances are parented to GameManager (a Node) so they can
+# use get_tree() for timers and tweens.
 
 extends RefCounted
 class_name BundleUIManager
 
-# ======================= SIGNALS =======================
-
-# Emitted when the bundle popup should be shown.
-# Payload: {tierKey: String, tier: Dictionary, keychains: Array}
-signal bundle_popup_requested(data: Dictionary)
-
-# Emitted when the bundle should be opened (image swap).
-signal bundle_opened(tier_key: String)
-
-# Emitted when the inventory is full (show trash/none popup).
-signal inventory_full_requested(is_trash: bool)
-
-# Emitted when the trash selection popup should be shown.
-signal trash_selection_requested(inventory: Array)
-
-# Emitted when the popup should be closed.
-signal popup_closed
-
-# ======================= STATE =======================
+const BUNDLE_POPUP_SCENE := "res://scenes/menu/bundle/BundlePopup.tscn"
+const INVENTORY_FULL_SCENE := "res://scenes/menu/bundle/InventoryFullPopup.tscn"
+const TRASH_SELECTION_SCENE := "res://scenes/menu/bundle/TrashSelectionPopup.tscn"
 
 var game_manager = null
 var bundle_manager = null
@@ -52,6 +29,11 @@ var current_keychains: Array = []
 var selected_count: int = 0
 var total_keychains: int = 0
 var is_trash_mode: bool = false
+
+# Active scene instances (parented to GameManager).
+var _bundle_popup: CanvasLayer = null
+var _inventory_full_popup: CanvasLayer = null
+var _trash_popup: CanvasLayer = null
 
 
 func _init(gm = null, bm = null, audio = null) -> void:
@@ -66,20 +48,18 @@ func set_locale_manager(lm) -> void:
 
 func get_text(key: String) -> String:
 	if locale_manager != null:
-		return locale_manager.get(key)
+		var r = locale_manager.get_translation(key)
+		if r is String and r != "":
+			return r
 	return key
 
 
-# ======================= SHOW BUNDLE POPUP =======================
+# ======================= SHOW BUNDLE =======================
 
-# Shows the bundle popup for the given tile.
-# If the player's inventory is full, shows the inventory-full popup
-# instead of generating the bundle.
 func show_bundle_popup(tile_x: int, tile_y: int) -> void:
 	if is_open:
 		return
 
-	# Check if inventory is full BEFORE generating the bundle
 	var player = game_manager.get_player()
 	var max_size: int = player.max_inventory_size if player.max_inventory_size > 0 else 5
 	var is_inventory_full: bool = player.inventory.size() >= max_size
@@ -96,45 +76,90 @@ func show_bundle_popup(tile_x: int, tile_y: int) -> void:
 
 	game_manager.set_game_input_locked(true)
 
-	# If inventory is full, show the inventory-full popup directly
 	if is_inventory_full:
-		show_inventory_full()
+		_show_inventory_full()
 	else:
-		var payload: Dictionary = {
-			"tierKey": tier_key,
-			"tier": tier,
-			"keychains": keychains
-		}
-		bundle_popup_requested.emit(payload)
+		_show_bundle_scene(tier_key, keychains)
+
+
+func _show_bundle_scene(tier_key: String, keychains: Array) -> void:
+	_bundle_popup = load(BUNDLE_POPUP_SCENE).instantiate()
+	game_manager.add_child(_bundle_popup)
+	_bundle_popup.keychain_taken.connect(_on_keychain_taken)
+	_bundle_popup.closed.connect(_on_bundle_closed)
+	_bundle_popup.show_bundle(tier_key, keychains, locale_manager)
+
+
+func _on_bundle_closed() -> void:
+	if _bundle_popup != null:
+		_bundle_popup.queue_free()
+		_bundle_popup = null
+	# Note: _on_keychain_taken already unlocked and set is_open=false.
+
+
+func _on_keychain_taken(keychain: Dictionary) -> void:
+	var player = game_manager.get_player()
+	player.inventory.append(keychain["id"])
+
+	KeychainConfig.init_keychain_uses_for_player(player)
+	game_manager.get_flag_mode_manager().update_swamp_button_ui()
+	game_manager.get_reversion_manager().update_button_ui()
+
+	if audio_manager != null:
+		audio_manager.play_rescue_sfx()
+
+	selected_count += 1
+	is_open = false
+	game_manager.set_game_input_locked(false)
 
 
 # ======================= INVENTORY FULL =======================
 
-# Shows the inventory-full popup.
-# 20% of the time it's a "trash" popup (lets the player remove one
-# keychain), otherwise it's a "nothing found" popup.
-func show_inventory_full() -> void:
+func _show_inventory_full() -> void:
 	var roll: float = randf()
 	var is_trash: bool = roll < 0.20
 	is_trash_mode = is_trash
-	inventory_full_requested.emit(is_trash)
+
+	_inventory_full_popup = load(INVENTORY_FULL_SCENE).instantiate()
+	game_manager.add_child(_inventory_full_popup)
+	_inventory_full_popup.trash_requested.connect(_on_trash_requested)
+	_inventory_full_popup.cancelled.connect(_on_inventory_cancelled)
+	_inventory_full_popup.acknowledged.connect(_on_inventory_cancelled)
+	_inventory_full_popup.show_popup(is_trash, locale_manager)
 
 
-# Shows the trash selection popup.
-# The player must choose a keychain to remove; cannot cancel.
-func show_trash_selection() -> void:
+func _on_trash_requested() -> void:
+	if _inventory_full_popup != null:
+		_inventory_full_popup.queue_free()
+		_inventory_full_popup = null
+	_show_trash_selection()
+
+
+func _on_inventory_cancelled() -> void:
+	if _inventory_full_popup != null:
+		_inventory_full_popup.queue_free()
+		_inventory_full_popup = null
+	is_open = false
+	is_trash_mode = false
+	game_manager.set_game_input_locked(false)
+
+
+# ======================= TRASH SELECTION =======================
+
+func _show_trash_selection() -> void:
 	var player = game_manager.get_player()
-	var inventory: Array = player.inventory
-
-	if inventory.is_empty():
+	if player.inventory.is_empty():
 		close()
 		return
 
-	trash_selection_requested.emit(inventory)
+	_trash_popup = load(TRASH_SELECTION_SCENE).instantiate()
+	game_manager.add_child(_trash_popup)
+	_trash_popup.keychain_selected.connect(_on_trash_keychain_selected)
+	_trash_popup.cancelled.connect(_on_trash_cancelled)
+	_trash_popup.show_popup(player.inventory.duplicate(), bundle_manager, locale_manager)
 
 
-# Called by the UI when the player selects a keychain to remove.
-func on_trash_keychain_selected(keychain_id: String) -> void:
+func _on_trash_keychain_selected(keychain_id: String) -> void:
 	var player = game_manager.get_player()
 	var idx: int = player.inventory.find(keychain_id)
 	if idx > -1:
@@ -143,47 +168,33 @@ func on_trash_keychain_selected(keychain_id: String) -> void:
 	if audio_manager != null:
 		audio_manager.play_click_sfx()
 
+	if _trash_popup != null:
+		_trash_popup.queue_free()
+		_trash_popup = null
+
 	close()
 
 
-# ======================= TAKE KEYCHAIN =======================
-
-# Called by the UI when the player clicks a keychain in the bundle.
-# Adds it to the inventory if there is space and it's not a duplicate.
-func take_keychain(keychain: Dictionary, item_index: int) -> void:
-	var player = game_manager.get_player()
-	var max_size: int = player.max_inventory_size if player.max_inventory_size > 0 else 5
-
-	if player.inventory.size() >= max_size:
-		show_inventory_full()
-		return
-
-	if player.inventory.has(keychain["id"]):
-		return
-
-	player.inventory.append(keychain["id"])
-
-	# Initialize uses if this keychain has them
-	KeychainConfig.init_keychain_uses_for_player(player)
-	game_manager.get_flag_mode_manager().update_swamp_button_ui()
-	game_manager._reversion_manager.update_button_ui()
-
-	if audio_manager != null:
-		audio_manager.play_rescue_sfx()
-
-	selected_count += 1
-
-	# Close the popup after a short delay (the UI handles the
-	# item fade-out animation and then calls close()).
-	# Delegate the timer to GameManager, which is a Node.
-	game_manager.get_tree().create_timer(0.4).timeout.connect(close)
+func _on_trash_cancelled() -> void:
+	if _trash_popup != null:
+		_trash_popup.queue_free()
+		_trash_popup = null
+	close()
 
 
 # ======================= CLOSE =======================
 
-# Closes the popup and unlocks input.
 func close() -> void:
+	if _bundle_popup != null:
+		_bundle_popup.queue_free()
+		_bundle_popup = null
+	if _inventory_full_popup != null:
+		_inventory_full_popup.queue_free()
+		_inventory_full_popup = null
+	if _trash_popup != null:
+		_trash_popup.queue_free()
+		_trash_popup = null
+
 	is_open = false
 	is_trash_mode = false
-	popup_closed.emit()
 	game_manager.set_game_input_locked(false)
