@@ -57,10 +57,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -19.0
-offset_top = -23.0
-offset_right = -7.0
-offset_bottom = -13.0
+offset_left = -18.0
+offset_top = -18.0
+offset_right = -6.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("4_charicon")
@@ -69,38 +69,38 @@ stretch_mode = 5
 
 [node name="GeohazAlert" type="TextureRect" parent="Root/CharGroup" unique_id=324626725]
 layout_mode = 0
-offset_left = 75.0
-offset_top = -21.0
-offset_right = 128.0
-offset_bottom = 25.0
+offset_left = 76.0
+offset_top = -16.0
+offset_right = 129.0
+offset_bottom = 30.0
 expand_mode = 1
 stretch_mode = 5
 
 [node name="GeoobsAlert" type="TextureRect" parent="Root/CharGroup" unique_id=1084722756]
 layout_mode = 0
-offset_left = 83.0
-offset_top = 80.0
-offset_right = 128.0
-offset_bottom = 127.0
+offset_left = 84.0
+offset_top = 84.0
+offset_right = 129.0
+offset_bottom = 131.0
 expand_mode = 1
 stretch_mode = 5
 
 [node name="TiredIcon" type="TextureRect" parent="Root/CharGroup" unique_id=1383390840]
 layout_mode = 0
 offset_left = -14.0
-offset_top = -3.0
+offset_top = 3.0
 offset_right = 71.0
-offset_bottom = 80.0
+offset_bottom = 86.0
 texture = ExtResource("13_tired")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="CriticizedIcon" type="TextureRect" parent="Root/CharGroup" unique_id=891293473]
 layout_mode = 0
-offset_left = -19.0
-offset_top = 86.0
-offset_right = 25.0
-offset_bottom = 127.0
+offset_left = -18.0
+offset_top = 91.0
+offset_right = 26.0
+offset_bottom = 132.0
 texture = ExtResource("14_criticized")
 expand_mode = 1
 stretch_mode = 5
@@ -108,9 +108,9 @@ stretch_mode = 5
 [node name="TreasureIcon" type="TextureRect" parent="Root/CharGroup" unique_id=1898935753]
 layout_mode = 0
 offset_left = -14.0
-offset_top = -14.0
+offset_top = -10.0
 offset_right = 25.0
-offset_bottom = 20.0
+offset_bottom = 24.0
 texture = ExtResource("15_treasure")
 expand_mode = 1
 stretch_mode = 5
@@ -128,9 +128,9 @@ stretch_mode = 5
 [node name="HealthGroup" type="Control" parent="Root" unique_id=2061290086]
 anchors_preset = 0
 offset_left = 3.0
-offset_top = 164.0
+offset_top = 168.0
 offset_right = 151.0
-offset_bottom = 224.0
+offset_bottom = 228.0
 mouse_filter = 2
 
 [node name="HealthBar" type="TextureRect" parent="Root/HealthGroup" unique_id=1138545777]
@@ -171,9 +171,9 @@ vertical_alignment = 1
 
 [node name="StatsRow" type="Control" parent="Root" unique_id=2028044993]
 anchors_preset = 0
-offset_top = 232.0
+offset_top = 237.0
 offset_right = 312.0
-offset_bottom = 312.0
+offset_bottom = 317.0
 mouse_filter = 2
 
 [node name="FlagsIcon" type="TextureRect" parent="Root/StatsRow" unique_id=2035658878]

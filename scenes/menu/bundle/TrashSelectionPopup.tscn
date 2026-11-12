@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/interface/menus/bundle/TrashSelectionPopup.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/menu/bundle/KeychainCard.tscn" id="2_card"]
+
+[node name="TrashSelectionPopup" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_script")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_alignment = 1
+
+[node name="Grid" type="GridContainer" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 3
+
+[node name="CancelButton" type="Button" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
