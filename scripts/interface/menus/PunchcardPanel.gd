@@ -224,6 +224,7 @@ func generate_legacy_config() -> void:
 	_update_punchcard_textures(config)
 	_update_punchcard_background()
 	_update_custom_elements_visibility(false)
+	_update_start_button_visibility()
 	_update_badges()
 
 
@@ -260,7 +261,7 @@ func generate_daily_config() -> void:
 	_update_punchcard_textures(config)
 	_update_seed_display(seed_value)
 
-	$Punchcard/StartButton.visible = not SaveManager.is_daily_attempted_today()
+	_update_start_button_visibility()
 	_update_custom_elements_visibility(false)
 	_update_badges()
 
@@ -288,6 +289,7 @@ func generate_custom_config() -> void:
 	_update_custom_elements_visibility(true)
 	_load_custom_keychains()
 	_update_custom_textures()
+	_update_start_button_visibility()
 	_update_badges()
 
 # ======================= TEXTURE UPDATES =======================
@@ -553,6 +555,10 @@ func _index_for_char(char_id: String) -> int:
 		"mommy": return 2
 		"scout": return 3
 		_: return 0
+
+func _update_start_button_visibility() -> void:
+	var hide_for_daily: bool = (punchcard_mode == "daily") and SaveManager.is_daily_attempted_today()
+	$Punchcard/StartButton.visible = not hide_for_daily
 
 # ======================= BUTTON HANDLERS =======================
 
