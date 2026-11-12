@@ -9,6 +9,10 @@
 #   3. Después del avatar → muestra WelcomeTutorialPanel.
 #   4. Después del tutorial (o si ya estaba completo) → muestra WelcomeIDCardPanel.
 #
+# El ID Card se anima cuando se abre automáticamente al volver
+# de una partida (si hay un delta de puntos). En los demás casos,
+# se muestra estático.
+#
 # Cada panel es una escena independiente con su propio script.
 # Este orquestador solo los instancia, los muestra/oculta y
 # escucha sus señales.
@@ -52,7 +56,8 @@ func init_welcome_screen() -> void:
 	var username: String = SaveManager.get_username()
 
 	if tutorial_completed and username != "":
-		_show_id_card(username, SaveManager.get_avatar())
+		# Returning player: show ID card WITH animation if there's a delta.
+		_show_id_card(username, SaveManager.get_avatar(), true)
 	elif username != "":
 		_show_avatar_panel()
 	else:
@@ -87,9 +92,9 @@ func _show_tutorial_panel() -> void:
 	_tutorial_panel.visible = true
 
 
-func _show_id_card(username: String, avatar_id: int) -> void:
+func _show_id_card(username: String, avatar_id: int, animate_points: bool = false) -> void:
 	_hide_all()
-	_id_card_panel.refresh(username, avatar_id)
+	_id_card_panel.refresh(username, avatar_id, animate_points)
 	_id_card_panel.visible = true
 
 
@@ -107,7 +112,8 @@ func _on_avatar_confirmed(avatar_id: int) -> void:
 	if not SaveManager.is_tutorial_completed():
 		_show_tutorial_panel()
 	else:
-		_show_id_card(SaveManager.get_username(), avatar_id)
+		# Edit flow: return to ID card WITHOUT animation.
+		_show_id_card(SaveManager.get_username(), avatar_id, false)
 
 
 func _on_tutorial_choice(wants_tutorial: bool) -> void:
@@ -128,7 +134,8 @@ func _on_tutorial_choice(wants_tutorial: bool) -> void:
 		}
 		get_tree().change_scene_to_file("res://scenes/game/Game.tscn")
 	else:
-		_show_id_card(SaveManager.get_username(), SaveManager.get_avatar())
+		# Return to ID card WITHOUT animation (first-time flow).
+		_show_id_card(SaveManager.get_username(), SaveManager.get_avatar(), false)
 
 
 func _on_id_card_play() -> void:

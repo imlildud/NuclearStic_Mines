@@ -86,11 +86,6 @@ func _ready() -> void:
 # ======================= GAME INITIALIZATION =======================
 
 # Starts a new game with the given configuration.
-# `config` must contain at least:
-#   - mode: "legacy" | "hardcore" | "daily" | "custom" | "tutorial" | "test"
-#   - character: character id
-#   - zone: zone name
-#   - seed (optional): int for deterministic generation
 func start_game(cfg: Dictionary) -> void:
 	config = cfg
 	game_input_locked = false
@@ -101,6 +96,14 @@ func start_game(cfg: Dictionary) -> void:
 		current_level = SaveManager.get_hardcore_level()
 	else:
 		current_level = SaveManager.get_legacy_level()
+
+	# Safety: current_level must be at least 1.
+	if current_level < 1:
+		current_level = 1
+		if is_hardcore:
+			SaveManager.set_hardcore_level(1)
+		else:
+			SaveManager.set_legacy_level(1)
 
 	# Create player
 	player = CharacterFactory.create_character(config.get("character", "chef"))
@@ -138,11 +141,8 @@ func start_game(cfg: Dictionary) -> void:
 		"legacy":
 			if is_hardcore_enabled():
 				_keychain_manager.load_hardcore_keychains(player)
-
-				# Restore character and health
 				var saved_char = SaveManager.get_hardcore_character()
 				var saved_health = SaveManager.get_hardcore_health()
-
 				if saved_char != null and saved_char == config.get("character") and saved_health != null:
 					player.set_hp(saved_health)
 					print("[Hardcore] Restored health: ", saved_health)
@@ -162,13 +162,12 @@ func start_game(cfg: Dictionary) -> void:
 	_keychain_manager.apply_resistance(player)
 	if player.has_keychain("judgment"):
 		player.set_criticized(true)
-		player.set_criticker_goal(9999)  # Permanent effect
+		player.set_criticker_goal(9999)
 
 	_flag_mode_manager.update_swamp_button_ui()
 	_reversion_manager.update_button_ui()
 	set_linked_pal(board)
 
-	# Memory markers (declared above to fix the JS bug)
 	memory_markers = 3
 
 	# Spike controller
@@ -201,7 +200,7 @@ func start_game(cfg: Dictionary) -> void:
 
 
 # Sets the player's available flags equal to the number of
-# hazards currently on the board. Called at game start and retry.
+# hazards currently on the board.
 func set_player_flags_from_board() -> void:
 	var total_hazards: int = get_total_hazards_on_board()
 	player.set_flags(total_hazards)
@@ -211,8 +210,6 @@ func set_player_flags_from_board() -> void:
 # ======================= INPUT =======================
 
 # Handles a directional move from the player.
-# `direction` is one of: "up" | "down" | "left" | "right".
-# Respects the input lock and the move cooldown.
 func handle_input(direction: String) -> void:
 	if game_input_locked:
 		return
@@ -225,7 +222,6 @@ func handle_input(direction: String) -> void:
 	char_ctrl.verify_tile(board)
 	board_ctrl.update_vision_around_player(board, player)
 
-	# Regeneration: if the player regens, hazards may respawn
 	if player.is_regen():
 		_hazard_manager.regenerate(self)
 
@@ -236,7 +232,6 @@ func handle_input(direction: String) -> void:
 
 
 # Checks if the player is standing on a treasure tile.
-# If so, consumes it and triggers the bundle popup.
 func check_treasure_tile() -> void:
 	var px: int = player.get_pos_x()
 	var py: int = player.get_pos_y()
@@ -248,8 +243,7 @@ func check_treasure_tile() -> void:
 			bundle_ui_manager.show_bundle_popup(px, py)
 
 
-# Tutorial-only: advances to the next phase when the player
-# steps on the flag goal (except in phases 2, 3, 4).
+# Tutorial-only: advances to the next phase.
 func check_tutorial_progress() -> void:
 	if config.get("mode") != "tutorial" or tutorial_manager == null:
 		return
@@ -261,7 +255,6 @@ func check_tutorial_progress() -> void:
 
 
 # Checks if the player has won.
-# Tutorial phase 5 has a special win condition.
 func check_victory() -> void:
 	if config.get("mode") == "tutorial":
 		if board_ctrl.current_phase == 5 and char_ctrl.win_condition(board):
@@ -272,38 +265,32 @@ func check_victory() -> void:
 			return
 
 
-# Checks if the player has died and triggers game over.
+# Checks if the player has died.
 func check_defeat() -> void:
 	if not player.is_alive():
 		game_input_locked = true
 		handle_game_over()
 
 
-# Activates the Reversion keychain. Returns true if it activated.
+# Activates the Reversion keychain.
 func activate_reversion() -> bool:
 	return _reversion_manager.activate()
 
 
-# Tells the link manager to pick a linked pal from the board.
 func set_linked_pal(b: Array) -> void:
 	_link_manager.set_linked_pal(b)
 
 
-# Returns the currently linked pal (or null).
 func get_linked_pal():
 	return _link_manager.get_linked_pal()
 
 
-# Called when the player takes damage; forwards to the link manager.
 func on_player_damage() -> void:
 	_link_manager.on_player_damage()
 
 
 # ======================= FLAG SYSTEM =======================
 
-# Handles a flag action in the given direction.
-# `direction` is "up" | "down" | "left" | "right".
-# If the flag was a jump flag, re-runs vision and tile verification.
 func handle_flag_direction(direction: String) -> void:
 	if board.is_empty():
 		return
@@ -344,9 +331,6 @@ func reset_memory_markers() -> void:
 
 
 # ======================= SUB-MANAGER GETTERS =======================
-# Public accessors for sub-managers. Used by KeychainManager,
-# BundleUIManager, KeychainUIManager, FlagManager, etc.
-# The internal variables are prefixed with `_` by convention.
 
 func get_keychain_manager():
 	return _keychain_manager
@@ -384,7 +368,6 @@ func get_player():
 func get_zone() -> String:
 	return config.get("zone", "")
 
-# Returns the next destiny target (for the Destiny keychain).
 func get_destiny_target(b: Array):
 	destiny_target = _keychain_manager.get_destiny_target(b, destiny_target)
 	return destiny_target
@@ -413,31 +396,43 @@ func is_fall_damage_enabled() -> bool:
 func is_hardcore_enabled() -> bool:
 	return SaveManager.is_hardcore_enabled()
 
-# Returns a translated string. Falls back to the key if no
-# locale manager is set.
 func get_text(key: String) -> String:
 	if _locale_manager != null:
-		return _locale_manager.get(key)
+		return _locale_manager.get_translation(key)
 	return key
 
 
 # ======================= DELEGATED METHODS =======================
 
-# Handles a victory: marks daily, shows scoreboard, sets last_result.
+# Handles a victory: marks daily, saves Legacy progress, shows scoreboard.
+#
+# IMPORTANT: In Legacy mode, the level is advanced HERE (not on
+# Continue). This makes Home and Continue both work correctly.
+# `prepare_next_level()` (called on Continue) only rebuilds the board.
 func handle_victory() -> void:
 	game_input_locked = true
+
 	if config.get("mode") == "daily":
 		SaveManager.mark_daily_completed()
+
+	# In Legacy mode, advance the level and save keychains NOW.
+	# This does NOT rebuild the board (that happens on Continue).
+	if config.get("mode") == "legacy":
+		_game_mode_manager.save_legacy_victory_progress(self)
+
 	scoreboard.show(true)
 	last_result = "victory"
 	scoreboard_requested.emit(true)
 
 
 # Handles a game over: marks daily failed, plays SFX, shows scoreboard.
+# In Legacy mode, clears progress (level resets to 1, keychains cleared).
 func handle_game_over() -> void:
 	game_input_locked = true
+
 	if config.get("mode") == "daily":
 		SaveManager.mark_daily_failed()
+
 	AudioManager.play_death_sfx()
 	_game_mode_manager.handle_game_over(self)
 	scoreboard.show(false)
@@ -446,27 +441,19 @@ func handle_game_over() -> void:
 
 
 # Advances to the next level (Legacy mode only).
-# Shows the level-start modal and updates Discord presence.
+# Called by the "Continue" button on the scoreboard.
+# The level was ALREADY incremented in handle_victory(). Here we
+# only rebuild the player, board, and controllers for the new level.
 func next_level() -> void:
 	print("[NextLevel] START - Current state: ", {
 		"mode": config.get("mode"),
 		"level": current_level,
-		"inputLocked": game_input_locked,
-		"playerAlive": player.is_alive() if player != null else false,
-		"playerHp": player.get_hp() if player != null else 0
+		"inputLocked": game_input_locked
 	})
 
 	if config.get("mode") == "legacy":
-		_game_mode_manager.handle_legacy_victory(self)
+		_game_mode_manager.prepare_next_level(self)
 
-		print("[NextLevel] After handleLegacyVictory: ", {
-			"level": current_level,
-			"inputLocked": game_input_locked,
-			"playerAlive": player.is_alive() if player != null else false,
-			"playerHp": player.get_hp() if player != null else 0
-		})
-
-		# Close the scoreboard overlay
 		get_tree().call_group("scoreboard_overlay", "close")
 
 		if config.get("mode") != "tutorial":
@@ -475,11 +462,10 @@ func next_level() -> void:
 
 		print("[NextLevel] END - Final state: ", {
 			"inputLocked": game_input_locked,
-			"playerAlive": player.is_alive() if player != null else false,
-			"playerHp": player.get_hp() if player != null else 0
+			"level": current_level
 		})
 
-		# Update Discord presence
+		# Update Discord presence.
 		var updated_config: Dictionary = config.duplicate()
 		updated_config["level"] = current_level if current_level > 0 else 1
 		var presence: Dictionary = DiscordRPC.build_presence(updated_config)
@@ -489,7 +475,6 @@ func next_level() -> void:
 
 
 # Retries the current level.
-# Custom mode restarts from scratch; other modes reconfigure the board.
 func retry_level() -> void:
 	if config.get("mode") == "custom":
 		start_game(config)
@@ -513,7 +498,6 @@ func retry_level() -> void:
 func randomize_new_game() -> void:
 	_game_mode_manager.randomize_new_game(self)
 
-	# Update Discord presence
 	var updated_config: Dictionary = config.duplicate()
 	updated_config["level"] = current_level if current_level > 0 else 1
 	var presence: Dictionary = DiscordRPC.build_presence(updated_config)
@@ -523,15 +507,10 @@ func randomize_new_game() -> void:
 
 
 # Returns to the main menu.
-# In Legacy mode, increments the level if the last result was victory.
+# In Legacy mode, the level was already incremented in handle_victory(),
+# so we don't increment it again here.
 func return_to_menu() -> void:
-	if config.get("mode") == "legacy" and last_result == "victory":
-		current_level += 1
-		if is_hardcore_enabled():
-			SaveManager.set_hardcore_level(current_level)
-		else:
-			SaveManager.set_legacy_level(current_level)
-	get_tree().change_scene_to_file("res://scenes/menus/MainMenu.tscn")
+	get_tree().change_scene_to_file("res://scenes/menu/MainMenu.tscn")
 
 
 # Shows a generic message modal (via signal).
@@ -567,7 +546,6 @@ func get_total_hazards_on_board() -> int:
 
 # ======================= UTILITY METHODS =======================
 
-# Creates a seeded pseudo-random generator (LCG).
 func create_seeded_random(seed_value: int) -> Callable:
 	var state: Dictionary = {"seed": seed_value}
 	return func() -> float:
@@ -577,8 +555,6 @@ func create_seeded_random(seed_value: int) -> Callable:
 
 # ======================= INTERNAL HELPERS =======================
 
-# Shows the level-start modal via signal.
-# UI scenes listen to `level_start_requested` and display it.
 func _show_level_start_modal() -> void:
 	level_start_requested.emit(char_ctrl, config, board)
 	await get_tree().process_frame

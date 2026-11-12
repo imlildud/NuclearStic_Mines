@@ -40,6 +40,7 @@ func _ready() -> void:
 	edit_button.pressed.connect(func(): edit_pressed.emit())
 	play_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
 	delete_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
+	ButtonFeedback.attach_all(self)
 
 
 # Refreshes the ID Card with the current save data.

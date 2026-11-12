@@ -17,6 +17,7 @@ func _ready() -> void:
 	continue_button.pressed.connect(_on_continue)
 	name_input.text_submitted.connect(_on_text_submitted)
 	continue_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
+	ButtonFeedback.attach_all(self)
 
 
 # Sets the localized prompt text.

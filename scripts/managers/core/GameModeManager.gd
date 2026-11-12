@@ -4,7 +4,8 @@
 # Handles Legacy, Daily, and Custom mode logic.
 #
 # RESPONSIBILITIES:
-# - Legacy/Hardcore victory progression (level up, keep keychains).
+# - Legacy/Hardcore victory progress saving (level + keychains).
+# - Legacy/Hardcore next level preparation (rebuild board).
 # - Legacy/Hardcore lose handling (clear progress, maybe save Stuffed).
 # - Game over dispatch.
 # - Custom mode randomization.
@@ -26,9 +27,11 @@ func _init(gm = null) -> void:
 # ======================= LEGACY =======================
 
 # Called when the player wins in Legacy (normal or Hardcore).
-# Progresses the level, rebuilds the player and controllers.
-func handle_legacy_victory(game) -> void:
-	print("[LegacyVictory] START - Player state: ", {
+# Saves progress (level + keychains) WITHOUT rebuilding the board.
+# Safe to call the moment the player wins, so that Home and Continue
+# both behave correctly.
+func save_legacy_victory_progress(game) -> void:
+	print("[LegacyVictory] Saving progress - Player state: ", {
 		"alive": game.player.is_alive(),
 		"hp": game.player.get_hp(),
 		"deadPals": game.player.get_dead_pals()
@@ -36,66 +39,74 @@ func handle_legacy_victory(game) -> void:
 
 	var is_hardcore: bool = game.is_hardcore_enabled()
 	var player = game.player
-	var config: Dictionary = game.config
 	var keychain_manager = game.get_keychain_manager()
 
 	if is_hardcore:
-		# Save hardcore keychains and uses
+		# Save hardcore keychains and uses.
 		keychain_manager.save_hardcore_keychains(player)
 
-		# Save character and health
+		# Save character and health.
 		SaveManager.set_hardcore_character(player.get_type())
 		SaveManager.set_hardcore_health(player.get_hp())
 
 		game.current_level += 1
 		SaveManager.set_hardcore_level(game.current_level)
+	else:
+		# Normal Legacy.
+		keychain_manager.save_legacy_keychains(player)
+		game.current_level += 1
+		SaveManager.set_legacy_level(game.current_level)
 
+	print("[LegacyVictory] Level advanced to: %d" % game.current_level)
+
+
+# Called when the player presses "Continue" on the scoreboard.
+# Rebuilds the player, board, controllers, and config for the new level.
+func prepare_next_level(game) -> void:
+	var is_hardcore: bool = game.is_hardcore_enabled()
+	var config: Dictionary = game.config
+	var keychain_manager = game.get_keychain_manager()
+
+	print("[PrepareNextLevel] START - level: %d" % game.current_level)
+
+	# Update config for the new level.
+	if is_hardcore:
 		config["level"] = game.current_level
 		config["goals"] = 5
 		config["size"] = 12 + game.current_level
 		config["hazards"] = 5 + game.current_level
 		config["obstacles"] = 10 + game.current_level
 		config["zone"] = "ash"
-
-		var current_hp: int = player.get_hp()
-		var current_type: String = player.get_type()
-		game.player = CharacterFactory.create_character(current_type)
-		game.player.set_hp(current_hp)
-
-		print("[LegacyVictory] After player creation: ", {
-			"alive": game.player.is_alive(),
-			"hp": game.player.get_hp(),
-			"type": game.player.get_type()
-		})
-
-		# Load hardcore keychains into new player
-		keychain_manager.load_hardcore_keychains(game.player)
 	else:
-		# Normal Legacy
-		keychain_manager.save_legacy_keychains(player)
-		game.current_level += 1
-		SaveManager.set_legacy_level(game.current_level)
+		config["level"] = game.current_level
 
-		var current_type: String = player.get_type()
-		game.player = CharacterFactory.create_character(current_type)
-
-		# Load legacy keychains into new player
-		keychain_manager.load_legacy_keychains(game.player)
-
-	# Re-roll seed if one was set
+	# Re-roll seed if one was set.
 	if config.get("seed", null) != null:
 		config["seed"] = randi_range(1, 999999999)
 
-	# Recreate controllers
+	# Recreate player (preserve type and HP for Hardcore).
+	var current_type: String = game.player.get_type()
+	var current_hp: int = game.player.get_hp()
+	game.player = CharacterFactory.create_character(current_type)
+	if is_hardcore:
+		game.player.set_hp(current_hp)
+
+	# Load keychains into the new player.
+	if is_hardcore:
+		keychain_manager.load_hardcore_keychains(game.player)
+	else:
+		keychain_manager.load_legacy_keychains(game.player)
+
+	# Recreate controllers.
 	game.board_ctrl = BoardController.new(game.player)
 	game.char_ctrl = CharacterController.new(game.player, game.board_ctrl, game)
 	game.add_child(game.char_ctrl)
 
-	# Reconfigure the level
+	# Reconfigure the level.
 	var level_configurator = game.get_level_configurator()
 	level_configurator.configure(game)
 
-	# Recreate spikes
+	# Recreate spikes.
 	if game.spike_controller != null:
 		game.spike_controller.destroy()
 	game.spike_controller = SpikeController.new(game)
@@ -105,7 +116,7 @@ func handle_legacy_victory(game) -> void:
 	game.set_player_flags_from_board()
 	game.game_input_locked = false
 
-	print("[LegacyVictory] END - final state: ", {
+	print("[PrepareNextLevel] END - final state: ", {
 		"alive": game.player.is_alive(),
 		"hp": game.player.get_hp(),
 		"flags": game.player.get_flags()
@@ -115,13 +126,15 @@ func handle_legacy_victory(game) -> void:
 # Called when the player loses in Legacy (normal or Hardcore).
 # Clears progress and optionally saves Stuffed keychains.
 func handle_legacy_lose(game) -> void:
-	print("Game over: Record %d" % game.current_level)
+	print("[LegacyLose] Before - current_level=%d, saved_level=%d" % [
+		game.current_level, SaveManager.get_legacy_level()
+	])
 
 	var is_hardcore: bool = game.is_hardcore_enabled()
 	var player = game.player
 	var keychain_manager = game.get_keychain_manager()
 
-	# Stuffed: Save keychains before clearing (separated by mode)
+	# Stuffed: Save keychains before clearing (separated by mode).
 	if player.has_keychain("stuffed"):
 		var keychains_to_save: Array = []
 		for id in player.inventory:
@@ -141,10 +154,16 @@ func handle_legacy_lose(game) -> void:
 		SaveManager.clear_hardcore_all()
 		SaveManager.clear_hardcore_progress()
 		game.current_level = 1
+		SaveManager.set_hardcore_level(1)
 	else:
 		keychain_manager.clear_legacy_keychains()
 		SaveManager.clear_legacy_progress()
 		game.current_level = 1
+		SaveManager.set_legacy_level(1)
+
+	print("[LegacyLose] After - current_level=%d, saved_level=%d" % [
+		game.current_level, SaveManager.get_legacy_level()
+	])
 
 
 # ======================= GENERIC =======================
@@ -152,8 +171,6 @@ func handle_legacy_lose(game) -> void:
 # Called by GameManager.handle_game_over.
 # Dispatches to mode-specific lose logic.
 func handle_game_over(game) -> void:
-	# Scores are computed here for side effects (Discord presence,
-	# last score, etc.) — the scoreboard itself handles display.
 	var _scores = game.scoreboard.calculate_scores()
 	if game.config.get("mode") == "legacy":
 		handle_legacy_lose(game)
@@ -196,6 +213,5 @@ func randomize_new_game(game) -> void:
 	game.spike_controller.register_spikes(game.board)
 	game.turn_manager.reset()
 
-	# Close scoreboard overlay
 	game.get_tree().call_group("scoreboard_overlay", "close")
 	game.start_game(game.config)

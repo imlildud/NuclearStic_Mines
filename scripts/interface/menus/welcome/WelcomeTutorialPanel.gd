@@ -18,6 +18,7 @@ func _ready() -> void:
 	no_button.pressed.connect(func(): _on_choice(false))
 	yes_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
 	no_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
+	ButtonFeedback.attach_all(self)
 
 
 # Sets the localized question text.

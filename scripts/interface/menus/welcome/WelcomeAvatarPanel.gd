@@ -24,6 +24,7 @@ func _ready() -> void:
 	confirm_button.pressed.connect(_on_confirm)
 	confirm_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
 	_highlight(_selected_avatar)
+	ButtonFeedback.attach_all(self)
 
 
 # Sets the localized prompt text.
