@@ -4,7 +4,8 @@
 # Handles flag placement and marking logic.
 #
 # FOUR MODES (selected by FlagModeManager):
-# 0 - Normal: place flags on hidden tiles.
+# 0 - Normal: place flags on hidden tiles. Combo: revealed tiles with
+#     hazard != "none" can also be flagged (Revelation combo).
 # 1 - Revelation: reveal a tile (10 uses).
 # 2 - Memory: place up to 3 lettered markers (a, b, c).
 # 3 - Purity: clean a damage-ratio tile (9 uses).
@@ -67,8 +68,12 @@ func handle_revelation(direction: String, board: Array, player) -> Dictionary:
 
 	var tile = board[target_x][target_y]
 
-	# Only reveal if hidden and has uses left
+	# Only reveal if hidden and has uses left.
+	# set_unhideable(true) is required, same as Concentration: without it
+	# the next update_vision()/update_vision_around_player() re-hides the
+	# tile (both first hide every non-secure, non-unhideable tile).
 	if tile.is_hide() and player.get_keychain_uses("revelation") > 0:
+		tile.set_unhideable(true)
 		tile.set_hide(false)
 		player.use_keychain("revelation")
 
@@ -195,7 +200,12 @@ func handle_normal_flag(direction: String, board: Array, player, criticker) -> D
 	# ===== OTHER CHARACTERS =====
 	if ability_id == 1 and tile.is_flagged():
 		return {}
-	if not tile.is_hide() or tile.is_marked():
+	# Normal rule: only hidden, unmarked tiles can be flagged.
+	# Combo rule (Revelation): a revealed tile that actually has a hazard
+	# (hazard != "none") can also be flagged, even though it is not hidden.
+	# Revealed safe tiles (hazard == "none") still cannot be flagged.
+	var tile_has_hazard: bool = tile.get_hazardtype() != "none"
+	if (not tile.is_hide() and not tile_has_hazard) or tile.is_marked():
 		return {}
 
 	if tile.is_flagged():
@@ -267,7 +277,9 @@ func handle_scout_flag(player, board: Array, tile, target_x: int, target_y: int,
 	var has_hazard: bool = tile.get_hazardtype() != "none"
 
 	# ===== PLACE JUMP FLAG =====
-	if tile.is_hide() and not tile.is_jumpflagged():
+	# Same Revelation combo as normal flags: revealed hazard tiles can
+	# receive a jump flag even though they are not hidden anymore.
+	if (tile.is_hide() or has_hazard) and not tile.is_jumpflagged():
 		if player.get_flags() > 0:
 			tile.set_jumpflagged(true)
 			player.decrement_flags()
