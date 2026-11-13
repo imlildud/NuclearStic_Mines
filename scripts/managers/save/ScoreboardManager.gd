@@ -301,7 +301,7 @@ func _build_button_config(is_victory: bool) -> Dictionary:
 
 	if mode == "legacy" and is_victory:
 		var current_level: int = game_manager.current_level + 1
-		var is_biome_transition: bool = current_level % 10 == 0
+		var is_biome_transition: bool = (current_level - 1) % 10 == 0
 		if is_biome_transition:
 			config["continue"] = false
 			config["home"] = true
