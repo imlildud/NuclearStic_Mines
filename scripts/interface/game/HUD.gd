@@ -33,6 +33,7 @@ signal restart_requested
 
 @onready var health_icon: TextureRect = $Root/HealthGroup/HealthIcon
 @onready var health_text: Label = $Root/HealthGroup/HealthText
+@onready var flags_icon: TextureRect = $Root/StatsRow/FlagsIcon
 @onready var flags_text: Label = $Root/StatsRow/FlagsText
 @onready var rescued_text: Label = $Root/StatsRow/RescuedText
 
@@ -178,19 +179,25 @@ func _get_max_hp_by_character(type: String) -> int:
 func _update_flags(player) -> void:
 	var mode = GameManager.get_flag_mode()
 	var text: String = ""
+	var icon_path: String = "res://assets/hud/game/stats/remainingflags.png"
 
 	match mode:
 		1:  # Revelation
 			text = str(player.get_keychain_uses("revelation"))
+			icon_path = "res://assets/hud/game/stats/remainingreveals.png"
 		2:  # Memory
 			var used: int = _count_memory_markers()
 			text = str(maxi(0, 3 - used))
+			icon_path = "res://assets/hud/game/stats/remainingmemories.png"
 		3:  # Purity
 			text = str(player.get_keychain_uses("purity"))
+			icon_path = "res://assets/hud/game/stats/remainingcleans.png"
 		_:  # Normal
 			text = str(player.get_flags())
 
 	flags_text.text = text
+	if ResourceLoader.exists(icon_path):
+		flags_icon.texture = load(icon_path)
 
 
 func _count_memory_markers() -> int:
