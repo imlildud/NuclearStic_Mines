@@ -426,7 +426,7 @@ func hurt_character() -> void:
 
 	if has_oblivion and game_manager != null:
 		var board: Array = game_manager.get_board()
-		var flag_manager = game_manager.flag_manager
+		var flag_manager = game_manager.get_flag_manager()
 		if not board.is_empty() and flag_manager != null and flag_manager.has_method("remove_marked_hazard"):
 			flag_manager.remove_marked_hazard(board)
 
