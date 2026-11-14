@@ -20,9 +20,11 @@ extends Control
 const PUNCHCARD_SCENE := "res://scenes/menu/PunchcardPanel.tscn"
 const WELCOME_SCENE := "res://scenes/menu/WelcomePanel.tscn"
 const GAME_SCENE := "res://scenes/game/Game.tscn"
+const CONFIG_SCENE := "res://scenes/config/Configuration.tscn"
 
 var _punchcard: Control = null
 var _welcome_panel: CanvasLayer = null
+var _config: Control = null
 
 
 # ======================= LIFECYCLE =======================
@@ -41,6 +43,13 @@ func _ready() -> void:
 		_punchcard.closed.connect(_on_punchcard_closed)
 	if _punchcard.has_signal("start_requested"):
 		_punchcard.start_requested.connect(_on_punchcard_start)
+
+	# Instance the configuration screen as a hidden child.
+	_config = load(CONFIG_SCENE).instantiate()
+	add_child(_config)
+	_config.visible = false
+	if _config.has_signal("closed"):
+		_config.closed.connect(_on_config_closed)
 
 	# Instance the welcome panel as a hidden child.
 	_welcome_panel = load(WELCOME_SCENE).instantiate()
@@ -160,7 +169,18 @@ func _on_diary_pressed() -> void:
 
 func _on_options_pressed() -> void:
 	AudioManager.play_click_sfx()
-	push_warning("[MainMenu] Options: not implemented yet (Phase 3.4)")
+	if _config == null:
+		push_error("[MainMenu] Configuration not instanced")
+		return
+	_config.open()
+
+
+# Called when the configuration screen emits "closed".
+func _on_config_closed() -> void:
+	AudioManager.play_click_sfx()
+	if _config != null:
+		_config.visible = false
+	AudioManager.play_menu_music(true)
 
 
 func _on_id_card_pressed() -> void:
