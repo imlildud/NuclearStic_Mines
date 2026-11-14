@@ -564,5 +564,8 @@ func create_seeded_random(seed_value: int) -> Callable:
 # ======================= INTERNAL HELPERS =======================
 
 func _show_level_start_modal() -> void:
+	# Flag-mode reset at EVERY level start
+	set_flag_mode(0)
+	reset_memory_markers()
 	level_start_requested.emit(char_ctrl, config, board)
 	await get_tree().process_frame

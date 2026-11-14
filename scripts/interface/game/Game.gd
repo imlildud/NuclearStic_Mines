@@ -65,6 +65,14 @@ func _ready() -> void:
 	# Hide the animation sprite initially.
 	anim_sprite.visible = false
 
+	# Connect GameManager signals FIRST — start_game() emits
+	# level_start_requested (via _show_level_start_modal), and connecting
+	# afterwards misses the very first LevelStartModal (punchcard -> game).
+	# Next/retry/random worked because the connects already existed then.
+	GameManager.scoreboard_requested.connect(_on_scoreboard_requested)
+	GameManager.level_start_requested.connect(_on_level_start_requested)
+	GameManager.reversion_activated.connect(_on_reversion_activated)
+
 	GameManager.start_game(config)
 
 	board_node.set_board(GameManager.board)
@@ -94,16 +102,11 @@ func _ready() -> void:
 	# Level start modal.
 	hud.level_start_modal.dismissed.connect(_on_level_start_dismissed)
 
-	# Connect GameManager signals.
-	GameManager.scoreboard_requested.connect(_on_scoreboard_requested)
-	GameManager.level_start_requested.connect(_on_level_start_requested)
 
 	# Connect CharacterController signals.
 	if GameManager.char_ctrl != null:
 		GameManager.char_ctrl.pal_rescued.connect(refresh_vision_after_rescue)
 
-	# Connect Reversion signals.
-	GameManager.reversion_activated.connect(_on_reversion_activated)
 
 	# Background + music per biome.
 	var zone: String = config.get("zone", "backyard")
