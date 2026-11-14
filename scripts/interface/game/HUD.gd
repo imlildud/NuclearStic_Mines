@@ -102,6 +102,13 @@ func _connect_touch_button(button: TextureButton, kind: String, direction: Strin
 			flag_requested.emit(direction)
 	)
 
+# Disables the restart (Reversion) button when the player has no
+# Reversion keychain or the uses run out, and re-enables it otherwise.
+func _on_reversion_button_state_changed(state_class: String, tooltip: String) -> void:
+	var enabled: bool = state_class == "active"
+	restart_button.disabled = not enabled
+	restart_button.tooltip_text = tooltip
+	restart_button.modulate = Color(1, 1, 1, 1) if enabled else Color(0.5, 0.5, 0.5, 1)
 
 # ======================= SETUP =======================
 

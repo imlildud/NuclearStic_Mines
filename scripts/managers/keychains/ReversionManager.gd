@@ -132,19 +132,29 @@ func restore_state() -> bool:
 
 	var player = game_manager.get_player()
 
-	# --- 1. Replace the board with the snapshot ---
-	var new_board: Array = []
+	# --- 1. Restore the board IN PLACE (FIX) ---
+	# TileRenderer keeps a reference to this same Array (set_board does
+	# board = new_board) and Game._reversion() only calls refresh(), so
+	# assigning a brand-new Array would leave the renderer drawing the
+	# OLD board. Mutating the existing Array keeps every holder in sync.
+	var board: Array = game_manager.board
+	board.clear()
 	for i in range(saved_state["board"].size()):
 		var row: Array = []
 		for j in range(saved_state["board"].size()):
 			row.append(_copy_tile(saved_state["board"][i][j]))
-		new_board.append(row)
-	game_manager.board = new_board
+		board.append(row)
 
 	# --- 2. Restore the player ---
-	player.set_pos_x(saved_state["player_pos_x"])
-	player.set_pos_y(saved_state["player_pos_y"])
-	player.set_hp(saved_state["player_hp"])
+	# Rewind returns the player to the start tile, NOT to the snapshot position. The snapshot
+	# position is kept in saved_state only as a fallback.
+	if game_manager.char_ctrl != null:
+		game_manager.char_ctrl.get_start_coords(game_manager.board)
+	else:
+		player.set_pos_x(saved_state["player_pos_x"])
+		player.set_pos_y(saved_state["player_pos_y"])
+
+	player.set_hp(maxi(1, saved_state["player_hp"]))
 	player.set_ap(saved_state["player_ap"])
 	player.set_flags(saved_state["player_flags"])
 	player.set_force(saved_state["player_force"])
@@ -160,6 +170,9 @@ func restore_state() -> bool:
 	player.set_regen(saved_state["player_regen"])
 	player.set_alive(saved_state["player_alive"])
 	player.keychain_uses = saved_state["player_keychain_uses"].duplicate(true)
+
+	if player.has_keychain("reversion"):
+		player.keychain_uses["reversion"] = saved_state["reversion_uses"]
 
 	# --- 3. Restore mission progress (the fix) ---
 	game_manager.char_ctrl.remaining_pals = saved_state["remaining_pals"]
@@ -180,8 +193,8 @@ func activate() -> bool:
 	var game = game_manager
 	var player = game.get_player()
 
-	if not has_uses(player):
-		print("[Reversion] No uses left")
+	if not player.has_keychain("reversion") or not has_uses(player):
+		print("[Reversion] Not available (no keychain or no uses left)")
 		return false
 
 	if is_rewinding:
@@ -217,6 +230,12 @@ func activate() -> bool:
 	game.update_flag_ui()
 	game.get_flag_mode_manager().update_swamp_button_ui()
 	update_button_ui()
+
+	# v2: tell the Game scene the rewind happened, so it can re-sync the
+	# board and snap the camera to the start tile. This also covers the
+	# auto-activate-on-death path, where Game._reversion() never runs.
+	if game_manager.has_signal("reversion_activated"):
+		game_manager.reversion_activated.emit()
 
 	is_rewinding = false
 	print("[Reversion] Rewind complete")

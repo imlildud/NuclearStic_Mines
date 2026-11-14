@@ -22,6 +22,14 @@ signal level_start_requested(character_controller, config: Dictionary, board: Ar
 # Emitted when the pause modal should be shown.
 signal pause_requested(character_controller, config: Dictionary, board: Array, game_manager)
 
+# Emitted by ReversionManager when a rewind finishes (manual or on
+# death). Game.gd listens to re-sync the board and snap the camera.
+signal reversion_activated
+
+# Emitted by ReversionManager.update_button_ui() with "active"/"disabled".
+# HUD.gd listens to enable/disable the restart (Reversion) button.
+signal reversion_button_state_changed(state_class: String, tooltip: String)
+
 # ======================= STATE =======================
 
 var config: Dictionary = {}

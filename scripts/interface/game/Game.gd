@@ -102,6 +102,9 @@ func _ready() -> void:
 	if GameManager.char_ctrl != null:
 		GameManager.char_ctrl.pal_rescued.connect(refresh_vision_after_rescue)
 
+	# Connect Reversion signals.
+	GameManager.reversion_activated.connect(_on_reversion_activated)
+
 	# Background + music per biome.
 	var zone: String = config.get("zone", "backyard")
 	_apply_zone_visuals(zone)
@@ -356,6 +359,15 @@ func _reversion() -> void:
 	if GameManager.activate_reversion():
 		board_node.refresh()
 		_place_character()
+
+# Runs on EVERY rewind (manual R / restart button AND auto-activate
+# on death, where _reversion() never runs). _place_character() moves
+# the camera to the player's tile and resets smoothing, so the
+# camera snaps to the start tile even if the player died far away.
+func _on_reversion_activated() -> void:
+	board_node.set_board(GameManager.board)
+	board_node.refresh()
+	_place_character()
 
 
 # ======================= DAMAGE FLASH =======================
