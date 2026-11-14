@@ -40,12 +40,17 @@ const DAMAGE_FLASH_DURATION: float = 0.15
 @onready var hud = $HUD
 @onready var background: TextureRect = $BackgroundLayer/Background
 @onready var anim_sprite: Sprite2D = $AnimationLayer/AnimSprite
+@onready var delirium_layer: CanvasLayer = $DeliriumLayer
+@onready var delirium_rect: ColorRect = $DeliriumLayer/DeliriumRect
+@onready var delirium_mat: ShaderMaterial = delirium_rect.material as ShaderMaterial
 
 var _is_scout_jump: bool = false
 var _is_animating: bool = false
 var _last_flag_time: float = 0.0
 var _last_swamp_time: float = 0.0
 var _current_zone: String = ""
+var _delirium_active: bool = false
+var _delirium_tween: Tween = null
 
 
 # ======================= LIFECYCLE =======================
@@ -74,6 +79,7 @@ func _ready() -> void:
 	hud.restart_requested.connect(_reversion)
 	hud.pause_requested.connect(_pause)
 	hud.back_requested.connect(_on_back_pressed)
+	_setup_delirium_filter()
 
 	# Scoreboard button signals.
 	hud.scoreboard.continue_pressed.connect(_on_scoreboard_continue)
@@ -104,6 +110,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if hud != null:
 		hud.update()
+		_update_delirium_filter()
 
 
 # ======================= ZONE VISUALS =======================
@@ -499,3 +506,40 @@ func _on_level_start_dismissed() -> void:
 func _on_back_pressed() -> void:
 	AudioManager.play_click_sfx()
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
+# ======================= DELIRIUM =======================
+
+func _setup_delirium_filter() -> void:
+	if delirium_mat == null:
+		push_warning("[Delirium] ShaderMaterial missing on DeliriumRect")
+		return
+	delirium_mat.set_shader_parameter("grayscale", 0.0)
+	delirium_mat.set_shader_parameter("brightness", 1.0)
+
+
+func _update_delirium_filter() -> void:
+	if delirium_mat == null or GameManager.player == null:
+		return
+
+	var has_delirium: bool = GameManager.player.has_keychain("delirium")
+	if has_delirium == _delirium_active:
+		return
+	_delirium_active = has_delirium
+
+	if _delirium_tween != null and _delirium_tween.is_valid():
+		_delirium_tween.kill()
+
+	_delirium_tween = create_tween()
+	_delirium_tween.set_parallel(true)
+	_delirium_tween.tween_method(
+		func(v: float): delirium_mat.set_shader_parameter("grayscale", v),
+		delirium_mat.get_shader_parameter("grayscale") as float,
+		1.0 if has_delirium else 0.0,
+		0.5
+	)
+	_delirium_tween.tween_method(
+		func(v: float): delirium_mat.set_shader_parameter("brightness", v),
+		delirium_mat.get_shader_parameter("brightness") as float,
+		0.95 if has_delirium else 1.0,
+		0.5
+	)

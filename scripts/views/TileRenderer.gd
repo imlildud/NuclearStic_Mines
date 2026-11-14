@@ -288,12 +288,6 @@ func _draw() -> void:
 			if tile.is_smoke():
 				_draw_sprite("smoke", draw_x - obj_offset.x, draw_y - obj_offset.y, obj_size)
 
-	# Delirium overlay
-	if player.has_keychain("delirium"):
-		var total_size: float = board_size * TILE_SIZE
-		draw_rect(Rect2(Vector2(-half, -half), Vector2(total_size, total_size)), Color(0, 0, 0, 0.25))
-
-
 # ======================= PLAYER DRAW (STATIC) =======================
 
 func _draw_player(draw_x: float, draw_y: float, obj_offset: Vector2, obj_size: float) -> void:

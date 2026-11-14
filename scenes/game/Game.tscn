@@ -5,6 +5,12 @@
 [ext_resource type="Texture2D" uid="uid://dnm8nytd78aoq" path="res://assets/hud/game/wallpaper/desert.png" id="2_lyhax"]
 [ext_resource type="PackedScene" uid="uid://56d6ce2h48ds" path="res://scenes/game/HUD.tscn" id="4_7qcb4"]
 [ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="5_lyhax"]
+[ext_resource type="Shader" path="res://shaders/delirium.gdshader" id="6_delirium"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_delirium"]
+shader = ExtResource("6_delirium")
+shader_parameter/grayscale = 0.0
+shader_parameter/brightness = 1.0
 
 [node name="Game" type="Node2D" unique_id=1786546877]
 script = ExtResource("1_game")
@@ -47,3 +53,16 @@ mouse_filter = 2
 texture = ExtResource("5_lyhax")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="DeliriumLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="DeliriumRect" type="ColorRect" parent="DeliriumLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+material = SubResource("ShaderMaterial_delirium")
