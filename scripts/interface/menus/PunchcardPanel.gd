@@ -40,15 +40,19 @@ func _ready() -> void:
 
 func _populate_selects() -> void:
 	# Character
+	# The id goes in the item metadata: the visible label is translated
+	var char_ids = ["chef", "mosquito", "mommy", "scout"]
 	var legacy_chars: OptionButton = $Punchcard/CharSection/LegacyCharSelect
 	legacy_chars.clear()
-	for c in ["chef", "mosquito", "mommy", "scout"]:
-		legacy_chars.add_item(_tr("menu.punchcard." + c, c.capitalize()))
+	for i in range(char_ids.size()):
+		legacy_chars.add_item(_tr("menu.punchcard." + char_ids[i], char_ids[i].capitalize()))
+		legacy_chars.set_item_metadata(i, char_ids[i])
 
 	var custom_chars: OptionButton = $Punchcard/CharSection/CustomCharSelect
 	custom_chars.clear()
-	for c in ["chef", "mosquito", "mommy", "scout"]:
-		custom_chars.add_item(_tr("menu.punchcard." + c, c.capitalize()))
+	for i in range(char_ids.size()):
+		custom_chars.add_item(_tr("menu.punchcard." + char_ids[i], char_ids[i].capitalize()))
+		custom_chars.set_item_metadata(i, char_ids[i])
 
 	# Size
 	var sizes: OptionButton = $Punchcard/SizeSection/CustomSizeSelect
@@ -250,7 +254,7 @@ func generate_legacy_config() -> void:
 		config["obstacles"] = level
 		config["zone"] = _get_zone_by_level(level)
 
-	config["character"] = _char_id_from_label(legacy_select.get_item_text(legacy_select.selected))
+	config["character"] = _selected_char_id(legacy_select)
 
 	daily_config = config
 	current_config = config
@@ -504,7 +508,7 @@ func _update_custom_textures() -> void:
 	else:
 		config["seed"] = generate_random_seed()
 
-	config["character"] = _char_id_from_label($Punchcard/CharSection/CustomCharSelect.get_item_text($Punchcard/CharSection/CustomCharSelect.selected))
+	config["character"] = _selected_char_id($Punchcard/CharSection/CustomCharSelect)
 	config["size"] = $Punchcard/SizeSection/CustomSizeSelect.get_item_metadata($Punchcard/SizeSection/CustomSizeSelect.selected)
 	config["hazards"] = $Punchcard/HazardsSection/CustomHazardsSelect.get_item_metadata($Punchcard/HazardsSection/CustomHazardsSelect.selected)
 	config["obstacles"] = $Punchcard/ObstaclesSection/CustomObstaclesSelect.get_item_metadata($Punchcard/ObstaclesSection/CustomObstaclesSelect.selected)
@@ -571,6 +575,14 @@ func _get_zone_by_level(level: int) -> String:
 	if level <= 39: return "roots"
 	if level <= 49: return "glowyland"
 	return "ash"
+
+
+# Returns the character id for an OptionButton's current selection.
+func _selected_char_id(select: OptionButton) -> String:
+	var id = select.get_item_metadata(select.selected)
+	if id is String and id != "":
+		return id
+	return _char_id_from_label(select.get_item_text(select.selected))
 
 
 func _char_id_from_label(label: String) -> String:
@@ -647,6 +659,9 @@ func _on_keychain_pressed() -> void:
 
 	# BundleManager provides the list of all keychains.
 	var bundle_manager = BundleManager.new(null, null)
+	# Same as the seed modal: the autoload, not the always-null var.
+	# This also fixes the cards inside the selector (name + rarity),
+	# which get the same manager passed through setup().
 	selector.show_selector(custom_keychains, bundle_manager, LocaleManager)
 
 func get_custom_keychains() -> Array:
@@ -673,8 +688,7 @@ func _on_dice_pressed() -> void:
 
 func _on_legacy_char_changed(_index: int) -> void:
 	if punchcard_mode == "legacy":
-		var selected_label: String = $Punchcard/CharSection/LegacyCharSelect.get_item_text($Punchcard/CharSection/LegacyCharSelect.selected)
-		current_config["character"] = _char_id_from_label(selected_label)
+		current_config["character"] = _selected_char_id($Punchcard/CharSection/LegacyCharSelect)
 		_update_punchcard_textures(current_config)
 
 
