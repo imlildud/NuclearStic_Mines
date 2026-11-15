@@ -114,11 +114,6 @@ func _ready() -> void:
 
 	# Import/export file picker.
 	file_dialog.file_selected.connect(_on_file_selected)
-
-	# Replay stays disabled until the tutorial is migrated (GOAL 1, last).
-	replay_button.disabled = true
-	replay_button.modulate = Color(0.5, 0.5, 0.5, 1.0)
-
 	ButtonFeedback.attach_all(self)
 
 
@@ -300,10 +295,23 @@ func _update_toggle_visual(toggle: Panel, active: bool, animate: bool) -> void:
 # ======================= OTHER BUTTONS =======================
 
 func _on_replay_pressed() -> void:
-	# Disabled in _ready until the tutorial is migrated (GOAL 1, last).
-	# Web behaviour for reference: setTutorialCompleted(false), save a
-	# tutorial config and go to the game.
-	pass
+	AudioManager.play_click_sfx()
+	SaveManager.set_tutorial_completed(false)
+	var tutorial_config: Dictionary = {
+		"mode": "tutorial",
+		"seed": null,
+		"level": 1,
+		"character": "student",
+		"size": 5,
+		"hazards": 1,
+		"obstacles": 1,
+		"goals": 1,
+		"zone": "backyard",
+	}
+	SaveManager.save_config(tutorial_config)
+	GameManager.config = tutorial_config
+	GameManager.set_locale_manager(LocaleManager)
+	get_tree().change_scene_to_file(GAME_SCENE)
 
 
 func _on_manual_pressed() -> void:
@@ -367,8 +375,6 @@ func _process_secret_code(code: String) -> void:
 		"back2school":
 			if not SaveManager.is_secret_code_activated("back2school"):
 				SaveManager.activate_secret_code("back2school")
-				# Godot's PunchcardPanel already lists Backyard, so there
-				# is no zone-select to patch (unlike the web).
 				modal_dialog.show_message(
 					LocaleManager.get_translation("config.secretBack2school")
 				)

@@ -22,6 +22,7 @@ var current_config: Dictionary = {}
 var locale_manager = null
 var custom_keychains: Array = []
 var _last_locale: String = ""
+var _backyard_unlocked: bool = false
 
 # ======================= LIFECYCLE =======================
 
@@ -93,8 +94,11 @@ func _populate_selects() -> void:
 	# menu.punchcard.scrapland / .roots / .glowyland to en/es/mx.json.
 	var zone: OptionButton = $Punchcard/ZoneSection/CustomZoneSelect
 	zone.clear()
-	var zones = ["Backyard", "Desert", "Snow", "Scrapland", "Roots", "Glowyland", "Ash"]
-	var zone_ids = ["backyard", "desert", "snow", "scrapland", "roots", "glowyland", "ash"]
+	var zones = ["Desert", "Snow", "Scrapland", "Roots", "Glowyland", "Ash"]
+	var zone_ids = ["desert", "snow", "scrapland", "roots", "glowyland", "ash"]
+	if SaveManager.is_secret_code_activated("back2school"):
+		zones.push_front("Backyard")
+		zone_ids.push_front("backyard")
 	for i in range(zones.size()):
 		zone.add_item(_tr("menu.punchcard." + zone_ids[i], zones[i]))
 		zone.set_item_metadata(i, zone_ids[i])
@@ -182,9 +186,11 @@ func open(mode: String) -> void:
 	# the locale didn't change. (Uses the LocaleManager autoload: nobody
 	# ever calls set_locale_manager() on this panel, so the
 	# locale_manager var is always null.)
-	if LocaleManager.get_current_locale() != _last_locale:
+	var backyard_now: bool = SaveManager.is_secret_code_activated("back2school")
+	if LocaleManager.get_current_locale() != _last_locale or backyard_now != _backyard_unlocked:
 		_populate_selects()
 		_last_locale = LocaleManager.get_current_locale()
+		_backyard_unlocked = backyard_now
 	_apply_language()
 	visible = true
 	match mode:
@@ -527,7 +533,8 @@ func _randomize_custom_selectors() -> void:
 	$Punchcard/HazardsSection/CustomHazardsSelect.select(_get_random_in_range(random, 0, 5))
 	$Punchcard/ObstaclesSection/CustomObstaclesSelect.select(_get_random_in_range(random, 0, 5))
 	$Punchcard/PalsSection/CustomPalsSelect.select(_get_random_in_range(random, 0, 4))
-	$Punchcard/ZoneSection/CustomZoneSelect.select(_get_random_in_range(random, 1, 6))
+	var zone_count: int = $Punchcard/ZoneSection/CustomZoneSelect.item_count
+	$Punchcard/ZoneSection/CustomZoneSelect.select(_get_random_in_range(random, 1, zone_count - 1))
 
 	_update_custom_textures()
 

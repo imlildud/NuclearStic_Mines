@@ -21,7 +21,7 @@ extends Node2D
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
 const WALLPAPER_PATH := "res://assets/hud/game/wallpaper/%s.png"
 
-# --- Movement animation (matches Renderer.js timing) ---
+# --- Movement animation ---
 const MOVE_DURATION: float = 0.2
 const NORMAL_ARC_HEIGHT: float = 40.0
 const NORMAL_TILT: float = 0.3
@@ -44,6 +44,7 @@ const DAMAGE_FLASH_DURATION: float = 0.15
 @onready var delirium_rect: ColorRect = $DeliriumLayer/DeliriumRect
 @onready var delirium_mat: ShaderMaterial = delirium_rect.material as ShaderMaterial
 
+var message_modal: MessageModal = null
 var _is_scout_jump: bool = false
 var _is_animating: bool = false
 var _last_flag_time: float = 0.0
@@ -65,6 +66,10 @@ func _ready() -> void:
 	# Hide the animation sprite initially.
 	anim_sprite.visible = false
 
+	# Modal overlay (message + Yes/No). UI logic lives in MessageModal.gd.
+	message_modal = MessageModal.new()
+	add_child(message_modal)
+
 	# Connect GameManager signals FIRST — start_game() emits
 	# level_start_requested (via _show_level_start_modal), and connecting
 	# afterwards misses the very first LevelStartModal (punchcard -> game).
@@ -72,8 +77,13 @@ func _ready() -> void:
 	GameManager.scoreboard_requested.connect(_on_scoreboard_requested)
 	GameManager.level_start_requested.connect(_on_level_start_requested)
 	GameManager.reversion_activated.connect(_on_reversion_activated)
+	GameManager.board_changed.connect(_on_board_changed)
+	GameManager.show_message.connect(_on_show_message)
+	GameManager.tutorial_manual_prompt.connect(_on_manual_prompt)
+	GameManager.board_refresh_requested.connect(_on_board_refresh_requested)
 
 	GameManager.start_game(config)
+	GameManager.set_renderer(board_node)
 
 	board_node.set_board(GameManager.board)
 	_place_character()
@@ -155,6 +165,43 @@ func refresh_vision_after_rescue() -> void:
 	board_node.refresh()
 
 
+# ======================= MESSAGE RELAYS =======================
+
+func _on_show_message(message: String, on_close: Callable) -> void:
+	if message_modal != null:
+		message_modal.show_message(message.replace("\n", "\n\n"), on_close)
+
+
+func _on_manual_prompt(question_text: String) -> void:
+	if message_modal == null:
+		return
+	var yes_text := "Yes"
+	var no_text := "No"
+	if GameManager.tutorial_manager != null:
+		yes_text = GameManager.tutorial_manager.get_text("tutorial.phase5.yes")
+		no_text = GameManager.tutorial_manager.get_text("tutorial.phase5.no")
+
+	var on_yes := func():
+		if GameManager.tutorial_manager != null:
+			GameManager.tutorial_manager.confirm_manual_yes()
+		else:
+			GameManager.set_game_input_locked(false)
+			OS.shell_open("https://github.com/imlildud/NuclearStic_Mines/wiki")
+
+	var on_no := func():
+		if GameManager.tutorial_manager != null:
+			GameManager.tutorial_manager.confirm_manual_no()
+		else:
+			GameManager.set_game_input_locked(false)
+
+	message_modal.show_question(question_text, yes_text, no_text, on_yes, on_no)
+
+
+func _on_board_refresh_requested() -> void:
+	if board_node != null:
+		board_node.refresh()
+
+
 # ======================= INPUT =======================
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -228,7 +275,10 @@ func _animate_character(from_pos: Vector2i, to_pos: Vector2i, scout_jump: bool) 
 	_is_animating = true
 	_is_scout_jump = scout_jump
 
-	var tile_layer = board_node.tile_layer
+	var tile_layer = board_node.tile_layer if board_node != null else null
+	if tile_layer == null:
+		_is_animating = false
+		return
 
 	# 1. Hide the static player (drawn by TileRenderer).
 	tile_layer.hide_static_player = true
@@ -363,11 +413,14 @@ func _reversion() -> void:
 		board_node.refresh()
 		_place_character()
 
-# Runs on EVERY rewind (manual R / restart button AND auto-activate
-# on death, where _reversion() never runs). _place_character() moves
-# the camera to the player's tile and resets smoothing, so the
-# camera snaps to the start tile even if the player died far away.
+
 func _on_reversion_activated() -> void:
+	board_node.set_board(GameManager.board)
+	board_node.refresh()
+	_place_character()
+
+
+func _on_board_changed() -> void:
 	board_node.set_board(GameManager.board)
 	board_node.refresh()
 	_place_character()
@@ -521,6 +574,7 @@ func _on_level_start_dismissed() -> void:
 func _on_back_pressed() -> void:
 	AudioManager.play_click_sfx()
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+
 
 # ======================= DELIRIUM =======================
 

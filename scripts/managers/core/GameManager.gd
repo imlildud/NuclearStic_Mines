@@ -30,6 +30,21 @@ signal reversion_activated
 # HUD.gd listens to enable/disable the restart (Reversion) button.
 signal reversion_button_state_changed(state_class: String, tooltip: String)
 
+# Emitted when GameManager.board is replaced by a new Array (e.g. the
+# tutorial regenerates the board on phase change). TileRenderer
+# keeps the old Array by reference, so Game.gd must re-set the board.
+signal board_changed
+
+# Emitted when the tutorial wants the Yes/No wiki prompt to be shown.
+# Game.gd relays this into a modal; the tutorial exposes
+# confirm_manual_yes()/confirm_manual_no() for the buttons.
+signal tutorial_manual_prompt(question_text: String)
+
+# Emitted when some code changed tile visibility without replacing
+# the board array (e.g. reveal_all_tiles / hide_all_tiles). Game.gd
+# listens and calls board_node.refresh().
+signal board_refresh_requested
+
 # ======================= STATE =======================
 
 var config: Dictionary = {}
@@ -45,6 +60,7 @@ var MOVE_DELAY: int = 200          # Milliseconds between moves
 var renderer = null                # Renderer
 var last_result = null             # "victory" | "gameover" | null
 var tutorial_manager = null        # TutorialManager
+var bubble_text = null             # BubbleText scene instance (tutorial + criticker)
 var criticker = null               # CritickerController
 var spike_controller = null        # SpikeController
 var destiny_target = null
@@ -190,9 +206,30 @@ func start_game(cfg: Dictionary) -> void:
 	if _locale_manager != null and criticker == null:
 		criticker = CritickerController.new(self, _locale_manager, AudioManager)
 		await criticker.init()
+	if criticker != null:
+		# Bind the shared bubble so nest dialogs actually show. The
+		# bind guards double-connections, so this is safe every game.
+		var bubble = _get_bubble_text()
+		if bubble != null and criticker.dialogs != null and criticker.dialogs.dialog_manager != null:
+			bubble.bind_criticker_dialog(criticker.dialogs.dialog_manager)
 
 	board_ctrl.update_vision(board, player)
 	board_ctrl.set_game_manager(self)
+
+	# Tutorial: create the manager (nobody else does — it was always
+	# null) and bind the shared bubble to its dialog manager, then
+	# start phase 1. Without this, start_phase_* only emit
+	# start_dialogue_sequence into the void and nothing shows.
+	if config.get("mode") == "tutorial":
+		if tutorial_manager == null:
+			tutorial_manager = TutorialManager.new(self, AudioManager, _locale_manager)
+		tutorial_manager.current_phase = 1
+		var bubble_tut = _get_bubble_text()
+		if bubble_tut != null and tutorial_manager.dialog_manager != null:
+			bubble_tut.bind_tutorial_dialog(tutorial_manager.dialog_manager)
+		if not tutorial_manager.manual_prompt_requested.is_connected(_on_tutorial_manual_prompt):
+			tutorial_manager.manual_prompt_requested.connect(_on_tutorial_manual_prompt)
+		tutorial_manager.init()
 
 	# Show level start modal (skipped for tutorial)
 	if config.get("mode") != "tutorial":
@@ -204,7 +241,14 @@ func start_game(cfg: Dictionary) -> void:
 		"largeImageKey": presence["largeImageKey"]
 	})
 
-	game_input_locked = false
+	# The tutorial owns the input lock from here: its init() locked
+	# it and the phase-1 dialogues unlock it at the WASD line. The
+	# blanket unlock below would undo that lock before phase 1 even
+	# starts, letting the player move during the intro.
+	if config.get("mode") != "tutorial":
+		game_input_locked = false
+	else:
+		print("[Tutorial] start_game end: tutorial mode, input stays locked")
 
 
 # Sets the player's available flags equal to the number of
@@ -258,7 +302,15 @@ func check_tutorial_progress() -> void:
 	var tile = board[player.get_pos_x()][player.get_pos_y()]
 	if tile != null and tile.is_flaggoal():
 		var phase: int = board_ctrl.current_phase
+		print("[Tutorial] check_tutorial_progress: flaggoal step in phase ", phase)
 		if phase < 2 or phase > 4:
+			tutorial_manager.next_phase()
+		elif tutorial_manager.has_method("has_flagged_correctly") and tutorial_manager.has_flagged_correctly():
+			# Phases 2-4: the flaggoal step only advances once the
+			# player marked the required hazards (the flag-check poll
+			# shows the success message; the step itself advances,
+			# like phase 1). Stepping on it without the marks is
+			# handled by the poll with the "haven't marked" reset.
 			tutorial_manager.next_phase()
 
 
@@ -391,6 +443,20 @@ func set_renderer(r) -> void:
 
 func set_tutorial_manager(tm) -> void:
 	tutorial_manager = tm
+
+
+# Instances the shared BubbleText scene once (child of this autoload,
+# so it survives scene changes) and returns it. Returns null with a
+# warning when the scene file is missing — dialogs then stay silent.
+func _get_bubble_text():
+	if bubble_text != null:
+		return bubble_text
+	if not ResourceLoader.exists("res://scenes/game/BubbleText.tscn"):
+		push_warning("[GameManager] BubbleText.tscn not found at res://scenes/game/, dialogs will not show")
+		return null
+	bubble_text = load("res://scenes/game/BubbleText.tscn").instantiate()
+	add_child(bubble_text)
+	return bubble_text
 
 func set_game_input_locked(locked: bool) -> void:
 	game_input_locked = locked
@@ -569,3 +635,14 @@ func _show_level_start_modal() -> void:
 	reset_memory_markers()
 	level_start_requested.emit(char_ctrl, config, board)
 	await get_tree().process_frame
+
+
+# Asks the renderer to redraw without replacing the board array.
+func request_refresh() -> void:
+	board_refresh_requested.emit()
+
+
+# Relay: TutorialManager's manual_prompt_requested -> GameManager
+# signal consumed by Game.gd to build the Yes/No modal.
+func _on_tutorial_manual_prompt(question_text: String) -> void:
+	tutorial_manual_prompt.emit(question_text)

@@ -63,7 +63,7 @@ static func _create_chef(character, is_hardcore: bool):
 		character.max_inventory_size = 3
 		character.set_ability_id(1)
 		character.set_vision(2)
-		character.set_force(1)
+		character.set_force(2)
 	else:
 		character.set_hp(5)
 		character.set_ap(0)
@@ -117,7 +117,7 @@ static func _create_mommy(character, is_hardcore: bool):
 		character.max_inventory_size = 5
 		character.set_ability_id(3)
 		character.set_vision(1)
-		character.set_force(1)
+		character.set_force(3)
 	return character
 
 
