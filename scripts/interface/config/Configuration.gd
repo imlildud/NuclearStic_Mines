@@ -1,45 +1,6 @@
 # ==============================================================
 # ====================== CONFIGURATION =========================
 # ==============================================================
-# Godot migration of the web configuration screen
-# (pages/configuration.html + css/config.css + js/main/Config.js).
-#
-# Layout (same order as the web):
-#   Volume (metalback) -> Language (noteback) -> Gameplay (woodback,
-#   includes the reserved Online Features block at the bottom)
-#   -> Other (leatherback) -> Save row (export / SAVE / import).
-#
-# v3 layout: NO containers inside the card — every node is positioned
-# by hand (offsets), so each thing can be dragged freely in the editor.
-# The ScrollContainer wraps the WHOLE card (700x1112), so scrolling
-# moves title, sections and save row together like one big canvas.
-# SAVE is a TextureButton (tag.png) with a separate Label child,
-# because Button + StyleBoxTexture stretched the text ugly.
-# Hardcore stays in Gameplay for now; in 1.1.0 it moves to the Legacy
-# punchcard as a difficulty option.
-#
-# Everything persists live through SaveManager (autoload), exactly
-# like the web wrote through saveManager.* — there is no separate
-# ConfigManager in Godot. Volume applies live through AudioManager.
-# SAVE only plays the grade sound and closes (web: grade.mp3 + 200ms).
-#
-# Differences vs the web, decided during migration:
-# - Fall damage / hardcore default OFF in Godot: SaveManager
-#   is_fall_damage_enabled()/is_hardcore_enabled() return
-#   `value == "true"`, so an unset save reads false (the web
-#   Config.js globals defaulted to true, but the Godot save is the
-#   source of truth here — the scene just shows what SaveManager says).
-# - The warning modal is ModalDialog (OK-only, no click-outside
-#   cancel). OK = confirm the toggle; the toggle only flips visually
-#   after OK. Turning a toggle OFF never asks.
-# - Import/export backs up the whole save file (user://save_data.cfg),
-#   the Godot equivalent of the web's full-localStorage JSON dump.
-#   The save is encrypted, but the file copies back 1:1 on import.
-# - Replay Tutorial stays DISABLED until the tutorial is migrated
-#   (it is the last thing in GOAL 1).
-# - Secret code "back2school": the Godot PunchcardPanel already lists
-#   Backyard unconditionally, so the code only activates the flag and
-#   shows the unlock message.
 
 extends Control
 
@@ -471,24 +432,71 @@ func _on_file_selected(path: String) -> void:
 				LocaleManager.get_translation("config.exportManual")
 			)
 	elif _file_dialog_mode == "import":
-		# Validate: it must be a Godot ConfigFile with the save section.
+		# 1) Godot backup: a ConfigFile with the save section.
 		var probe := ConfigFile.new()
-		if probe.load(path) != OK or not probe.has_section("data"):
-			modal_dialog.show_message(
-				LocaleManager.get_translation("config.importError")
-			)
+		if probe.load(path) == OK and probe.has_section("data"):
+			if _copy_file(path, SAVE_PATH):
+				modal_dialog.show_message(
+					LocaleManager.get_translation("config.importSuccess")
+				)
+				# Re-apply the imported settings without a full restart.
+				LocaleManager.load_locale(SaveManager.get_language())
+				_refresh_all()
+			else:
+				modal_dialog.show_message(
+					LocaleManager.get_translation("config.importError")
+				)
 			return
-		if _copy_file(path, SAVE_PATH):
+		# 2) Web backup: a flat JSON dump of localStorage (e.g.
+		# lildud.json). Before this, it failed the ConfigFile probe
+		# above and the import always errored — that's why old web
+		# saves never loaded. See _import_web_json().
+		if _import_web_json(path):
 			modal_dialog.show_message(
 				LocaleManager.get_translation("config.importSuccess")
 			)
-			# Re-apply the imported settings without a full restart.
 			LocaleManager.load_locale(SaveManager.get_language())
 			_refresh_all()
 		else:
 			modal_dialog.show_message(
 				LocaleManager.get_translation("config.importError")
 			)
+
+
+# Imports a web localStorage JSON dump into the Godot save file.
+# Returns false when the file is not a valid web save.
+func _import_web_json(path: String) -> bool:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (parsed is Dictionary) or parsed.is_empty():
+		return false
+	# Sanity check: a real web save has encrypted entries, or at
+	# least the plain settings keys. Anything else is not a save.
+	var looks_like_save: bool = false
+	for key in parsed.keys():
+		if str(key).begins_with("NSK1:") or str(key) == "language" or str(key) == "username":
+			looks_like_save = true
+			break
+	if not looks_like_save:
+		return false
+
+	# Encrypted entries go straight into the ConfigFile as-is.
+	var config := ConfigFile.new()
+	for key in parsed.keys():
+		if str(key).begins_with("NSK1:"):
+			config.set_value("data", str(key), str(parsed[key]))
+	config.save(SAVE_PATH)
+
+	# Plaintext keys are re-saved encrypted, like a Godot save.
+	# (set_value loads/saves the file each time, so this runs after
+	# the encrypted entries above are already on disk.)
+	for key in parsed.keys():
+		if not str(key).begins_with("NSK1:"):
+			SaveManager.set_value(str(key), str(parsed[key]))
+	return true
 
 
 func _copy_file(from_path: String, to_path: String) -> bool:
