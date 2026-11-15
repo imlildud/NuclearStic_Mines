@@ -9,6 +9,7 @@ extends Control
 signal play_pressed
 signal edit_pressed
 signal delete_pressed
+signal name_pressed
 
 const ICONS_PATH := "res://assets/hud/menu/icons/icon%d.png"
 const BADGES_PATH := "res://assets/hud/badges/%s"
@@ -38,6 +39,9 @@ func _ready() -> void:
 	play_button.pressed.connect(func(): play_pressed.emit())
 	delete_button.pressed.connect(func(): delete_pressed.emit())
 	edit_button.pressed.connect(func(): edit_pressed.emit())
+	name_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	name_label.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	name_label.gui_input.connect(_on_name_gui_input)
 	play_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
 	delete_button.mouse_entered.connect(func(): AudioManager.play_hover_sfx())
 	ButtonFeedback.attach_all(self)
@@ -61,6 +65,7 @@ func refresh(username: String, avatar_id: int, animate_points: bool = false) -> 
 	# current locale every time the card refreshes.
 	play_button.text = LocaleManager.get_translation("menu.play")
 	delete_button.text = LocaleManager.get_translation("menu.deleteData")
+	name_label.tooltip_text = LocaleManager.get_translation("menu.clickToEdit")
 
 	avatar_image.texture = load(ICONS_PATH % avatar_id)
 	name_label.text = username
@@ -108,6 +113,11 @@ func _animate_points_delta(is_hardcore: bool) -> void:
 			# return to the menu doesn't replay the same delta.
 			RankManager.sync_old_total_points(is_hardcore)
 	)
+
+
+func _on_name_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		name_pressed.emit()
 
 
 func _get_legacy_badge(level: int) -> String:

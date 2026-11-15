@@ -1,21 +1,7 @@
 # ==============================================================
 # ====================== WELCOME PANEL =========================
 # ==============================================================
-# Orquestador del flujo de bienvenida.
-#
-# Flujo:
-#   1. Sin nombre → muestra WelcomeNamePanel.
-#   2. Con nombre, sin tutorial → muestra WelcomeAvatarPanel.
-#   3. Después del avatar → muestra WelcomeTutorialPanel.
-#   4. Después del tutorial (o si ya estaba completo) → muestra WelcomeIDCardPanel.
-#
-# El ID Card se anima cuando se abre automáticamente al volver
-# de una partida (si hay un delta de puntos). En los demás casos,
-# se muestra estático.
-#
-# Cada panel es una escena independiente con su propio script.
-# Este orquestador solo los instancia, los muestra/oculta y
-# escucha sus señales.
+# Welcome Panels orchestator
 
 extends CanvasLayer
 
@@ -28,6 +14,7 @@ signal play_pressed
 @onready var _id_card_panel = $Root/IDCardPanel
 
 var _locale_manager = null
+var _editing_name: bool = false
 
 
 func _ready() -> void:
@@ -41,6 +28,7 @@ func _ready() -> void:
 	_id_card_panel.play_pressed.connect(_on_id_card_play)
 	_id_card_panel.edit_pressed.connect(_on_id_card_edit)
 	_id_card_panel.delete_pressed.connect(_on_id_card_delete)
+	_id_card_panel.name_pressed.connect(_on_id_card_name_edit)
 
 
 func set_locale_manager(lm) -> void:
@@ -102,6 +90,10 @@ func _show_id_card(username: String, avatar_id: int, animate_points: bool = fals
 
 func _on_name_submitted(player_name: String) -> void:
 	SaveManager.set_username(player_name)
+	if _editing_name:
+		_editing_name = false
+		_show_id_card(player_name, SaveManager.get_avatar(), false)
+		return
 	_show_avatar_panel()
 
 
@@ -147,6 +139,18 @@ func _on_id_card_play() -> void:
 func _on_id_card_edit() -> void:
 	AudioManager.play_click_sfx()
 	_show_avatar_panel()
+
+
+# Name label clicked on the ID card (web parity: prompt "Enter your
+# new name:", input prefilled with the current name).
+func _on_id_card_name_edit() -> void:
+	AudioManager.play_click_sfx()
+	_editing_name = true
+	_hide_all()
+	_name_panel.set_prompt(_get_text("menu.editName", "Enter your new name:"))
+	_name_panel.visible = true
+	visible = true
+	_name_panel.set_current_name(SaveManager.get_username())
 
 
 func _on_id_card_delete() -> void:

@@ -25,6 +25,15 @@ func set_prompt(text: String) -> void:
 	prompt_label.text = text
 
 
+# Prefills the input with the current name (name-edit flow, mirroring
+# the web editor: maxlength 20, text selected, focused).
+func set_current_name(current_name: String) -> void:
+	name_input.text = current_name
+	name_input.max_length = 14
+	name_input.grab_focus()
+	name_input.select_all()
+
+
 func _on_continue() -> void:
 	var name: String = name_input.text.strip_edges()
 	if name == "":
