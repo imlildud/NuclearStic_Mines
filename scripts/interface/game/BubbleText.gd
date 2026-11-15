@@ -110,16 +110,15 @@ func set_mode(new_mode: String) -> void:
 	mode = new_mode
 	var l: Dictionary = LAYOUTS[mode]
 
-	# The tutorial layout IS the scene (BubbleText.tscn, edited in the
-	# editor): restore the snapshot taken in _ready(). The criticker,
-	# which has no scene of its own, gets its layout from code.
+	# Both modes use the scene's own layout (BubbleText.tscn, edited
+	# in the editor): restore the snapshot taken in _ready(). The
+	# criticker used to get a smaller/higher layout from code (web
+	# parity), but that made it look like a different bubble.
 	# Restoring (not just "not touching") matters: start_game binds
 	# the criticker first, and without the restore the tutorial would
-	# keep the criticker offsets.
-	if mode == "tutorial":
-		_restore_scene_layout()
-	else:
-		_apply_layout(l)
+	# keep the criticker offsets. Only the avatar and the pulse stay
+	# mode-specific.
+	_restore_scene_layout()
 
 	# The pulse scales the avatar around its center ("latir"), so the
 	# pivot is the center of the avatar's own rect — the scene's rect
@@ -172,8 +171,10 @@ func _restore_scene_layout() -> void:
 	text_label.add_theme_font_size_override("font_size", int(_scene_layout["font_size"]))
 
 
-# Applies a code layout (criticker only). The tutorial layout comes
-# from the scene itself — see set_mode().
+# Applies a code layout. UNUSED while both modes share the scene
+# layout — kept for reference: the web's smaller/higher criticker
+# bubble (LAYOUTS["criticker"]). If the criticker should look
+# different from the tutorial again, call this from set_mode().
 func _apply_layout(l: Dictionary) -> void:
 	container.offset_left = -l["container_half_width"]
 	container.offset_right = l["container_half_width"]
