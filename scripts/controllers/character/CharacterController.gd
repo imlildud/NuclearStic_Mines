@@ -89,6 +89,15 @@ func move_character(direction: String, board: Array, river_depth: int = 0) -> vo
 	var current_tile = board[character.get_pos_x()][character.get_pos_y()]
 	var target_tile = board[new_x][new_y]
 
+	# ===== TARGET TILE BLOCK CHECK =====
+	# A tile that can't be entered must reject the move BEFORE any fall
+	# damage is applied.
+	var obst_early: String = target_tile.get_obstacletype()
+	if obst_early == "natural" and character.get_ability_id() != 4:
+		return
+	if target_tile.get_hazardtype() == "pipe" and character.get_ability_id() != 4:
+		return
+
 	# ===== HEIGHT DIFFERENCE CHECK =====
 	var height_diff: int = target_tile.get_tileheight() - current_tile.get_tileheight()
 
