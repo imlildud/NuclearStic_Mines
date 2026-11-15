@@ -623,7 +623,9 @@ func _on_seed_pressed() -> void:
 	modal.cancelled.connect(func():
 		modal.queue_free()
 	)
-	modal.show_modal(current_config.get("seed", generate_random_seed()), locale_manager)
+	# locale_manager is never set on this panel, so pass the autoload —
+	# passing null here is why the seed modal stayed in English.
+	modal.show_modal(current_config.get("seed", generate_random_seed()), LocaleManager)
 
 
 func _on_keychain_pressed() -> void:
@@ -645,7 +647,7 @@ func _on_keychain_pressed() -> void:
 
 	# BundleManager provides the list of all keychains.
 	var bundle_manager = BundleManager.new(null, null)
-	selector.show_selector(custom_keychains, bundle_manager, locale_manager)
+	selector.show_selector(custom_keychains, bundle_manager, LocaleManager)
 
 func get_custom_keychains() -> Array:
 	return custom_keychains
