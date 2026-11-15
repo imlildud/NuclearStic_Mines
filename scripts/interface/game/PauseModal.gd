@@ -12,6 +12,7 @@ signal exit_pressed
 const CHAR_PATH := "res://assets/sprites/characters/%s.png"
 const CHILD_NAME_KEY := "game.children.%s"
 
+@onready var title_label: Label = $Root/Card/Content/TitleLabel
 @onready var seed_label: Label = $Root/Card/Content/SeedLabel
 @onready var stats_label: Label = $Root/Card/Content/StatsLabel
 @onready var children_container: HBoxContainer = $Root/Card/Content/ChildrenContainer
@@ -27,6 +28,11 @@ func _ready() -> void:
 
 
 func show_modal(char_ctrl, config: Dictionary, board: Array) -> void:
+	# Title — the scene hardcodes "PAUSED", so set it here like the
+	# stats and children below (this is why the rest translated but
+	# the title didn't).
+	title_label.text = LocaleManager.get_translation("game.paused")
+
 	# Seed.
 	var seed_value = config.get("seed", null)
 	seed_label.text = "Seed: %s" % (str(seed_value) if seed_value != null else "---")

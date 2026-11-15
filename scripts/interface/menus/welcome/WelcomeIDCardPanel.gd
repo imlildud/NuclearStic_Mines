@@ -57,6 +57,11 @@ func refresh(username: String, avatar_id: int, animate_points: bool = false) -> 
 	var total_points: int = RankManager.get_total_points(is_hardcore)
 	var rank_data: Dictionary = RankManager.get_rank_data(total_points, is_hardcore)
 
+	# The scene hardcodes "Play" / "Delete Save" — rewrite them from the
+	# current locale every time the card refreshes.
+	play_button.text = LocaleManager.get_translation("menu.play")
+	delete_button.text = LocaleManager.get_translation("menu.deleteData")
+
 	avatar_image.texture = load(ICONS_PATH % avatar_id)
 	name_label.text = username
 	level_label.text = "%d" % legacy_level

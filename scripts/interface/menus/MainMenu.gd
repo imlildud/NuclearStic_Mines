@@ -66,6 +66,9 @@ func _ready() -> void:
 	_connect_button($BottomRow/OptionsButton, _on_options_pressed)
 	_connect_button($IdCardButton, _on_id_card_pressed)
 
+	# Translate the mode buttons (their Labels are hardcoded in the scene).
+	_apply_language()
+
 	# Show the welcome panel if needed (first time / returning player).
 	_maybe_show_welcome_panel()
 
@@ -180,7 +183,18 @@ func _on_config_closed() -> void:
 	AudioManager.play_click_sfx()
 	if _config != null:
 		_config.visible = false
+	# The language may have changed inside Configuration — re-apply it
+	# to the mode buttons (the scene itself never reloads here).
+	_apply_language()
 	AudioManager.play_menu_music(true)
+
+
+# Rewrites the mode-button Labels from the current locale.
+# The scene hardcodes "Legacy Mode" / "Daily Mission" / "Custom Mission".
+func _apply_language() -> void:
+	$MenuButtons/LegacyButton/Label.text = LocaleManager.get_translation("menu.legacy")
+	$MenuButtons/DailyButton/Label.text = LocaleManager.get_translation("menu.daily")
+	$MenuButtons2/CustomButton/Label.text = LocaleManager.get_translation("menu.custom")
 
 
 func _on_id_card_pressed() -> void:

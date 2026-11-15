@@ -21,6 +21,7 @@ var daily_config: Dictionary = {}
 var current_config: Dictionary = {}
 var locale_manager = null
 var custom_keychains: Array = []
+var _last_locale: String = ""
 
 # ======================= LIFECYCLE =======================
 
@@ -41,39 +42,40 @@ func _populate_selects() -> void:
 	# Character
 	var legacy_chars: OptionButton = $Punchcard/CharSection/LegacyCharSelect
 	legacy_chars.clear()
-	for c in ["Chef", "Mosquito", "Mommy", "Scout"]:
-		legacy_chars.add_item(c)
+	for c in ["chef", "mosquito", "mommy", "scout"]:
+		legacy_chars.add_item(_tr("menu.punchcard." + c, c.capitalize()))
 
 	var custom_chars: OptionButton = $Punchcard/CharSection/CustomCharSelect
 	custom_chars.clear()
-	for c in ["Chef", "Mosquito", "Mommy", "Scout"]:
-		custom_chars.add_item(c)
+	for c in ["chef", "mosquito", "mommy", "scout"]:
+		custom_chars.add_item(_tr("menu.punchcard." + c, c.capitalize()))
 
 	# Size
 	var sizes: OptionButton = $Punchcard/SizeSection/CustomSizeSelect
 	sizes.clear()
-	sizes.add_item("Small"); sizes.set_item_metadata(0, 8)
-	sizes.add_item("Medium"); sizes.set_item_metadata(1, 12)
-	sizes.add_item("Large"); sizes.set_item_metadata(2, 16)
-	sizes.add_item("Xtra-Large"); sizes.set_item_metadata(3, 20)
-	sizes.add_item("Ultra-Large"); sizes.set_item_metadata(4, 24)
+	var size_keys = ["small", "medium", "large", "xtraLarge", "ultraLarge"]
+	var size_values = [8, 12, 16, 20, 24]
+	var size_fallbacks = ["Small", "Medium", "Large", "Xtra-Large", "Ultra-Large"]
+	for i in range(size_keys.size()):
+		sizes.add_item(_tr("menu.punchcard." + size_keys[i], size_fallbacks[i]))
+		sizes.set_item_metadata(i, size_values[i])
 
 	# Hazards
 	var hazards: OptionButton = $Punchcard/HazardsSection/CustomHazardsSelect
 	hazards.clear()
 	var hazard_values = [1, 5, 10, 15, 20, 30]
-	var hazard_labels = ["Low", "Medium", "High", "Xtra-High", "Ultra-High", "Nsanely-High"]
+	var hazard_keys = ["low", "medium", "high", "xtraHigh", "ultraHigh", "nsanelyHigh"]
+	var hazard_fallbacks = ["Low", "Medium", "High", "Xtra-High", "Ultra-High", "Nsanely-High"]
 	for i in range(hazard_values.size()):
-		hazards.add_item(hazard_labels[i])
+		hazards.add_item(_tr("menu.punchcard." + hazard_keys[i], hazard_fallbacks[i]))
 		hazards.set_item_metadata(i, hazard_values[i])
 
 	# Obstacles
 	var obstacles: OptionButton = $Punchcard/ObstaclesSection/CustomObstaclesSelect
 	obstacles.clear()
 	var obstacle_values = [1, 3, 5, 10, 15, 20]
-	var obstacle_labels = ["Low", "Medium", "High", "Xtra-High", "Ultra-High", "Nsanely-High"]
 	for i in range(obstacle_values.size()):
-		obstacles.add_item(obstacle_labels[i])
+		obstacles.add_item(_tr("menu.punchcard." + hazard_keys[i], hazard_fallbacks[i]))
 		obstacles.set_item_metadata(i, obstacle_values[i])
 
 	# Pals
@@ -82,14 +84,36 @@ func _populate_selects() -> void:
 	for i in range(1, 6):
 		pals.add_item(str(i))
 
-	# Zone
+	# Zone — note: scrapland / roots / glowyland have no key in any
+	# locale file yet, so they keep their English name until you add
+	# menu.punchcard.scrapland / .roots / .glowyland to en/es/mx.json.
 	var zone: OptionButton = $Punchcard/ZoneSection/CustomZoneSelect
 	zone.clear()
 	var zones = ["Backyard", "Desert", "Snow", "Scrapland", "Roots", "Glowyland", "Ash"]
 	var zone_ids = ["backyard", "desert", "snow", "scrapland", "roots", "glowyland", "ash"]
 	for i in range(zones.size()):
-		zone.add_item(zones[i])
+		zone.add_item(_tr("menu.punchcard." + zone_ids[i], zones[i]))
 		zone.set_item_metadata(i, zone_ids[i])
+
+
+# Translates a key, falling back to the given English text when the key
+# is missing (get_translation returns the key itself in that case).
+func _tr(key: String, fallback: String) -> String:
+	var t: String = LocaleManager.get_translation(key)
+	if t == "" or t == key:
+		return fallback
+	return t
+
+
+# Rewrites the section titles from the current locale — the scene
+# hardcodes them in English ("Character", "Size", ...).
+func _apply_language() -> void:
+	$Punchcard/CharSection/CharLabel.text = _tr("menu.punchcard.character", "Character")
+	$Punchcard/SizeSection/SizeLabel.text = _tr("menu.punchcard.size", "Size")
+	$Punchcard/HazardsSection/HazardsLabel.text = _tr("menu.punchcard.hazards", "Hazards")
+	$Punchcard/ObstaclesSection/ObstaclesLabel.text = _tr("menu.punchcard.obstacles", "Obstacles")
+	$Punchcard/PalsSection/PalsLabel.text = _tr("menu.punchcard.wanted", "Wanted:")
+	$Punchcard/ZoneSection/ZoneLabel.text = _tr("menu.punchcard.zone", "Zone")
 
 
 func _wire_buttons() -> void:
@@ -148,6 +172,16 @@ func _get_all_buttons() -> Array:
 # ======================= PUBLIC API =======================
 
 func open(mode: String) -> void:
+	# The selects are populated once in _ready() with hardcoded English.
+	# Re-populate them when the language changed since the last open, so
+	# option names follow the current locale. Selections are kept when
+	# the locale didn't change. (Uses the LocaleManager autoload: nobody
+	# ever calls set_locale_manager() on this panel, so the
+	# locale_manager var is always null.)
+	if LocaleManager.get_current_locale() != _last_locale:
+		_populate_selects()
+		_last_locale = LocaleManager.get_current_locale()
+	_apply_language()
 	visible = true
 	match mode:
 		"legacy": generate_legacy_config()
@@ -269,7 +303,7 @@ func generate_daily_config() -> void:
 func generate_custom_config() -> void:
 	punchcard_mode = "custom"
 	_hide_all_selects()
-	$Punchcard/DateNote.text = "Custom"
+	$Punchcard/DateNote.text = _tr("menu.punchcard.custom", "Custom")
 
 	if current_config.is_empty() or not current_config.has("seed"):
 		current_config = _create_base_config()
@@ -298,9 +332,9 @@ func _update_punchcard_textures(config: Dictionary) -> void:
 	$Punchcard/SeedLabel.visible = true
 	$Punchcard/CharSection/LegacyCharSelect.visible = false
 
-	var seed_prefix: String = "Seed: "
-	if locale_manager != null and locale_manager.has_method("get_translation"):
-		seed_prefix = locale_manager.get_translation("menu.punchcard.seed")
+	# locale_manager is never set on this panel (nobody calls
+	# set_locale_manager), so use the LocaleManager autoload directly.
+	var seed_prefix: String = _tr("menu.punchcard.seed", "Seed: ")
 
 	if config.has("seed") and config["seed"] != null:
 		$Punchcard/SeedLabel.text = "%s%s" % [seed_prefix, str(config["seed"])]
@@ -425,9 +459,9 @@ func generate_random_seed() -> int:
 
 
 func _update_seed_display(seed_value: int) -> void:
-	var seed_prefix: String = "Seed: "
-	if locale_manager != null and locale_manager.has_method("get_translation"):
-		seed_prefix = locale_manager.get_translation("menu.punchcard.seed")
+	# locale_manager is never set on this panel (nobody calls
+	# set_locale_manager), so use the LocaleManager autoload directly.
+	var seed_prefix: String = _tr("menu.punchcard.seed", "Seed: ")
 	$Punchcard/SeedLabel.text = "%s%d" % [seed_prefix, seed_value]
 
 

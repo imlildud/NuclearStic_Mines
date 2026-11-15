@@ -30,6 +30,12 @@ const NUMBER_DURATION: float = 1.5
 const GRADE_POP_DURATION: float = 0.3
 const GRADE_FADE_DURATION: float = 0.5
 
+@onready var rescued_label: Label = $Root/Card/LabelsCol/RescuedLabel
+@onready var marked_label: Label = $Root/Card/LabelsCol/MarkedLabel
+@onready var difficulty_label: Label = $Root/Card/LabelsCol/DifficultyLabel
+@onready var deaths_label: Label = $Root/Card/LabelsCol/DeathsLabel
+@onready var failed_label: Label = $Root/Card/LabelsCol/FailedLabel
+@onready var damage_label: Label = $Root/Card/LabelsCol/DamageLabel
 @onready var rescued_value: Label = $Root/Card/ValuesCol/RescuedValue
 @onready var marked_value: Label = $Root/Card/ValuesCol/MarkedValue
 @onready var difficulty_value: Label = $Root/Card/ValuesCol/DifficultyValue
@@ -49,6 +55,7 @@ var _final_values: Dictionary = {}
 
 func _ready() -> void:
 	visible = false
+	_apply_language()
 	continue_button.pressed.connect(func(): continue_pressed.emit())
 	retry_button.pressed.connect(func(): retry_pressed.emit())
 	home_button.pressed.connect(func(): home_pressed.emit())
@@ -74,6 +81,7 @@ func display_scores(data: Dictionary) -> void:
 		"buttons": data.get("buttons", {}),
 	}
 
+	_apply_language()
 	_reset_labels_to_zero()
 	_update_buttons(_final_values["buttons"])
 	visible = true
@@ -86,6 +94,17 @@ func display_scores(data: Dictionary) -> void:
 		AudioManager.start_score_animation_sfx()
 
 	_animate_all_values(play_sound)
+
+
+# Rewrites the row titles from the current locale — the scene
+# hardcodes them in English ("Rescued", "Marked Hazard", ...).
+func _apply_language() -> void:
+	rescued_label.text = LocaleManager.get_translation("game.scoreboard.rescued")
+	marked_label.text = LocaleManager.get_translation("game.scoreboard.marked")
+	difficulty_label.text = LocaleManager.get_translation("game.scoreboard.difficulty")
+	deaths_label.text = LocaleManager.get_translation("game.scoreboard.deaths")
+	failed_label.text = LocaleManager.get_translation("game.scoreboard.failed")
+	damage_label.text = LocaleManager.get_translation("game.scoreboard.damage")
 
 
 # ======================= LABEL RESET =======================
