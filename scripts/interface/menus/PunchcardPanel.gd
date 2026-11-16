@@ -24,6 +24,13 @@ var custom_keychains: Array = []
 var _last_locale: String = ""
 var _backyard_unlocked: bool = false
 
+# Menu transition fades (phase 1 of effects): opacity tweens, not shaders.
+const FADE_IN_TIME: float = 0.2
+const FADE_OUT_TIME: float = 0.15
+
+var _fade_tween: Tween = null
+var _fade_id: int = 0
+
 # ======================= LIFECYCLE =======================
 
 func _ready() -> void:
@@ -192,7 +199,13 @@ func open(mode: String) -> void:
 		_last_locale = LocaleManager.get_current_locale()
 		_backyard_unlocked = backyard_now
 	_apply_language()
+	_fade_id += 1
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
 	visible = true
+	modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_TIME)
 	match mode:
 		"legacy": generate_legacy_config()
 		"daily":  generate_daily_config()
@@ -618,7 +631,17 @@ func _update_start_button_visibility() -> void:
 func _on_close_pressed() -> void:
 	if AudioManager.has_method("play_click_sfx"):
 		AudioManager.play_click_sfx()
+	_fade_id += 1
+	var my_id: int = _fade_id
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_TIME)
+	await get_tree().create_timer(FADE_OUT_TIME).timeout
+	if my_id != _fade_id:
+		return
 	visible = false
+	modulate.a = 1.0
 	closed.emit()
 
 

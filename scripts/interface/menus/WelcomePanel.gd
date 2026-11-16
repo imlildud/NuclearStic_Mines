@@ -16,6 +16,14 @@ signal play_pressed
 var _locale_manager = null
 var _editing_name: bool = false
 
+# Menu transition fades (phase 1 of effects): opacity tweens, not shaders.
+const FADE_IN_TIME: float = 0.2
+const FADE_OUT_TIME: float = 0.15
+
+var _current_panel: Control = null
+var _switch_id: int = 0
+var _panel_tweens: Dictionary = {}
+
 
 func _ready() -> void:
 	visible = false
@@ -39,6 +47,9 @@ func set_locale_manager(lm) -> void:
 func init_welcome_screen() -> void:
 	_hide_all()
 	visible = true
+	if _dimmer != null:
+		_dimmer.modulate.a = 0.0
+		_fade_panel(_dimmer, 1.0, FADE_IN_TIME)
 
 	var tutorial_completed: bool = SaveManager.is_tutorial_completed()
 	var username: String = SaveManager.get_username()
@@ -55,35 +66,70 @@ func init_welcome_screen() -> void:
 # ======================= PANEL HELPERS =======================
 
 func _hide_all() -> void:
-	_name_panel.visible = false
-	_avatar_panel.visible = false
-	_tutorial_panel.visible = false
-	_id_card_panel.visible = false
+	_current_panel = null
+	for panel in [_name_panel, _avatar_panel, _tutorial_panel, _id_card_panel]:
+		_kill_panel_tween(panel)
+		panel.visible = false
+		panel.modulate.a = 1.0
 
 
 func _show_name_panel() -> void:
-	_hide_all()
 	_name_panel.set_prompt(_get_text("menu.enterName", "Enter your name, rescuer:"))
-	_name_panel.visible = true
+	_switch_to(_name_panel)
 
 
 func _show_avatar_panel() -> void:
-	_hide_all()
 	_avatar_panel.set_prompt(_get_text("menu.selectAvatar", "Choose your profile picture:"))
 	_avatar_panel.select_avatar(SaveManager.get_avatar())
-	_avatar_panel.visible = true
+	_switch_to(_avatar_panel)
 
 
 func _show_tutorial_panel() -> void:
-	_hide_all()
 	_tutorial_panel.set_question(_get_text("menu.tutorialQuestion", "Would you like to play the tutorial?"))
-	_tutorial_panel.visible = true
+	_switch_to(_tutorial_panel)
 
 
 func _show_id_card(username: String, avatar_id: int, animate_points: bool = false) -> void:
-	_hide_all()
 	_id_card_panel.refresh(username, avatar_id, animate_points)
-	_id_card_panel.visible = true
+	_switch_to(_id_card_panel)
+
+
+# Fades a panel's opacity, killing any fade already running on it so two
+# tweens never fight over the same property.
+func _kill_panel_tween(panel: Control) -> void:
+	if _panel_tweens.has(panel):
+		var old_tween = _panel_tweens[panel]
+		if old_tween != null and (old_tween as Tween).is_valid():
+			(old_tween as Tween).kill()
+
+
+func _fade_panel(panel: Control, target_alpha: float, duration: float) -> void:
+	_kill_panel_tween(panel)
+	var t := panel.create_tween()
+	t.tween_property(panel, "modulate:a", target_alpha, duration)
+	_panel_tweens[panel] = t
+
+
+# Cross-fade between panels: fade the current one out, then fade the new
+# one in. Safe against fast double-clicks: each switch gets an id, and a
+# superseded switch only cleans up its own old panel.
+func _switch_to(panel: Control) -> void:
+	if _current_panel == panel:
+		return
+	_switch_id += 1
+	var my_id: int = _switch_id
+	var old_panel: Control = _current_panel
+	_current_panel = panel
+	if old_panel != null and old_panel.visible:
+		_fade_panel(old_panel, 0.0, FADE_OUT_TIME)
+		await get_tree().create_timer(FADE_OUT_TIME).timeout
+		old_panel.visible = false
+		old_panel.modulate.a = 1.0
+		if my_id != _switch_id:
+			return
+	panel.visible = true
+	panel.modulate.a = 0.0
+	_fade_panel(panel, 1.0, FADE_IN_TIME)
 
 
 # ======================= SIGNAL HANDLERS =======================
@@ -132,7 +178,27 @@ func _on_tutorial_choice(wants_tutorial: bool) -> void:
 
 func _on_id_card_play() -> void:
 	AudioManager.play_click_sfx()
+	_fade_out_welcome()
+
+
+# Fades the current panel and the dimmer out, then hides the whole layer.
+func _fade_out_welcome() -> void:
+	_switch_id += 1
+	var my_id: int = _switch_id
+	if _current_panel != null and _current_panel.visible:
+		_fade_panel(_current_panel, 0.0, FADE_OUT_TIME)
+	if _dimmer != null:
+		_fade_panel(_dimmer, 0.0, FADE_OUT_TIME)
+	await get_tree().create_timer(FADE_OUT_TIME).timeout
+	if my_id != _switch_id:
+		return
 	visible = false
+	if _current_panel != null:
+		_current_panel.visible = false
+		_current_panel.modulate.a = 1.0
+	_current_panel = null
+	if _dimmer != null:
+		_dimmer.modulate.a = 1.0
 	play_pressed.emit()
 
 
@@ -146,11 +212,10 @@ func _on_id_card_edit() -> void:
 func _on_id_card_name_edit() -> void:
 	AudioManager.play_click_sfx()
 	_editing_name = true
-	_hide_all()
 	_name_panel.set_prompt(_get_text("menu.editName", "Enter your new name:"))
-	_name_panel.visible = true
-	visible = true
 	_name_panel.set_current_name(SaveManager.get_username())
+	visible = true
+	_switch_to(_name_panel)
 
 
 func _on_id_card_delete() -> void:
