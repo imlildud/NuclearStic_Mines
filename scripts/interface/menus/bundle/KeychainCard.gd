@@ -99,6 +99,14 @@ func _apply_sizes(card_size: String) -> void:
 		_badge_label.add_theme_font_size_override("font_size", 26)
 		_name_label.offset_top = -52.0
 		_name_label.offset_bottom = 0.0
+	elif card_size == "compact":
+		custom_minimum_size = Vector2(200, 250)
+		_icon_wrapper.offset_bottom = 150.0
+		RarezaBadge_fix(50.0, 55.0)
+		_name_label.add_theme_font_size_override("font_size", 20)
+		_badge_label.add_theme_font_size_override("font_size", 16)
+		_name_label.offset_top = -48.0
+		_name_label.offset_bottom = 0.0
 	else:
 		custom_minimum_size = Vector2(300, 320)
 		_icon_wrapper.offset_bottom = 200.0

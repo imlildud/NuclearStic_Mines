@@ -50,7 +50,7 @@ func show_popup(inventory: Array, bundle_manager, locale_manager) -> void:
 			continue
 		var card: Control = load(CARD_SCENE).instantiate()
 		_grid.add_child(card)
-		card.setup(data, locale_manager, "bundle")
+		card.setup(data, locale_manager, "compact")
 		card.pressed.connect(_on_card_pressed.bind(keychain_id))
 
 	visible = true
@@ -88,6 +88,6 @@ func _clear_grid() -> void:
 func _get_text(lm, key: String, fallback: String) -> String:
 	if lm != null:
 		var r = lm.get_translation(key)
-		if r is String and r != "":
+		if r is String and r != "" and r != key:
 			return r
 	return fallback

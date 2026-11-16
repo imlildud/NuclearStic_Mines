@@ -78,6 +78,6 @@ func _on_cancel_pressed() -> void:
 func _get_text(lm, key: String, fallback: String) -> String:
 	if lm != null:
 		var r = lm.get_translation(key)
-		if r is String and r != "":
+		if r is String and r != "" and r != key:
 			return r
 	return fallback

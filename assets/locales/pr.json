@@ -265,5 +265,9 @@
         "link": { "name": "Vínculo", "description": "Unidos pelo destino. Além do que tu vê." },
         "oblivion": { "name": "Esquecimento", "description": "A ordem se desfaz. Tudo desmorona." },
         "delirium": { "name": "Delírio", "description": "A realidade se desfoca. A mente viaja." }
+    },
+    "ui": {
+        "cancel": "Cancelar",
+        "ok": "OK"
     }
 }

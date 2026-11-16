@@ -265,5 +265,9 @@
         "link": { "name": "Link", "description": "Bound by fate. United beyond." },
         "oblivion": { "name": "Oblivion", "description": "Order unravels. Everything falls apart." },
         "delirium": { "name": "Delirium", "description": "Reality blurs. The mind wanders." }
+    },
+    "ui": {
+        "cancel": "Cancel",
+        "ok": "Ok"
     }
 }
