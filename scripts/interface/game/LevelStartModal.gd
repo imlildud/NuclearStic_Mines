@@ -11,10 +11,10 @@ signal dismissed
 const CHAR_PATH := "res://assets/sprites/characters/%s.png"
 const CHILD_NAME_KEY := "game.children.%s"
 
-@onready var title_label: Label = $Root/Card/Content/TitleLabel
-@onready var seed_label: Label = $Root/Card/Content/SeedLabel
-@onready var info_label: Label = $Root/Card/Content/InfoLabel
-@onready var children_container: HBoxContainer = $Root/Card/Content/ChildrenContainer
+@onready var title_label: Label = $Root/Card/TitleLabel
+@onready var seed_label: Label = $Root/Card/SeedLabel
+@onready var info_label: Label = $Root/Card/InfoLabel
+@onready var children_container: HBoxContainer = $Root/Card/ChildrenContainer
 
 
 func _ready() -> void:

@@ -12,12 +12,12 @@ signal exit_pressed
 const CHAR_PATH := "res://assets/sprites/characters/%s.png"
 const CHILD_NAME_KEY := "game.children.%s"
 
-@onready var title_label: Label = $Root/Card/Content/TitleLabel
-@onready var seed_label: Label = $Root/Card/Content/SeedLabel
-@onready var stats_label: Label = $Root/Card/Content/StatsLabel
-@onready var children_container: HBoxContainer = $Root/Card/Content/ChildrenContainer
-@onready var continue_button: TextureButton = $Root/Card/Content/ButtonsRow/ContinueButton
-@onready var exit_button: TextureButton = $Root/Card/Content/ButtonsRow/ExitButton
+@onready var title_label: Label = $Root/Card/TitleLabel
+@onready var seed_label: Label = $Root/Card/SeedLabel
+@onready var stats_label: Label = $Root/Card/StatsLabel
+@onready var children_container: HBoxContainer = $Root/Card/ChildrenContainer
+@onready var continue_button: TextureButton = $Root/Card/ContinueButton
+@onready var exit_button: TextureButton = $Root/Card/ExitButton
 
 
 func _ready() -> void:
