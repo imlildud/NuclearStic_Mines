@@ -12,6 +12,122 @@
 [ext_resource type="Texture2D" uid="uid://daqg43ql0yb02" path="res://assets/hud/badges/fire0.png" id="9_fire0"]
 [ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="10_font"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_normal"]
+content_margin_left = 18.0
+content_margin_top = 6.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24, 0.42, 0.31, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.12, 0.23, 0.16, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_pressed"]
+content_margin_left = 18.0
+content_margin_top = 9.0
+content_margin_right = 18.0
+content_margin_bottom = 5.0
+bg_color = Color(0.16, 0.29, 0.21, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.08, 0.16, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_hover"]
+content_margin_left = 18.0
+content_margin_top = 5.0
+content_margin_right = 18.0
+content_margin_bottom = 9.0
+bg_color = Color(0.3, 0.52, 0.39, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.16, 0.3, 0.21, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_delete_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.44, 0.25, 0.25, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.24, 0.13, 0.13, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_delete_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.3, 0.17, 0.17, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.17, 0.09, 0.09, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_delete_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.55, 0.31, 0.31, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.31, 0.17, 0.17, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
 [node name="WelcomeIDCardPanel" type="Control" unique_id=2021107184]
 layout_mode = 3
 anchors_preset = 15
@@ -68,6 +184,7 @@ offset_right = -103.0
 offset_bottom = 15.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("4_edit")
 ignore_texture_size = true
 stretch_mode = 5
@@ -378,14 +495,22 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -273.0
-offset_top = 211.0
-offset_right = -123.0
-offset_bottom = 271.0
+offset_left = -332.0
+offset_top = 210.0
+offset_right = -68.0
+offset_bottom = 312.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("10_font")
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxFlat_play_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_play_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_play_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 text = "Play"
 
 [node name="DeleteButton" type="Button" parent="." unique_id=835856660]
@@ -395,12 +520,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 127.0
+offset_left = 71.0
 offset_top = 209.0
-offset_right = 307.0
-offset_bottom = 269.0
+offset_right = 337.0
+offset_bottom = 314.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("10_font")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_delete_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_delete_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_delete_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 text = "Delete Save"
