@@ -27,8 +27,8 @@
 [ext_resource type="Texture2D" uid="uid://b327kj6dv2hls" path="res://assets/hud/game/control/swamp.png" id="26_swamp"]
 [ext_resource type="Texture2D" uid="uid://buc0iigmiva6o" path="res://assets/hud/game/control/restart.png" id="27_restart"]
 [ext_resource type="PackedScene" uid="uid://ctpotjyjiawqk" path="res://scenes/game/Scoreboard.tscn" id="28_scoreboard"]
-[ext_resource type="PackedScene" path="res://scenes/game/LevelStartModal.tscn" id="29_levelstart"]
-[ext_resource type="PackedScene" path="res://scenes/game/PauseModal.tscn" id="30_pause"]
+[ext_resource type="PackedScene" uid="uid://b22relmukp3r2" path="res://scenes/game/LevelStartModal.tscn" id="29_levelstart"]
+[ext_resource type="PackedScene" uid="uid://c43pou2krmsn1" path="res://scenes/game/PauseModal.tscn" id="30_pause"]
 [ext_resource type="PackedScene" path="res://scenes/game/ModalDialog.tscn" id="31_modal"]
 
 [node name="HUD" type="CanvasLayer" unique_id=1643378140]
@@ -406,9 +406,9 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -272.0
-offset_top = -48.0
+offset_top = -61.0
 offset_right = 7.0
-offset_bottom = 42.0
+offset_bottom = 29.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_constants/separation = 0

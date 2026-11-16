@@ -451,8 +451,6 @@ func _create_keychain_slot(keychain_id: String) -> Control:
 	slot.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var tex := TextureRect.new()
-	# Igualamos el tamaño interno de la textura
-	tex.custom_minimum_size = Vector2(55, 55)
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	tex.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -462,21 +460,37 @@ func _create_keychain_slot(keychain_id: String) -> Control:
 		tex.texture = load(path)
 
 	slot.add_child(tex)
-	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# The keychain art is portrait (aspect 0.47-1.07) and looked tiny
+	# fitted into the 55x55 slot. Render it bigger: fit each texture
+	# in a 70x110 box, centered on the slot and hanging below it like
+	# a pendant. The slot itself stays 55 wide, so the 5 hooks keep
+	# their spacing and the bar needs no changes.
+	var disp := Vector2(55, 55)
+	if tex.texture != null:
+		var tex_size: Vector2 = tex.texture.get_size()
+		var fit := Vector2(70, 110)
+		var sc: float = minf(fit.x / tex_size.x, fit.y / tex_size.y)
+		disp = tex_size * sc
+	tex.anchor_left = 0.5
+	tex.anchor_right = 0.5
+	tex.anchor_top = 0.0
+	tex.anchor_bottom = 0.0
+	tex.offset_left = -disp.x / 2.0
+	tex.offset_right = disp.x / 2.0
+	tex.offset_top = 0.0
+	tex.offset_bottom = disp.y
 
 	# Pivot at the top so it swings like a pendant.
-	tex.pivot_offset = Vector2(tex.size.x / 2.0, 0.0)
-	# Defer pivot fix until the slot has its final size.
-	slot.resized.connect(func():
-		tex.pivot_offset = Vector2(tex.size.x / 2.0, 0.0)
-	)
+	tex.pivot_offset = Vector2(disp.x / 2.0, 0.0)
 
 	var swing_tween: Tween = null
 
 	slot.mouse_entered.connect(func():
+		# Don't restart the swing while it's still playing: re-hovering
+		# mid-swing does nothing until the tween finishes.
+		if swing_tween != null and swing_tween.is_valid() and swing_tween.is_running():
+			return
 		AudioManager.play_hover_sfx()
-		if swing_tween != null and swing_tween.is_valid():
-			swing_tween.kill()
 		swing_tween = _build_swing_tween(tex)
 	)
 	slot.mouse_exited.connect(func():
