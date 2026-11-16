@@ -1,10 +1,69 @@
-[gd_scene format=3 uid="uid://welcome_name_panel"]
+[gd_scene format=3 uid="uid://df4ddkct4yk6h"]
 
-[ext_resource type="Script" path="res://scripts/interface/menus/welcome/WelcomeNamePanel.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_welcomebg"]
-[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+[ext_resource type="Script" uid="uid://cte50lyylcscq" path="res://scripts/interface/menus/welcome/WelcomeNamePanel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cf8kbghbgom5s" path="res://assets/hud/menu/namemodal.png" id="2_2xa0g"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
 
-[node name="WelcomeNamePanel" type="Control"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_input"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.18, 0.16, 0.15, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.09, 0.08, 0.07, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 9
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.13, 0.11, 0.1, 1)
+border_width_left = 2
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.06, 0.05, 0.05, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 9
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.27, 0.24, 0.22, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.12, 0.1, 0.09, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 9
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[node name="WelcomeNamePanel" type="Control" unique_id=788151266]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +72,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="Card" type="TextureRect" parent="."]
+[node name="Card" type="TextureRect" parent="." unique_id=885007372]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -26,39 +85,53 @@ offset_right = 500.0
 offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_welcomebg")
+texture = ExtResource("2_2xa0g")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PromptLabel" type="Label" parent="Card"]
+[node name="PromptLabel" type="Label" parent="Card" unique_id=1997640164]
 layout_mode = 0
-offset_left = 100.0
-offset_top = 200.0
-offset_right = 900.0
-offset_bottom = 250.0
+offset_left = 296.0
+offset_top = 190.0
+offset_right = 738.0
+offset_bottom = 245.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 35
 text = "Enter your name, rescuer:"
 horizontal_alignment = 1
 
-[node name="NameInput" type="LineEdit" parent="Card"]
+[node name="NameInput" type="LineEdit" parent="Card" unique_id=1629401881]
 layout_mode = 0
-offset_left = 250.0
-offset_top = 280.0
-offset_right = 750.0
-offset_bottom = 340.0
+offset_left = 367.0
+offset_top = 504.0
+offset_right = 737.0
+offset_bottom = 563.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_placeholder_color = Color(0.2, 0.18, 0.16, 0.55)
+theme_override_colors/caret_color = Color(0, 0, 0, 1)
+theme_override_colors/selection_color = Color(0.55, 0.15, 0.15, 0.35)
 theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 48
+theme_override_styles/normal = SubResource("StyleBoxEmpty_input")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_input")
 placeholder_text = "Your name"
 max_length = 20
 
-[node name="ContinueButton" type="Button" parent="Card"]
+[node name="ContinueButton" type="Button" parent="Card" unique_id=1556137366]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 400.0
-offset_right = 600.0
-offset_bottom = 460.0
+offset_left = 419.0
+offset_top = 596.0
+offset_right = 619.0
+offset_bottom = 656.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.92, 0.86, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("3_font")
 theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_input")
 text = "Continue"
