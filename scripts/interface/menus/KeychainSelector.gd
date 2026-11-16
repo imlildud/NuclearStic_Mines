@@ -90,7 +90,7 @@ func _build_grid() -> void:
 
 		var card: Control = load(CARD_SCENE).instantiate()
 		_grid.add_child(card)
-		card.setup(k, _locale_manager, "bundle")
+		card.setup(k, _locale_manager, "compact")
 		card.pressed.connect(_on_card_pressed.bind(id))
 
 		# The SelectionBorder lives in the selector, not the card.
@@ -218,6 +218,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _get_text(key: String, fallback: String) -> String:
 	if _locale_manager != null:
 		var r = _locale_manager.get_translation(key)
-		if r is String and r != "":
+		# get_translation returns the key itself when it is missing,
+		# so r == key also means "not translated" — use the fallback.
+		if r is String and r != "" and r != key:
 			return r
 	return fallback
