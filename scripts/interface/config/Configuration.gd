@@ -30,6 +30,7 @@ const KNOB_ON_BG := Color("#fffdfa")
 @onready var language_title: Label = $ScrollContainer/Card/LanguageSection/LanguageTitle
 @onready var lang_en_button: Button = $ScrollContainer/Card/LanguageSection/LangEnButton
 @onready var lang_es_button: Button = $ScrollContainer/Card/LanguageSection/LangEsButton
+@onready var lang_pr_button: Button = $ScrollContainer/Card/LanguageSection/LangPrButton
 
 @onready var gameplay_title: Label = $ScrollContainer/Card/GameplaySection/GameplayTitle
 @onready var touch_label: Label = $ScrollContainer/Card/GameplaySection/TouchLabel
@@ -85,6 +86,7 @@ func _ready() -> void:
 	# Language.
 	lang_en_button.pressed.connect(func(): _set_language("en"))
 	lang_es_button.pressed.connect(func(): _set_language("es"))
+	lang_pr_button.pressed.connect(func(): _set_language("pr"))
 
 	# Toggles (custom pill switches — see _setup_toggle).
 	_setup_toggle(touch_toggle, "touch")
@@ -173,6 +175,7 @@ func apply_language() -> void:
 	manual_button.text = LocaleManager.get_translation("config.manual")
 	lang_en_button.text = LocaleManager.get_translation("config.langEn")
 	lang_es_button.text = LocaleManager.get_translation("config.langEs")
+	lang_pr_button.text = LocaleManager.get_translation("config.langPr")
 	save_label.text = LocaleManager.get_translation("config.save")
 	online_title.text = "Online Features"
 	online_label.text = "Daily Leaderboard — 1.1.0"
@@ -210,6 +213,7 @@ func _update_lang_buttons() -> void:
 	var current: String = LocaleManager.get_current_locale()
 	_set_lang_button_active(lang_en_button, current == "en")
 	_set_lang_button_active(lang_es_button, current == "es")
+	_set_lang_button_active(lang_pr_button, current == "pr")
 
 
 func _set_lang_button_active(button: Button, active: bool) -> void:

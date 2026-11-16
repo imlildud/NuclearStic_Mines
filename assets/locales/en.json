@@ -105,6 +105,7 @@
         "langEn": "English",
         "langEs": "Spanish",
         "langMx": "Mexican",
+        "langPr": "Português",
         "exportSuccess": "Configuration saved successfully!",
         "exportClipboard": "Configuration copied to clipboard. You can paste it into a file.",
         "exportManual": "Copy this JSON to save your configuration:",
@@ -112,7 +113,7 @@
         "importSuccess": "Configuration imported successfully! Please restart the game.",
         "importError": "Invalid backup file",
         "fallDamageWarning": "WARNING:\nEnabling fall damage allows you to drop from any height. This can cause SOFTLOCK (getting stuck in areas you can't climb back from). Are you sure you want to enable fall damage?",
-        "hardcoreWarning":"WARNING: Enabling Hardcore Mode...\nWhen you complete a level, your health will no longer regenerate, and you will only recover one flag per level. (The current Legacy Normal progress is not affected. Daily and Custom will be disabled.)\nAre you sure you want to enable Hardcore Mode?",
+        "hardcoreWarning": "WARNING: Enabling Hardcore Mode...\nWhen you complete a level, your health will no longer regenerate, and you will only recover one flag per level. (The current Legacy Normal progress is not affected. Daily and Custom will be disabled.)\nAre you sure you want to enable Hardcore Mode?",
         "secretTitle": "Enter Secret Code",
         "secretPlaceholder": "Enter code...",
         "secretSubmit": "Submit",
@@ -130,49 +131,76 @@
             "dialog2": "We'll start with the basics. Learn how to walk... You were supposed to have learned that years ago... whatever. Use the 'WASD' keys to move around.",
             "dialog3": "Good. Reach that marker ahead, and move carefully. Some things out there are a pain to get through, so it's usually best to go around them."
         },
+        "numbers": {
+            "dialog1": "Good. Now the part that actually keeps people alive out there: the numbers. Every revealed Tile shows how many Hazards are hiding in the 8 Tiles around it. Diagonals count.",
+            "dialog2": "A 0 means every neighbor is safe. A 1 means exactly one of them is a Hazard. Hazards never show themselves, so you work it out.",
+            "dialog3": "There's a Cactus somewhere in that crossing. Look at the numbers from different Tiles and find a lane that can't be hiding it.",
+            "dialog4": "No flags for now. Just get to the goal without hugging anything spiky.",
+            "damageMessage": "Ouch. That was the Cactus. Hazards cost you health, and you only have two points of it. Try again.",
+            "hint": "Step next to the crossing and read the numbers. If two different Tiles both say 1, the Hazard must be among the neighbors they share."
+        },
         "phase2": {
-            "dialog1": "Great. Now that you know how to walk, you should learn how to use your flags wisely. Below your icon, you'll find a counter showing how many you have available.",
-            "dialog2": "The wasteland out there is full of Hazards, and you'll want to avoid them. To identify them, you'll use the Hazard Count numbers, which indicate whether there are any Hazards in adjacent Tiles.",
+            "dialog1": "Great. You can read the numbers now, so let's put them to work. Below your icon you'll find a counter showing how many flags you have.",
+            "dialog2": "You get exactly one flag per Hazard on the board. A flag marks a Tile you're sure is dangerous, so you don't step on it by accident.",
             "dialog3": "Use the arrow controls to place flags. They only work on hidden Tiles, the ones you can't see yet.",
             "dialog4": "Got it? Go mark that Hazard, then head for the goal.",
             "damageMessage": "Come on, it's not that hard, idiot. Running over to hug a cactus isn't exactly a good solution. Try again.",
             "wrongFlagMessage": "Do you have some kind of problem? Try again.",
             "goalWithoutMarkingMessage": "You haven't marked anything yet. Go place the flag...",
-            "successMessage": "Well done. Now head for the goal."
+            "successMessage": "Well done. Now head for the goal.",
+            "hint": "Flags only go on hidden Tiles. Stand next to where you think the Hazard is and press the arrow key toward it. Compare the neighboring numbers first."
         },
         "phase3": {
             "dialog1": "Now that you've mastered the art of flagging, you need to understand that Hazards are completely unpredictable.",
             "dialog2": "No one ever knows exactly where they are. If several of them are clustered in nearby Tiles, the Hazard Count will increase.",
             "dialog3": "You'll need to sharpen your deductive skills if you want to mark them or avoid them.",
-            "dialog4": "Use all your flags and mark every one of them.",
+            "dialog4": "Use all your flags and mark every one of them. You get exactly one flag per Hazard, so none are spare.",
             "damageMessage": "Read the damn numbers. Out in the wasteland, you'd be scattered across a hundred pieces by now.",
             "wrongFlagMessage": "Do you think flags grow on trees? Quit wasting them.",
             "goalWithoutMarkingMessage": "You haven't marked all the hazards yet. keep searching.",
-            "successMessage": "All hazards marked! Well done. Now head for the goal."
+            "successMessage": "All hazards marked! Well done. Now head for the goal.",
+            "hint": "Count your flags: one per Hazard. If you've run out and Hazards remain, one of your flags is sitting on a safe Tile."
+        },
+        "terrain": {
+            "dialog1": "Next lesson: the ground isn't flat. Every Tile has a height, and you can only climb one level at a time. Anything taller just stops you.",
+            "dialog2": "Going down is easier, but not free. Drop one level and you're fine. Drop two or more and the fall costs you health.",
+            "dialog3": "Get to the goal on the low ground. There's a staircase for the smart and a cliff for the rest. Your call.",
+            "damageMessage": "That's what a cliff does to your legs. Stairs exist for a reason. I've patched you up, keep going."
         },
         "phase4": {
-            "dialog1": "Now that I can trust you to understand the numbers, you need to know that the terrain out there isn't flat. You'll face valleys, hills, and terrain challenging enough to make you regret getting out of bed.",
-            "dialog2": "I've put this course together with different elevations so you can get used to how they look. Don't try to drop more than two levels at once, or you'll break your damn legs.",
+            "dialog1": "You can read the numbers and you can climb. Now let's put it all together: hills, Hazards and flags on the same course, just like out there.",
+            "dialog2": "I've put this course together with different elevations. Remember: one level up at a time, and don't jump off ledges for fun.",
             "dialog3": "Mark the Hazards I've left up there, then make your way to the goal.",
-            "dialog4": "By the way, I forgot to mention... there's an entity that keeps moving the hazards around. You'll always have to plan new routes.",
+            "dialog4": "By the way, I forgot to mention... there's an entity that keeps moving the hazards around. Only the ones you've marked stay put. You'll always have to plan new routes.",
             "damageMessage": "I'm not sure whether I should be worried about your mental state at this point.",
             "wrongFlagMessage": "Keep practicing. You're going to need it...",
             "goalWithoutMarkingMessage": "You still haven't marked them all. Keep looking.",
-            "successMessage": "Fantastic. I'm proud of you. Head to the goal for the final challenge. I've got something special prepared."
+            "successMessage": "Fantastic. I'm proud of you. Head to the goal for the final challenge. I've got something special prepared.",
+            "hint": "Hazards sit on the tallest Tiles of this course. Read the numbers around them and take the stairs."
         },
         "phase5": {
             "dialog1": "Your job out there is to find stranded children and bring them back to the starting point. Easy enough, right?",
             "dialog2": "For this final test, I want you to simulate a rescue. I've set up a dummy for you to retrieve and bring back. Good luck.",
             "dialog3": "Go find the dummy and bring it back to the start. And try not to kill yourself on the way.",
             "damageMessage": "If you bring back a child, I doubt they'll want to be rescued by someone with a strange obsession with hugging cacti. Please stop doing that.",
-            "successMessage": "That's everything I can teach you. Out there, you'll find plenty of things you won't see in this boring little training yard. Good luck...",
+            "successMessage": "Good. Rescued, delivered, still in one piece. Don't get cocky, there's one more test.",
             "manualPrompt": "Oh, and by the way, I've got a manual that might actually keep you alive if you feel like reading it.",
             "manualQuestion": "Read the manual?",
             "yes": "Yes",
-            "no": "No"
+            "no": "No",
+            "hint": "Walk onto the dummy to pick it up, then bring it back to the Start Tile. Read the numbers so you don't step on a Cactus."
+        },
+        "force": {
+            "dialog1": "Last exam, and it's a mean one. Two dummies this time, and you can only carry one at a time.",
+            "dialog2": "When you're carrying all you can, your icon starts sweating. Bring that one back to the start, then go for the other.",
+            "dialog3": "And remember the entity I mentioned? It only moves the Hazards you haven't marked. Watch what happens the moment you pick one up.",
+            "shuffle": "See that? The Hazards you didn't mark moved. The ones you flagged stayed put. Every rescue reshuffles the rest, so don't trust your old notes. Read the numbers again.",
+            "damageMessage": "Dead dummies are a hell of a bad look on your record. Try again, and read the numbers this time.",
+            "hint": "Take one dummy back to the Start Tile before going for the other. After the first pickup the Hazards move, so re-read the numbers.",
+            "successMessage": "That's everything I can teach you. Out there, you'll find plenty of things you won't see in this boring little training yard. Good luck..."
         },
         "pitFall": "HA! Watch where you're stepping. The ground out there is full of holes so deep that not even a vulture would bother going after your corpse. Try again.",
-        "exhaustion": "Heavy, isn't it? See those sweat drops on your icon? That means you're exhausted and can't carry any more children. If there were others to rescue, you'd have to drop off the ones you're carrying and go back for the rest."
+        "exhaustion": "Heavy, isn't it? See those sweat drops on your icon? That means you're carrying as much as you can. Take this one back to the start first, then go back for the other."
     },
 
     "criticker": {

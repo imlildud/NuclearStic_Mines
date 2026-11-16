@@ -11,7 +11,7 @@ extends Node
 var current_locale: String = ""
 var strings: Dictionary = {}
 var listeners: Array = []         # Array[Callable]
-var supported_locales: Array = ["en", "es", "mx"]
+var supported_locales: Array = ["en", "es", "mx", "pr"]
 var default_locale: String = "en"
 
 

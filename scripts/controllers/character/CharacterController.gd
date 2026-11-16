@@ -30,6 +30,8 @@ func _init(char = null, board_ctrl = null, gm = null) -> void:
 
 # Helper: checks if fall damage is enabled in the current save.
 func is_fall_damage_enabled() -> bool:
+	if game_manager != null and game_manager.config.get("mode") == "tutorial":
+		return true
 	return game_manager != null and game_manager.is_fall_damage_enabled()
 
 

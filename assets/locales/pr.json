@@ -1,0 +1,269 @@
+{
+    "menu": {
+        "welcome": "Bem-vindo ao Nuclear-Stic Mines.\nPrepare-se para encarar o ermo, aguentar os perrengues e \"se divertir\"... depois de cada morte neste jogo tático, procedural e roguelike inspirado no Campo Minado.\nQuer jogar o tutorial?",
+        "yes": "Bora",
+        "no": "Não, valeu",
+        "legacy": "Modo\nLegado",
+        "daily": "Missão\nDiária",
+        "custom": "Missão\nPersonalizada",
+        "timetrials": "Contra\nRelógio",
+        "dailyCompleted": "A missão diária de hoje já foi concluída! Volte amanhã.",
+        "tutorialCompleted": "Tutorial concluído! Voltando ao menu principal.",
+
+        "welcomeBack": "E aí, {name}!\nPronto pra jogar?",
+        "currentLevel": "Nível Atual",
+        "recordLevel": "Nível Recorde",
+        "dailyStreak": "Sequência Diária",
+        "play": "Jogar",
+        "enterName": "Digite seu nome, resgatador:",
+        "namePlaceholder": "Seu nome, mano",
+        "continue": "Continuar",
+        "selectAvatar": "Escolha sua foto de perfil:",
+        "confirm": "Confirmar",
+        "clickToEdit": "Clique para editar o nome",
+        "editName": "Digite seu novo nome:",
+        "tutorialQuestion": "Quer jogar o tutorial?",
+        "deleteData": "Apagar Save",
+        "confirmDelete": "AVISO: Isso vai apagar TODOS os dados do jogo (progresso, configurações, tudo).\n\nNão dá pra desfazer, mano!\n\nTem certeza?",
+
+        "punchcard": {
+            "character": "Personagem",
+            "size": "Tamanho",
+            "hazards": "Perigos",
+            "obstacles": "Obstáculos",
+            "wanted": "Alvo:",
+            "zone": "Zona",
+            "small": "Pequeno",
+            "medium": "Médio",
+            "large": "Grande",
+            "xtraLarge": "Extra Grande",
+            "ultraLarge": "Ultra Grande",
+            "low": "Baixo",
+            "high": "Alto",
+            "xtraHigh": "Extra Alto",
+            "ultraHigh": "Ultra Alto",
+            "nsanelyHigh": "Insanamente Alto",
+            "backyard": "Quintal",
+            "desert": "Deserto",
+            "snow": "Neve",
+            "scrapland": "Ferro-Velho",
+            "roots": "Raízes",
+            "glowyland": "Fungilândia",
+            "ash": "Cinzas",
+            "chef": "Chef",
+            "mosquito": "Mosquito",
+            "mommy": "Mamãe",
+            "scout": "Batedor",
+            "custom": "Personalizada",
+            "seed": "Semente: ",
+            "enterSeed": "Digite o número da semente:",
+            "copied": "Copiado!",
+            "selectKeychains": "Escolha até 5 chaveiros",
+            "keychainSelected": "Selecionados: {count}/5",
+            "keychainConfirm": "Confirmar Chaveiros",
+            "keychainReset": "Reiniciar Seleção"
+        }
+    },
+
+    "game": {
+        "level": "NÍVEL",
+        "wanted": "PROCURADO",
+        "customMission": "MISSÃO PERSONALIZADA",
+        "paused": "PAUSADO",
+        "remaining": "Restantes",
+        "children": {
+            "charlie": "Charlie",
+            "joni": "Joni",
+            "ru": "Ru",
+            "evy": "Evy",
+            "zac": "Zac",
+            "dummie": "Manequim"
+        },
+        "scoreboard": {
+            "rescued": "Resgatados",
+            "marked": "Perigos Marcados",
+            "difficulty": "Bônus de Dificuldade",
+            "deaths": "Mortes",
+            "failed": "Bandeiras Erradas",
+            "damage": "Dano Recebido"
+        }
+    },
+
+    "config": {
+        "volume": "Volume",
+        "music": "Música",
+        "sfx": "Efeitos",
+        "language": "Idioma / Language",
+        "gameplay": "Jogabilidade",
+        "showTouch": "Mostrar Botões de Toque",
+        "fallDamage": "Ativar Dano por Queda",
+        "hardcore": "Modo hardcore",
+        "other": "Outros",
+        "replayTutorial": "Jogar Tutorial",
+        "manual": "Abrir Manual",
+        "save": "SALVAR",
+        "langEn": "Inglês",
+        "langEs": "Espanhol",
+        "langMx": "Mexicano",
+        "langPr": "Português",
+        "exportSuccess": "Configuração salva, mano!",
+        "exportClipboard": "Configuração copiada pra área de transferência. Cola num arquivo.",
+        "exportManual": "Copia esse JSON pra salvar tua configuração, parça:",
+        "copied": "Copiado!",
+        "importSuccess": "Configuração importada de boa. Reinicia o jogo, mano.",
+        "importError": "Arquivo de backup inválido",
+        "fallDamageWarning": "AVISO:\nAtivar o dano por queda permite cair de qualquer altura. Isso pode causar SOFTLOCK (ficar preso em áreas das quais não dá pra subir de volta). Tem certeza que quer ativar o dano por queda?",
+        "hardcoreWarning": "AVISO: Ativando o Modo Hardcore...\nAo completar um nível, sua vida não vai mais regenerar e você só vai recuperar uma bandeira por nível. (O progresso atual do Legacy Normal não é afetado. As missões diárias e personalizadas vão ser desativadas.)\nTem certeza que quer ativar o Modo Hardcore?",
+        "secretTitle": "Digite o Código Secreto",
+        "secretPlaceholder": "Digite o código...",
+        "secretSubmit": "Enviar",
+        "secretCancel": "Cancelar",
+        "secretInvalid": "Código inválido, não inventa!",
+        "secretAlready": "Código já ativado!",
+        "secretBack2school": "CÓDIGO ATIVADO: Zona Backyard desbloqueada no modo Custom!",
+        "secretMasiosare": "CÓDIGO ATIVADO! Idioma alterado para Mexicano.",
+        "secretDebugthis": "CÓDIGO ATIVADO! Modo de teste disponível no modo Custom."
+    },
+
+    "tutorial": {
+        "phase1": {
+            "dialog1": "E aí, resgatador. Bem-vindo ao teu treinamento, onde tu vai se preparar pra encarar o ermo e resgatar gente.",
+            "dialog2": "Vamo começar pelo básico. Aprende a andar... Era pra tu ter aprendido isso anos atrás... deixa. Usa as teclas 'WASD' pra se mover.",
+            "dialog3": "Boa. Chega naquele marcador ali na frente, e vai com cuidado. Algumas coisas lá fora são um pé no saco, então geralmente é melhor desviar delas."
+        },
+        "numbers": {
+            "dialog1": "Boa. Agora a parte que de verdade mantém o pessoal vivo lá fora: os números. Cada Casa revelada mostra quantos Perigos estão escondidos nas 8 Casas ao redor. As diagonais contam.",
+            "dialog2": "Um 0 significa que todos os vizinhos estão seguros. Um 1 significa que exatamente um deles é Perigo. Os Perigos nunca se mostram, então tu tem que deduzir.",
+            "dialog3": "Tem um Cactus em algum lugar desse cruzamento. Olha os números de Casas diferentes e acha um corredor que não possa estar escondendo ele.",
+            "dialog4": "Sem bandeiras por enquanto. Só chega na meta sem abraçar nada com espinho.",
+            "damageMessage": "Ai. Esse era o Cactus. Perigos custam vida, e tu só tem dois pontos. Tenta de novo.",
+            "hint": "Fica do lado do cruzamento e lê os números. Se duas Casas diferentes dizem 1, o Perigo tem que estar entre os vizinhos que elas compartilham."
+        },
+        "phase2": {
+            "dialog1": "Show. Agora que tu sabe ler os números, vamo colocar eles pra trabalhar. Embaixo do teu ícone tem um contador mostrando quantas bandeiras tu tem.",
+            "dialog2": "Tu tem exatamente uma bandeira por cada Perigo no tabuleiro. Uma bandeira marca uma Casa que tu sabe que é perigosa, pra não pisar nela sem querer.",
+            "dialog3": "Usa os botões de seta pra colocar bandeiras. Eles só funcionam em Casas ocultas, as que tu ainda não consegue ver.",
+            "dialog4": "Entendeu? Vai marcar aquele Perigo, depois vai pra meta.",
+            "damageMessage": "Vamo, não é tão difícil, mano. Correr pra abraçar um cactus não é exatamente uma boa solução. Tenta de novo.",
+            "wrongFlagMessage": "Tu tem algum problema? Tenta de novo.",
+            "goalWithoutMarkingMessage": "Tu ainda não marcou nada. Vai colocar a bandeira...",
+            "successMessage": "Boa. Agora vai pra meta.",
+            "hint": "Bandeiras só vão em Casas ocultas. Fica do lado de onde tu acha que o Perigo tá e aperta a seta na direção dele. Compara os números vizinhos primeiro."
+        },
+        "phase3": {
+            "dialog1": "Agora que tu dominou a arte de bandeirar, precisa entender que os Perigos são completamente imprevisíveis.",
+            "dialog2": "Ninguém sabe exatamente onde eles estão. Se vários estiverem agrupados em Casas próximas, o Contador de Perigos vai aumentar.",
+            "dialog3": "Tu vai precisar afiar tua dedução se quiser marcar eles ou evitar eles.",
+            "dialog4": "Usa todas as tuas bandeiras e marca todos eles. Tu tem exatamente uma bandeira por Perigo, então não sobra nenhuma.",
+            "damageMessage": "Lê os malditos números. Lá fora no ermo, tu já estaria espalhado em cem pedaços.",
+            "wrongFlagMessage": "Tu acha que bandeira nasce em árvore? Para de desperdiçar.",
+            "goalWithoutMarkingMessage": "Tu ainda não marcou todos os perigos. Continua procurando.",
+            "successMessage": "Todos os perigos marcados! Boa. Agora vai pra meta.",
+            "hint": "Conta tuas bandeiras: uma por Perigo. Se acabaram e ainda sobraram Perigos, uma das tuas bandeiras tá em cima de uma Casa segura."
+        },
+        "terrain": {
+            "dialog1": "Próxima lição: o chão não é plano. Cada Casa tem uma altura, e tu só consegue subir um nível por vez. Qualquer coisa mais alta simplesmente te para.",
+            "dialog2": "Descer é mais fácil, mas não é de graça. Cai um nível e tá tudo bem. Cai dois ou mais e a queda te custa vida.",
+            "dialog3": "Chega na meta pelo terreno baixo. Tem escada pros espertos e penhasco pro resto. Tu decide.",
+            "damageMessage": "É isso que um penhasco faz com tuas pernas. Escada existe por algum motivo. Já te curei, segue."
+        },
+        "phase4": {
+            "dialog1": "Tu já sabe ler os números e já sabe escalar. Agora vamo juntar tudo: morros, Perigos e bandeiras no mesmo percurso, igual lá fora.",
+            "dialog2": "Montei esse percurso com elevações diferentes. Lembra: um nível pra cima por vez, e não pula dos bordos por diversão.",
+            "dialog3": "Marca os Perigos que deixei lá em cima, depois vai pra meta.",
+            "dialog4": "Ah, e esqueci de mencionar... tem uma entidade que fica mudando os perigos de lugar. Só os que tu já marcou ficam parados. Tu sempre vai ter que planejar rotas novas.",
+            "damageMessage": "Não sei se devo me preocupar com teu estado mental nesse ponto.",
+            "wrongFlagMessage": "Continua praticando. Tu vai precisar...",
+            "goalWithoutMarkingMessage": "Tu ainda não marcou todos. Continua procurando.",
+            "successMessage": "Fantástico. Tô orgulhoso de ti. Vai pra meta pro desafio final. Preparei algo especial.",
+            "hint": "Os Perigos ficam nas Casas mais altas desse percurso. Lê os números ao redor deles e usa as escadas."
+        },
+        "phase5": {
+            "dialog1": "Teu trabalho lá fora é achar crianças perdidas e trazer elas de volta pro ponto de início. Fácil, né?",
+            "dialog2": "Pra esse teste final, quero que tu simule um resgate. Deixei um manequim pra tu pegar e trazer de volta. Boa sorte.",
+            "dialog3": "Vai buscar o manequim e traz ele de volta pro início. E tenta não se matar no caminho.",
+            "damageMessage": "Se tu trouxer uma criança de volta, duvido que ela queira ser resgatada por alguém com uma obsessão estranha de abraçar cactus. Por favor, para com isso.",
+            "successMessage": "Boa. Resgatado, entregue e inteiro. Não fica convencido, ainda tem mais um teste.",
+            "manualPrompt": "Ah, e por falar nisso, tenho um manual que pode te manter vivo se tu curtir ler.",
+            "manualQuestion": "Ler o manual?",
+            "yes": "Bora",
+            "no": "Não",
+            "hint": "Anda em cima do manequim pra pegar ele, depois traz de volta pra Casa de Início. Lê os números pra não pisar num Cactus."
+        },
+        "force": {
+            "dialog1": "Último exame, e é pesado. Dois manequins dessa vez, e tu só consegue carregar um por vez.",
+            "dialog2": "Quando tu tá carregando tudo que pode, teu ícone começa a suar. Leva esse de volta pro início, depois vai pelo outro.",
+            "dialog3": "E lembra da entidade que eu mencionei? Ela só move os Perigos que tu não marcou. Olha o que acontece no momento em que tu pega um.",
+            "shuffle": "Viu isso? Os Perigos que tu não marcou se moveram. Os que tu marcou ficaram parados. Cada resgate reorganiza o resto, então não confia nas tuas anotações antigas. Lê os números de novo.",
+            "damageMessage": "Manequins mortos é um péssimo visual no teu recorde. Tenta de novo, e dessa vez lê os números.",
+            "hint": "Leva um manequim de volta pra Casa de Início antes de ir pelo outro. Depois da primeira pega os Perigos se movem, então lê os números de novo.",
+            "successMessage": "Isso é tudo que eu posso te ensinar. Lá fora tu vai encontrar um monte de coisas que não vai ver nesse quintalzinho de treino entediante. Boa sorte..."
+        },
+        "pitFall": "HA! Olha onde pisa, mano. O chão lá fora tá cheio de buracos tão fundos que nem urubu se dá o trabalho de ir atrás do teu cadáver. Tenta de novo.",
+        "exhaustion": "Pesado, né? Tá vendo essas gotinhas de suor no teu ícone? Significa que tu tá carregando tudo que pode. Leva esse de volta pro início primeiro, depois volta pelo outro."
+    },
+
+    "criticker": {
+        "infection": {
+            "step1": "Bom dia, estimado cavalheiro. Lamento informar que o senhor acabou de devastar uma propriedade privada de considerável valor sentimental para mim. No entanto, sou um indivíduo razoável e estou disposto a proceder por vias diplomáticas.",
+            "step2": "Permita-me acompanhá-lo durante suas labores de saneamento ambiental. A presença desses deploráveis Perigos constitui uma afronta estética que perturba meus habituais passeios contemplativos.",
+            "step3": "Com sua permissão, procederei a aderir temporariamente à sua anatomia. Asseguro que esta ação possui fins estritamente profissionais. O senhor deverá marcar {goal} perigos corretamente para me satisfazer."
+        },
+        "success": {
+            "main": "Fascinante. Seu desempenho excedeu minhas expectativas estatísticas. É reconfortante verificar que a incompetência humana não é uma constante universal.",
+            "farewell": "Foi um privilégio testemunhar suas atividades. Espero não encontrá-lo novamente sob circunstâncias catastróficas. Adeus."
+        },
+        "failure": {
+            "main": "Cavalheiro, encontro-me profundamente decepcionado. A magnitude deste fracasso merece uma tese acadêmica completa. Procederei a manifestar meu descontentamento por meios ligeiramente prejudiciais.",
+            "damage": "Considere esta intervenção uma correção pedagógica e não um ato hostil."
+        },
+        "damage": {
+            "main": "Que conduta tão imprópria! Tentar assassinar um observador imparcial constitui uma grave falha no protocolo civilizado.",
+            "farewell": "Concluí que a preservação da minha integridade biológica tem prioridade superior à continuação deste intercâmbio. Desejo-lhe um dia moderadamente aceitável."
+        }
+    },
+
+    "bundle": {
+        "clickToOpen": "Clique pra abrir",
+        "inventoryFull": "Inventário cheio! Tu não consegue carregar mais chaveiros.",
+        "nothingFound": "Não encontrou nada...",
+        "trashFound": "Achou fogo! Clique pra jogar um chaveiro fora",
+        "trashTitle": "Selecione um chaveiro pra eliminar:",
+        "trashSelect": "Escolha qual chaveiro tu quer jogar fora",
+        "close": "Fechar",
+        "rareza": {
+            "typical": "Típico",
+            "abnormal": "Anormal",
+            "extravagant": "Extravagante",
+            "unheard": "Inaudito",
+            "cursed": "Amaldiçoado"
+        }
+    },
+    "keychain": {
+        "horizon": { "name": "Horizonte", "description": "A terra revela seus segredos. Dá pra ver até o que tá escondido." },
+        "home": { "name": "Lar", "description": "Um farol te chama de volta. Tu sabe como voltar." },
+        "topography": { "name": "Topografia", "description": "A terra lembra. Tu vai manter o olho bem posto no alto." },
+        "memory": { "name": "Memória", "description": "Deixa tua marca no mundo. Coloca até 3 memórias." },
+        "safekeeping": { "name": "Guarda", "description": "Evita o desgaste de algumas ferramentas. E elas não se perdem tão fácil." },
+        "revelation": { "name": "Revelação", "description": "O que tá escondido não vai ficar assim. Tuas mãos vão encontrar a verdade." },
+        "destiny": { "name": "Destino", "description": "Sempre aponta quem salvar. O caminho já tá escrito." },
+        "ascent": { "name": "Ascensão", "description": "Onde os outros tropeçam, tu escala. O topo tá mais perto." },
+        "protection": { "name": "Proteção", "description": "Uma cicatriz que protege. As feridas que te fizeram mais forte." },
+        "descent": { "name": "Descida", "description": "A queda não é o fim. Tu vai sobreviver às profundezas." },
+        "greed": { "name": "Ganância", "description": "O ouro chama. E tu vai saber quando." },
+        "resistance": { "name": "Resistência", "description": "Proteção extra. Uma segunda pele." },
+        "salvation": { "name": "Salvação", "description": "O abismo não te quer. Tu vai escapar." },
+        "stealth": { "name": "Furtividade", "description": "Pisada de veludo. O mundo não vai te notar." },
+        "purity": { "name": "Pureza", "description": "Limpa o que os outros evitam. A mancha não vai ser permanente." },
+        "concentration": { "name": "Concentração", "description": "A presa revela o terreno. Marca uma e a terra se abre." },
+        "fortune": { "name": "Fortuna", "description": "A sorte do tolo. A fortuna sorri pros ousados." },
+        "vision": { "name": "Visão", "description": "O que é visto não se esquece. Os olhos lembram." },
+        "continuity": { "name": "Continuidade", "description": "O mundo não tem fim. O que vai, volta." },
+        "reversion": { "name": "Reversão", "description": "Desfaz o que foi feito. O tempo pode dobrar." },
+        "stuffed": { "name": "Empacotado", "description": "O que tu carrega não se perde. Nem no final." },
+        "judgment": { "name": "Julgamento", "description": "O veredito é eterno. Não tem apelação." },
+        "link": { "name": "Vínculo", "description": "Unidos pelo destino. Além do que tu vê." },
+        "oblivion": { "name": "Esquecimento", "description": "A ordem se desfaz. Tudo desmorona." },
+        "delirium": { "name": "Delírio", "description": "A realidade se desfoca. A mente viaja." }
+    }
+}

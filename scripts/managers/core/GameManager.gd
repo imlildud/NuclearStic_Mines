@@ -303,16 +303,8 @@ func check_tutorial_progress() -> void:
 	if tile != null and tile.is_flaggoal():
 		var phase: int = board_ctrl.current_phase
 		print("[Tutorial] check_tutorial_progress: flaggoal step in phase ", phase)
-		if phase < 2 or phase > 4:
+		if tutorial_manager.can_advance_on_goal():
 			tutorial_manager.next_phase()
-		elif tutorial_manager.has_method("has_flagged_correctly") and tutorial_manager.has_flagged_correctly():
-			# Phases 2-4: the flaggoal step only advances once the
-			# player marked the required hazards (the flag-check poll
-			# shows the success message; the step itself advances,
-			# like phase 1). Stepping on it without the marks is
-			# handled by the poll with the "haven't marked" reset.
-			tutorial_manager.next_phase()
-
 
 # Checks if the player has won.
 func check_victory() -> void:

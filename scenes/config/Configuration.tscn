@@ -297,9 +297,9 @@ horizontal_alignment = 1
 [node name="LangEnButton" type="Button" parent="ScrollContainer/Card/LanguageSection" unique_id=1942844356]
 custom_minimum_size = Vector2(150, 48)
 layout_mode = 1
-offset_left = 74.0
-offset_top = 64.0
-offset_right = 224.0
+offset_left = 20.0
+offset_top = 42.0
+offset_right = 170.0
 offset_bottom = 112.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("14_font")
@@ -313,9 +313,9 @@ text = "English"
 [node name="LangEsButton" type="Button" parent="ScrollContainer/Card/LanguageSection" unique_id=38345054]
 custom_minimum_size = Vector2(150, 48)
 layout_mode = 1
-offset_left = 285.0
-offset_top = 64.0
-offset_right = 435.0
+offset_left = 175.0
+offset_top = 43.0
+offset_right = 325.0
 offset_bottom = 112.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("14_font")
@@ -325,6 +325,22 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_btn")
 theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
 theme_override_styles/focus = SubResource("StyleBoxTexture_btn")
 text = "Español"
+
+[node name="LangPrButton" type="Button" parent="ScrollContainer/Card/LanguageSection" unique_id=825505634]
+custom_minimum_size = Vector2(150, 48)
+layout_mode = 1
+offset_left = 328.0
+offset_top = 42.0
+offset_right = 478.0
+offset_bottom = 113.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("14_font")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
+theme_override_styles/focus = SubResource("StyleBoxTexture_btn")
+text = "Portuguese"
 
 [node name="GameplaySection" type="Panel" parent="ScrollContainer/Card" unique_id=327535665]
 layout_mode = 1

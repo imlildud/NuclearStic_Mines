@@ -105,6 +105,7 @@
         "langEn": "Inglés",
         "langEs": "Español",
         "langMx": "Mexicano",
+        "langPr": "Brasileño",
         "exportSuccess": "¡Configuración guardada, wey!",
         "exportClipboard": "Configuración copiada al portapapeles. Pégalo en un archivo.",
         "exportManual": "Copea este JSON para guardar tu configuración, carnal:",
@@ -112,7 +113,7 @@
         "importSuccess": "Configuración importada chida. Reinicia el juego, wey.",
         "importError": "¿Esa mamada que?, invalido",
         "fallDamageWarning": "¡AGUAS!\nActivar el daño por caída te permite aventarte de cualquier pinche altura. Te puedes quedar ATORADO (sin poder trepar de regreso). ¿Seguro quieres prenderlo?",
-        "hardcoreWarning":"¡AGUAS! Prendiendo el modo CABRÓN...\nCuando acabes un nivel ya no recuperarás vida y nomás recuperarás una bandera por nivel.\n\n(Tu progreso actual de Legacy Normal no se verá afectado. Las otras madres quedarán apagadas.)\n¿Seguro quieres prenderlo?",
+        "hardcoreWarning": "¡AGUAS! Prendiendo el modo CABRÓN...\nCuando acabes un nivel ya no recuperarás vida y nomás recuperarás una bandera por nivel.\n\n(Tu progreso actual de Legacy Normal no se verá afectado. Las otras madres quedarán apagadas.)\n¿Seguro quieres prenderlo?",
         "secretTitle": "Pon el Código Secreto",
         "secretPlaceholder": "Pon el código...",
         "secretSubmit": "Mandar",
@@ -130,49 +131,76 @@
             "dialog2": "Empezaremos con el pilon. Aprende a caminar... Se suponía que debías haber aprendido eso hace años... lo que sea. Usa las teclas 'WASD' para moverte.",
             "dialog3": "Eso merito. Vete a esa meta que está ahi, te vas con cuidado. Algunas madres allá afuera son un dolor de huevos, así que generalmente es mejor rodearlas."
         },
+        "numbers": {
+            "dialog1": "A huevo. Ahora la parte que de verdad mantiene vivo al personal allá afuera: los números. Cada Casilla revelada te dice cuántos Peligros andan escondidos en las 8 Casillas de alrededor. Las diagonales cuentan.",
+            "dialog2": "Un 0 significa que todos sus vecinos están tranquilos. Un 1 significa que exactamente uno de ellos es Peligro. Los Peligros nunca se destapan, así que tú tienes que deducirlo.",
+            "dialog3": "Hay un Cactus en algún lado de ese cruce. Lee los números desde distintas Casillas y encuentra un carril que no lo pueda estar escondiendo.",
+            "dialog4": "Sin banderas por ahora. Nomás llega a la meta sin abrazar nada con espinas.",
+            "damageMessage": "Ay. Ese era el Cactus. Los Peligros te cuestan vida, y nomás tienes dos puntos. Échale otra vez.",
+            "hint": "Párate junto al cruce y lee los números. Si dos Casillas distintas dicen 1, el Peligro tiene que estar entre los vecinos que comparten."
+        },
         "phase2": {
-            "dialog1": "A huevo. Ahora que sabes caminar, debes meterte en la cabeza como usar tus banderas sabiamente. Ahí abajo de tu icono, esta un contador que muestra cuántas traes.",
-            "dialog2": "El yermo está hasta la madre de Peligros, y ta mejor evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
+            "dialog1": "A huevo. Ahora que ya le sabes a los números, vamos a ponerlos a chambear. Ahí abajo de tu icono está un contador que muestra cuántas banderas traes.",
+            "dialog2": "Traes exactamente una bandera por cada Peligro en el tablero. Una bandera marca una Casilla que ya sabes que es peligrosa, pa' que no la pises de pendejo.",
             "dialog3": "Usa los botones de flechas para echar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes wachar.",
             "dialog4": "¿Va? Ve a marcar ese pinche Peligro, luego vete a la meta.",
             "damageMessage": "Vamos, no es tan difícil, wey. Correr a chingarte un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
             "wrongFlagMessage": "¿Tienes algún pedo? Vas de nuevo.",
             "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a echar la bandera...",
-            "successMessage": "A toda madre. Ahora vete a la meta."
+            "successMessage": "A toda madre. Ahora vete a la meta.",
+            "hint": "Las banderas nomás van en Casillas ocultas. Párate junto a donde crees que está el Peligro y picale a la flecha hacia él. Primero compara los números vecinos."
         },
         "phase3": {
             "dialog1": "De huevos. Ahora que le sabes al bandereo, tienes que entender que los Peligros son bien cabrones e impredecibles.",
             "dialog2": "Nadie sabe exactamente dónde están. Si varios están en putiza en casillas cercanas, el Conteo de Peligros se va a la chingada.",
             "dialog3": "Te va a tocar usar la cabeza si quieres marcarlos o evitarlos, papá.",
-            "dialog4": "Usa todas tus banderas y márcalos todos, carajo.",
+            "dialog4": "Usa todas tus banderas y márcalos todos, carajo. Traes exactamente una bandera por Peligro, así que no sobra ni madres.",
             "damageMessage": "Lee los pinches números, wey. Allá afuera en el yermo, ya estarías más muerto que el perro de la vecina.",
             "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de gastarlas a lo pendejo.",
             "goalWithoutMarkingMessage": "Todavía no marcas todos los peligros. Sigue buscando, huevón.",
-            "successMessage": "¡Todos los peligros marcados! A huevo. Ahora dale a la meta."
+            "successMessage": "¡Todos los peligros marcados! A huevo. Ahora dale a la meta.",
+            "hint": "Cuenta tus banderas: una por Peligro. Si ya se te acabaron y quedan Peligros, una de tus banderas está sobre una Casilla segura."
+        },
+        "terrain": {
+            "dialog1": "Siguiente lección: el suelo no es parejo. Cada Casilla tiene su altura, y nomás puedes subir un nivel a la vez. Lo que esté más alto nomás te detiene.",
+            "dialog2": "Bajar es más fácil, pero no gratis. Cae un nivel y estás bien. Cae dos o más y la caída te cuesta vida.",
+            "dialog3": "Llega a la meta por lo bajo. Hay escalera pa' los listos y precipicio pa' los demás. Tú decides.",
+            "damageMessage": "Eso es lo que un precipicio le hace a tus patas. Las escaleras existen por algo. Ya te curé, sigue."
         },
         "phase4": {
-            "dialog1": "Ahora que ya le entiendes a los números, debes saber que el terreno allá afuera no es parejo. Te tocarán cerros, hoyos, y un desmadre que te hará querer no levantarte de la hamaca.",
-            "dialog2": "Te puse este desmadre con diferentes alturas para que te acostumbres. No te avientes más de dos niveles de una sola vez o te vas a quebrar las pinches patas.",
+            "dialog1": "Ya le sabes a los números y ya sabes trepar. Ahora vamos a juntar todo: cerros, Peligros y banderas en el mismo recorrido, igual que allá afuera.",
+            "dialog2": "Te puse este desmadre con diferentes alturas para que te acostumbres. Acuérdate: un nivel pa' arriba a la vez, y no te avientes de los bordes por diversión.",
             "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta, ¿va?",
-            "dialog4": "Ah, y se me fue el pedo... hay un pinche ente castroso que anda moviendo todo de lugar. Nomás crees que ya le agarraste el pex y ¡zas!, otra vez a hacer ruta, cawn.",
+            "dialog4": "Ah, y se me fue el pedo... hay un pinche ente castroso que anda moviendo todo de lugar. Nomás los que ya marcaste se quedan quietos. Nomás crees que ya le agarraste el pex y ¡zas!, otra vez a hacer ruta, cawn.",
             "damageMessage": "Ya no sé si preocuparme por tu estado mental, wey. Estás pero bien pendejo.",
             "wrongFlagMessage": "Sigue practicando, vas a necesitar mucha suerte...",
             "goalWithoutMarkingMessage": "Todavía no los marcas todos. Sigue buscando, no te hagas.",
-            "successMessage": "¡Fantástico! Estoy orgulloso de ti, carnal. Ándale a la meta para el reto final. Tengo algo bien verga preparado."
+            "successMessage": "¡Fantástico! Estoy orgulloso de ti, carnal. Ándale a la meta para el reto final. Tengo algo bien verga preparado.",
+            "hint": "Los Peligros están en las Casillas más altas de este curso. Lee los números de alrededor y agarrate de las escaleras."
         },
         "phase5": {
             "dialog1": "Tu chamba allá afuera es encontrar morrillos perdidos y traerlos de regreso al punto de inicio. Bien fácil, ¿no?",
             "dialog2": "Para la prueba final, quiero que simules un rescate, ¿va? Dejé un maniquí para que lo recojas y lo traigas de vuelta. Éxito, wey.",
             "dialog3": "Ve por el maniquí y tráelo al inicio. Y trata de no matarte en el camino, ogete.",
             "damageMessage": "Si traes de vuelta a un morrillo, dudo que quiera ser rescatado por alguien con una obsesión bien rara de abrazar pinches cactus. Por favor, ya dejate de mamadas.",
-            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera te esperan cosas que no vas a ver en este patiecito aburrido. Suerte, carnal...",
+            "successMessage": "Bien. Rescatado, entregado y en una pieza. No te agrandes, falta otra prueba.",
             "manualPrompt": "Ah, y por cierto, tengo un manual que tal vez te mantenga vivo si te gusta leer, ¿va?",
             "manualQuestion": "¿Leer el manual?",
             "yes": "Órale",
-            "no": "Nel"
+            "no": "Nel",
+            "hint": "Camina sobre el maniquí pa' recogerlo, luego tráelo de vuelta a la Casilla de Inicio. Lee los números pa' no pisar un Cactus."
+        },
+        "force": {
+            "dialog1": "Último examen, y está cabrón. Dos maniquíes esta vez, y nomás puedes cargar uno a la vez.",
+            "dialog2": "Cuando trais todo lo que puedes, tu icono empieza a sudar. Lleva ese de vuelta al inicio, luego ve por el otro.",
+            "dialog3": "Y acuérdate del ente que mencioné... nomás mueve los Peligros que no has marcado. Mira lo que pasa en el momento en que recojas uno.",
+            "shuffle": "¿Ves eso? Los Peligros que no marcaste se movieron. Los que marcaste se quedaron quietos. Cada rescate reorganiza el resto, así que no confíes en tus notas viejas. Lee los números otra vez.",
+            "damageMessage": "Maniquíes muertos es un pésimo aspecto en tu récord. Échale otra vez, y esta vez lee los números.",
+            "hint": "Lleva un maniquí de vuelta a la Casilla de Inicio antes de ir por el otro. Después del primer recojo los Peligros se mueven, así que vuelve a leer los números.",
+            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera te esperan cosas que no vas a ver en este patiecito aburrido. Suerte, carnal..."
         },
         "pitFall": "¡JA! Mira por dónde pisas, wey. El suelo allá afuera está lleno de hoyos tan pinches profundos que ni los zopilotes se molestan en ir por tus restos. Échale otra vez.",
-        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotitas de sudor en tu icono? Significa que estás hasta la madre y no puedes cargar más morrillos. Si hubiera más que rescatar, tendrías que dejar los que llevas y volver por ellos, cabrón."
+        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotitas de sudor en tu icono? Significa que estás hasta la madre y no puedes cargar más morrillos. Lleva este de vuelta al inicio primero, luego regresa por el otro."
     },
 
     "criticker": {
