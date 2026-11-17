@@ -1,0 +1,212 @@
+# ==============================================================
+# ======================== MAIN MENU ===========================
+# ==============================================================
+# Main menu scene. Handles navigation to game modes and menus.
+#
+# Mode buttons (Legacy / Daily / Custom) open the PunchcardPanel
+# overlay in the corresponding mode. When the player presses Start
+# in the punchcard, the game config is saved to GameManager and the
+# scene changes to Game.tscn.
+#
+# The WelcomePanel is shown on top of the menu when the player
+# needs to register (first time) or when returning from a game.
+# The ID Card toggle button in the main menu also opens the
+# WelcomePanel in ID Card mode.
+#
+# Options, Diary are placeholders for now.
+
+extends Control
+
+const PUNCHCARD_SCENE := "res://scenes/menu/PunchcardPanel.tscn"
+const WELCOME_SCENE := "res://scenes/menu/WelcomePanel.tscn"
+const GAME_SCENE := "res://scenes/game/Game.tscn"
+const CONFIG_SCENE := "res://scenes/config/Configuration.tscn"
+
+var _punchcard: Control = null
+var _welcome_panel: CanvasLayer = null
+var _config: Control = null
+var _starting: bool = false
+
+
+# ======================= LIFECYCLE =======================
+
+func _ready() -> void:
+	# Play menu music when the menu loads.
+	AudioManager.play_menu_music(true)
+
+	# Instance the punchcard as a hidden child.
+	_punchcard = load(PUNCHCARD_SCENE).instantiate()
+	add_child(_punchcard)
+	_punchcard.visible = false
+
+	# Connect the punchcard signals.
+	if _punchcard.has_signal("closed"):
+		_punchcard.closed.connect(_on_punchcard_closed)
+	if _punchcard.has_signal("start_requested"):
+		_punchcard.start_requested.connect(_on_punchcard_start)
+
+	# Instance the configuration screen as a hidden child.
+	_config = load(CONFIG_SCENE).instantiate()
+	add_child(_config)
+	_config.visible = false
+	if _config.has_signal("closed"):
+		_config.closed.connect(_on_config_closed)
+
+	# Instance the welcome panel as a hidden child.
+	_welcome_panel = load(WELCOME_SCENE).instantiate()
+	add_child(_welcome_panel)
+	_welcome_panel.visible = false
+	if _welcome_panel.has_signal("play_pressed"):
+		_welcome_panel.play_pressed.connect(_on_welcome_play_pressed)
+
+	# Wire every main-menu button.
+	_connect_button($MenuButtons/LegacyButton, _on_legacy_pressed)
+	_connect_button($MenuButtons/DailyButton, _on_daily_pressed)
+	_connect_button($MenuButtons2/CustomButton, _on_custom_pressed)
+	_connect_button($BottomRow/DiaryButton, _on_diary_pressed)
+	_connect_button($BottomRow/OptionsButton, _on_options_pressed)
+	_connect_button($IdCardButton, _on_id_card_pressed)
+
+	# Translate the mode buttons (their Labels are hardcoded in the scene).
+	_apply_language()
+
+	# Show the welcome panel if needed (first time / returning player).
+	_maybe_show_welcome_panel()
+
+
+# Shows the welcome panel when the player needs to register or
+# when they're returning from a game.
+func _maybe_show_welcome_panel() -> void:
+	var tutorial_completed: bool = SaveManager.is_tutorial_completed()
+	var username: String = SaveManager.get_username()
+
+	# First time or no username → show the welcome panel.
+	if not tutorial_completed or username == "":
+		_welcome_panel.set_locale_manager(LocaleManager)
+		_welcome_panel.init_welcome_screen()
+		_welcome_panel.visible = true
+
+		# Also show the ID card toggle button (hidden until first login).
+		# In Godot we don't hide it, it's always available.
+
+
+# ======================= BUTTON FEEDBACK =======================
+
+# Connects a button to its handler and adds hover/click feedback.
+func _connect_button(button: TextureButton, handler: Callable) -> void:
+	button.pressed.connect(handler)
+	button.mouse_entered.connect(func():
+		AudioManager.play_hover_sfx()
+		_tween_button(button, 1.05, 1.15)
+	)
+	button.mouse_exited.connect(func():
+		_tween_button(button, 1.0, 1.0)
+	)
+	button.button_down.connect(func():
+		_tween_button(button, 0.95, 0.85)
+	)
+	button.button_up.connect(func():
+		_tween_button(button, 1.05, 1.15)
+	)
+
+
+# Animates a button's scale and brightness.
+func _tween_button(button: TextureButton, scale_value: float, brightness: float) -> void:
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(button, "scale", Vector2(scale_value, scale_value), 0.12)
+	button.modulate = Color(brightness, brightness, brightness, 1.0)
+
+
+# ======================= PUNCHCARD =======================
+
+# Opens the punchcard in the given mode.
+func _open_punchcard(mode: String) -> void:
+	if _punchcard == null:
+		push_error("[MainMenu] Punchcard not instanced")
+		return
+	_punchcard.open(mode)
+
+
+# Called when the punchcard emits its "closed" signal.
+func _on_punchcard_closed() -> void:
+	AudioManager.play_click_sfx()
+
+
+# Called when the punchcard emits "start_requested".
+# Saves the config to GameManager and changes to Game.tscn.
+func _on_punchcard_start(config: Dictionary) -> void:
+	if _starting:
+		return
+	_starting = true
+	GameManager.config = config
+	GameManager.set_locale_manager(LocaleManager)
+	var transition = load("res://scripts/interface/transitions/SceneTransition.gd").new()
+	get_tree().root.add_child(transition)
+	transition.transition_to(GAME_SCENE)
+
+
+# ======================= WELCOME PANEL =======================
+
+# Called when the welcome panel emits its "play_pressed" signal.
+func _on_welcome_play_pressed() -> void:
+	AudioManager.play_click_sfx()
+	_welcome_panel.visible = false
+
+
+# ======================= BUTTON HANDLERS =======================
+
+func _on_legacy_pressed() -> void:
+	AudioManager.play_click_sfx()
+	_open_punchcard("legacy")
+
+
+func _on_daily_pressed() -> void:
+	AudioManager.play_click_sfx()
+	_open_punchcard("daily")
+
+
+func _on_custom_pressed() -> void:
+	AudioManager.play_click_sfx()
+	_open_punchcard("custom")
+
+
+func _on_diary_pressed() -> void:
+	AudioManager.play_click_sfx()
+	push_warning("[MainMenu] Diary: not implemented yet (Phase 3.4)")
+
+
+func _on_options_pressed() -> void:
+	AudioManager.play_click_sfx()
+	if _config == null:
+		push_error("[MainMenu] Configuration not instanced")
+		return
+	_config.open()
+
+
+# Called when the configuration screen emits "closed".
+func _on_config_closed() -> void:
+	AudioManager.play_click_sfx()
+	if _config != null:
+		_config.visible = false
+	# The language may have changed inside Configuration — re-apply it
+	# to the mode buttons (the scene itself never reloads here).
+	_apply_language()
+	AudioManager.play_menu_music(true)
+
+
+# Rewrites the mode-button Labels from the current locale.
+# The scene hardcodes "Legacy Mode" / "Daily Mission" / "Custom Mission".
+func _apply_language() -> void:
+	$MenuButtons/LegacyButton/Label.text = LocaleManager.get_translation("menu.legacy")
+	$MenuButtons/DailyButton/Label.text = LocaleManager.get_translation("menu.daily")
+	$MenuButtons2/CustomButton/Label.text = LocaleManager.get_translation("menu.custom")
+
+
+func _on_id_card_pressed() -> void:
+	AudioManager.play_click_sfx()
+	# Open the welcome panel in ID Card mode.
+	if _welcome_panel != null:
+		_welcome_panel.set_locale_manager(LocaleManager)
+		_welcome_panel.init_welcome_screen()
+		_welcome_panel.visible = true

@@ -1,0 +1,115 @@
+[gd_scene format=3 uid="uid://b3pu5nhxiwnff"]
+
+[ext_resource type="Script" uid="uid://vidqqudvsaq3" path="res://scripts/interface/menus/LoadingScreen.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bb4cimvamrdss" path="res://assets/hud/NuclearSticMines.png" id="2_cover"]
+[ext_resource type="Texture2D" uid="uid://usc1cup65bar" path="res://assets/hud/game/radio/walkie.png" id="3_radio"]
+[ext_resource type="Texture2D" uid="uid://du18lfxru1j3h" path="res://assets/hud/game/radio/bubble.png" id="4_bubble"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="5_font"]
+[ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="6_0s2e3"]
+
+[node name="LoadingScreen" type="Control" unique_id=1285620657]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Bg" type="TextureRect" parent="." unique_id=595026748]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_cover")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Bottom" type="Control" parent="." unique_id=1094163504]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -216.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Radio" type="TextureRect" parent="Bottom" unique_id=1483127177]
+layout_mode = 1
+offset_left = 2.0
+offset_top = -163.0
+offset_right = 302.0
+offset_bottom = 143.0
+texture = ExtResource("3_radio")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TipBubble" type="TextureRect" parent="Bottom" unique_id=332998874]
+layout_mode = 1
+offset_left = 236.0
+offset_top = 10.0
+offset_right = 1095.0
+offset_bottom = 217.0
+texture = ExtResource("4_bubble")
+expand_mode = 1
+
+[node name="TipLabel" type="Label" parent="Bottom/TipBubble" unique_id=2003441590]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 159.0
+offset_top = 34.0
+offset_right = -40.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 35
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="LoadingLabel" type="Label" parent="." unique_id=345326075]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -168.0
+offset_top = -37.0
+offset_right = -2.0
+offset_bottom = -3.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 37
+text = "Loading..."
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Filter" type="TextureRect" parent="." unique_id=1682860644]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_0s2e3")
+expand_mode = 1
+stretch_mode = 6

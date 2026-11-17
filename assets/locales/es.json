@@ -3,11 +3,13 @@
         "welcome": "Bienvenido a Nuclear-Stic Mines.\nPrepárate para aventurarte en el yermo, sobrevivir a sus peligros y \"divertirte\"... después de cada muerte en este juego táctico, procedural y roguelike inspirado en Buscaminas.\n¿Quieres jugar el tutorial?",
         "yes": "Sí",
         "no": "No, gracias",
-        "daily": "Misión Diaria",
+        "legacy": "Modo\nLegado",
+        "daily": "Misión\nDiaria",
         "custom": "Misión\nPersonalizada",
+        "timetrials": "Prueba\nContrareloj",
         "dailyCompleted": "¡La misión diaria ya fue completada hoy! Vuelve mañana.",
         "tutorialCompleted": "¡Tutorial completado! Volviendo al menú principal.",
-        
+
         "welcomeBack": "¡Bienvenido de vuelta, {name}!\n¿Listo para jugar?",
         "currentLevel": "Nivel Actual",
         "recordLevel": "Nivel Récord",
@@ -23,7 +25,7 @@
         "tutorialQuestion": "¿Quieres jugar el tutorial?",
         "deleteData": "Borrar Partida",
         "confirmDelete": "ADVERTENCIA: Esto borrará TODOS los datos del juego (progreso, configuraciones, todo).\n\n¡Esto no se puede deshacer!\n\n¿Estás seguro?",
-        
+
         "punchcard": {
             "character": "Personaje",
             "size": "Tamaño",
@@ -44,6 +46,9 @@
             "backyard": "Patio",
             "desert": "Desierto",
             "snow": "Nieve",
+            "scrapland": "Chatarreria",
+            "roots": "Raices",
+            "glowyland": "Fungisla",
             "ash": "Ceniza",
             "chef": "Chef",
             "mosquito": "Mosquito",
@@ -88,6 +93,8 @@
         "volume": "Volumen",
         "music": "Música",
         "sfx": "Efectos",
+        "renderDistance": "Distancia de renderizado",
+        "renderLow": "Cerca", "renderMedium": "Medio", "renderLong": "Lejos", "renderXtraLong": "Extra lejos", "renderUltraLong": "Ultra lejos",
         "language": "Idioma / Language",
         "gameplay": "Jugabilidad",
         "showTouch": "Mostrar Botones Táctiles",
@@ -100,6 +107,7 @@
         "langEn": "Inglés",
         "langEs": "Español",
         "langMx": "Mexicano",
+        "langPr": "Português",
         "exportSuccess": "¡Configuración guardada exitosamente!",
         "exportClipboard": "Configuración copiada al portapapeles. Puedes pegarla en un archivo.",
         "exportManual": "Copia este JSON para guardar tu configuración:",
@@ -107,7 +115,7 @@
         "importSuccess": "Configuración importada exitosamente. Reinicia el juego.",
         "importError": "Archivo de respaldo inválido",
         "fallDamageWarning": "ADVERTENCIA:\nActivar daño por caída te permite caer desde cualquier altura. Esto puede causar SOFTLOCK (quedarte atrapado en áreas de las que no puedes subir). ¿Estás seguro de que quieres activar el daño por caída?",
-        "hardcoreWarning":"ADVERTENCIA: Activando el Modo Extremo...\nAl completar un nivel, tu vida ya no se regenerará y solo recuperarás una bandera por nivel. (El progreso actual de Legacy Normal no se verá afectado. Las misiones diarias y customizadas se desactivarán.)\n¿Estás seguro de que quieres habilitar el Modo Hardcore?",
+        "hardcoreWarning": "ADVERTENCIA: Activando el Modo Extremo...\nAl completar un nivel, tu vida ya no se regenerará y solo recuperarás una bandera por nivel. (El progreso actual de Legacy Normal no se verá afectado. Las misiones diarias y customizadas se desactivarán.)\n¿Estás seguro de que quieres habilitar el Modo Hardcore?",
         "secretTitle": "Ingresa el Código Secreto",
         "secretPlaceholder": "Ingresa el código...",
         "secretSubmit": "Enviar",
@@ -125,51 +133,78 @@
             "dialog2": "Empezaremos con lo básico. Aprende a caminar... Se suponía que debías haber aprendido eso hace años... lo que sea. Usa las teclas 'WASD' para moverte.",
             "dialog3": "Bien. Llega a ese marcador que está adelante y muévete con cuidado. Algunas cosas allá afuera son un dolor de cabeza, así que generalmente es mejor rodearlas."
         },
+        "numbers": {
+            "dialog1": "Bien. Ahora la parte que de verdad mantiene viva a la gente allá afuera: los números. Cada Casilla revelada muestra cuántos Peligros se esconden en las 8 Casillas a su alrededor. Las diagonales cuentan.",
+            "dialog2": "Un 0 significa que todos sus vecinos son seguros. Un 1 significa que exactamente uno de ellos es un Peligro. Los Peligros nunca se muestran, así que tú tienes que deducirlo.",
+            "dialog3": "Hay un Cactus en algún lugar de ese cruce. Mira los números desde distintas Casillas y encuentra un carril que no pueda estar escondiéndolo.",
+            "dialog4": "Sin banderas por ahora. Solo llega a la meta sin abrazar nada con espinas.",
+            "damageMessage": "Auch. Ese era el Cactus. Los Peligros te cuestan vida, y solo tienes dos puntos. Inténtalo de nuevo.",
+            "hint": "Ponte junto al cruce y lee los números. Si dos Casillas distintas dicen 1, el Peligro debe estar entre los vecinos que comparten."
+        },
         "phase2": {
-            "dialog1": "Genial. Ahora que sabes caminar, debes aprender a usar tus banderas sabiamente. Debajo de tu icono, encontrarás un contador que muestra cuántas tienes disponibles.",
-            "dialog2": "El yermo está lleno de Peligros, y querrás evitarlos. Para identificarlos, usarás los números de Contador de Peligros, que indican si hay Peligros en Casillas adyacentes.",
-            "dialog3": "Usa los botones de flechas para colocar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes ver.",
+            "dialog1": "Genial. Ahora que sabes leer los números, vamos a ponerlos a trabajar. Debajo de tu icono encontrarás un contador que muestra cuántas banderas tienes.",
+            "dialog2": "Tienes exactamente una bandera por cada Peligro en el tablero. Una bandera marca una Casilla que sabes que es peligrosa, para no pisarla por accidente.",
+            "dialog3": "Usa los controles de flechas para colocar banderas. Solo funcionan en Casillas ocultas, las que aún no puedes ver.",
             "dialog4": "¿Entendido? Ve a marcar ese Peligro, luego dirígete a la meta.",
             "damageMessage": "Vamos, no es tan difícil. Correr a abrazar un cactus no es exactamente una buena solución. Inténtalo de nuevo.",
             "wrongFlagMessage": "¿Tienes algún problema? Inténtalo de nuevo.",
             "goalWithoutMarkingMessage": "Aún no has marcado nada. Ve a colocar la bandera...",
-            "successMessage": "Bien hecho. Ahora dirígete a la meta."
+            "successMessage": "Bien hecho. Ahora dirígete a la meta.",
+            "hint": "Las banderas solo van en Casillas ocultas. Párate junto a donde crees que está el Peligro y presiona la flecha hacia él. Compara primero los números vecinos."
         },
         "phase3": {
             "dialog1": "Ahora que dominaste el arte de banderear, debes entender que los Peligros son completamente impredecibles.",
             "dialog2": "Nadie sabe exactamente dónde están. Si varios están agrupados en Casillas cercanas, el Contador de Peligros aumentará.",
             "dialog3": "Necesitarás agudizar tus habilidades deductivas si quieres marcarlos o evitarlos.",
-            "dialog4": "Usa todas tus banderas y márcalos todos.",
+            "dialog4": "Usa todas tus banderas y márcalos todos. Tienes exactamente una bandera por Peligro, así que no sobra ninguna.",
             "damageMessage": "Lee los malditos números. Allá afuera en el yermo, ya estarías esparcido en cien pedazos.",
             "wrongFlagMessage": "¿Crees que las banderas crecen en los árboles? Deja de desperdiciarlas.",
             "goalWithoutMarkingMessage": "Aún no has marcado todos los peligros. Sigue buscando.",
-            "successMessage": "¡Todos los peligros fueron marcados! Bien hecho. Ahora dirígete a la meta."
+            "successMessage": "¡Todos los peligros fueron marcados! Bien hecho. Ahora dirígete a la meta.",
+            "hint": "Cuenta tus banderas: una por Peligro. Si se te acabaron y quedan Peligros, una de tus banderas está sobre una Casilla segura."
+        },
+        "terrain": {
+            "dialog1": "Siguiente lección: el suelo no es plano. Cada Casilla tiene una altura, y solo puedes subir un nivel a la vez. Cualquier cosa más alta simplemente te detiene.",
+            "dialog2": "Bajar es más fácil, pero no gratis. Cae un nivel y estás bien. Cae dos o más y la caída te cuesta vida.",
+            "dialog3": "Llega a la meta por el terreno bajo. Hay una escalera para los listos y un precipicio para los demás. Tú decides.",
+            "damageMessage": "Eso es lo que un precipicio le hace a tus piernas. Las escaleras existen por algo. Ya te curé, sigue."
         },
         "phase4": {
-            "dialog1": "Ahora que puedo confiar en que entiendes los números, debes saber que el terreno allá afuera no es plano. Enfrentarás valles, colinas y terrenos suficientemente desafiantes como para hacerte arrepentir de haberte levantado de la cama.",
-            "dialog2": "He preparado este curso con diferentes elevaciones para que te acostumbres a cómo se ven. No intentes caer más de dos niveles de una vez, o te romperás las malditas piernas.",
+            "dialog1": "Ya sabes leer los números y sabes escalar. Ahora vamos a juntarlo todo: colinas, Peligros y banderas en el mismo recorrido, igual que allá afuera.",
+            "dialog2": "He preparado este curso con diferentes elevaciones. Recuerda: un nivel hacia arriba a la vez, y no te avientes de los bordes por diversión.",
             "dialog3": "Marca los Peligros que dejé allá arriba, luego llega a la meta.",
-            "dialog4": "Por cierto, se me olvidó mencionarlo... hay una entidad que constantemente reorganiza los peligros. Siempre tendrás que planear rutas nuevas.",
+            "dialog4": "Por cierto, se me olvidó mencionarlo... hay una entidad que constantemente reorganiza los peligros. Solo los que ya marcaste se quedan quietos. Siempre tendrás que planear rutas nuevas.",
             "damageMessage": "No estoy seguro de si debería preocuparme por tu estado mental en este punto.",
             "wrongFlagMessage": "Sigue practicando. Lo vas a necesitar...",
             "goalWithoutMarkingMessage": "Aún no los has marcado todos. Sigue buscando.",
-            "successMessage": "Fantástico. Estoy orgulloso de ti. Dirígete a la meta para el desafío final. Tengo algo especial preparado."
+            "successMessage": "Fantástico. Estoy orgulloso de ti. Dirígete a la meta para el desafío final. Tengo algo especial preparado.",
+            "hint": "Los Peligros están en las Casillas más altas de este curso. Lee los números a su alrededor y usa las escaleras."
         },
         "phase5": {
             "dialog1": "Tu trabajo allá afuera es encontrar niños varados y traerlos de vuelta al punto de inicio. Bastante fácil, ¿verdad?",
             "dialog2": "Para esta prueba final, quiero que simules un rescate. Preparé un maniquí para que lo recuperes y lo traigas de vuelta. Buena suerte.",
             "dialog3": "Ve a buscar el maniquí y tráelo de vuelta al inicio. Y trata de no matarte en el camino.",
             "damageMessage": "Si traes de vuelta a un niño, dudo que quiera ser rescatado por alguien con una extraña obsesión por abrazar cactus. Por favor, deja de hacer eso.",
-            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera encontrarás muchas cosas que no verás en este aburrido patio de entrenamiento. Buena suerte...",
+            "successMessage": "Bien. Rescatado, entregado y en una pieza. No te confíes, queda una prueba más.",
             "manualPrompt": "Ah, y por cierto, tengo un manual que podría mantenerte con vida si te apetece leerlo.",
             "manualQuestion": "¿Leer el manual?",
             "yes": "Sí",
-            "no": "No"
+            "no": "No",
+            "hint": "Camina sobre el maniquí para recogerlo, luego tráelo de vuelta a la Casilla de Inicio. Lee los números para no pisar un Cactus."
+        },
+        "force": {
+            "dialog1": "Último examen, y es duro. Dos maniquíes esta vez, y solo puedes cargar uno a la vez.",
+            "dialog2": "Cuando lleves todo lo que puedes, tu icono empezará a sudar. Lleva ese de vuelta al inicio, luego ve por el otro.",
+            "dialog3": "Y recuerda a la entidad que mencioné... solo mueve los Peligros que no has marcado. Mira lo que pasa en el momento en que recojas uno.",
+            "shuffle": "¿Ves eso? Los Peligros que no marcaste se movieron. Los que marcaste se quedaron quietos. Cada rescate reorganiza el resto, así que no confíes en tus notas viejas. Lee los números otra vez.",
+            "damageMessage": "Maniquíes muertos es un pésimo aspecto en tu récord. Inténtalo de nuevo, y esta vez lee los números.",
+            "hint": "Lleva un maniquí de vuelta a la Casilla de Inicio antes de ir por el otro. Después del primer recogido los Peligros se mueven, así que vuelve a leer los números.",
+            "successMessage": "Eso es todo lo que puedo enseñarte. Allá afuera encontrarás muchas cosas que no verás en este aburrido patio de entrenamiento. Buena suerte..."
         },
         "pitFall": "¡JA! Mira por dónde pisas. El suelo allá afuera está lleno de agujeros tan profundos que ni un buitre se molestaría en ir tras tu cadáver. Inténtalo de nuevo.",
-        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotas de sudor en tu icono? Significa que estás exhausto y no puedes cargar más niños. Si hubiera más para rescatar, tendrías que dejar los que llevas y volver por el resto."
+        "exhaustion": "Pesado, ¿eh? ¿Ves esas gotas de sudor en tu icono? Significa que estás cargando todo lo que puedes. Lleva este de vuelta al inicio primero, luego regresa por el otro."
     },
-    
+
     "criticker": {
         "infection": {
             "step1": "Buenos días, estimado caballero. Lamento informarle que usted acaba de devastar una propiedad privada de considerable valor sentimental para mi persona. No obstante, soy un individuo razonable y estoy dispuesto a proceder mediante vías diplomáticas.",
@@ -189,7 +224,7 @@
             "farewell": "He concluido que la preservación de mi integridad biológica posee una prioridad superior a la continuación de este intercambio. Le deseo una jornada moderadamente aceptable."
         }
     },
-    
+
     "bundle": {
         "clickToOpen": "Haz clic para abrir",
         "inventoryFull": "¡Inventario lleno! No puedes llevar más llaveros.",
@@ -232,5 +267,43 @@
         "link": { "name": "Vínculo", "description": "Unidos por el destino. Más allá de lo que ves." },
         "oblivion": { "name": "Olvido", "description": "El orden se deshace. Todo se desmorona." },
         "delirium": { "name": "Delirio", "description": "La realidad se desdibuja. La mente divaga." }
+    },
+    "ui": {
+        "cancel": "Cancelar",
+        "ok": "Aceptar"
+    },
+    "loading": {
+        "loading": "Cargando...",
+        "tips": [
+            "Un 0 significa que los ocho vecinos están seguros. Las diagonales también cuentan.",
+            "Tienes exactamente una bandera por peligro. Si se te acaban y quedan peligros, una de tus banderas está mintiendo.",
+            "Las banderas solo van en casillas ocultas. ¿Ya la viste? Demasiado tarde para marcarla.",
+            "Solo puedes subir un nivel a la vez. Si es más alto, te quedas ahí parado viendo el ridículo.",
+            "Caer un nivel es gratis. Dos o más, y tus piernas presentan una queja.",
+            "Entrega a los pals caminando de vuelta a la casilla de inicio. Sí, todo el camino de regreso.",
+            "Un icono sudoroso significa que no puedes cargar más pals. Déjalos primero.",
+            "Cada rescate lo sacude todo: los peligros que no marcaste pueden moverse. No confíes en tus notas viejas.",
+            "Los peligros marcados se quedan exactamente donde están. De eso se trata marcarlos.",
+            "Poner banderas es gratis, pero una mal puesta te va a costar. Asegúrate antes de comprometerte.",
+            "El Chef no puede quitar una bandera una vez puesta. Apunta bien.",
+            "Mosquito, Mamá y Explorador no marcan peligros automáticamente. Sus banderas siguen puestas hasta que recogen un pal.",
+            "Ahí es cuando sale la verdad: una bandera sobre un peligro queda marcada. Una bandera sobre una casilla segura te castiga.",
+            "Cada personaje carga una cantidad distinta de pals a la vez. Conoce tus límites antes de ir de compras por niños.",
+            "Los personajes más pesados cargan más pals por viaje. Planea tu ruta en consecuencia.",
+            "Algunos llaveros desbloquean modos de bandera extra. Pulsa F para alternar entre ellos.",
+            "Los llaveros y paquetes pueden cambiar cómo se juega una partida. Lee sus descripciones antes de equiparlos.",
+            "Cinco espacios de llavero, cinco oportunidades de tomar una decisión cuestionable.",
+            "Un paquete que no leíste es un paquete que no entendiste. Léelo.",
+            "Leer los números desde dos casillas distintas te dice más que cualquiera de las dos por separado.",
+            "Cuando dudes, rodea. Los desvíos son gratis. Los cactus no.",
+            "¿No sabes qué significa un número? Abre tu diario. Tiene respuestas y no juzga.",
+            "Los cactus no te guardan rencor. Simplemente no les importas.",
+            "El yermo no tiene Wi-Fi. Esta pantalla de carga es lo más cerca que estarás de una señal.",
+            "Morir es una forma perfectamente válida de aprenderse el mapa. Aunque no recomendada.",
+            "Pausar está permitido. Los peligros esperarán. No tienen nada mejor que hacer.",
+            "Recuerda: los números nunca mienten. El jugador sí.",
+            "Si parece seguro, revisa los números otra vez. Si sigue pareciendo seguro, revísalos una vez más.",
+            "Otro día, otro yermo. Trata de divertirte... o lo que sea que sea esto."
+        ]
     }
 }

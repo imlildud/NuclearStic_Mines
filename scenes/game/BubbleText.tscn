@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://clif5jnsvf8xi"]
+
+[ext_resource type="Script" uid="uid://djngw4plnab2a" path="res://scripts/interface/game/BubbleText.gd" id="1_bubble"]
+[ext_resource type="Texture2D" uid="uid://usc1cup65bar" path="res://assets/hud/game/radio/walkie.png" id="2_walkie"]
+[ext_resource type="Texture2D" uid="uid://du18lfxru1j3h" path="res://assets/hud/game/radio/bubble.png" id="3_bubble"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="4_font"]
+
+[node name="BubbleText" type="CanvasLayer" unique_id=462621054]
+layer = 60
+script = ExtResource("1_bubble")
+
+[node name="Container" type="Control" parent="." unique_id=729104961]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -349.0
+offset_top = -252.0
+offset_right = 349.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Avatar" type="TextureRect" parent="Container" unique_id=1701249148]
+layout_mode = 1
+offset_left = -132.0
+offset_top = -82.0
+offset_right = 90.0
+offset_bottom = 134.0
+mouse_filter = 2
+texture = ExtResource("2_walkie")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bubble" type="TextureRect" parent="Container" unique_id=1913475884]
+layout_mode = 1
+offset_left = -64.0
+offset_top = 33.0
+offset_right = 846.0
+offset_bottom = 251.0
+mouse_filter = 2
+texture = ExtResource("3_bubble")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Text" type="Label" parent="Container/Bubble" unique_id=1545833727]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 230.0
+offset_top = 41.0
+offset_right = -144.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.101961, 0.101961, 0.101961, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="TypeTimer" type="Timer" parent="." unique_id=1288064913]
+wait_time = 0.03
+
+[node name="PulseTimer" type="Timer" parent="." unique_id=1500347757]
+wait_time = 0.05
+
+[node name="MovePollTimer" type="Timer" parent="." unique_id=1328679041]
+wait_time = 0.1

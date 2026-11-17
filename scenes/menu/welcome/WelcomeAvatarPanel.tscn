@@ -1,0 +1,193 @@
+[gd_scene format=3 uid="uid://bm6yoga0x1lmv"]
+
+[ext_resource type="Script" uid="uid://cl0mjbfyp6454" path="res://scripts/interface/menus/welcome/WelcomeAvatarPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dbdjrxwjcv8yt" path="res://assets/hud/menu/photomodal.png" id="2_prsw3"]
+[ext_resource type="Texture2D" uid="uid://dotkrxf5so7m5" path="res://assets/hud/menu/icons/icon1.png" id="3_icon1"]
+[ext_resource type="Texture2D" uid="uid://cfma5v8kkunbt" path="res://assets/hud/menu/icons/icon2.png" id="4_icon2"]
+[ext_resource type="Texture2D" uid="uid://csoygcsna7b25" path="res://assets/hud/menu/icons/icon3.png" id="5_icon3"]
+[ext_resource type="Texture2D" uid="uid://c42weif16mhwr" path="res://assets/hud/menu/icons/icon4.png" id="6_icon4"]
+[ext_resource type="Texture2D" uid="uid://bw8wo7ttsevkq" path="res://assets/hud/menu/icons/icon5.png" id="7_icon5"]
+[ext_resource type="Texture2D" uid="uid://7qpn4bjd6axt" path="res://assets/hud/menu/icons/icon6.png" id="8_icon6"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="9_font"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_confirm_normal"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.22, 0.2, 0.18, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.1, 0.09, 0.08, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 11
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 9
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 5
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_confirm_hover"]
+content_margin_left = 18.0
+content_margin_top = 6.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.3, 0.27, 0.24, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.14, 0.12, 0.1, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 11
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 9
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 7
+shadow_offset = Vector2(2, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_confirm_pressed"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 6.0
+bg_color = Color(0.15, 0.13, 0.12, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.07, 0.06, 0.06, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 11
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 9
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[node name="WelcomeAvatarPanel" type="Control" unique_id=293315391]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Card" type="TextureRect" parent="." unique_id=218082319]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -350.0
+offset_right = 500.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_prsw3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PromptLabel" type="Label" parent="Card" unique_id=984407258]
+layout_mode = 0
+offset_left = 233.0
+offset_top = 80.0
+offset_right = 748.0
+offset_bottom = 130.0
+theme_override_colors/font_color = Color(0.08, 0.06, 0.05, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.18)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("9_font")
+theme_override_font_sizes/font_size = 37
+text = "Choose your profile picture:"
+horizontal_alignment = 1
+
+[node name="AvatarGrid" type="GridContainer" parent="Card" unique_id=1019612649]
+layout_mode = 0
+offset_left = 226.0
+offset_top = 196.0
+offset_right = 798.0
+offset_bottom = 553.0
+theme_override_constants/h_separation = 91
+theme_override_constants/v_separation = 95
+columns = 3
+
+[node name="Avatar1" type="TextureButton" parent="Card/AvatarGrid" unique_id=291118868]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("3_icon1")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar2" type="TextureButton" parent="Card/AvatarGrid" unique_id=258939354]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_icon2")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar3" type="TextureButton" parent="Card/AvatarGrid" unique_id=969201382]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("5_icon3")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar4" type="TextureButton" parent="Card/AvatarGrid" unique_id=1795304322]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("6_icon4")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar5" type="TextureButton" parent="Card/AvatarGrid" unique_id=1829171674]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("7_icon5")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Avatar6" type="TextureButton" parent="Card/AvatarGrid" unique_id=1240564929]
+modulate = Color(0.95, 0.93, 0.89, 1)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("8_icon6")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ConfirmButton" type="Button" parent="Card" unique_id=711817619]
+layout_mode = 0
+offset_left = 378.0
+offset_top = 610.0
+offset_right = 638.0
+offset_bottom = 693.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.92, 0.86, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_fonts/font = ExtResource("9_font")
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_confirm_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_confirm_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_confirm_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "Confirm"

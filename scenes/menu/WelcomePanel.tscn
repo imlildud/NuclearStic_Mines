@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://welcome_panel_scene"]
+
+[ext_resource type="Script" path="res://scripts/interface/menus/WelcomePanel.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/menu/welcome/WelcomeNamePanel.tscn" id="2_name"]
+[ext_resource type="PackedScene" path="res://scenes/menu/welcome/WelcomeAvatarPanel.tscn" id="3_avatar"]
+[ext_resource type="PackedScene" path="res://scenes/menu/welcome/WelcomeTutorialPanel.tscn" id="4_tutorial"]
+[ext_resource type="PackedScene" path="res://scenes/menu/welcome/WelcomeIDCardPanel.tscn" id="5_idcard"]
+
+[node name="WelcomePanel" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="NamePanel" parent="Root" instance=ExtResource("2_name")]
+visible = false
+
+[node name="AvatarPanel" parent="Root" instance=ExtResource("3_avatar")]
+visible = false
+
+[node name="TutorialPanel" parent="Root" instance=ExtResource("4_tutorial")]
+visible = false
+
+[node name="IDCardPanel" parent="Root" instance=ExtResource("5_idcard")]
+visible = false

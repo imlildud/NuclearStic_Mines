@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://b22relmukp3r2"]
+
+[ext_resource type="Script" uid="uid://c5y5fme6bxu3y" path="res://scripts/interface/game/LevelStartModal.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dres8pb6uqvcr" path="res://assets/hud/menu/levelmodal.png" id="2_sd57o"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+
+[node name="LevelStartModal" type="CanvasLayer" unique_id=122303926]
+layer = 90
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="." unique_id=2059109113]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root" unique_id=742126488]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Card" type="TextureRect" parent="Root" unique_id=313713355]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -335.0
+offset_top = -250.0
+offset_right = 335.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_sd57o")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="Root/Card" unique_id=974780832]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 138.0
+offset_top = 54.0
+offset_right = -149.0
+offset_bottom = 119.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 40
+text = "Level 1"
+horizontal_alignment = 1
+
+[node name="SeedLabel" type="Label" parent="Root/Card" unique_id=185529432]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 188.0
+offset_top = 140.0
+offset_right = -198.0
+offset_bottom = 180.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 24
+text = "Seed: ---"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="Root/Card" unique_id=522051071]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 192.0
+offset_top = 243.0
+offset_right = -206.0
+offset_bottom = 298.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 30
+text = "Wanted: 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ChildrenContainer" type="HBoxContainer" parent="Root/Card" unique_id=1150136853]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 64.0
+offset_top = 340.0
+offset_right = -57.0
+offset_bottom = 452.0
+grow_horizontal = 2
+theme_override_constants/separation = 20
+alignment = 1

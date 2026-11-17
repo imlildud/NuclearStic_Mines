@@ -1,0 +1,194 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/interface/menus/KeychainSelector.gd" id="1_script"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24, 0.42, 0.31, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.12, 0.23, 0.16, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.3, 0.52, 0.39, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.16, 0.3, 0.21, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.16, 0.29, 0.21, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.08, 0.16, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.42, 0.26, 0.26, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.24, 0.14, 0.14, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.52, 0.32, 0.32, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.3, 0.18, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.29, 0.17, 0.17, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.16, 0.09, 0.09, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[node name="KeychainSelector" type="CanvasLayer"]
+layer = 12
+script = ExtResource("1_script")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.79)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_alignment = 1
+
+[node name="CounterLabel" type="Label" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Center/VBox"]
+custom_minimum_size = Vector2(500, 512)
+layout_mode = 2
+size_flags_horizontal = 4
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="Center/VBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 5
+
+[node name="Buttons" type="HBoxContainer" parent="Center/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="ResetButton" type="Button" parent="Center/VBox/Buttons"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_no_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_no_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_no_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+
+[node name="ConfirmButton" type="Button" parent="Center/VBox/Buttons"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_yes_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yes_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yes_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")

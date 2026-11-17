@@ -1,0 +1,115 @@
+# ==============================================================
+# ==================== LEVEL START MODAL =======================
+# ==============================================================
+# Shows level title, seed, info, and the children to rescue.
+# Dismissed by clicking or pressing any key.
+
+extends CanvasLayer
+
+signal dismissed
+
+const CHAR_PATH := "res://assets/sprites/characters/%s.png"
+const CHILD_NAME_KEY := "game.children.%s"
+# Same fade times as the menu fades (WelcomePanel / PunchcardPanel).
+const FADE_IN_TIME: float = 0.2
+const FADE_OUT_TIME: float = 0.15
+
+var _fade_tween: Tween = null
+var _fade_id: int = 0
+
+@onready var root_control: Control = $Root
+@onready var title_label: Label = $Root/Card/TitleLabel
+@onready var seed_label: Label = $Root/Card/SeedLabel
+@onready var info_label: Label = $Root/Card/InfoLabel
+@onready var children_container: HBoxContainer = $Root/Card/ChildrenContainer
+
+
+func _ready() -> void:
+	visible = false
+	set_process_input(false)
+	ButtonFeedback.attach_all(self)
+
+
+func show_modal(title: String, seed_text: String, info: String, child_types: Array) -> void:
+	title_label.text = title
+	seed_label.text = seed_text
+	info_label.text = info
+
+	# Clear existing children.
+	for child in children_container.get_children():
+		child.queue_free()
+
+	# Add new children.
+	for child_type in child_types:
+		_add_child_icon(child_type)
+
+	visible = true
+	set_process_input(true)
+	_fade_in()
+
+
+func _add_child_icon(child_type: String) -> void:
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+
+	var texture_rect := TextureRect.new()
+	texture_rect.custom_minimum_size = Vector2(60, 60)
+	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+	var path: String = CHAR_PATH % child_type
+	if ResourceLoader.exists(path):
+		texture_rect.texture = load(path)
+
+	vbox.add_child(texture_rect)
+
+	var label := Label.new()
+	label.text = LocaleManager.get_translation(CHILD_NAME_KEY % child_type)
+	if label.text == CHILD_NAME_KEY % child_type:
+		label.text = child_type.capitalize()
+	label.add_theme_font_override("font", load("res://assets/font/Shampoos-Regular.ttf"))
+	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_color_override("font_color", Color(0, 0, 0, 1))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(label)
+
+	children_container.add_child(vbox)
+
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		_dismiss()
+	elif event is InputEventMouseButton and event.pressed:
+		_dismiss()
+
+
+func _dismiss() -> void:
+	set_process_input(false)
+	_fade_id += 1
+	var my_id := _fade_id
+	_kill_fade_tween()
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 0.0, FADE_OUT_TIME)
+	var timer := get_tree().create_timer(FADE_OUT_TIME)
+	await timer.timeout
+	if my_id != _fade_id:
+		return
+	visible = false
+	root_control.modulate.a = 1.0
+	dismissed.emit()
+
+
+func _fade_in() -> void:
+	_fade_id += 1
+	_kill_fade_tween()
+	root_control.modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 1.0, FADE_IN_TIME)
+
+
+func _kill_fade_tween() -> void:
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = null

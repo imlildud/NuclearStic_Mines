@@ -1,0 +1,200 @@
+[gd_scene format=3 uid="uid://b8tlp1vq3ryhy"]
+
+[ext_resource type="Script" uid="uid://nyu1dau2h57l" path="res://scripts/interface/menus/welcome/WelcomeTutorialPanel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cgqkpas3ev84f" path="res://assets/hud/menu/tutorialmodal.png" id="2_ecq83"]
+[ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.24, 0.42, 0.31, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.12, 0.23, 0.16, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.3, 0.52, 0.39, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.16, 0.3, 0.21, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yes_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.16, 0.29, 0.21, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.08, 0.16, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_normal"]
+content_margin_left = 16.0
+content_margin_top = 6.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.42, 0.26, 0.26, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.24, 0.14, 0.14, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+shadow_offset = Vector2(2, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_hover"]
+content_margin_left = 16.0
+content_margin_top = 5.0
+content_margin_right = 16.0
+content_margin_bottom = 9.0
+bg_color = Color(0.52, 0.32, 0.32, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(0.3, 0.18, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no_pressed"]
+content_margin_left = 16.0
+content_margin_top = 9.0
+content_margin_right = 16.0
+content_margin_bottom = 5.0
+bg_color = Color(0.29, 0.17, 0.17, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.16, 0.09, 0.09, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 10
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[node name="WelcomeTutorialPanel" type="Control" unique_id=1765567852]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Card" type="TextureRect" parent="." unique_id=160443903]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -350.0
+offset_right = 500.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_ecq83")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="QuestionLabel" type="Label" parent="Card" unique_id=1118514779]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 147.0
+offset_right = 910.0
+offset_bottom = 260.0
+theme_override_colors/font_color = Color(0.08, 0.06, 0.05, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.15)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 44
+text = "Would you like to play the tutorial?"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="YesButton" type="Button" parent="Card" unique_id=1960941726]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 336.0
+offset_right = 463.0
+offset_bottom = 412.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_yes_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yes_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_yes_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "Yep"
+
+[node name="NoButton" type="Button" parent="Card" unique_id=1769610058]
+layout_mode = 0
+offset_left = 534.0
+offset_top = 332.0
+offset_right = 779.0
+offset_bottom = 408.0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.95, 0.93, 0.88, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.92, 1)
+theme_override_colors/font_pressed_color = Color(0.75, 0.72, 0.66, 1)
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_no_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_no_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_no_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "No ty"

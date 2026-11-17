@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://character_scene_001"]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/characters/chef.png" id="1_chef"]
+
+[node name="Character" type="Node2D"]
+
+[node name="Sprite" type="Sprite2D" parent="."]

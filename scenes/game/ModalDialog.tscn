@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://modaldialog_scene"]
+
+[ext_resource type="Script" path="res://scripts/interface/game/ModalDialog.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/hud/menu/welcome.png" id="2_bg"]
+[ext_resource type="FontFile" path="res://assets/font/Shampoos-Regular.ttf" id="3_font"]
+
+[node name="ModalDialog" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Card" type="TextureRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Content" type="VBoxContainer" parent="Root/Card"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = 80.0
+offset_right = -80.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="MessageText" type="RichTextLabel" parent="Root/Card/Content"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("3_font")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+bbcode_enabled = true
+
+[node name="OkButton" type="Button" parent="Root/Card/Content"]
+custom_minimum_size = Vector2(160, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 28
+text = "OK"
