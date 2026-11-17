@@ -67,7 +67,7 @@ var spike_controller = null        # SpikeController
 var destiny_target = null
 
 # Managers (autoloads referenced by name)
-# AudioManager, SaveManager, LocaleManager, DiscordRPC -> autoloads
+# AudioManager, SaveManager, LocaleManager, DiscordRCP -> autoloads
 
 # Sub-managers (instantiated)
 var bundle_manager = null

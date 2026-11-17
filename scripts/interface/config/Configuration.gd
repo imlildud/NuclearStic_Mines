@@ -212,6 +212,7 @@ func apply_language() -> void:
 	save_label.text = LocaleManager.get_translation("config.save")
 	online_title.text = "Online Features"
 	online_label.text = "Daily Leaderboard — 1.1.0"
+	# The render level name (Low/Medium/...) is localized too.
 	_update_render_value_label()
 
 
@@ -320,7 +321,6 @@ func _render_distance_names() -> Array[String]:
 		_tr("config.renderMedium", "Medium"),
 		_tr("config.renderLong", "Long"),
 		_tr("config.renderXtraLong", "XtraLong"),
-		_tr("config.renderUltraLong", "UltraLong")
 	]
 
 

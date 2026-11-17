@@ -1,42 +1,71 @@
 # ==============================================================
 # ==================== DISCORD RPC =============================
 # ==============================================================
-# Handles Discord Rich Presence integration.
+# Handles Discord Rich Presence integration (desktop only).
 #
-# ⚠️ PENDING ADDON:
-# This is a wrapper around a Godot Discord RPC addon. The addon
-# has not been chosen yet. Until then, `update_presence` and
-# `reset_timestamp` are no-ops (they just print a warning).
-#
-# The presence-building functions (build_presence, build_id_card_presence)
-# are fully implemented and do not depend on the addon.
-#
-# AUTOLOAD: Available as `DiscordRPC` from any scene.
+# Backend: the vaporvee "Discord RPC" addon (Asset Library 1.3.2,
+# Godot 4.4+). It registers an engine singleton called DiscordRPC
+# (GDExtension) plus a DiscordRPCLoader autoload that runs the SDK
+# callbacks in the background.
 
 extends Node
+
+const APP_ID: int = 1532240298930077728
+
+# The addon's engine singleton (null when the addon is not loaded:
+# mobile/web exports, plugin disabled, or APP_ID not set).
+var _sdk = null
+
+
+# ======================= LIFECYCLE =======================
+
+func _ready() -> void:
+	# No addon, no singleton (mobile/web, plugin disabled): no-op.
+	if not Engine.has_singleton("DiscordRPC"):
+		push_warning("[RPC] Discord addon not loaded (desktop only), presence disabled")
+		return
+	if APP_ID == 0:
+		push_warning("[RPC] APP_ID is 0: paste your Discord Application ID in DiscordRCP.gd")
+		return
+	_sdk = Engine.get_singleton("DiscordRPC")
+	_sdk.app_id = APP_ID
+	# Elapsed-time counter starts at launch.
+	_sdk.start_timestamp = int(Time.get_unix_time_from_system())
+	update_presence("In the menu", "Preparing for adventure", {"largeImageKey": "nuclearstic_logo"})
+
 
 # ======================= PRESENCE UPDATE =======================
 
 # Updates Discord Rich Presence with the given state.
-# Returns true if the update was sent, false if the addon is missing.
+# Returns true if Discord is connected and the update was sent.
 func update_presence(details: String, state: String, extra: Dictionary = {}) -> bool:
-	# TODO: Replace with the chosen addon's API.
-	# Example (Discord RPC addon):
-	#   DiscordRPC.set_activity({"details": details, "state": state, ...})
-	push_warning("[RPC] Discord bridge unavailable (addon not installed)")
-	return false
+	if _sdk == null:
+		return false
+	_sdk.details = details
+	_sdk.state = state
+	_sdk.large_image = str(extra.get("largeImageKey", "nuclearstic_logo"))
+	_sdk.large_image_text = str(extra.get("largeImageText", ""))
+	_sdk.small_image = str(extra.get("smallImageKey", ""))
+	_sdk.small_image_text = str(extra.get("smallImageText", ""))
+	_sdk.refresh()
+	# Values are staged even if Discord is not running yet; the next
+	# refresh sends them once it connects.
+	return bool(_sdk.get_is_discord_working())
 
 
-# Returns true if the Discord RPC addon is ready.
+# Returns true if the Discord RPC addon is ready (live connection).
 func is_ready() -> bool:
-	# TODO: Replace with the chosen addon's ready check.
-	return false
+	if _sdk == null:
+		return false
+	return bool(_sdk.get_is_discord_working())
 
 
-# Resets the Discord activity timer.
+# Resets the Discord activity timer (call on level start).
 func reset_timestamp() -> void:
-	# TODO: Replace with the chosen addon's reset API.
-	pass
+	if _sdk == null:
+		return
+	_sdk.start_timestamp = int(Time.get_unix_time_from_system())
+	_sdk.refresh()
 
 
 # ======================= FORMATTING HELPERS =======================
