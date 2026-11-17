@@ -8,7 +8,8 @@ signal closed
 
 const GAME_SCENE := "res://scenes/game/Game.tscn"
 const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
-const RENDER_DISTANCE_NAMES: Array[String] = ["Low", "Medium", "Long", "XtraLong", "UltraLong"]
+const FADE_IN_TIME := 0.2
+const FADE_OUT_TIME := 0.15
 const MANUAL_URL := "https://github.com/imlildud/NuclearStic_Mines/wiki"
 const SAVE_PATH := "user://save_data.cfg"
 
@@ -68,9 +69,13 @@ var _touch_enabled: bool = true
 var _fall_damage_enabled: bool = false
 var _hardcore_enabled: bool = false
 
-# Pending toggle waiting for the warning modal OK ("falldamage"/"hardcore").
-var _pending_warning: String = ""
 var _file_dialog_mode: String = ""  # "export" | "import"
+
+# Fade state (see open() / _fade_out_then_close()). _fade_id aborts a
+# close that was superseded by a reopen, so it can never hide the
+# panel or emit closed twice.
+var _fade_tween: Tween = null
+var _fade_id: int = 0
 
 var _secret_click_count: int = 0
 var _secret_click_deadline_msec: int = 0
@@ -123,9 +128,6 @@ func _ready() -> void:
 	# Title = secret codes (5 clicks within 3 seconds, like the web).
 	title_rect.gui_input.connect(_on_title_gui_input)
 
-	# Warning / info modal (OK-only).
-	modal_dialog.closed.connect(_on_modal_closed)
-
 	# Secret code modal.
 	secret_submit.pressed.connect(_on_secret_submit)
 	secret_cancel.pressed.connect(_on_secret_cancel)
@@ -137,9 +139,13 @@ func _ready() -> void:
 
 
 # Shows the screen (called by MainMenu) and refreshes every control
-# from the saved settings.
+# from the saved settings. Fades in (0.2s), like the other menus.
 func open() -> void:
+	_fade_id += 1
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
 	visible = true
+	modulate.a = 0.0
 	_refresh_all()
 	AudioManager.play_config_music(true)
 	if DiscordRPC.has_method("update_presence"):
@@ -148,6 +154,8 @@ func open() -> void:
 			"Configuring game options",
 			{"largeImageKey": "nuclearstic_logo"}
 		)
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(self, "modulate:a", 1.0, FADE_IN_TIME)
 
 
 # ======================= REFRESH =======================
@@ -204,6 +212,7 @@ func apply_language() -> void:
 	save_label.text = LocaleManager.get_translation("config.save")
 	online_title.text = "Online Features"
 	online_label.text = "Daily Leaderboard — 1.1.0"
+	_update_render_value_label()
 
 
 # ======================= VOLUME =======================
@@ -265,40 +274,13 @@ func _on_toggle_pressed(kind: String) -> void:
 			SaveManager.set_touch_enabled(_touch_enabled)
 			_update_toggle_visual(touch_toggle, _touch_enabled, true)
 		"falldamage":
-			if not _fall_damage_enabled:
-				# Enabling asks first (softlock risk) — like the web.
-				_pending_warning = "falldamage"
-				modal_dialog.show_message(
-					LocaleManager.get_translation("config.fallDamageWarning")
-				)
-			else:
-				_fall_damage_enabled = false
-				SaveManager.set_fall_damage_enabled(false)
-				_update_toggle_visual(fall_toggle, false, true)
+			_fall_damage_enabled = not _fall_damage_enabled
+			SaveManager.set_fall_damage_enabled(_fall_damage_enabled)
+			_update_toggle_visual(fall_toggle, _fall_damage_enabled, true)
 		"hardcore":
-			if not _hardcore_enabled:
-				_pending_warning = "hardcore"
-				modal_dialog.show_message(
-					LocaleManager.get_translation("config.hardcoreWarning")
-				)
-			else:
-				_hardcore_enabled = false
-				SaveManager.set_hardcore_enabled(false)
-				_update_toggle_visual(hardcore_toggle, false, true)
-
-
-# OK on the warning modal = confirm the pending toggle.
-func _on_modal_closed() -> void:
-	match _pending_warning:
-		"falldamage":
-			_fall_damage_enabled = true
-			SaveManager.set_fall_damage_enabled(true)
-			_update_toggle_visual(fall_toggle, true, true)
-		"hardcore":
-			_hardcore_enabled = true
-			SaveManager.set_hardcore_enabled(true)
-			_update_toggle_visual(hardcore_toggle, true, true)
-	_pending_warning = ""
+			_hardcore_enabled = not _hardcore_enabled
+			SaveManager.set_hardcore_enabled(_hardcore_enabled)
+			_update_toggle_visual(hardcore_toggle, _hardcore_enabled, true)
 
 
 func _update_toggle_visual(toggle: Panel, active: bool, animate: bool) -> void:
@@ -328,10 +310,32 @@ func _on_render_distance_changed(value: float) -> void:
 	_update_render_value_label()
 
 
+# Render Distance display names from the locales (logic stays 0-4,
+# only the label shows names). 4 has no own name yet, so it clamps to
+# XtraLong like before. get_translation returns the key itself when
+# the key is missing, so the fallback only fires when we check for it.
+func _render_distance_names() -> Array[String]:
+	return [
+		_tr("config.renderLow", "Low"),
+		_tr("config.renderMedium", "Medium"),
+		_tr("config.renderLong", "Long"),
+		_tr("config.renderXtraLong", "XtraLong"),
+		_tr("config.renderUltraLong", "UltraLong")
+	]
+
+
+func _tr(key: String, fallback: String) -> String:
+	var text = LocaleManager.get_translation(key)
+	if text is String and text != "" and text != key:
+		return text
+	return fallback
+
+
 func _update_render_value_label() -> void:
 	if _render_value_label != null:
-		var index: int = clampi(SaveManager.get_render_distance(), 0, RENDER_DISTANCE_NAMES.size() - 1)
-		_render_value_label.text = RENDER_DISTANCE_NAMES[index]
+		var names: Array[String] = _render_distance_names()
+		var index: int = clampi(SaveManager.get_render_distance(), 0, names.size() - 1)
+		_render_value_label.text = names[index]
 
 
 # ======================= OTHER BUTTONS =======================
@@ -369,14 +373,30 @@ func _on_manual_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	AudioManager.play_click_sfx()
-	closed.emit()
+	_fade_out_then_close()
 
 
 func _on_save_pressed() -> void:
 	# Everything already saved live on change; SAVE is confirm +
-	# grade sound + close after 200ms, like the web.
+	# grade sound, then fade out and close (like the web's 200ms).
 	AudioManager.play_sfx("grade.mp3", false, 0.5)
-	await get_tree().create_timer(0.2).timeout
+	_fade_out_then_close()
+
+
+# Fades the panel out (0.15s), hides it and emits closed. A reopen
+# during the fade aborts the hide/emit (see _fade_id).
+func _fade_out_then_close() -> void:
+	_fade_id += 1
+	var my_id: int = _fade_id
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(self, "modulate:a", 0.0, FADE_OUT_TIME)
+	await get_tree().create_timer(FADE_OUT_TIME).timeout
+	if my_id != _fade_id:
+		return
+	visible = false
+	modulate.a = 1.0
 	closed.emit()
 
 

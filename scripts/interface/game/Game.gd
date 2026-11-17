@@ -108,6 +108,8 @@ func _ready() -> void:
 	hud.flag_requested.connect(_handle_flag)
 	hud.swamp_requested.connect(_cycle_flag_mode)
 	hud.restart_requested.connect(_reversion)
+	if GameManager.has_signal("reversion_button_state_changed"):
+		GameManager.reversion_button_state_changed.connect(hud._on_reversion_button_state_changed)
 	hud.pause_requested.connect(_pause)
 	hud.back_requested.connect(_on_back_pressed)
 	_setup_delirium_filter()

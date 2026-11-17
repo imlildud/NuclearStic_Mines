@@ -94,6 +94,7 @@
         "music": "Music",
         "sfx": "SFX",
         "renderDistance": "Render Distance",
+        "renderLow": "Low", "renderMedium": "Medium", "renderLong": "Long", "renderXtraLong": "XtraLong", "renderUltraLong": "Ultralong",
         "language": "Language / Idioma",
         "gameplay": "Gameplay",
         "showTouch": "Show Touch Buttons",

@@ -94,6 +94,7 @@
         "music": "Música",
         "sfx": "Efectos",
         "renderDistance": "Que tan lejos ves",
+        "renderLow": "Cerquita", "renderMedium": "Medianito", "renderLong": "Lejillos", "renderXtraLong": "Tastalama", "renderUltraLong": "uuuuuta",
         "language": "Idioma / Language",
         "gameplay": "Jugabilidad",
         "showTouch": "Mostrar Botones Táctiles",

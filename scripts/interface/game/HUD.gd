@@ -63,6 +63,11 @@ signal restart_requested
 var game = null
 var _last_keychain_ids: String = ""
 
+# Cached action-button states (Swamp / Restart). The poll in
+# _update_action_buttons() only touches a button when its state flips.
+var _swamp_enabled: bool = true
+var _restart_enabled: bool = true
+
 
 # ======================= LIFECYCLE =======================
 
@@ -102,13 +107,11 @@ func _connect_touch_button(button: TextureButton, kind: String, direction: Strin
 			flag_requested.emit(direction)
 	)
 
-# Disables the restart (Reversion) button when the player has no
-# Reversion keychain or the uses run out, and re-enables it otherwise.
+# Reversion button tooltip (uses left). The enabled/disabled look
+# is owned by the poll in _update_action_buttons(), not by this signal,
+# so this handler only feeds the tooltip.
 func _on_reversion_button_state_changed(state_class: String, tooltip: String) -> void:
-	var enabled: bool = state_class == "active"
-	restart_button.disabled = not enabled
 	restart_button.tooltip_text = tooltip
-	restart_button.modulate = Color(1, 1, 1, 1) if enabled else Color(0.5, 0.5, 0.5, 1)
 
 # ======================= SETUP =======================
 
@@ -139,6 +142,7 @@ func update() -> void:
 	_update_coordinates(board, player)
 	_update_support(player)
 	_update_treasure_indicator(board, player)
+	_update_action_buttons(player)
 
 
 # ======================= CHARACTER ICON =======================
@@ -541,6 +545,48 @@ func _on_keychain_slot_clicked(keychain_id: String) -> void:
 	var ui = GameManager.keychain_ui_manager
 	if ui != null:
 		ui.show_keychain_info(keychain_id)
+
+
+# ======================= ACTION BUTTONS (Swamp / Restart) =======================
+# Touch buttons for keychain powers. On mobile there is no F/R key, so
+# a button that does nothing must look dead: no function, no hover and
+# darker. The state is polled every frame (cheap keychain checks), so
+# it follows bundle pickups, uses running out and rewinds without
+# needing a signal for every case.
+
+func _update_action_buttons(player) -> void:
+	_swamp_enabled = _apply_action_button(swamp_button, _has_usable_swamp_keychain(player), _swamp_enabled)
+	_restart_enabled = _apply_action_button(restart_button, _has_usable_reversion(player), _restart_enabled)
+
+
+# Applies the enabled/disabled look to an action button, only touching
+# it when the state actually flips.
+func _apply_action_button(button: TextureButton, enabled: bool, was_enabled: bool) -> bool:
+	if enabled == was_enabled:
+		return was_enabled
+	button.disabled = not enabled
+	# MOUSE_FILTER_IGNORE kills hover too (a disabled button alone can
+	# still get mouse_entered and play the hover sound).
+	button.mouse_filter = Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
+	button.modulate = Color(1, 1, 1, 1) if enabled else Color(0.5, 0.5, 0.5, 1)
+	return enabled
+
+
+# Swamp button: on when the player has a usable keychain power.
+# revelation / descent / salvation / purity need uses left; memory has
+# no uses but IS a mode the button cycles to, so it counts too.
+# Reversion is excluded: it has its own button (RestartButton).
+func _has_usable_swamp_keychain(player) -> bool:
+	if player.has_keychain("memory"):
+		return true
+	for id in ["revelation", "descent", "salvation", "purity"]:
+		if player.has_keychain(id) and player.get_keychain_uses(id) > 0:
+			return true
+	return false
+
+
+func _has_usable_reversion(player) -> bool:
+	return player.has_keychain("reversion") and player.get_keychain_uses("reversion") > 0
 
 
 # ======================= TREASURE INDICATOR =======================

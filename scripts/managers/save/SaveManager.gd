@@ -675,7 +675,8 @@ func set_sfx_volume(volume: int) -> void:
 
 
 # Get the render distance (extra tiles drawn beyond the visible
-# area, 0-4). Default 2.
+# area, 0-4). Default 2. The display names (Low/Medium/Long/
+# XtraLong) live in Configuration.gd, not here.
 func get_render_distance() -> int:
 	var distance: String = get_value("renderDistance")
 	return int(distance) if distance != "" else 2
@@ -689,10 +690,22 @@ func set_render_distance(distance: int) -> void:
 
 # ======================= TOUCH BUTTONS =======================
 
-# Get the touch button setting.
+# Get the touch button setting. If the player never set it, the
+# default depends on the platform: on mobile (Android/iOS, or a web
+# export running on a mobile browser) touch controls are on, on PC
+# they are off. Once the player toggles the option, the saved value
+# wins and the platform default never overrides it.
 func get_touch_enabled() -> bool:
 	var value: String = get_value("touchEnabled")
-	return value != "false" if value != "" else true
+	if value == "":
+		return _is_mobile_platform()
+	return value != "false"
+
+
+# True on Android/iOS (native or web export). Touchscreen laptops
+# still count as PC: they have a keyboard, so touch stays off.
+func _is_mobile_platform() -> bool:
+	return OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")
 
 
 # Set the touch button setting.

@@ -94,6 +94,7 @@
         "music": "Música",
         "sfx": "Efeitos",
         "renderDistance": "Distância de renderização",
+        "renderLow": "Baixo", "renderMedium": "Médio", "renderLong": "Longo", "renderXtraLong": "Extra longo", "renderUltraLong": "Ultra longo",
         "language": "Idioma / Language",
         "gameplay": "Jogabilidade",
         "showTouch": "Mostrar Botões de Toque",
