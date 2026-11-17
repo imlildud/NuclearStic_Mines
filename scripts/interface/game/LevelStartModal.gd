@@ -10,7 +10,14 @@ signal dismissed
 
 const CHAR_PATH := "res://assets/sprites/characters/%s.png"
 const CHILD_NAME_KEY := "game.children.%s"
+# Same fade times as the menu fades (WelcomePanel / PunchcardPanel).
+const FADE_IN_TIME: float = 0.2
+const FADE_OUT_TIME: float = 0.15
 
+var _fade_tween: Tween = null
+var _fade_id: int = 0
+
+@onready var root_control: Control = $Root
 @onready var title_label: Label = $Root/Card/TitleLabel
 @onready var seed_label: Label = $Root/Card/SeedLabel
 @onready var info_label: Label = $Root/Card/InfoLabel
@@ -38,6 +45,7 @@ func show_modal(title: String, seed_text: String, info: String, child_types: Arr
 
 	visible = true
 	set_process_input(true)
+	_fade_in()
 
 
 func _add_child_icon(child_type: String) -> void:
@@ -78,6 +86,30 @@ func _input(event: InputEvent) -> void:
 
 
 func _dismiss() -> void:
-	visible = false
 	set_process_input(false)
+	_fade_id += 1
+	var my_id := _fade_id
+	_kill_fade_tween()
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 0.0, FADE_OUT_TIME)
+	var timer := get_tree().create_timer(FADE_OUT_TIME)
+	await timer.timeout
+	if my_id != _fade_id:
+		return
+	visible = false
+	root_control.modulate.a = 1.0
 	dismissed.emit()
+
+
+func _fade_in() -> void:
+	_fade_id += 1
+	_kill_fade_tween()
+	root_control.modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 1.0, FADE_IN_TIME)
+
+
+func _kill_fade_tween() -> void:
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = null

@@ -23,6 +23,9 @@ signal home_pressed
 signal random_pressed
 
 const GRADES_PATH := "res://assets/hud/game/gameover/%s.png"
+# Same fade times as the menu fades (WelcomePanel / PunchcardPanel).
+const FADE_IN_TIME: float = 0.2
+const FADE_OUT_TIME: float = 0.15
 
 # Animation timing (matches JS ScoreboardManager).
 const STEP_DELAY: float = 0.2
@@ -30,6 +33,7 @@ const NUMBER_DURATION: float = 1.5
 const GRADE_POP_DURATION: float = 0.3
 const GRADE_FADE_DURATION: float = 0.5
 
+@onready var root_control: Control = $Root
 @onready var rescued_label: Label = $Root/Card/LabelsCol/RescuedLabel
 @onready var marked_label: Label = $Root/Card/LabelsCol/MarkedLabel
 @onready var difficulty_label: Label = $Root/Card/LabelsCol/DifficultyLabel
@@ -51,6 +55,9 @@ const GRADE_FADE_DURATION: float = 0.5
 @onready var home_button: TextureButton = $Root/Card/ButtonsRow/HomeButton
 
 var _final_values: Dictionary = {}
+
+var _fade_tween: Tween = null
+var _fade_id: int = 0
 
 
 func _ready() -> void:
@@ -85,6 +92,7 @@ func display_scores(data: Dictionary) -> void:
 	_reset_labels_to_zero()
 	_update_buttons(_final_values["buttons"])
 	visible = true
+	_fade_in()
 
 	var sfx_enabled: bool = SaveManager.is_sfx_enabled()
 	var sfx_volume: int = SaveManager.get_sfx_volume()
@@ -252,4 +260,28 @@ func _update_buttons(buttons: Dictionary) -> void:
 
 func hide_scoreboard() -> void:
 	AudioManager.stop_score_animation_sfx()
+	_fade_id += 1
+	var my_id := _fade_id
+	_kill_fade_tween()
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 0.0, FADE_OUT_TIME)
+	var timer := get_tree().create_timer(FADE_OUT_TIME)
+	await timer.timeout
+	if my_id != _fade_id:
+		return
 	visible = false
+	root_control.modulate.a = 1.0
+
+
+func _fade_in() -> void:
+	_fade_id += 1
+	_kill_fade_tween()
+	root_control.modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(root_control, "modulate:a", 1.0, FADE_IN_TIME)
+
+
+func _kill_fade_tween() -> void:
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	_fade_tween = null
