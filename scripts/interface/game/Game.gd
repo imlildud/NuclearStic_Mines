@@ -19,6 +19,7 @@
 extends Node2D
 
 const MAIN_MENU_SCENE := "res://scenes/menu/MainMenu.tscn"
+const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
 const WALLPAPER_PATH := "res://assets/hud/game/wallpaper/%s.png"
 
 # --- Movement animation ---
@@ -462,8 +463,25 @@ func _on_pause_continue() -> void:
 
 
 func _on_pause_exit() -> void:
-	hud.hide_pause()
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	_transition_to_menu(hud.hide_pause)
+
+
+# ======================= TRANSITIONS =======================
+
+# Circle transition to the main menu. The optional callable runs after
+# the circle closes (e.g. hiding the scoreboard/pause modal under the black).
+func _transition_to_menu(before_change: Callable = Callable()) -> void:
+	var transition = load(SCENE_TRANSITION_SCRIPT).new()
+	get_tree().root.add_child(transition)
+	transition.transition_to(MAIN_MENU_SCENE, before_change)
+
+
+# Circle transition without changing scenes (Next/Retry/Randomize):
+# close the circle, run the action, open the circle again.
+func _transition_in_place(action: Callable) -> void:
+	var transition = load(SCENE_TRANSITION_SCRIPT).new()
+	get_tree().root.add_child(transition)
+	transition.transition_in_place(action)
 
 
 # ======================= SCOREBOARD =======================
@@ -494,6 +512,10 @@ func _on_scoreboard_requested(is_victory: bool) -> void:
 
 
 func _on_scoreboard_continue() -> void:
+	_transition_in_place(_regen_next_level)
+
+
+func _regen_next_level() -> void:
 	hud.hide_scoreboard()
 	GameManager.next_level()
 
@@ -507,6 +529,10 @@ func _on_scoreboard_continue() -> void:
 
 
 func _on_scoreboard_retry() -> void:
+	_transition_in_place(_regen_retry_level)
+
+
+func _regen_retry_level() -> void:
 	hud.hide_scoreboard()
 	GameManager.retry_level()
 
@@ -516,11 +542,14 @@ func _on_scoreboard_retry() -> void:
 
 
 func _on_scoreboard_home() -> void:
-	hud.hide_scoreboard()
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	_transition_to_menu(hud.hide_scoreboard)
 
 
 func _on_scoreboard_random() -> void:
+	_transition_in_place(_regen_random_level)
+
+
+func _regen_random_level() -> void:
 	hud.hide_scoreboard()
 	GameManager.randomize_new_game()
 
@@ -573,7 +602,7 @@ func _on_level_start_dismissed() -> void:
 
 func _on_back_pressed() -> void:
 	AudioManager.play_click_sfx()
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	_transition_to_menu()
 
 
 # ======================= DELIRIUM =======================

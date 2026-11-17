@@ -269,5 +269,39 @@
     "ui": {
         "cancel": "Nel pastel",
         "ok": "Jalo"
+    },
+    "loading": {
+        "loading": "Cargando...",
+        "tips": [
+            "Un 0 significa que los ocho vecinos están tranquilos. Las diagonales también cuentan, cawn.",
+            "Traes exactamente una bandera por peligro. Si ya se te acabaron y quedan peligros, una de tus banderas está mintiendo.",
+            "Las banderas nomás van en casillas ocultas. ¿Ya la wachaste? Muy tarde pa' marcarla.",
+            "Nomás puedes subir un nivel a la vez. Si está más alto, te quedas ahí parado viendo el ridículo.",
+            "Caer un nivel es gratis. Dos o más, y tus patas presentan una queja formal.",
+            "Entrega a los morrillos caminando de vuelta a la casilla de inicio. Sí, todo el camino de regreso, wey.",
+            "Un icono sudoroso significa que ya no puedes cargar más morrillos. Déjalos primero.",
+            "Cada rescate lo sacude todo: los peligros que no marcaste se pueden mover. No confíes en tus notas viejas.",
+            "Los peligros marcados se quedan exactamente donde están. De eso se trata marcarlos, carnal.",
+            "Poner banderas es gratis, pero una mal puesta te va a costar. Asegúrate antes de comprometerte.",
+            "El Chef no puede quitar una bandera una vez puesta. Apunta bien.",
+            "Mosco, Jefa y Ratero no marcan peligros automáticamente. Sus banderas siguen puestas hasta que recogen un morrillo.",
+            "Ahí es cuando sale la verdad: una bandera sobre un peligro queda marcada. Una bandera sobre una casilla segura te castiga.",
+            "Cada personaje carga una cantidad distinta de morrillos a la vez. Conoce tus límites antes de ir de compras por niños.",
+            "Los personajes más pesados cargan más morrillos por viaje. Planea tu ruta en consecuencia.",
+            "Algunos llaveros desbloquean modos de bandera extra. Picale a la F pa' alternar entre ellos.",
+            "Los llaveros y paquetes pueden cambiar cómo se juega una partida. Lee sus descripciones antes de equiparlos.",
+            "Cinco espacios de llavero, cinco oportunidades de tomar una decisión cuestionable.",
+            "Un paquete que no leíste es un paquete que no entendiste. Léelo.",
+            "Leer los números desde dos casillas distintas te dice más que cualquiera de las dos por separado.",
+            "Cuando dudes, rodea. Los desvíos son gratis. Los cactus no.",
+            "¿No sabes qué significa un número? Abre tu diario. Tiene respuestas y no juzga.",
+            "Los cactus no te guardan rencor. Simplemente no les importas.",
+            "El yermo no tiene Wi-Fi. Esta pantalla de carga es lo más cerca que estarás de una señal.",
+            "Morir es una forma perfectamente válida de aprenderse el mapa. Aunque no recomendada, güey.",
+            "Pausar está permitido. Los peligros esperarán. No tienen nada mejor que hacer.",
+            "Recuerda: los números nunca mienten. El jugador sí.",
+            "Si parece seguro, revisa los números otra vez. Si sigue pareciendo seguro, revísalos una vez más.",
+            "Otro día, otro yermo. Trata de divertirte... o lo que sea que sea esto."
+        ]
     }
 }

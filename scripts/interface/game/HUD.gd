@@ -494,8 +494,10 @@ func _create_keychain_slot(keychain_id: String) -> Control:
 		swing_tween = _build_swing_tween(tex)
 	)
 	slot.mouse_exited.connect(func():
-		if swing_tween != null and swing_tween.is_valid():
-			swing_tween.kill()
+		# Don't cut a running swing short: it already ends at 0 degrees,
+		# so let it finish. Only ease back to 0 when no swing is playing.
+		if swing_tween != null and swing_tween.is_valid() and swing_tween.is_running():
+			return
 		var t := create_tween()
 		t.tween_property(tex, "rotation", 0.0, 0.2).set_trans(Tween.TRANS_SINE)
 	)

@@ -25,6 +25,7 @@ const CONFIG_SCENE := "res://scenes/config/Configuration.tscn"
 var _punchcard: Control = null
 var _welcome_panel: CanvasLayer = null
 var _config: Control = null
+var _starting: bool = false
 
 
 # ======================= LIFECYCLE =======================
@@ -135,9 +136,14 @@ func _on_punchcard_closed() -> void:
 # Called when the punchcard emits "start_requested".
 # Saves the config to GameManager and changes to Game.tscn.
 func _on_punchcard_start(config: Dictionary) -> void:
+	if _starting:
+		return
+	_starting = true
 	GameManager.config = config
 	GameManager.set_locale_manager(LocaleManager)
-	get_tree().change_scene_to_file(GAME_SCENE)
+	var transition = load("res://scripts/interface/transitions/SceneTransition.gd").new()
+	get_tree().root.add_child(transition)
+	transition.transition_to(GAME_SCENE)
 
 
 # ======================= WELCOME PANEL =======================

@@ -269,5 +269,39 @@
     "ui": {
         "cancel": "Cancel",
         "ok": "Ok"
+    },
+    "loading": {
+      	"loading": "Loading...",
+      	"tips": [
+         "A 0 means all eight neighbors are safe. Diagonals count, too.",
+         "You get exactly one flag per hazard. If you run out with hazards left, one of your flags is lying.",
+         "Flags only go on hidden tiles. Seen it already? Too late to flag it.",
+         "You can only climb one level at a time. Anything taller and you just stand there looking silly.",
+         "Dropping one level is free. Two or more, and your legs file a complaint.",
+         "Deliver pals by walking back onto the start tile. Yes, all the way back.",
+         "A sweaty icon means you can't carry any more pals. Drop them off first.",
+         "Every rescue shakes things up: hazards you didn't mark can move. Don't trust your old notes.",
+         "Marked hazards stay exactly where they are. That's the whole point of marking them.",
+         "Flags are free to place, but a wrong one will cost you. Be sure before you commit.",
+         "Chef can't take a flag back once it's placed. Aim well.",
+         "Mosquito, Mommy and Scout don't mark hazards automatically. Their flags stay flagged until they pick up a pal.",
+         "That's when the truth comes out: a flag on a hazard becomes marked. A flag on a safe tile gets you punished.",
+         "Every character carries a different number of pals at once. Know your limits before you go shopping for kids.",
+         "Heavier characters carry more pals per trip. Plan your route around it.",
+         "Some keychains unlock extra flag modes. Press F to cycle through them.",
+         "Keychains and bundles can change how a run plays out. Read their descriptions before you equip them.",
+         "Five keychain slots, five chances to make a questionable decision.",
+         "A bundle you didn't read is a bundle you didn't understand. Read it.",
+         "Reading the numbers from two different tiles tells you more than either one alone.",
+         "When in doubt, walk around. Detours are free. Cacti aren't.",
+         "Not sure what a number means? Open your diary. It's got answers and no judgment.",
+         "Cacti have no hard feelings about you. They just don't care.",
+         "The wasteland has no Wi-Fi. This loading screen is the closest you'll get to a signal.",
+         "Dying is a perfectly valid way to learn the map. Not recommended, though.",
+         "Pausing is allowed. The hazards will wait. They have nothing better to do.",
+         "Remember: the numbers never lie. The player does.",
+         "If it looks safe, check the numbers again. If it still looks safe, check them one more time.",
+         "Another day, another wasteland. Try to have fun... or whatever this is."
+       ]
     }
 }

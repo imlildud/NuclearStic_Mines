@@ -269,5 +269,39 @@
     "ui": {
         "cancel": "Cancelar",
         "ok": "OK"
+    },
+    "loading": {
+        "loading": "Carregando...",
+        "tips": [
+            "Um 0 significa que os oito vizinhos estão seguros. As diagonais também contam.",
+            "Você tem exatamente uma bandeira por perigo. Se acabaram e ainda restam perigos, uma das suas bandeiras está mentindo.",
+            "Bandeiras só vão em casas ocultas. Já viu? Tarde demais pra marcar.",
+            "Você só consegue subir um nível por vez. Se for mais alto, você fica parado ali pagando mico.",
+            "Cair um nível é de graça. Dois ou mais, e suas pernas registram uma reclamação.",
+            "Entregue os pals caminhando de volta pra casa inicial. Sim, o caminho inteiro de volta.",
+            "Um ícone suando significa que você não consegue carregar mais pals. Deixe eles primeiro.",
+            "Cada resgate sacode tudo: os perigos que você não marcou podem se mover. Não confie nas suas anotações antigas.",
+            "Perigos marcados ficam exatamente onde estão. É pra isso que serve marcar.",
+            "Colocar bandeiras é de graça, mas uma errada vai te custar. Certeza antes de comprometer.",
+            "O Chef não consegue tirar uma bandeira depois de colocada. Mire bem.",
+            "Mosquito, Mamãe e Batedor não marcam perigos automaticamente. As bandeiras deles ficam lá até pegarem um pal.",
+            "É aí que a verdade aparece: bandeira em perigo vira marcada. Bandeira em casa segura te pune.",
+            "Cada personagem carrega uma quantidade diferente de pals por vez. Conheça seus limites antes de sair comprando crianças.",
+            "Personagens mais pesados carregam mais pals por viagem. Planeje sua rota pensando nisso.",
+            "Alguns chaveiros desbloqueiam modos de bandeira extras. Aperte F pra alternar entre eles.",
+            "Chaveiros e pacotes podem mudar como uma run se desenrola. Leia as descrições antes de equipar.",
+            "Cinco slots de chaveiro, cinco chances de tomar uma decisão questionável.",
+            "Um pacote que você não leu é um pacote que você não entendeu. Leia.",
+            "Ler os números de duas casas diferentes te diz mais do que qualquer uma sozinha.",
+            "Na dúvida, dá a volta. Desvios são de graça. Cactus não.",
+            "Não sabe o que um número significa? Abre teu diário. Tem respostas e não julga.",
+            "Cactus não guardam rancor de você. Eles simplesmente não ligam.",
+            "O ermo não tem Wi-Fi. Essa tela de carregamento é o mais perto que você vai chegar de um sinal.",
+            "Morrer é uma forma perfeitamente válida de aprender o mapa. Não recomendada, mas válida.",
+            "Pausar é permitido. Os perigos vão esperar. Eles não têm nada melhor pra fazer.",
+            "Lembra: os números nunca mentem. O jogador mente.",
+            "Se parece seguro, lê os números de novo. Se ainda parece seguro, lê mais uma vez.",
+            "Mais um dia, mais um ermo. Tenta se divertir... ou o que quer que isso seja."
+        ]
     }
 }
