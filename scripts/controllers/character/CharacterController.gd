@@ -137,6 +137,9 @@ func move_character(direction: String, board: Array, river_depth: int = 0) -> vo
 						# Play hurt sound
 						if game_manager != null:
 							AudioManager.play_hurt_sfx()
+							var fx = game_manager.get_damage_effects()
+							if fx != null:
+								fx.play_damage()
 
 						# Trigger visual damage flash
 						character.set_damage_flash(true)
@@ -262,10 +265,14 @@ func verify_tile(board: Array) -> void:
 
 			if game_manager != null:
 				AudioManager.play_hurt_metal_sfx()
-
-			# Trigger screen blackout effect for dramatic mine explosion
-			if game_manager != null and game_manager.renderer != null:
-				game_manager.renderer.trigger_mine_flash()
+				AudioManager.play_death_sfx()
+				AudioManager.duck_after_explosion()
+				# Mine explosion survived with AP: gray flash on the
+				# character + red sparks, screen goes blurry and recovers
+				# little by little (web triggerMineFlash).
+				var fx = game_manager.get_damage_effects()
+				if fx != null:
+					fx.play_mine_ap()
 			return
 
 		# No armor - die
@@ -290,6 +297,10 @@ func verify_tile(board: Array) -> void:
 
 			if game_manager != null:
 				AudioManager.play_hurt_metal_sfx()
+				# Armor absorbs the hit: gray flash + red metal sparks.
+				var fx = game_manager.get_damage_effects()
+				if fx != null:
+					fx.play_ap_damage()
 			return
 
 		# Criticker damage
@@ -424,6 +435,9 @@ func hurt_character() -> void:
 
 	if game_manager != null:
 		AudioManager.play_hurt_sfx()
+		var fx = game_manager.get_damage_effects()
+		if fx != null:
+			fx.play_damage()
 
 	character.set_damage_flash(true)
 	get_tree().create_timer(0.15).timeout.connect(func():
@@ -463,6 +477,11 @@ func kill_character() -> void:
 	character.increment_damage_taken(10)
 
 	if game_manager != null:
+		# Real death (Reversion did not save us): the screen darkens
+		# and stays dark, the game over screen takes it from here.
+		var fx = game_manager.get_damage_effects()
+		if fx != null:
+			fx.play_death()
 		game_manager.handle_game_over()
 	else:
 		push_error("[KillCharacter] CRITICAL: No game_manager!")

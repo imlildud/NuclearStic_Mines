@@ -34,6 +34,9 @@ var _sfx_pool: Array[AudioStreamPlayer] = []
 const SFX_POOL_SIZE: int = 8
 var _sfx_pool_index: int = 0
 
+# Running explosion-deafness tween (see duck_after_explosion).
+var _duck_tween: Tween = null
+
 
 # ======================= LIFECYCLE =======================
 
@@ -73,6 +76,26 @@ func set_music_volume(volume: float) -> void:
 	music_volume = clampf(volume, 0.0, 1.0)
 	if current_music != null:
 		current_music.volume_db = linear_to_db(music_volume)
+
+
+# Mine explosion deafness: after a short delay (so the explosion bang is
+# heard), drop ALL game sound to 0 and bring it back slowly to the volumes
+# left in the config. Targets are read from SaveManager every time, so
+# re-triggering mid-duck can never restore the wrong volume.
+func duck_after_explosion(delay: float = 0.5, down_time: float = 0.3, recover_time: float = 10.0) -> void:
+	if _duck_tween != null and _duck_tween.is_valid():
+		_duck_tween.kill()
+	var target_music: float = SaveManager.get_music_volume() / 100.0
+	var target_sfx: float = SaveManager.get_sfx_volume() / 100.0
+	_duck_tween = create_tween()
+	_duck_tween.tween_interval(delay)
+	_duck_tween.tween_method(_apply_duck_volumes.bind(target_music, target_sfx), 1.0, 0.0, down_time)
+	_duck_tween.tween_method(_apply_duck_volumes.bind(target_music, target_sfx), 0.0, 1.0, recover_time)
+
+
+func _apply_duck_volumes(factor: float, target_music: float, target_sfx: float) -> void:
+	set_music_volume(target_music * factor)
+	set_sfx_volume(target_sfx * factor)
 
 
 # Play a sound effect. Returns the player used, or null if disabled.

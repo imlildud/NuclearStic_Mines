@@ -204,7 +204,11 @@ func activate() -> bool:
 	is_rewinding = true
 
 	# ===== TRIGGER REWIND VISUAL EFFECT =====
-	if game.renderer != null:
+	# Board doesn't implement trigger_rewind() yet (same as the
+	# mine-flash: it's a shader/effect for the feedback phase).
+	# Guarded with has_method so the rewind still runs now and the
+	# effect plays automatically once Board has it.
+	if game.renderer != null and game.renderer.has_method("trigger_rewind"):
 		game.renderer.trigger_rewind()
 
 	# ===== PLAY REWIND SOUND =====
@@ -222,6 +226,13 @@ func activate() -> bool:
 	if not ok:
 		is_rewinding = false
 		return false
+
+	# Rewind clears any damage effect still on screen (the mine
+	# blur/dark): going back in time means the hit never happened.
+	if game_manager != null:
+		var fx = game_manager.get_damage_effects()
+		if fx != null:
+			fx.reset_effects()
 
 	# ===== 4. UPDATE VISION AND UI =====
 	game.board_ctrl.update_vision(game.board, player)

@@ -90,6 +90,15 @@ func _ready() -> void:
 	_place_character()
 	camera.make_current()
 
+	# Damage effects layer (fullscreen shader + sparks). The character
+	# sprite tells it where the sparks burst from. Reset so a previous
+	# game's death blackout never leaks into a new game.
+	var fx = GameManager.get_damage_effects()
+	if fx != null:
+		fx.set_character_sprite(anim_sprite)
+		fx.reset_effects()
+		fx.set_vignette_enabled(true)
+
 	# HUD setup.
 	hud.set_game(self)
 	hud.move_requested.connect(_move)
@@ -471,6 +480,10 @@ func _on_pause_exit() -> void:
 # Circle transition to the main menu. The optional callable runs after
 # the circle closes (e.g. hiding the scoreboard/pause modal under the black).
 func _transition_to_menu(before_change: Callable = Callable()) -> void:
+	# Leaving the game: the low-HP vignette must not follow us to the menu.
+	var fx = GameManager.get_damage_effects()
+	if fx != null:
+		fx.set_vignette_enabled(false)
 	var transition = load(SCENE_TRANSITION_SCRIPT).new()
 	get_tree().root.add_child(transition)
 	transition.transition_to(MAIN_MENU_SCENE, before_change)
@@ -517,6 +530,7 @@ func _on_scoreboard_continue() -> void:
 
 func _regen_next_level() -> void:
 	hud.hide_scoreboard()
+	_reset_fx()
 	GameManager.next_level()
 
 	board_node.set_board(GameManager.board)
@@ -534,6 +548,7 @@ func _on_scoreboard_retry() -> void:
 
 func _regen_retry_level() -> void:
 	hud.hide_scoreboard()
+	_reset_fx()
 	GameManager.retry_level()
 
 	board_node.set_board(GameManager.board)
@@ -542,7 +557,18 @@ func _regen_retry_level() -> void:
 
 
 func _on_scoreboard_home() -> void:
-	_transition_to_menu(hud.hide_scoreboard)
+	_transition_to_menu(_hide_scoreboard_and_reset_fx)
+
+
+func _hide_scoreboard_and_reset_fx() -> void:
+	hud.hide_scoreboard()
+	_reset_fx()
+
+
+func _reset_fx() -> void:
+	var fx = GameManager.get_damage_effects()
+	if fx != null:
+		fx.reset_effects()
 
 
 func _on_scoreboard_random() -> void:
@@ -551,6 +577,7 @@ func _on_scoreboard_random() -> void:
 
 func _regen_random_level() -> void:
 	hud.hide_scoreboard()
+	_reset_fx()
 	GameManager.randomize_new_game()
 
 	board_node.set_board(GameManager.board)

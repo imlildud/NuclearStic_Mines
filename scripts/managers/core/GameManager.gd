@@ -61,6 +61,7 @@ var renderer = null                # Renderer
 var last_result = null             # "victory" | "gameover" | null
 var tutorial_manager = null        # TutorialManager
 var bubble_text = null             # BubbleText scene instance (tutorial + criticker)
+var damage_effects = null          # DamageEffects layer (fullscreen shader + sparks)
 var criticker = null               # CritickerController
 var spike_controller = null        # SpikeController
 var destiny_target = null
@@ -227,6 +228,9 @@ func start_game(cfg: Dictionary) -> void:
 		var bubble_tut = _get_bubble_text()
 		if bubble_tut != null and tutorial_manager.dialog_manager != null:
 			bubble_tut.bind_tutorial_dialog(tutorial_manager.dialog_manager)
+		# Relay the tutorial's manual-prompt signal through the
+		# GameManager so Game.gd can show the Yes/No modal (parity
+		# with the JS `showManualButtons` overlay).
 		if not tutorial_manager.manual_prompt_requested.is_connected(_on_tutorial_manual_prompt):
 			tutorial_manager.manual_prompt_requested.connect(_on_tutorial_manual_prompt)
 		tutorial_manager.init()
@@ -241,14 +245,7 @@ func start_game(cfg: Dictionary) -> void:
 		"largeImageKey": presence["largeImageKey"]
 	})
 
-	# The tutorial owns the input lock from here: its init() locked
-	# it and the phase-1 dialogues unlock it at the WASD line. The
-	# blanket unlock below would undo that lock before phase 1 even
-	# starts, letting the player move during the intro.
-	if config.get("mode") != "tutorial":
-		game_input_locked = false
-	else:
-		print("[Tutorial] start_game end: tutorial mode, input stays locked")
+	game_input_locked = false
 
 
 # Sets the player's available flags equal to the number of
@@ -302,9 +299,16 @@ func check_tutorial_progress() -> void:
 	var tile = board[player.get_pos_x()][player.get_pos_y()]
 	if tile != null and tile.is_flaggoal():
 		var phase: int = board_ctrl.current_phase
-		print("[Tutorial] check_tutorial_progress: flaggoal step in phase ", phase)
-		if tutorial_manager.can_advance_on_goal():
+		if phase < 2 or phase > 4:
 			tutorial_manager.next_phase()
+		elif tutorial_manager.has_method("has_flagged_correctly") and tutorial_manager.has_flagged_correctly():
+			# Phases 2-4: the flaggoal step only advances once the
+			# player marked the required hazards (the flag-check poll
+			# shows the success message; the step itself advances,
+			# like phase 1). Stepping on it without the marks is
+			# handled by the poll with the "haven't marked" reset.
+			tutorial_manager.next_phase()
+
 
 # Checks if the player has won.
 func check_victory() -> void:
@@ -449,6 +453,19 @@ func _get_bubble_text():
 	bubble_text = load("res://scenes/game/BubbleText.tscn").instantiate()
 	add_child(bubble_text)
 	return bubble_text
+
+
+# Instances the shared DamageEffects layer once (child of this autoload,
+# so it survives scene changes) and returns it. Same pattern as BubbleText.
+func get_damage_effects():
+	if damage_effects != null:
+		return damage_effects
+	if not ResourceLoader.exists("res://scripts/interface/game/DamageEffects.gd"):
+		push_warning("[GameManager] DamageEffects.gd not found at res://scripts/interface/game/, damage effects will not show")
+		return null
+	damage_effects = load("res://scripts/interface/game/DamageEffects.gd").new()
+	add_child(damage_effects)
+	return damage_effects
 
 func set_game_input_locked(locked: bool) -> void:
 	game_input_locked = locked
