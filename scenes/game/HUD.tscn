@@ -420,45 +420,45 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 17.0
-offset_top = -185.0
-offset_right = 257.0
+offset_top = -278.0
+offset_right = 407.0
 offset_bottom = -18.0
 grow_vertical = 0
 
 [node name="W" type="TextureButton" parent="Root/TouchMovement" unique_id=83845411]
 layout_mode = 0
-offset_left = 80.0
-offset_right = 160.0
-offset_bottom = 80.0
+offset_left = 130.0
+offset_right = 260.0
+offset_bottom = 130.0
 texture_normal = ExtResource("18_w")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="A" type="TextureButton" parent="Root/TouchMovement" unique_id=2120564938]
 layout_mode = 0
-offset_top = 80.0
-offset_right = 80.0
-offset_bottom = 160.0
+offset_top = 130.0
+offset_right = 130.0
+offset_bottom = 260.0
 texture_normal = ExtResource("19_a")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="S" type="TextureButton" parent="Root/TouchMovement" unique_id=1430990718]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 80.0
-offset_right = 160.0
-offset_bottom = 160.0
+offset_left = 130.0
+offset_top = 130.0
+offset_right = 260.0
+offset_bottom = 260.0
 texture_normal = ExtResource("20_s")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="D" type="TextureButton" parent="Root/TouchMovement" unique_id=1370450782]
 layout_mode = 0
-offset_left = 160.0
-offset_top = 80.0
-offset_right = 240.0
-offset_bottom = 160.0
+offset_left = 260.0
+offset_top = 130.0
+offset_right = 390.0
+offset_bottom = 260.0
 texture_normal = ExtResource("21_d")
 ignore_texture_size = true
 stretch_mode = 5
@@ -470,8 +470,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -258.0
-offset_top = -188.0
+offset_left = -408.0
+offset_top = -278.0
 offset_right = -18.0
 offset_bottom = -18.0
 grow_horizontal = 0
@@ -479,55 +479,55 @@ grow_vertical = 0
 
 [node name="SwampButton" type="TextureButton" parent="Root/TouchFlags" unique_id=711126598]
 layout_mode = 0
-offset_top = -80.0
-offset_right = 80.0
+offset_top = -130.0
+offset_right = 130.0
 texture_normal = ExtResource("26_swamp")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="RestartButton" type="TextureButton" parent="Root/TouchFlags" unique_id=1397407148]
 layout_mode = 0
-offset_left = 160.0
-offset_top = -80.0
-offset_right = 240.0
+offset_left = 260.0
+offset_top = -130.0
+offset_right = 390.0
 texture_normal = ExtResource("27_restart")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Up" type="TextureButton" parent="Root/TouchFlags" unique_id=2131487274]
 layout_mode = 0
-offset_left = 80.0
-offset_right = 160.0
-offset_bottom = 80.0
+offset_left = 130.0
+offset_right = 260.0
+offset_bottom = 130.0
 texture_normal = ExtResource("22_up")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Left" type="TextureButton" parent="Root/TouchFlags" unique_id=1854864583]
 layout_mode = 0
-offset_top = 80.0
-offset_right = 80.0
-offset_bottom = 160.0
+offset_top = 130.0
+offset_right = 130.0
+offset_bottom = 260.0
 texture_normal = ExtResource("24_left")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Down" type="TextureButton" parent="Root/TouchFlags" unique_id=920329166]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 80.0
-offset_right = 160.0
-offset_bottom = 160.0
+offset_left = 130.0
+offset_top = 130.0
+offset_right = 260.0
+offset_bottom = 260.0
 texture_normal = ExtResource("23_down")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="Right" type="TextureButton" parent="Root/TouchFlags" unique_id=1894009771]
 layout_mode = 0
-offset_left = 160.0
-offset_top = 80.0
-offset_right = 240.0
-offset_bottom = 160.0
+offset_left = 260.0
+offset_top = 130.0
+offset_right = 390.0
+offset_bottom = 260.0
 texture_normal = ExtResource("25_right")
 ignore_texture_size = true
 stretch_mode = 5

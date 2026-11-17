@@ -484,19 +484,68 @@ func _process_secret_code(code: String) -> void:
 
 
 # ======================= IMPORT / EXPORT =======================
+# Native OS picker (DisplayServer.file_dialog_show): on Android it
+# opens the system picker (SAF) and on PC the OS file explorer, so
+# the .json in Downloads is reachable. The built-in FileDialog node
+# is only a fallback when the platform has no native dialog — it is
+# Godot's own window, not the OS explorer, and on Android it cannot
+# leave the app's own folder (scoped storage), so the .json never
+# shows up there.
 
 func _on_export_pressed() -> void:
 	_file_dialog_mode = "export"
-	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
-	file_dialog.current_file = "nuclearstic_save_%d.json" % Time.get_unix_time_from_system()
-	file_dialog.popup_centered(Vector2i(700, 450))
+	_show_native_file_dialog(
+		"NuclearStic Mines",
+		DisplayServer.FILE_DIALOG_MODE_SAVE_FILE,
+		"nuclearstic_save_%d.json" % Time.get_unix_time_from_system()
+	)
 
 
 func _on_import_pressed() -> void:
 	_file_dialog_mode = "import"
-	file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	file_dialog.filters = PackedStringArray(["*.json ; JSON backup"])
+	_show_native_file_dialog(
+		"NuclearStic Mines",
+		DisplayServer.FILE_DIALOG_MODE_OPEN_FILE,
+		""
+	)
+
+
+# Opens the OS native file picker when the platform supports it
+# (FEATURE_NATIVE_DIALOG_FILE: Linux, Windows, macOS, Android).
+# Falls back to the embedded FileDialog node otherwise. The native
+# picker is async: the result arrives in _on_native_file_selected.
+func _show_native_file_dialog(title: String, mode: DisplayServer.FileDialogMode, filename: String) -> void:
+	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE):
+		var downloads_dir: String = OS.get_system_dir(OS.SYSTEM_DIR_DOWNLOADS)
+		var err: Error = DisplayServer.file_dialog_show(
+			title,
+			downloads_dir,
+			filename,
+			false,
+			mode,
+			PackedStringArray(["*.json;JSON backup;application/json"]),
+			Callable(self, "_on_native_file_selected")
+		)
+		if err == OK:
+			return
+	# No native dialog (or it failed): embedded FileDialog fallback.
+	if mode == DisplayServer.FILE_DIALOG_MODE_SAVE_FILE:
+		file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+		file_dialog.current_file = filename
+	else:
+		file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		file_dialog.filters = PackedStringArray(["*.json ; JSON backup"])
 	file_dialog.popup_centered(Vector2i(700, 450))
+
+
+# Callback from the native picker: status=false when the user
+# cancels. On Android selected_paths holds a content:// URI, which
+# FileAccess can read/write directly.
+func _on_native_file_selected(status: bool, selected_paths: PackedStringArray, _selected_filter_index: int) -> void:
+	if not status or selected_paths.is_empty():
+		return
+	_on_file_selected(selected_paths[0])
+
 
 
 func _on_file_selected(path: String) -> void:
