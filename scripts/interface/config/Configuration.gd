@@ -8,6 +8,7 @@ signal closed
 
 const GAME_SCENE := "res://scenes/game/Game.tscn"
 const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
+const RENDER_DISTANCE_NAMES: Array[String] = ["Low", "Medium", "Long", "XtraLong", "UltraLong"]
 const MANUAL_URL := "https://github.com/imlildud/NuclearStic_Mines/wiki"
 const SAVE_PATH := "user://save_data.cfg"
 
@@ -76,6 +77,12 @@ var _secret_click_deadline_msec: int = 0
 # Guard against a fast double-click launching two transitions.
 var _starting: bool = false
 
+# Render Distance section nodes (own section below Volume).
+# Null until the nodes exist, so the config still opens without them.
+var _render_title: Label = null
+var _render_slider: HSlider = null
+var _render_value_label: Label = null
+
 
 # ======================= LIFECYCLE =======================
 
@@ -95,6 +102,13 @@ func _ready() -> void:
 	_setup_toggle(touch_toggle, "touch")
 	_setup_toggle(fall_toggle, "falldamage")
 	_setup_toggle(hardcore_toggle, "hardcore")
+
+	# Render Distance section (own section below Volume).
+	_render_title = get_node_or_null("ScrollContainer/Card/RenderSection/RenderTitle") as Label
+	_render_slider = get_node_or_null("ScrollContainer/Card/RenderSection/RenderSlider") as HSlider
+	_render_value_label = get_node_or_null("ScrollContainer/Card/RenderSection/RenderValue") as Label
+	if _render_slider != null:
+		_render_slider.value_changed.connect(_on_render_distance_changed)
 
 	# Other.
 	replay_button.pressed.connect(_on_replay_pressed)
@@ -159,6 +173,11 @@ func _refresh_all() -> void:
 	_update_toggle_visual(fall_toggle, _fall_damage_enabled, false)
 	_update_toggle_visual(hardcore_toggle, _hardcore_enabled, false)
 
+	# Render Distance.
+	if _render_slider != null:
+		_render_slider.set_value_no_signal(SaveManager.get_render_distance())
+	_update_render_value_label()
+
 	_update_lang_buttons()
 	apply_language()
 
@@ -173,6 +192,9 @@ func apply_language() -> void:
 	touch_label.text = LocaleManager.get_translation("config.showTouch")
 	fall_label.text = LocaleManager.get_translation("config.fallDamage")
 	hardcore_label.text = LocaleManager.get_translation("config.hardcore")
+	if _render_title != null:
+		var render_text = LocaleManager.get_translation("config.renderDistance")
+		_render_title.text = render_text if (render_text is String and render_text != "" and render_text != "config.renderDistance") else "Render Distance"
 	other_title.text = LocaleManager.get_translation("config.other")
 	replay_button.text = LocaleManager.get_translation("config.replayTutorial")
 	manual_button.text = LocaleManager.get_translation("config.manual")
@@ -297,6 +319,19 @@ func _update_toggle_visual(toggle: Panel, active: bool, animate: bool) -> void:
 		tween.tween_property(knob, "position:x", target_x, 0.2)
 	else:
 		knob.position.x = target_x
+
+
+# ======================= RENDER DISTANCE =======================
+
+func _on_render_distance_changed(value: float) -> void:
+	SaveManager.set_render_distance(int(value))
+	_update_render_value_label()
+
+
+func _update_render_value_label() -> void:
+	if _render_value_label != null:
+		var index: int = clampi(SaveManager.get_render_distance(), 0, RENDER_DISTANCE_NAMES.size() - 1)
+		_render_value_label.text = RENDER_DISTANCE_NAMES[index]
 
 
 # ======================= OTHER BUTTONS =======================

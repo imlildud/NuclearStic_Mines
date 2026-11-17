@@ -33,6 +33,10 @@ const Y_LIFT: float = 5.0
 # --- Height scale map (from Renderer.js heightOffsetCache) ---
 const HEIGHT_SCALE_MAP: Dictionary = {1: 1.05, 2: 1.08, 3: 1.10, 4: 1.12}
 
+# Viewport culling (see BoardViewport.gd). Preload instead of class_name
+# so the file works the moment it is copied into the project.
+const BOARD_VIEWPORT_SCRIPT := preload("res://scripts/views/BoardViewport.gd")
+
 # ======================= STATE =======================
 
 var board: Array = []
@@ -45,6 +49,14 @@ var _images: Dictionary = {}
 # When true, the static player is NOT drawn (a temporary Sprite2D
 # is being used by Game.gd for the movement animation).
 var hide_static_player: bool = false
+
+# Extra tiles drawn beyond the visible rect (Render Distance setting,
+# 0-4). Set by Game.gd from the save; default 2.
+var _render_margin: int = 2
+
+
+func set_render_margin(margin: int) -> void:
+	_render_margin = clampi(margin, 0, 4)
 
 
 # ======================= INIT =======================
@@ -61,6 +73,14 @@ func set_board(new_board: Array) -> void:
 
 func set_player(p) -> void:
 	player = p
+
+
+# Visible tile range from the camera (+ Render Distance margin).
+# BoardViewport.visible_range() is static: it reads the camera and
+# the viewport from this renderer itself, and falls back to the
+# whole board when there is no camera yet.
+func _get_visible_range(board_size: int) -> Rect2i:
+	return BOARD_VIEWPORT_SCRIPT.visible_range(self, board_size, TILE_SIZE, _render_margin)
 
 
 # ======================= SPRITE LOADING =======================
@@ -167,8 +187,11 @@ func _draw() -> void:
 	var board_size: int = board.size()
 	var half: float = (board_size * TILE_SIZE) / 2.0
 
-	for x in range(board_size):
-		for y in range(board_size):
+	# Viewport culling: only the tiles around the camera are drawn.
+	# The player tile is always inside (the camera follows the player).
+	var vis: Rect2i = _get_visible_range(board_size)
+	for x in range(vis.position.x, vis.end.x):
+		for y in range(vis.position.y, vis.end.y):
 			var tile = board[x][y]
 			var draw_x: float = x * TILE_SIZE - half
 			var draw_y: float = y * TILE_SIZE - half

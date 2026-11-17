@@ -87,6 +87,9 @@ func _ready() -> void:
 	GameManager.set_renderer(board_node)
 
 	board_node.set_board(GameManager.board)
+	var tile_layer = board_node.tile_layer if board_node != null else null
+	if tile_layer != null and tile_layer.has_method("set_render_margin"):
+		tile_layer.set_render_margin(SaveManager.get_render_distance())
 	_place_character()
 	camera.make_current()
 

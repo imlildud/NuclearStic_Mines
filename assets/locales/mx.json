@@ -93,6 +93,7 @@
         "volume": "Ruido",
         "music": "Música",
         "sfx": "Efectos",
+        "renderDistance": "Que tan lejos ves",
         "language": "Idioma / Language",
         "gameplay": "Jugabilidad",
         "showTouch": "Mostrar Botones Táctiles",

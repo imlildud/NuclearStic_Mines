@@ -93,6 +93,7 @@
         "volume": "Volume",
         "music": "Music",
         "sfx": "SFX",
+        "renderDistance": "Render Distance",
         "language": "Language / Idioma",
         "gameplay": "Gameplay",
         "showTouch": "Show Touch Buttons",

@@ -24,16 +24,29 @@ texture = ExtResource("3_card")
 texture = ExtResource("6_metal")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider"]
-bg_color = Color(0.749, 0.639, 0.541, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.431, 0.333, 0.255, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.24, 0.19, 0.15, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.11, 0.08, 0.05, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.68, 0.36, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.11, 0.08, 0.05, 1)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_note"]
 texture = ExtResource("7_note")
@@ -51,17 +64,17 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.29, 0.22, 0.169, 1)
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knob_touch"]
 bg_color = Color(0.91, 0.816, 0.71, 1)
-corner_radius_top_left = 19
-corner_radius_top_right = 19
-corner_radius_bottom_right = 19
-corner_radius_bottom_left = 19
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_fall"]
 bg_color = Color(0.035, 0.016, 0, 1)
@@ -70,17 +83,17 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.29, 0.22, 0.169, 1)
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knob_fall"]
 bg_color = Color(0.91, 0.816, 0.71, 1)
-corner_radius_top_left = 19
-corner_radius_top_right = 19
-corner_radius_bottom_right = 19
-corner_radius_bottom_left = 19
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_hardcore"]
 bg_color = Color(0.035, 0.016, 0, 1)
@@ -89,17 +102,17 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.29, 0.22, 0.169, 1)
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knob_hardcore"]
 bg_color = Color(0.91, 0.816, 0.71, 1)
-corner_radius_top_left = 19
-corner_radius_top_right = 19
-corner_radius_bottom_right = 19
-corner_radius_bottom_left = 19
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_leather"]
 texture = ExtResource("9_leather")
@@ -147,7 +160,7 @@ grow_vertical = 2
 horizontal_scroll_mode = 0
 
 [node name="Card" type="Panel" parent="ScrollContainer" unique_id=970997933]
-custom_minimum_size = Vector2(700, 1112)
+custom_minimum_size = Vector2(700, 1238)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_styles/panel = SubResource("StyleBoxTexture_card")
@@ -206,9 +219,9 @@ horizontal_alignment = 1
 
 [node name="MusicLabel" type="Label" parent="ScrollContainer/Card/VolumeSection" unique_id=1536267072]
 layout_mode = 1
-offset_left = 50.0
+offset_left = 40.0
 offset_top = 58.0
-offset_right = 140.0
+offset_right = 130.0
 offset_bottom = 92.0
 theme_override_colors/font_color = Color(0.125, 0.063, 0.02, 1)
 theme_override_fonts/font = ExtResource("14_font")
@@ -219,10 +232,13 @@ horizontal_alignment = 1
 [node name="MusicSlider" type="HSlider" parent="ScrollContainer/Card/VolumeSection" unique_id=1313309495]
 layout_mode = 1
 offset_left = 132.0
-offset_top = 62.0
+offset_top = 60.0
 offset_right = 419.0
-offset_bottom = 86.0
+offset_bottom = 88.0
+mouse_default_cursor_shape = 2
 theme_override_styles/slider = SubResource("StyleBoxFlat_slider")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
 value = 50.0
 
 [node name="MusicPercent" type="Label" parent="ScrollContainer/Card/VolumeSection" unique_id=60512424]
@@ -239,9 +255,9 @@ horizontal_alignment = 1
 
 [node name="SfxLabel" type="Label" parent="ScrollContainer/Card/VolumeSection" unique_id=296439903]
 layout_mode = 1
-offset_left = 57.0
+offset_left = 52.0
 offset_top = 110.0
-offset_right = 130.0
+offset_right = 125.0
 offset_bottom = 137.0
 theme_override_colors/font_color = Color(0.125, 0.063, 0.02, 1)
 theme_override_fonts/font = ExtResource("14_font")
@@ -252,10 +268,13 @@ horizontal_alignment = 1
 [node name="SfxSlider" type="HSlider" parent="ScrollContainer/Card/VolumeSection" unique_id=929590672]
 layout_mode = 1
 offset_left = 130.0
-offset_top = 114.0
+offset_top = 112.0
 offset_right = 419.0
-offset_bottom = 138.0
+offset_bottom = 140.0
+mouse_default_cursor_shape = 2
 theme_override_styles/slider = SubResource("StyleBoxFlat_slider")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
 value = 50.0
 
 [node name="SfxPercent" type="Label" parent="ScrollContainer/Card/VolumeSection" unique_id=370533197]
@@ -270,12 +289,61 @@ theme_override_font_sizes/font_size = 26
 text = "50%"
 horizontal_alignment = 1
 
+[node name="RenderSection" type="Panel" parent="ScrollContainer/Card" unique_id=1753312098]
+layout_mode = 1
+offset_left = 156.0
+offset_top = 326.0
+offset_right = 555.0
+offset_bottom = 436.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_metal")
+
+[node name="RenderTitle" type="Label" parent="ScrollContainer/Card/RenderSection" unique_id=884512367]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -195.0
+offset_top = 17.0
+offset_right = 197.0
+offset_bottom = 49.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.169, 0.086, 0.031, 1)
+theme_override_fonts/font = ExtResource("14_font")
+theme_override_font_sizes/font_size = 37
+text = "Render Distance"
+horizontal_alignment = 1
+
+[node name="RenderSlider" type="HSlider" parent="ScrollContainer/Card/RenderSection" unique_id=1523789450]
+layout_mode = 1
+offset_left = 49.0
+offset_top = 46.0
+offset_right = 353.0
+offset_bottom = 74.0
+mouse_default_cursor_shape = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_slider")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
+max_value = 4.0
+value = 2.0
+
+[node name="RenderValue" type="Label" parent="ScrollContainer/Card/RenderSection" unique_id=673291845]
+layout_mode = 1
+offset_left = 56.0
+offset_top = 68.0
+offset_right = 346.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.231, 0.125, 0.047, 1)
+theme_override_fonts/font = ExtResource("14_font")
+theme_override_font_sizes/font_size = 26
+text = "2"
+horizontal_alignment = 1
+
 [node name="LanguageSection" type="Panel" parent="ScrollContainer/Card" unique_id=438477795]
 layout_mode = 1
 offset_left = 97.0
-offset_top = 326.0
+offset_top = 452.0
 offset_right = 618.0
-offset_bottom = 466.0
+offset_bottom = 592.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_note")
 
 [node name="LanguageTitle" type="Label" parent="ScrollContainer/Card/LanguageSection" unique_id=103475007]
@@ -345,9 +413,9 @@ text = "Portuguese"
 [node name="GameplaySection" type="Panel" parent="ScrollContainer/Card" unique_id=327535665]
 layout_mode = 1
 offset_left = 94.0
-offset_top = 482.0
+offset_top = 608.0
 offset_right = 624.0
-offset_bottom = 833.0
+offset_bottom = 959.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_wood")
 
 [node name="GameplayTitle" type="Label" parent="ScrollContainer/Card/GameplaySection" unique_id=459359554]
@@ -378,20 +446,22 @@ theme_override_font_sizes/font_size = 30
 text = "Show Touch Buttons"
 
 [node name="TouchToggle" type="Panel" parent="ScrollContainer/Card/GameplaySection" unique_id=899619513]
-custom_minimum_size = Vector2(105, 50)
+custom_minimum_size = Vector2(93, 38)
 layout_mode = 1
-offset_left = 357.0
-offset_top = 77.0
-offset_right = 462.0
-offset_bottom = 127.0
+offset_left = 365.0
+offset_top = 82.0
+offset_right = 458.0
+offset_bottom = 120.0
+mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_toggle_touch")
 
 [node name="Knob" type="Panel" parent="ScrollContainer/Card/GameplaySection/TouchToggle" unique_id=319957653]
 layout_mode = 1
-offset_left = 6.0
-offset_top = 6.0
-offset_right = 46.0
-offset_bottom = 46.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 34.0
+offset_bottom = 34.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_knob_touch")
 
 [node name="FallLabel" type="Label" parent="ScrollContainer/Card/GameplaySection" unique_id=1837667330]
@@ -406,20 +476,22 @@ theme_override_font_sizes/font_size = 30
 text = "Enable Fall Damage"
 
 [node name="FallToggle" type="Panel" parent="ScrollContainer/Card/GameplaySection" unique_id=732329177]
-custom_minimum_size = Vector2(105, 50)
+custom_minimum_size = Vector2(93, 38)
 layout_mode = 1
-offset_left = 358.0
-offset_top = 135.0
-offset_right = 463.0
-offset_bottom = 185.0
+offset_left = 365.0
+offset_top = 139.0
+offset_right = 458.0
+offset_bottom = 177.0
+mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_toggle_fall")
 
 [node name="Knob" type="Panel" parent="ScrollContainer/Card/GameplaySection/FallToggle" unique_id=2040123176]
 layout_mode = 1
-offset_left = 6.0
-offset_top = 6.0
-offset_right = 44.0
-offset_bottom = 44.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 34.0
+offset_bottom = 34.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_knob_fall")
 
 [node name="HardcoreLabel" type="Label" parent="ScrollContainer/Card/GameplaySection" unique_id=79269543]
@@ -434,20 +506,22 @@ theme_override_font_sizes/font_size = 30
 text = "Hardcore Mode"
 
 [node name="HardcoreToggle" type="Panel" parent="ScrollContainer/Card/GameplaySection" unique_id=626906258]
-custom_minimum_size = Vector2(105, 50)
+custom_minimum_size = Vector2(93, 38)
 layout_mode = 1
-offset_left = 357.0
-offset_top = 190.0
-offset_right = 462.0
-offset_bottom = 240.0
+offset_left = 365.0
+offset_top = 196.0
+offset_right = 458.0
+offset_bottom = 234.0
+mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_toggle_hardcore")
 
 [node name="Knob" type="Panel" parent="ScrollContainer/Card/GameplaySection/HardcoreToggle" unique_id=600908753]
 layout_mode = 1
-offset_left = 6.0
-offset_top = 6.0
-offset_right = 44.0
-offset_bottom = 44.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 34.0
+offset_bottom = 34.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_knob_hardcore")
 
 [node name="OnlineTitle" type="Label" parent="ScrollContainer/Card/GameplaySection" unique_id=856176425]
@@ -485,9 +559,9 @@ horizontal_alignment = 1
 [node name="OtherSection" type="Panel" parent="ScrollContainer/Card" unique_id=1271450537]
 layout_mode = 1
 offset_left = 102.0
-offset_top = 822.0
+offset_top = 948.0
 offset_right = 617.0
-offset_bottom = 1051.0
+offset_bottom = 1177.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_leather")
 
 [node name="OtherTitle" type="Label" parent="ScrollContainer/Card/OtherSection" unique_id=678174686]
@@ -543,9 +617,9 @@ text = "Open Manual"
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 1
 offset_left = -2.0
-offset_top = 956.0
+offset_top = 1082.0
 offset_right = 174.0
-offset_bottom = 1124.0
+offset_bottom = 1250.0
 texture_normal = ExtResource("11_export")
 ignore_texture_size = true
 stretch_mode = 5
@@ -554,9 +628,9 @@ stretch_mode = 5
 custom_minimum_size = Vector2(190, 64)
 layout_mode = 1
 offset_left = 207.0
-offset_top = 1017.0
+offset_top = 1143.0
 offset_right = 473.0
-offset_bottom = 1152.0
+offset_bottom = 1278.0
 texture_normal = ExtResource("13_tag")
 ignore_texture_size = true
 stretch_mode = 5
@@ -583,9 +657,9 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 1
 offset_left = 522.0
-offset_top = 953.0
+offset_top = 1079.0
 offset_right = 715.0
-offset_bottom = 1125.0
+offset_bottom = 1251.0
 texture_normal = ExtResource("12_import")
 ignore_texture_size = true
 stretch_mode = 5

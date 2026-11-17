@@ -674,6 +674,19 @@ func set_sfx_volume(volume: int) -> void:
 	set_value("sfxVolume", clampi(volume, 0, 100))
 
 
+# Get the render distance (extra tiles drawn beyond the visible
+# area, 0-4). Default 2.
+func get_render_distance() -> int:
+	var distance: String = get_value("renderDistance")
+	return int(distance) if distance != "" else 2
+
+
+# Set the render distance (extra tiles drawn beyond the visible
+# area, 0-4).
+func set_render_distance(distance: int) -> void:
+	set_value("renderDistance", clampi(distance, 0, 4))
+
+
 # ======================= TOUCH BUTTONS =======================
 
 # Get the touch button setting.
