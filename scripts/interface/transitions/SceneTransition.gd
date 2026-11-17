@@ -19,6 +19,8 @@
 
 extends CanvasLayer
 
+signal transition_finished
+
 const CIRCLE_SHADER_PATH := "res://shaders/circle_transition.gdshader"
 const LOADING_SCREEN_SCENE := "res://scenes/menu/LoadingScreen.tscn"
 const CLOSE_TIME: float = 0.5
@@ -64,8 +66,10 @@ func transition_to(scene_path: String, before_change: Callable = Callable()) -> 
 	_grace_timer = LOADING_GRACE
 
 
-# Circle transition without changing scenes (Next/Retry/Randomize):
-# close the circle, run the action, open the circle again.
+# Circle transition without changing scenes (Next/Retry/Randomize,
+# Reversion): close the circle, run the action, open the circle again.
+# Emits transition_finished right before freeing, so the caller (e.g.
+# ReversionManager) knows when the transition ended.
 func transition_in_place(action: Callable) -> void:
 	var t := create_tween()
 	t.tween_property(_material, "shader_parameter/radius", 0.0, CLOSE_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
@@ -75,6 +79,7 @@ func transition_in_place(action: Callable) -> void:
 	var t2 := create_tween()
 	t2.tween_property(_material, "shader_parameter/radius", OPEN_RADIUS, OPEN_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	await t2.finished
+	transition_finished.emit()
 	queue_free()
 
 

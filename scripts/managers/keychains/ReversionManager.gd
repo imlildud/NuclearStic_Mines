@@ -6,6 +6,8 @@
 extends RefCounted
 class_name ReversionManager
 
+const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
+
 # ======================= STATE =======================
 
 var game_manager = null
@@ -203,38 +205,49 @@ func activate() -> bool:
 
 	is_rewinding = true
 
-	# ===== TRIGGER REWIND VISUAL EFFECT =====
-	# Board doesn't implement trigger_rewind() yet (same as the
-	# mine-flash: it's a shader/effect for the feedback phase).
-	# Guarded with has_method so the rewind still runs now and the
-	# effect plays automatically once Board has it.
-	if game.renderer != null and game.renderer.has_method("trigger_rewind"):
-		game.renderer.trigger_rewind()
-
-	# ===== PLAY REWIND SOUND =====
-	if AudioManager != null:
-		AudioManager.play_rewind_sfx()
-
 	# ===== 1. SAVE STATE (full snapshot) =====
 	save_state()
 
 	# ===== 2. SPEND USE =====
 	player.use_keychain("reversion")
 
-	# ===== 3. RESTORE STATE (no retryLevel! this is the fix) =====
-	var ok: bool = restore_state()
-	if not ok:
-		is_rewinding = false
-		return false
-
+	# ===== 3. CIRCLE TRANSITION (rewind) =====
+	# The restore happens with the circle fully closed (hidden), not
+	# now: the circle closes, the world is restored, then it opens into
+	# the restored present. Same proven circle transition as the menu,
+	# no extra shader. Input stays locked until the transition ends,
+	# so no move can land on the pre-restore board mid-transition.
+	game_manager.game_input_locked = true
 	# Rewind clears any damage effect still on screen (the mine
 	# blur/dark): going back in time means the hit never happened.
-	if game_manager != null:
-		var fx = game_manager.get_damage_effects()
-		if fx != null:
-			fx.reset_effects()
+	var fx = game_manager.get_damage_effects()
+	if fx != null:
+		fx.reset_effects()
+	if AudioManager != null:
+		AudioManager.play_rewind_sfx()
+	var transition_script = load(SCENE_TRANSITION_SCRIPT)
+	if transition_script != null:
+		var transition = transition_script.new()
+		transition.transition_finished.connect(_on_rewind_finished, CONNECT_ONE_SHOT)
+		game_manager.get_tree().root.add_child(transition)
+		transition.transition_in_place(Callable(self, "_on_rewind_peak"))
+	else:
+		push_error("[Reversion] SceneTransition script not found at " + SCENE_TRANSITION_SCRIPT)
+		_on_rewind_peak()
+		_on_rewind_finished()
+	print("[Reversion] Rewind started")
+	return true
 
-	# ===== 4. UPDATE VISION AND UI =====
+
+# Runs with the circle fully closed (hidden): restores the snapshot,
+# re-syncs vision/UI, and tells the Game scene to re-sync the board and
+# snap the camera to the start tile.
+func _on_rewind_peak() -> void:
+	var game = game_manager
+	var player = game.get_player()
+	var ok: bool = restore_state()
+	if not ok:
+		return
 	game.board_ctrl.update_vision(game.board, player)
 	game.board_ctrl.update_vision_around_player(game.board, player)
 
@@ -247,10 +260,18 @@ func activate() -> bool:
 	# auto-activate-on-death path, where Game._reversion() never runs.
 	if game_manager.has_signal("reversion_activated"):
 		game_manager.reversion_activated.emit()
+	print("[Reversion] State restored at rewind peak")
 
+
+# Runs when the circle transition ends: unlocks input and allows the
+# next rewind. The transition node is a child of the tree root, so it
+# survives scene changes and this always runs.
+func _on_rewind_finished() -> void:
+	# Reversion can't be equipped in the tutorial, so unlocking here
+	# can't break the tutorial's own input lock.
+	game_manager.game_input_locked = false
 	is_rewinding = false
 	print("[Reversion] Rewind complete")
-	return true
 
 
 # ======================= AUTO ACTIVATE ON DEATH =======================
