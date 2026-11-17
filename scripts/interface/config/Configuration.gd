@@ -7,6 +7,7 @@ extends Control
 signal closed
 
 const GAME_SCENE := "res://scenes/game/Game.tscn"
+const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
 const MANUAL_URL := "https://github.com/imlildud/NuclearStic_Mines/wiki"
 const SAVE_PATH := "user://save_data.cfg"
 
@@ -72,6 +73,8 @@ var _file_dialog_mode: String = ""  # "export" | "import"
 
 var _secret_click_count: int = 0
 var _secret_click_deadline_msec: int = 0
+# Guard against a fast double-click launching two transitions.
+var _starting: bool = false
 
 
 # ======================= LIFECYCLE =======================
@@ -299,6 +302,9 @@ func _update_toggle_visual(toggle: Panel, active: bool, animate: bool) -> void:
 # ======================= OTHER BUTTONS =======================
 
 func _on_replay_pressed() -> void:
+	if _starting:
+		return
+	_starting = true
 	AudioManager.play_click_sfx()
 	SaveManager.set_tutorial_completed(false)
 	var tutorial_config: Dictionary = {
@@ -315,7 +321,9 @@ func _on_replay_pressed() -> void:
 	SaveManager.save_config(tutorial_config)
 	GameManager.config = tutorial_config
 	GameManager.set_locale_manager(LocaleManager)
-	get_tree().change_scene_to_file(GAME_SCENE)
+	var transition = load(SCENE_TRANSITION_SCRIPT).new()
+	get_tree().root.add_child(transition)
+	transition.transition_to(GAME_SCENE)
 
 
 func _on_manual_pressed() -> void:
@@ -394,6 +402,9 @@ func _process_secret_code(code: String) -> void:
 				LocaleManager.get_translation("config.secretMasiosare")
 			)
 		"debugthis":
+			if _starting:
+				return
+			_starting = true
 			var test_config: Dictionary = {
 				"mode": "test",
 				"seed": null,
@@ -408,7 +419,9 @@ func _process_secret_code(code: String) -> void:
 			SaveManager.save_config(test_config)
 			GameManager.config = test_config
 			GameManager.set_locale_manager(LocaleManager)
-			get_tree().change_scene_to_file(GAME_SCENE)
+			var transition = load(SCENE_TRANSITION_SCRIPT).new()
+			get_tree().root.add_child(transition)
+			transition.transition_to(GAME_SCENE)
 		_:
 			modal_dialog.show_message(
 				LocaleManager.get_translation("config.secretInvalid")

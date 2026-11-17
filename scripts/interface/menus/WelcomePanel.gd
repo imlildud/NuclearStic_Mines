@@ -20,9 +20,13 @@ var _editing_name: bool = false
 const FADE_IN_TIME: float = 0.2
 const FADE_OUT_TIME: float = 0.15
 
+const GAME_SCENE := "res://scenes/game/Game.tscn"
+const SCENE_TRANSITION_SCRIPT := "res://scripts/interface/transitions/SceneTransition.gd"
+
 var _current_panel: Control = null
 var _switch_id: int = 0
 var _panel_tweens: Dictionary = {}
+var _starting: bool = false
 
 
 func _ready() -> void:
@@ -158,7 +162,10 @@ func _on_tutorial_choice(wants_tutorial: bool) -> void:
 	SaveManager.set_tutorial_completed(true)
 
 	if wants_tutorial:
-		# Configurar tutorial y navegar a Game.
+		if _starting:
+			return
+		_starting = true
+		# Configurar tutorial y navegar a Game (con la transicion de circulo).
 		GameManager.config = {
 			"mode": "tutorial",
 			"seed": null,
@@ -170,7 +177,9 @@ func _on_tutorial_choice(wants_tutorial: bool) -> void:
 			"goals": 1,
 			"zone": "backyard"
 		}
-		get_tree().change_scene_to_file("res://scenes/game/Game.tscn")
+		var transition = load(SCENE_TRANSITION_SCRIPT).new()
+		get_tree().root.add_child(transition)
+		transition.transition_to(GAME_SCENE)
 	else:
 		# Return to ID card WITHOUT animation (first-time flow).
 		_show_id_card(SaveManager.get_username(), SaveManager.get_avatar(), false)
