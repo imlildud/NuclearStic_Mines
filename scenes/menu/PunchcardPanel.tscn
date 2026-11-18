@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://ck28fxqfxla1" path="res://assets/hud/menu/welcome.png" id="18_welcome"]
 [ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="19_font"]
 [ext_resource type="Texture2D" uid="uid://cqt58qo6l1ral" path="res://assets/hud/punchcard/note.png" id="20_note"]
+[ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="22_rbcbx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup_hover"]
 bg_color = Color(0.121569, 0.380392, 0.85098, 1)
@@ -684,3 +685,19 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("19_font")
 theme_override_font_sizes/font_size = 28
 text = "OK"
+
+[node name="Filter" type="TextureRect" parent="." unique_id=1006854702]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("22_rbcbx")
+expand_mode = 1
+stretch_mode = 6

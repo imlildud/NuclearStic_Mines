@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://dfvu0us2q0ygf" path="res://assets/hud/game/control/left.png" id="24_left"]
 [ext_resource type="Texture2D" uid="uid://dmq5irskpmg62" path="res://assets/hud/game/control/right.png" id="25_right"]
 [ext_resource type="Texture2D" uid="uid://b327kj6dv2hls" path="res://assets/hud/game/control/swamp.png" id="26_swamp"]
+[ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="27_04ylb"]
 [ext_resource type="Texture2D" uid="uid://buc0iigmiva6o" path="res://assets/hud/game/control/restart.png" id="27_restart"]
 [ext_resource type="PackedScene" uid="uid://ctpotjyjiawqk" path="res://scenes/game/Scoreboard.tscn" id="28_scoreboard"]
 [ext_resource type="PackedScene" uid="uid://b22relmukp3r2" path="res://scenes/game/LevelStartModal.tscn" id="29_levelstart"]
@@ -543,3 +544,14 @@ visible = false
 
 [node name="ModalDialog" parent="." unique_id=1621720254 instance=ExtResource("31_modal")]
 visible = false
+
+[node name="Filter" type="TextureRect" parent="." unique_id=169928022]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("27_04ylb")
+expand_mode = 1
+stretch_mode = 6

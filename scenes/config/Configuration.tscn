@@ -16,6 +16,7 @@
 [ext_resource type="FontFile" uid="uid://bgywjrtb5k60" path="res://assets/font/Shampoos-Regular.ttf" id="14_font"]
 [ext_resource type="Texture2D" uid="uid://ck28fxqfxla1" path="res://assets/hud/menu/welcome.png" id="15_welcome"]
 [ext_resource type="PackedScene" path="res://scenes/game/ModalDialog.tscn" id="16_modal"]
+[ext_resource type="Texture2D" uid="uid://bm3iu0xl1lx1n" path="res://assets/hud/filter.png" id="17_gww61"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_card"]
 texture = ExtResource("3_card")
@@ -768,3 +769,19 @@ text = "Cancel"
 
 [node name="FileDialog" type="FileDialog" parent="." unique_id=1779759709]
 title = "NuclearStic Mines"
+
+[node name="Filter" type="TextureRect" parent="." unique_id=255693302]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("17_gww61")
+expand_mode = 1
+stretch_mode = 6

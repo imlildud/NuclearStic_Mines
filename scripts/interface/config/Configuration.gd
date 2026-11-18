@@ -321,6 +321,7 @@ func _render_distance_names() -> Array[String]:
 		_tr("config.renderMedium", "Medium"),
 		_tr("config.renderLong", "Long"),
 		_tr("config.renderXtraLong", "XtraLong"),
+		_tr("config.renderUltraLong", "UltraLong"),
 	]
 
 
